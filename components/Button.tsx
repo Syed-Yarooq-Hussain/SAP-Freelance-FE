@@ -1,27 +1,19 @@
 'use client';
 
 import * as React from 'react';
-import MuiButton from '@mui/material/Button';
+import MuiButton, { ButtonProps } from '@mui/material/Button';
 
-type AppButtonProps = {
+interface IAppButtonProps extends ButtonProps {
     label: string;
-    onClick: () => void;
-    variant?: 'text' | 'outlined' | 'contained';
-    color?: 'primary' | 'secondary' | 'error' | 'success' | 'info' | 'warning';
 };
 
-export default function AppButton({
-    label,
-    onClick,
-    variant = 'contained',
-    color = 'primary',
-}: AppButtonProps) {
+const AppButton: React.FC<IAppButtonProps> = ({ label, ...props }) => {
     return (
         <MuiButton
-            variant={variant}
-            color={color}
+            variant={props.variant || 'contained'}
+            color={props.color || 'primary'}
             size="small"
-            onClick={onClick}
+            onClick={props.onClick}
             sx={{
                 textTransform: 'none',
                 borderRadius: 2,
@@ -34,3 +26,6 @@ export default function AppButton({
         </MuiButton>
     );
 }
+
+
+export default AppButton;
