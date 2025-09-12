@@ -9,51 +9,53 @@ import PaymentIcon from "@mui/icons-material/Payment";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import MapItems from "@/components/MapItems";
-
-const cards = [
-  {
-    icon: <PeopleIcon />,
-    title: "User Management",
-    description: "Approve, edit, or deactivate consultant and client profiles.",
-    buttonText: "View Users",
-    onClick: () => alert("Go to Users"),
-    grid: { xs: 12, sm: 6, md: 4 },
-  },
-  {
-    icon: <AssignmentIcon />,
-    title: "Project Oversight",
-    description: "Track all active, completed, and planned projects.",
-    buttonText: "View Projects",
-    onClick: () => alert("Go to Projects"),
-    grid: { xs: 12, sm: 6, md: 4 },
-  },
-  {
-    icon: <PaymentIcon />,
-    title: "Payment Monitoring",
-    description: "Monitor client payments and consultant disbursements.",
-    buttonText: "Check Payments",
-    onClick: () => alert("Go to Payments"),
-    grid: { xs: 12, sm: 6, md: 4 },
-  },
-  {
-    icon: <NotificationsIcon />,
-    title: "Notifications Center",
-    description: "Manage all alerts and announcements in the system.",
-    buttonText: "View Alerts",
-    onClick: () => alert("Go to Notifications"),
-    grid: { xs: 12, sm: 6, md: 4 },
-  },
-  {
-    icon: <BarChartIcon />,
-    title: "Report Generation",
-    description: "Export data reports on users, payments, and engagements.",
-    buttonText: "Export Reports",
-    onClick: () => alert("Go to Reports"),
-    grid: { xs: 12, sm: 6, md: 4 },
-  },
-];
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const route = useRouter();
+  const cards = [
+    {
+      icon: <PeopleIcon />,
+      title: "User Management",
+      description: "Approve, edit, or deactivate consultant and client profiles.",
+      buttonText: "View Users",
+      onClick: () => route.push("/user/management"),
+      grid: { xs: 12, sm: 6, md: 4 },
+    },
+    {
+      icon: <AssignmentIcon />,
+      title: "Project Oversight",
+      description: "Track all active, completed, and planned projects.",
+      buttonText: "View Projects",
+      onClick: () => alert("Go to Projects"),
+      grid: { xs: 12, sm: 6, md: 4 },
+    },
+    {
+      icon: <PaymentIcon />,
+      title: "Payment Monitoring",
+      description: "Monitor client payments and consultant disbursements.",
+      buttonText: "Check Payments",
+      onClick: () => alert("Go to Payments"),
+      grid: { xs: 12, sm: 6, md: 4 },
+    },
+    {
+      icon: <NotificationsIcon />,
+      title: "Notifications Center",
+      description: "Manage all alerts and announcements in the system.",
+      buttonText: "View Alerts",
+      onClick: () => alert("Go to Notifications"),
+      grid: { xs: 12, sm: 6, md: 4 },
+    },
+    {
+      icon: <BarChartIcon />,
+      title: "Report Generation",
+      description: "Export data reports on users, payments, and engagements.",
+      buttonText: "Export Reports",
+      onClick: () => alert("Go to Reports"),
+      grid: { xs: 12, sm: 6, md: 4 },
+    },
+  ];
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <h1 style={{ marginBottom: "20px" }}>Admin Dashboard</h1>
