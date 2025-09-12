@@ -108,7 +108,7 @@ const Sidebar = ({ children }: Props) => {
             <AppBar
                 position="fixed"
                 open={open}
-                sx={{ backgroundColor: '#9e9e9e' }}
+                sx={{ backgroundColor: '#5d66e7ff' }}
             >
                 <Toolbar sx={{ display: 'flex', alignItems: 'center', gap: 2, px: 2 }}>
                     <IconButton
@@ -230,7 +230,7 @@ const Sidebar = ({ children }: Props) => {
 
             </Drawer>
 
-            <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+            <Box component="main" sx={{ flexGrow: 1, p: 0 }}>
                 <DrawerHeader />
                 {children}
             </Box>
