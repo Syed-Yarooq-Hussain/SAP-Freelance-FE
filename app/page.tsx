@@ -1,79 +1,88 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import Box from "@mui/material/Box";
-import DashboardCard from "@/components/Card";
-import PeopleIcon from "@mui/icons-material/People";
-import AssignmentIcon from "@mui/icons-material/Assignment";
-import PaymentIcon from "@mui/icons-material/Payment";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import BarChartIcon from "@mui/icons-material/BarChart";
-import MapItems from "@/components/MapItems";
-import { useRouter } from "next/navigation";
+import * as React from 'react';
+import { Box, Button, Container, Typography, Stack, Paper } from '@mui/material';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import { Roles } from '@/constants/roles';
 
 export default function Home() {
-  const route = useRouter();
-  const cards = [
-    {
-      icon: <PeopleIcon />,
-      title: "User Management",
-      description: "Approve, edit, or deactivate consultant and client profiles.",
-      buttonText: "View Users",
-      onClick: () => route.push("/user/management"),
-      grid: { xs: 12, sm: 6, md: 4 },
-    },
-    {
-      icon: <AssignmentIcon />,
-      title: "Project Oversight",
-      description: "Track all active, completed, and planned projects.",
-      buttonText: "View Projects",
-      onClick: () => alert("Go to Projects"),
-      grid: { xs: 12, sm: 6, md: 4 },
-    },
-    {
-      icon: <PaymentIcon />,
-      title: "Payment Monitoring",
-      description: "Monitor client payments and consultant disbursements.",
-      buttonText: "Check Payments",
-      onClick: () => alert("Go to Payments"),
-      grid: { xs: 12, sm: 6, md: 4 },
-    },
-    {
-      icon: <NotificationsIcon />,
-      title: "Notifications Center",
-      description: "Manage all alerts and announcements in the system.",
-      buttonText: "View Alerts",
-      onClick: () => alert("Go to Notifications"),
-      grid: { xs: 12, sm: 6, md: 4 },
-    },
-    {
-      icon: <BarChartIcon />,
-      title: "Report Generation",
-      description: "Export data reports on users, payments, and engagements.",
-      buttonText: "Export Reports",
-      onClick: () => alert("Go to Reports"),
-      grid: { xs: 12, sm: 6, md: 4 },
-    },
-  ];
+  const router = useRouter();
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <h1 style={{ marginBottom: "20px" }}>Admin Dashboard</h1>
-      <MapItems
-        items={cards.map((card) => ({
-          key: card.title,
-          grid: card.grid,
-          component: (
-            <DashboardCard
-              icon={card.icon}
-              title={card.title}
-              description={card.description}
-              buttonText={card.buttonText}
-              onClick={card.onClick}
+    <Box
+      sx={{
+        minHeight: '100vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        bgcolor: 'background.default',
+        px: 2,
+      }}
+    >
+      <Container maxWidth="sm">
+        <Paper
+          elevation={3}
+          sx={{
+            textAlign: 'center',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 2,
+            p: { xs: 3, sm: 4 },
+            borderRadius: 2,
+          }}
+        >
+          <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+            <Image
+              src="/vx9-logo-02.png"
+              alt="SAP Portal Logo"
+              width={0}
+              height={0}
+              style={{
+                width: '100%',
+                height: 'auto',
+                maxWidth: '150px',
+              }}
+              sizes="(max-width: 600px) 80px,
+                     (max-width: 900px) 120px,
+                     150px"
+              priority
             />
-          ),
-        }))}
-      />
+          </Box>
+
+          <Typography variant="h4" fontWeight="bold">
+            Welcome to SAP Portal
+          </Typography>
+
+          <Typography variant="h6" color="text.secondary">
+            Continue as
+          </Typography>
+
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            spacing={2}
+            sx={{ mt: 1, width: '100%' }}
+          >
+            <Button
+              variant="contained"
+              size="large"
+              sx={{ flex: 1, fontWeight: 'bold' }}
+              onClick={() => router.push(`/auth/signup?type=${Roles.CLIENT}`)}
+            >
+              Client
+            </Button>
+            <Button
+              variant="outlined"
+              size="large"
+              sx={{ flex: 1, fontWeight: 'bold' }}
+              onClick={() => router.push(`/auth/signup?type=${Roles.CONSULTANT}`)}
+            >
+              Consultant
+            </Button>
+          </Stack>
+        </Paper>
+      </Container>
     </Box>
   );
 }
