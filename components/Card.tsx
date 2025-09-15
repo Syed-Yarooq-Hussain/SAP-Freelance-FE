@@ -7,7 +7,6 @@ import {
   CardActions,
   CardMedia,
   Typography,
-  Box,
 } from '@mui/material';
 import AppButton from '@/components/Button';
 

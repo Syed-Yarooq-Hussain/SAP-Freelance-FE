@@ -1,4 +1,3 @@
-import Sidebar from "@/components/Sidebar";
 import theme from "@/theme";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import { ThemeProvider } from "@mui/material/styles";
@@ -31,7 +30,7 @@ export default function RootLayout({
       <body>
         <AppRouterCacheProvider options={{ key: "css", enableCssLayer: true }}>
           <ThemeProvider theme={theme}>
-            <Sidebar>{children}</Sidebar>
+            {children}
           </ThemeProvider>
         </AppRouterCacheProvider>
       </body>
