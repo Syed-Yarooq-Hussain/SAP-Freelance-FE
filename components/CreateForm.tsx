@@ -1,5 +1,6 @@
 "use client";
 
+import { IOption } from "@/types/options";
 import {
   Alert,
   BaseTextFieldProps,
@@ -7,9 +8,11 @@ import {
   Button,
   ButtonProps,
   FormControl,
+  MenuItem,
   Stack,
   StackProps,
   TextField,
+  Typography,
 } from "@mui/material";
 import { ResponsiveStyleValue } from "@mui/system";
 import { FC } from "react";
@@ -34,6 +37,7 @@ export interface IFieldConfig extends BaseTextFieldProps {
   column?: IGridSpan;
   row?: IGridSpan;
   type?: string;
+  options?: IOption[];
 }
 
 interface ICreateFormProps {
@@ -119,10 +123,32 @@ export const CreateForm: FC<ICreateFormProps> = ({
                     helperText={errors[element.name]?.message?.toString()}
                     disabled={loading}
                     placeholder={element.placeholder}
-                    InputLabelProps={{ shrink: true }}
-                    {...element}
+                    slotProps={{
+                      inputLabel: { shrink: true },
+                      select: {
+                        displayEmpty: true,
+                        renderValue: (value) => {
+                          if (!value) {
+                            return (
+                              <Typography color="gray">
+                                Select {element.label}
+                              </Typography>
+                            );
+                          }
+                          return <>{value}</>;
+                        },
+                      },
+                    }}
                     label={element.label}
-                  />
+                    {...element}
+                  >
+                    {element.options?.length !== 0 &&
+                      element.options?.map((opt) => (
+                        <MenuItem key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </MenuItem>
+                      ))}
+                  </TextField>
                 )}
               />
             </FormControl>

@@ -2,7 +2,8 @@
 
 import { useLogin } from "@/actions/auth/login";
 import AuthHeader from "@/components/AuthHeader";
-import { CreateForm, IFieldConfig } from "@/components/CreateForm";
+import { CreateForm } from "@/components/CreateForm";
+import { getLoginFormFields } from "@/forms/loginForm";
 import { ILoginForm } from "@/types/commonauth";
 import { APP_ROUTES } from "@/utils/app_routes";
 import { Box, Container, Typography } from "@mui/material";
@@ -13,25 +14,7 @@ import { FieldValues } from "react-hook-form";
 const LoginPage: React.FC = () => {
   const { mutate, error, isPending } = useLogin();
 
-  const elements: IFieldConfig[] = [
-    {
-      name: "email",
-      label: "Email",
-      placeholder: "Enter email",
-      type: "email",
-      rules: {
-        required: "Email is required",
-        pattern: { value: /^\S+@\S+$/i, message: "Invalid email format" },
-      },
-    },
-    {
-      name: "password",
-      label: "Password",
-      placeholder: "Enter password",
-      type: "password",
-      rules: { required: "Password is required" },
-    },
-  ];
+  const elements = getLoginFormFields();
 
   const handleSuccess = (data: FieldValues) => {
     const formData = data as ILoginForm;
