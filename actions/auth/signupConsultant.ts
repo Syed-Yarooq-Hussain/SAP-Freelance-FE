@@ -6,6 +6,7 @@ import { IConsultantSignupPayload } from "@/types/consultant";
 import { useRouter } from "next/navigation";
 import { Roles } from "@/constants/roles";
 import { APP_ROUTES } from "@/utils/app_routes";
+import { API_ROUTES } from "@/utils/api_routes";
 
 export const useSignupConsultant = () => {
   const router = useRouter();
@@ -21,7 +22,7 @@ export const useSignupConsultant = () => {
       }
 
       const response = await request<IConsultantSignupPayload, void>({
-        url: "/auth/signup/consultant",
+        url: API_ROUTES.SIGNUP_CONSULTANT,
         method: "POST",
         data,
       });
