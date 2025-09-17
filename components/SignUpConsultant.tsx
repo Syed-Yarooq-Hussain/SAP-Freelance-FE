@@ -1,84 +1,113 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { Box, Container, Typography, Alert} from '@mui/material';
-import Image from 'next/image';
-import { CreateForm, IFieldConfig } from '@/components/CreateForm';
-import { ISignUpForm } from '@/types/auth';
-import { FieldValues } from 'react-hook-form';
+import * as React from "react";
+import { Box, Container } from "@mui/material";
+import { CreateForm } from "@/components/CreateForm";
+import { FieldValues } from "react-hook-form";
+import { useSearchParams } from "next/navigation";
+import { useSignupConsultant } from "@/actions/auth/signupConsultant";
+import { IConsultantSignupPayload } from "@/types/consultant";
+import AuthHeader from "./AuthHeader";
+import { getConsultantFormFields } from "@/forms/consultantForm";
+
+interface IConsultantForm {
+  fullName: string;
+  email: string;
+  phone: string;
+  password: string;
+  confirmPassword: string;
+  city: string;
+  country: string;
+  module: string;
+  level: string;
+  experience: number;
+  rate: number;
+  availableHours: number;
+  availability: {
+    day: string;
+    enabled: boolean;
+    start?: string;
+    end?: string;
+  }[];
+  cvUrl: string;
+}
 
 const SignUpConsultant: React.FC = () => {
-    const [error, setError] = React.useState('');
+  const { mutate, error, isPending } = useSignupConsultant();
+  const searchParams = useSearchParams();
+  const role = Number(searchParams.get("type")) || "Invalid role";
 
-    const elements: IFieldConfig[] = [
-        {
-            name: "fullName",
-            label: "Full Name",
-            type: "text",
-            rules: { required: "Full Name is required" }
+  const elements = getConsultantFormFields();
+
+  const handleSuccess = (data: FieldValues) => {
+    const formData = data as IConsultantForm;
+
+    const payload: IConsultantSignupPayload = {
+      consultant: {
+        module: formData.module,
+        level: formData.level,
+        experience: formData.experience,
+        rate: formData.rate,
+        weekly_available_hours: 20,
+        schedule: {
+          monday: "9-5",
+          tuesday: "9-5",
+          wednesday: "off",
+          thursday: "9-5",
+          friday: "9-5",
+          saturday: "off",
+          sunday: "off",
         },
-        {
-            name: "email",
-            label: "Email",
-            type: "email",
-            rules: {
-                required: "Email is required",
-                pattern: { value: /^\S+@\S+$/i, message: "Invalid email format" }
-            }
-        },
-        { name: "phone", label: "Phone Number", type: "tel" },
-        { name: "password", label: "Password", type: "password", rules: { required: "Password is required" } },
-        { name: "confirmPassword", label: "Confirm Password", type: "password", rules: { required: "Confirm Password is required" } },
-        { name: "city", label: "City", type: "text" },
-        { name: "country", label: "Country", type: "text" },
-        {
-            name: "cv",
-            label: "Upload CV",
-            type: "file",
-            rules: { required: "CV is required", },
-            inputProps: { accept: ".pdf,.doc,.docx" },
-
-        }
-    ];
-
-    const handleSuccess = (data: FieldValues) => {
-        const formData = data as ISignUpForm;
-        if (formData.password !== formData.confirmPassword) {
-            setError('Passwords do not match.');
-            return;
-        }
-        setError('');
-        console.log('Consultant signup submitted:', formData);
+        cv_url: formData.cvUrl ?? "",
+      },
+      user: {
+        username: formData.fullName,
+        role,
+        email: formData.email,
+        phone: formData.phone,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+        currency: "EUR",
+        city: formData.city,
+        country: formData.country,
+        status: 1,
+      },
     };
 
-    return (
-        <Container maxWidth="sm">
-            <Box sx={{ mt: 8, p: 4, borderRadius: 2, boxShadow: 3, bgcolor: 'background.paper' }}>
-                <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
-                    <Image
-                        src="/vx9-logo-02.png"
-                        alt="SAP Portal Logo"
-                        width={0}
-                        height={0}
-                        style={{ width: '100%', height: 'auto', maxWidth: '120px' }}
-                        sizes="(max-width: 600px) 80px, (max-width: 900px) 100px, 150px"
-                        priority
-                    />
-                </Box>
+    mutate(payload);
+  };
 
-                <Typography variant="h5" fontWeight="bold" align="center" gutterBottom>
-                    Create Consultant Account
-                </Typography>
-                <Typography variant="body2" align="center" color="text.secondary" mb={2}>
-                    Sign up to get started
-                </Typography>
+  return (
+    <Container maxWidth="sm">
+      <Box
+        sx={{
+          mt: 8,
+          p: 4,
+          borderRadius: 2,
+          boxShadow: 3,
+          bgcolor: "background.paper",
+        }}
+      >
+        <AuthHeader
+          heading="Create Consultant Account"
+          description="Sign up to get started"
+        />
 
-                {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-
-                <CreateForm elements={elements} onSuccess={handleSuccess} />
-            </Box>
-        </Container>
-    );
+        <CreateForm
+          elements={elements}
+          onSuccess={handleSuccess}
+          loading={isPending}
+          error={error?.message}
+          submitButton={{
+            children: "Create an Account",
+            variant: "contained",
+            fullWidth: false,
+            size: "medium",
+          }}
+        />
+      </Box>
+    </Container>
+  );
 };
 
 export default SignUpConsultant;
