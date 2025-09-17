@@ -7,7 +7,7 @@ const getTheme = (mode: "light" | "dark") =>
     palette: {
       mode,
       primary: {
-        main: "#4099ff", // fallback color
+        main: "#4099ff",
       },
       secondary: {
         main: "#73b4ff",
