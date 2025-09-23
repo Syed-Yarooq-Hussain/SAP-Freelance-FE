@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { API_ROUTES } from "@/utils/api_routes";
 import { APP_ROUTES } from "@/utils/app_routes";
 import { Roles } from "@/constants/roles";
-import { IBaseSignupDTO } from "@/types/commonauth";
+import { IBaseSignupDTO } from "@/types/common-auth";
 
 export const useSignupClient = () => {
   const router = useRouter();
@@ -24,7 +24,6 @@ export const useSignupClient = () => {
         method: "POST",
         data,
       });
-      if (response.error) throw new Error(response.error.message);
 
       return response;
     },

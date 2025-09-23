@@ -1,4 +1,6 @@
-export interface ApiResponse<T> {
-  success?: { message: string; data: T };
-  error?: { message: string; code?: number };
+export interface ApiResponse<T = null> {
+  code: number;
+  status: string;
+  message: string;
+  data: T | null;
 }

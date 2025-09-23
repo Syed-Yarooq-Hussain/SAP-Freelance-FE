@@ -6,7 +6,7 @@ import { CreateForm } from "@/components/CreateForm";
 import { FieldValues } from "react-hook-form";
 import { useSignupClient } from "@/actions/auth/signupClient";
 import { useSearchParams } from "next/navigation";
-import { IBaseSignupDTO } from "@/types/commonauth";
+import { IBaseSignupDTO } from "@/types/common-auth";
 import AuthHeader from "./AuthHeader";
 import { getClientFormFields } from "@/forms/clientForm";
 

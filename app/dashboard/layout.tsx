@@ -1,9 +1,14 @@
-import Sidebar from "@/components/Sidebar"
+import Sidebar from "@/components/Sidebar";
+import { SessionProvider } from "next-auth/react";
 
 export default function DashboardLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
-  return  <Sidebar>{children}</Sidebar>
+  return (
+    <SessionProvider>
+      <Sidebar>{children}</Sidebar>
+    </SessionProvider>
+  );
 }

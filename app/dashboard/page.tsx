@@ -10,14 +10,24 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import MapItems from "@/components/MapItems";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 export default function Home() {
   const route = useRouter();
+  const { data: session } = useSession();
+
+  React.useEffect(() => {
+    if (session) {
+      console.log("Session data:", session);
+    }
+  }, [session]);
+
   const cards = [
     {
       icon: <PeopleIcon />,
       title: "User Management",
-      description: "Approve, edit, or deactivate consultant and client profiles.",
+      description:
+        "Approve, edit, or deactivate consultant and client profiles.",
       buttonText: "View Users",
       onClick: () => route.push("/user/management"),
       grid: { xs: 12, sm: 6, md: 4 },
