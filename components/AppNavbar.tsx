@@ -19,7 +19,7 @@ import AppTitle from "./AppTitle";
 import { useLogout } from "@/actions/auth/logout";
 
 const AppNavbar: React.FC = () => {
-   const { mutate: logout } = useLogout();
+  const { mutate: logout } = useLogout();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
     React.useState<null | HTMLElement>(null);
@@ -43,9 +43,7 @@ const AppNavbar: React.FC = () => {
     setMobileMoreAnchorEl(null);
   };
 
-   const handleLogout = async () => {
-    logout();
-  };
+  const handleLogout = () => logout();
 
   return (
     <AppBar position="fixed">
