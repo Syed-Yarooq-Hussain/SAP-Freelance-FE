@@ -1,5 +1,7 @@
+import { API_STATUS } from "@/constants/api_status";
 import { ApiResponse } from "@/types/api";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
+import { CustomError } from "@/exceptions/custom-exception";
 
 const baseURL = process.env.NEXT_PUBLIC_API_URL!;
 const instance = axios.create({ baseURL });
@@ -9,18 +11,31 @@ export const request = async <P, R>(
 ): Promise<ApiResponse<R>> => {
   try {
     const response = await instance(props);
-    const result = response.data;
-    console.log("API Response:", result);
+    const result: ApiResponse<R> = response.data;
+
+    if (result.status === API_STATUS.ERROR) {
+      throw new CustomError(result.code, result.message);
+    }
+
     return result;
   } catch (err: unknown) {
-    const error = err as AxiosError;
-    const errorResponse = {
-      error: {
-        message: "Something went wrong",
-        code: error.response?.status,
-      },
+    const errorResponse: ApiResponse<R> = {
+      message: "Something went wrong",
+      code: 500,
+      status: API_STATUS.ERROR,
+      data: null,
     };
 
-    return errorResponse as ApiResponse<R>;
+    if (err instanceof CustomError) {
+      errorResponse.message = err.message;
+      errorResponse.code = err.statusCode;
+    } else if (err instanceof AxiosError) {
+      errorResponse.message = err.message;
+      errorResponse.code = Number(err.response?.status);
+    } else if (err instanceof Error) {
+      errorResponse.message = err.message;
+    }
+
+    return errorResponse;
   }
 };

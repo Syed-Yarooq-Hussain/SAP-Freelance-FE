@@ -4,7 +4,7 @@ import { useLogin } from "@/actions/auth/login";
 import AuthHeader from "@/components/AuthHeader";
 import { CreateForm } from "@/components/CreateForm";
 import { getLoginFormFields } from "@/forms/loginForm";
-import { ILoginForm } from "@/types/commonauth";
+import { ILoginForm } from "@/types/common-auth";
 import { APP_ROUTES } from "@/utils/app_routes";
 import { Box, Container, Typography } from "@mui/material";
 import Link from "next/link";
