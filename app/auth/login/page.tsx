@@ -42,11 +42,7 @@ const LoginPage: React.FC = () => {
           elements={elements}
           onSuccess={handleSuccess}
           loading={isPending}
-          error={
-            error?.message === "CredentialsSignin"
-              ? "Invalid email or password"
-              : error?.message
-          }
+          error={error?.message}
           submitButton={{
             children: "Login",
             variant: "contained",
