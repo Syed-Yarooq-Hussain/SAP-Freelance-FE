@@ -1,15 +1,15 @@
 "use client";
 
-import * as React from "react";
-import { Box, Container } from "@mui/material";
-import { CreateForm } from "@/components/CreateForm";
-import { FieldValues } from "react-hook-form";
-import { useSearchParams } from "next/navigation";
 import { useSignupConsultant } from "@/actions/auth/signupConsultant";
-import { IConsultantSignupPayload } from "@/types/consultant";
-import AuthHeader from "./AuthHeader";
+import { CreateForm } from "@/components/CreateForm";
 import { getConsultantFormFields } from "@/forms/consultantForm";
+import { IConsultantSignupPayload } from "@/types/consultant";
 import { parseCV } from "@/utils/cvParser";
+import { Box, Container } from "@mui/material";
+import { useSearchParams } from "next/navigation";
+import * as React from "react";
+import { FieldValues, UseFormSetValue } from "react-hook-form";
+import AuthHeader from "./AuthHeader";
 
 interface IConsultantForm {
   fullName: string;
@@ -33,13 +33,17 @@ interface IConsultantForm {
   cvUrl: string;
 }
 
+type FormHelpers = {
+  setValue: UseFormSetValue<FieldValues>;
+};
+
 const SignUpConsultant: React.FC = () => {
   const { mutate, error, isPending } = useSignupConsultant();
   const searchParams = useSearchParams();
   const role = Number(searchParams.get("type")) || "Invalid role";
 
   const elements = getConsultantFormFields();
-  const formHelpers = React.useRef<any>(null);
+  const formHelpers = React.useRef<FormHelpers | null>(null);
 
   const handleSuccess = (data: FieldValues) => {
     const formData = data as IConsultantForm;
@@ -80,22 +84,22 @@ const SignUpConsultant: React.FC = () => {
   };
 
   const handleCVUpload = async (file: File) => {
-  try {
-    const parsed = await parseCV(file);
+    try {
+      const parsed = await parseCV(file);
 
-    if (formHelpers.current?.setValue) {
-      if (parsed.fullName) formHelpers.current.setValue("fullName", parsed.fullName);
-      if (parsed.email) formHelpers.current.setValue("email", parsed.email);
-      if (parsed.phone) formHelpers.current.setValue("phone", parsed.phone);
-      if (parsed.experience)
-        formHelpers.current.setValue("experience", Number(parsed.experience));
-      if (parsed.city) formHelpers.current.setValue("city", parsed.city);
-      if (parsed.country) formHelpers.current.setValue("country", parsed.country);
+      if (formHelpers.current?.setValue) {
+        if (parsed.fullName) formHelpers.current.setValue("fullName", parsed.fullName);
+        if (parsed.email) formHelpers.current.setValue("email", parsed.email);
+        if (parsed.phone) formHelpers.current.setValue("phone", parsed.phone);
+        if (parsed.experience)
+          formHelpers.current.setValue("experience", Number(parsed.experience));
+        if (parsed.city) formHelpers.current.setValue("city", parsed.city);
+        if (parsed.country) formHelpers.current.setValue("country", parsed.country);
+      }
+    } catch (err) {
+      console.error("Error parsing CV:", err);
     }
-  } catch (err) {
-    console.error("Error parsing CV:", err);
-  }
-};
+  };
 
   return (
     <Container maxWidth="sm">
@@ -115,8 +119,8 @@ const SignUpConsultant: React.FC = () => {
             el.name === "cv"
               ? {
                 ...el,
-                onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-                  const file = e.target.files?.[0];
+                onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+                  const file = (e.target as HTMLInputElement).files?.[0];
                   if (file) handleCVUpload(file);
                 },
               }

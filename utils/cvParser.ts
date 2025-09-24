@@ -1,6 +1,6 @@
+import mammoth from "mammoth";
 import { getDocument } from "pdfjs-dist";
 import "pdfjs-dist/webpack";
-import mammoth from "mammoth";
 
 async function fetchCityCountry(address: string) {
   const query = address.replace(/\d{3,5}/g, "").trim();
@@ -81,7 +81,7 @@ export async function parseCV(file: File): Promise<{
   const nameMatch = lines.find((line) => line.trim().length > 0);
 
   const experienceMatch = textContent.match(/(\d+\+?)\s+(years?|yrs?)/i);
-   console.log("experienceMatch");
+  console.log("experienceMatch");
   console.log(experienceMatch);
 
   let city: string | undefined;
@@ -95,15 +95,14 @@ export async function parseCV(file: File): Promise<{
     );
 
     if (filtered.length >= 2) {
+      city = filtered[filtered.length - 2];
 
-  city = filtered[filtered.length - 2];
-
-  country = filtered[filtered.length - 1]
-    .replace(/\d{4,6}/g, "")
-    .replace(/•.*/g, "")     
-    .replace(/\s+/g, " ")
-    .trim();
-}
+      country = filtered[filtered.length - 1]
+        .replace(/\d{4,6}/g, "")
+        .replace(/•.*/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
   }
 
   if ((!city || !country) && addressLine) {

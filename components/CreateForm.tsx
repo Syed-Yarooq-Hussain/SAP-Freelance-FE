@@ -22,6 +22,7 @@ import {
   FieldValues,
   RegisterOptions,
   useForm,
+  UseFormSetValue
 } from "react-hook-form";
 
 export interface IGridSpan {
@@ -39,7 +40,7 @@ export interface IFieldConfig extends BaseTextFieldProps {
   row?: IGridSpan;
   type?: string;
   options?: IOption[];
-  onChange?: (e: React.ChangeEvent<any>) => void;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 }
 
 interface ICreateFormProps {
@@ -51,7 +52,7 @@ interface ICreateFormProps {
   actionsContainerProps?: StackProps;
   submitButton?: ButtonProps;
   cancelButton?: ButtonProps;
-  onFormReady?: (helpers: { setValue: any }) => void;
+  onFormReady?: (helpers: { setValue: UseFormSetValue<FieldValues> }) => void;
 }
 
 const generateSpans = (type: "row" | "column", spans?: IGridSpan) => {
@@ -134,7 +135,7 @@ export const CreateForm: FC<ICreateFormProps> = ({
                     helperText={errors[element.name]?.message?.toString()}
                     disabled={loading}
                     placeholder={element.placeholder}
-                    onChange={(e) => {
+                    onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
                       field.onChange(e);
                       element.onChange?.(e);
                     }}
