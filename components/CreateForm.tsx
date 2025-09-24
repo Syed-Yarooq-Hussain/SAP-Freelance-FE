@@ -7,6 +7,7 @@ import {
   Box,
   Button,
   ButtonProps,
+  CircularProgress,
   FormControl,
   MenuItem,
   Stack,
@@ -15,7 +16,7 @@ import {
   Typography,
 } from "@mui/material";
 import { ResponsiveStyleValue } from "@mui/system";
-import { FC } from "react";
+import React, { FC } from "react";
 import {
   Controller,
   FieldValues,
@@ -38,6 +39,7 @@ export interface IFieldConfig extends BaseTextFieldProps {
   row?: IGridSpan;
   type?: string;
   options?: IOption[];
+  onChange?: (e: React.ChangeEvent<any>) => void;
 }
 
 interface ICreateFormProps {
@@ -49,6 +51,7 @@ interface ICreateFormProps {
   actionsContainerProps?: StackProps;
   submitButton?: ButtonProps;
   cancelButton?: ButtonProps;
+  onFormReady?: (helpers: { setValue: any }) => void;
 }
 
 const generateSpans = (type: "row" | "column", spans?: IGridSpan) => {
@@ -75,12 +78,20 @@ export const CreateForm: FC<ICreateFormProps> = ({
   submitButton,
   cancelButton,
   actionsContainerProps,
+  onFormReady,
 }) => {
   const {
     control,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = useForm();
+
+  React.useEffect(() => {
+    if (typeof onFormReady === "function") {
+      onFormReady({ setValue });
+    }
+  }, [onFormReady, setValue]);
 
   const submitHandler = (data: FieldValues) => {
     onSuccess(data);
@@ -123,6 +134,10 @@ export const CreateForm: FC<ICreateFormProps> = ({
                     helperText={errors[element.name]?.message?.toString()}
                     disabled={loading}
                     placeholder={element.placeholder}
+                    onChange={(e) => {
+                      field.onChange(e);
+                      element.onChange?.(e);
+                    }}
                     slotProps={{
                       inputLabel: { shrink: true },
                       select: {
@@ -139,9 +154,7 @@ export const CreateForm: FC<ICreateFormProps> = ({
                         },
                       },
                     }}
-                    label={element.label}
-                    {...element}
-                  >
+                    label={element.label}                >
                     {element.options?.length !== 0 &&
                       element.options?.map((opt) => (
                         <MenuItem key={opt.value} value={opt.value}>
@@ -167,11 +180,14 @@ export const CreateForm: FC<ICreateFormProps> = ({
           type="submit"
           variant="contained"
           size="small"
-          loading={loading}
-          loadingPosition="start"
+          disabled={loading}
           {...submitButton}
         >
-          {submitButton?.children || "Submit"}
+          {loading ? (
+            <CircularProgress size={20} color="inherit" />
+          ) : (
+            submitButton?.children || "Submit"
+          )}
         </Button>
         {onCancel && (
           <Button
