@@ -1,11 +1,16 @@
 "use client";
 
-import DashboardStats from "@/components/ConsultantDashboardStats";
-import SidebarInfo from "@/components/SidebarInfo";
+import SidebarInfo from "@/components/DashboardSidebarInfo";
 import { Box, Paper, Typography, Button, Chip, ChipProps } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import VisibilityChart from "@/components/VisibilityChart";
+import DashboardStats from "@/components/DashboardStats";
+import { StatCardProps } from "@/components/StatCard";
+import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
+import QueryStatsIcon from "@mui/icons-material/QueryStats";
+import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
+import BallotIcon from "@mui/icons-material/Ballot";
 
 const interviewColumns: GridColDef[] = [
   { field: "name", headerName: "Name", flex: 1 },
@@ -100,11 +105,38 @@ const taskRows = [
   },
 ];
 
+const consultantStats: StatCardProps[] = [
+  {
+    title: "Appeared in search",
+    value: 360,
+    color: "#4680FF",
+    icon: <QueryStatsIcon fontSize="large" />,
+  },
+  {
+    title: "Scheduled Interview",
+    value: 10,
+    color: "#00997B",
+    icon: <PeopleAltIcon fontSize="large" />,
+  },
+  {
+    title: "Hourly rates",
+    value: "$30 / hr",
+    color: "#FFB64E",
+    icon: <CurrencyExchangeIcon fontSize="large" />,
+  },
+  {
+    title: "Skills",
+    value: "4hana",
+    color: "#FF5471",
+    icon: <BallotIcon fontSize="large" />,
+  },
+];
+
 export default function ConsultantDashboard() {
   return (
     <main style={{ padding: "10px" }}>
       <Box mb={3}>
-        <DashboardStats />
+        <DashboardStats stats={consultantStats} />
       </Box>
 
       <Grid container spacing={2}>
