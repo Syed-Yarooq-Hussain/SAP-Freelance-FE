@@ -1,6 +1,10 @@
 "use client";
 
-import Link from "next/link";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import DescriptionIcon from "@mui/icons-material/Description";
+import PaymentIcon from "@mui/icons-material/Payment";
+import WorkIcon from "@mui/icons-material/Work";
 import {
   List,
   ListItem,
@@ -8,52 +12,56 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
+import Link from "next/link";
 import { FC } from "react";
 
 type DrawerItem = {
   icon: React.ReactNode;
   label: string;
   link: string;
-  onClick?: () => void;
 };
 
 type DrawerListProps = {
-  items: DrawerItem[];
+  items?: DrawerItem[];
   open: boolean;
 };
 
-const DrawerList: FC<DrawerListProps> = ({ items, open }) => {
+const defaultItems: DrawerItem[] = [
+  { icon: <DashboardIcon />, label: "Dashboard", link: "/dashboard" },
+  { icon: <CalendarMonthIcon />, label: "Calendar", link: "/calendar" },
+  { icon: <WorkIcon />, label: "Projects", link: "/projects" },
+  { icon: <DescriptionIcon />, label: "Documents", link: "/documents" },
+  { icon: <PaymentIcon />, label: "Payments", link: "/payments" },
+];
+
+const DrawerList: FC<DrawerListProps> = ({ items = defaultItems, open }) => {
   return (
-    <List dense={true}>
+    <List>
       {items.map((item, index) => (
         <ListItem key={index} disablePadding>
           <ListItemButton
             component={Link}
             href={item.link}
-            onClick={item.onClick}
             sx={{
-              width: "100%",
-              justifyContent: open ? "initial" : "center",
-              px: 2.5,
+              py: 1.5,
+              px: 2,
+              alignItems: "center",
             }}
           >
-            <ListItemIcon
-              sx={{
-                minWidth: 0,
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
+            <ListItemIcon sx={{ color: "grey.700", minWidth: 32 }}>
               {item.icon}
             </ListItemIcon>
             {open && (
-              <ListItemText primary={item.label} sx={{ opacity: 1, ml: 2 }} />
+              <ListItemText
+                primary={item.label}
+                primaryTypographyProps={{ fontWeight: 500, fontSize: 14 }}
+              />
             )}
           </ListItemButton>
         </ListItem>
       ))}
     </List>
+
   );
 };
 
