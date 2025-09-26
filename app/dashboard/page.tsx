@@ -1,89 +1,33 @@
-"use client";
+import { redirect } from "next/navigation";
+import { Roles } from "@/constants/roles";
+import { auth } from "@/auth";
+import AdminDashboard from "@/components/dashboard/AdminDashboard";
+import ConsultantDashboard from "@/components/dashboard/ConsultantDashboard";
+import ClientDashboard from "@/components/dashboard/ClientDashboard";
+import { IUser } from "@/types/common-auth";
 
-import * as React from "react";
-import Box from "@mui/material/Box";
-import DashboardCard from "@/components/Card";
-import PeopleIcon from "@mui/icons-material/People";
-import AssignmentIcon from "@mui/icons-material/Assignment";
-import PaymentIcon from "@mui/icons-material/Payment";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import BarChartIcon from "@mui/icons-material/BarChart";
-import MapItems from "@/components/MapItems";
-import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
+export default async function DashboardPage() {
+  const session = await auth();
 
-export default function Home() {
-  const route = useRouter();
-  const { data: session } = useSession();
+  if (!session || !session.user) {
+    redirect("/auth/login");
+  }
 
-  React.useEffect(() => {
-    if (session) {
-      console.log("Session data:", session);
-    }
-  }, [session]);
+  const user = session.user as IUser;
+console.log("Session:", session);
 
-  const cards = [
-    {
-      icon: <PeopleIcon />,
-      title: "User Management",
-      description:
-        "Approve, edit, or deactivate consultant and client profiles.",
-      buttonText: "View Users",
-      onClick: () => route.push("/user/management"),
-      grid: { xs: 12, sm: 6, md: 4 },
-    },
-    {
-      icon: <AssignmentIcon />,
-      title: "Project Oversight",
-      description: "Track all active, completed, and planned projects.",
-      buttonText: "View Projects",
-      onClick: () => alert("Go to Projects"),
-      grid: { xs: 12, sm: 6, md: 4 },
-    },
-    {
-      icon: <PaymentIcon />,
-      title: "Payment Monitoring",
-      description: "Monitor client payments and consultant disbursements.",
-      buttonText: "Check Payments",
-      onClick: () => alert("Go to Payments"),
-      grid: { xs: 12, sm: 6, md: 4 },
-    },
-    {
-      icon: <NotificationsIcon />,
-      title: "Notifications Center",
-      description: "Manage all alerts and announcements in the system.",
-      buttonText: "View Alerts",
-      onClick: () => alert("Go to Notifications"),
-      grid: { xs: 12, sm: 6, md: 4 },
-    },
-    {
-      icon: <BarChartIcon />,
-      title: "Report Generation",
-      description: "Export data reports on users, payments, and engagements.",
-      buttonText: "Export Reports",
-      onClick: () => alert("Go to Reports"),
-      grid: { xs: 12, sm: 6, md: 4 },
-    },
-  ];
+  const role = user.role;
+  console.log("Role:", user.role);
 
-  return (
-    <Box sx={{ flexGrow: 1 }}>
-      <h1 style={{ marginBottom: "20px" }}>Admin Dashboard</h1>
-      <MapItems
-        items={cards.map((card) => ({
-          key: card.title,
-          grid: card.grid,
-          component: (
-            <DashboardCard
-              icon={card.icon}
-              title={card.title}
-              description={card.description}
-              buttonText={card.buttonText}
-              onClick={card.onClick}
-            />
-          ),
-        }))}
-      />
-    </Box>
-  );
+
+  switch (role) {
+    case Roles.ADMIN:
+      return <AdminDashboard />;
+    case Roles.CONSULTANT:
+      return <ConsultantDashboard />;
+    case Roles.CLIENT:
+      return <ClientDashboard />;
+    default:
+      return <div>Unauthorized access</div>;
+  }
 }

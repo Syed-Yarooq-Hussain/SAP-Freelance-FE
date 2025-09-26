@@ -1,25 +1,28 @@
 "use client";
 
-import * as React from "react";
+import { useLogout } from "@/actions/auth/logout";
+import { DESKTOP_DRAWER_WIDTH } from "@/constants/drawer";
+import AccountCircle from "@mui/icons-material/AccountCircle";
+import MailIcon from "@mui/icons-material/Mail";
+import MenuIcon from "@mui/icons-material/Menu";
+import MoreIcon from "@mui/icons-material/MoreVert";
+import NotificationsIcon from "@mui/icons-material/Notifications";
 import {
   AppBar,
-  Toolbar,
+  Badge,
   Box,
   IconButton,
-  Badge,
+  InputBase,
   Menu,
   MenuItem,
+  Toolbar,
 } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
-import MailIcon from "@mui/icons-material/Mail";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import AccountCircle from "@mui/icons-material/AccountCircle";
-import MoreIcon from "@mui/icons-material/MoreVert";
+import * as React from "react";
 import AppTitle from "./AppTitle";
-import { useLogout } from "@/actions/auth/logout";
 
 const AppNavbar: React.FC = () => {
   const { mutate: logout } = useLogout();
+
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
     React.useState<null | HTMLElement>(null);
@@ -35,6 +38,7 @@ const AppNavbar: React.FC = () => {
     setAnchorEl(null);
     handleMobileMenuClose();
   };
+
   const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
@@ -46,8 +50,15 @@ const AppNavbar: React.FC = () => {
   const handleLogout = () => logout();
 
   return (
-    <AppBar position="fixed">
-      <Toolbar>
+    <AppBar
+      position="fixed"
+      elevation={0}
+      sx={{
+        width: { md: `calc(100% - ${DESKTOP_DRAWER_WIDTH}px)` },
+        ml: { md: `${DESKTOP_DRAWER_WIDTH}px` },
+      }}
+    >
+      <Toolbar sx={{ minHeight: 64 }}>
         <Box sx={{ display: { xs: "flex", md: "none" }, mr: 2 }}>
           <IconButton size="large" edge="start" color="inherit">
             <MenuIcon />
@@ -56,9 +67,27 @@ const AppNavbar: React.FC = () => {
 
         <AppTitle />
 
-        <Box sx={{ flexGrow: 1 }} />
-
-        <Box sx={{ display: { xs: "none", md: "flex" } }}>
+        <Box
+          sx={{
+            flexGrow: 1,
+            px: 3,
+            display: { xs: 'none', sm: 'flex' },
+            justifyContent: 'center',
+          }}
+        >
+          <Box
+            sx={{
+              backgroundColor: 'white',
+              borderRadius: '8px',
+              px: 2,
+              py: 0.5,
+              width: { sm: '400px', md: '500px' },
+            }}
+          >
+            <InputBase placeholder="Search…" fullWidth sx={{ fontSize: 14 }} />
+          </Box>
+        </Box>
+        <Box sx={{ display: { xs: "none", md: "flex" }, gap: 2 }}>
           <IconButton size="large" color="inherit">
             <Badge badgeContent={4} color="error">
               <MailIcon />
@@ -80,11 +109,7 @@ const AppNavbar: React.FC = () => {
         </Box>
 
         <Box sx={{ display: { xs: "flex", md: "none" } }}>
-          <IconButton
-            size="large"
-            color="inherit"
-            onClick={handleMobileMenuOpen}
-          >
+          <IconButton size="large" color="inherit" onClick={handleMobileMenuOpen}>
             <MoreIcon />
           </IconButton>
         </Box>

@@ -1,17 +1,12 @@
 "use client";
 
-import MailIcon from "@mui/icons-material/Mail";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import { Drawer, useMediaQuery } from "@mui/material";
-import Box from "@mui/material/Box";
-import CssBaseline from "@mui/material/CssBaseline";
+import { DESKTOP_DRAWER_WIDTH, MOBILE_DRAWER_WIDTH } from "@/constants/drawer";
+import { Box, CssBaseline, Drawer, useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import Image from "next/image";
 import React, { FC } from "react";
-import DrawerList from "./DrawerList";
 import AppNavbar from "./AppNavbar";
-
-const desktopdrawerWidth = 240;
-const mobiledrawerWidth = 60;
+import DrawerList from "./DrawerList";
 
 type ISidebarProps = {
   children: React.ReactNode;
@@ -23,13 +18,6 @@ const Sidebar: FC<ISidebarProps> = ({ children }) => {
 
   const appBarHeight = theme.mixins.toolbar.minHeight;
 
-  const drawerItems = [
-    { icon: <InboxIcon />, label: "Inbox", link: "/inbox" },
-    { icon: <MailIcon />, label: "Mail", link: "/mail" },
-    { icon: <MailIcon />, label: "Drafts", link: "/drafts" },
-    { icon: <InboxIcon />, label: "Starred", link: "/starred" },
-  ];
-
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
@@ -40,31 +28,72 @@ const Sidebar: FC<ISidebarProps> = ({ children }) => {
         variant="permanent"
         open={true}
         sx={{
-          width: open ? desktopdrawerWidth : mobiledrawerWidth,
-          flexShrink: 0,
+          width: open ? DESKTOP_DRAWER_WIDTH : MOBILE_DRAWER_WIDTH,
           "& .MuiDrawer-paper": {
-            width: open ? desktopdrawerWidth : mobiledrawerWidth,
-            position: "fixed",
-            boxSizing: "border-box",
-
-            top: {
-              xs: "56px",
-              sm: "64px",
-            },
-            height: {
-              xs: "calc(100% - 56px)",
-              sm: "calc(100% - 64px)",
-            },
+            width: open ? DESKTOP_DRAWER_WIDTH : MOBILE_DRAWER_WIDTH,
           },
         }}
       >
-        <DrawerList items={drawerItems} open={open} />
+        {/* <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: open ? "center" : "center",
+            height: 64,
+            px: 1,
+          }}
+        >
+          <Image
+            src="/vx9-logo-02.png"
+            alt="Logo"
+            width={120}
+            height={40}
+            style={{
+              objectFit: "contain",
+              maxWidth: "100%",
+              height: "auto",
+            }}
+            priority
+          />
+        </Box> */}
+
+        <Box
+          sx={{
+            width: "100%",
+            height: 64,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            px: 1.5,
+            py: 1,
+          }}
+        >
+          <Box
+            sx={{
+              position: "relative",
+              width: { xs: 100, sm: 120, md: 140 },
+              height: 40,
+            }}
+          >
+            <Image
+              src="/vx9-logo-02.png"
+              alt="Logo"
+              fill
+              style={{ objectFit: "contain" }}
+              priority
+            />
+          </Box>
+        </Box>
+
+
+        <DrawerList open={open} />
       </Drawer>
+
       <Box
         component="main"
         sx={{
           flexGrow: 1,
-          p: 3,
+          p: 2,
           marginTop: `${appBarHeight}px`,
         }}
       >
