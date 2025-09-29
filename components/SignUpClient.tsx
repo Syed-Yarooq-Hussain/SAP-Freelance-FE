@@ -1,15 +1,15 @@
 "use client";
 
-import * as React from "react";
-import { Box, Container, Link, Typography } from "@mui/material";
-import { CreateForm } from "@/components/CreateForm";
-import { FieldValues } from "react-hook-form";
 import { useSignupClient } from "@/actions/auth/signupClient";
-import { useSearchParams } from "next/navigation";
-import { IBaseSignupDTO } from "@/types/common-auth";
-import AuthHeader from "./AuthHeader";
+import { CreateForm } from "@/components/CreateForm";
 import { getClientFormFields } from "@/forms/clientForm";
-import { APP_ROUTES } from "@/utils/app_routes";
+import { IBaseSignupDTO } from "@/types/common-auth";
+import { Box, Container } from "@mui/material";
+import { useSearchParams } from "next/navigation";
+import * as React from "react";
+import { FieldValues } from "react-hook-form";
+import AuthHeader from "./AuthHeader";
+import LoginLink from "./LoginLink";
 
 interface ISignUpClientForm {
   fullName: string;
@@ -76,16 +76,8 @@ const SignUpClient: React.FC = () => {
             size: "medium",
           }}
         />
-        <Box sx={{ mt: 2, display: "flex", justifyContent: "center", gap: 1 }}>
-          <Typography variant="body2">Already have an account?</Typography>
-          <Link
-            variant="body2"
-            href={APP_ROUTES.LOGIN}
-            style={{ textDecoration: "none", fontWeight: "bold" }}
-          >
-            Login here
-          </Link>
-        </Box>
+
+        <LoginLink />
       </Box>
     </Container>
   );

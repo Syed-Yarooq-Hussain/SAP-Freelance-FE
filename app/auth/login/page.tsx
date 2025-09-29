@@ -3,10 +3,10 @@
 import { useLogin } from "@/actions/auth/login";
 import AuthHeader from "@/components/AuthHeader";
 import { CreateForm } from "@/components/CreateForm";
+import SignUpLink from "@/components/SignUpLink";
 import { getLoginFormFields } from "@/forms/loginForm";
 import { ILoginForm } from "@/types/common-auth";
-import { APP_ROUTES } from "@/utils/app_routes";
-import { Box, Container, Typography, Link } from "@mui/material";
+import { Box, Container } from "@mui/material";
 import * as React from "react";
 import { FieldValues } from "react-hook-form";
 
@@ -49,16 +49,7 @@ const LoginPage: React.FC = () => {
             size: "medium",
           }}
         />
-        <Box sx={{ mt: 2, display: "flex", justifyContent: "center", gap: 1 }}>
-          <Typography variant="body2">Don’t have an account?</Typography>
-          <Link
-            variant="body2"
-            href={APP_ROUTES.HOME}
-            style={{ textDecoration: "none", fontWeight: "bold" }}
-          >
-            Sign up
-          </Link>
-        </Box>
+        <SignUpLink />
       </Box>
     </Container>
   );

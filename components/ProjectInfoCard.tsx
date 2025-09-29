@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Paper, Typography, Button } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import { FC, ReactNode } from "react";
 
 interface ProjectInfoCardProps {
@@ -19,7 +19,7 @@ const ProjectInfoCard: FC<ProjectInfoCardProps> = ({
     extraContent,
 }) => {
     return (
-        <Paper
+        <Box
             sx={{
                 p: 2,
                 borderRadius: 2,
@@ -60,7 +60,7 @@ const ProjectInfoCard: FC<ProjectInfoCardProps> = ({
                 )}
                 {extraContent}
             </Box>
-        </Paper>
+        </Box>
     );
 };
 

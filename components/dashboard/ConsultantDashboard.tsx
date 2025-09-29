@@ -109,25 +109,25 @@ const consultantStats: StatCardProps[] = [
   {
     title: "Appeared in search",
     subtitle: 360,
-    color: "#4680FF",
+    color: "linear-gradient(135deg, #4680FF, #002486ff)",
     icon: <QueryStatsIcon fontSize="large" />,
   },
   {
-    title: "Scheduled Interview",
+    title: "Interview Scheduled",
     subtitle: 10,
-    color: "#00997B",
+    color: "linear-gradient(135deg, #00997B, #008638ff)",
     icon: <PeopleAltIcon fontSize="large" />,
   },
   {
-    title: "Hourly rates",
-    subtitle: "$30 / hr",
-    color: "#FFB64E",
+    title: "Projected Monthly Revenue",
+    subtitle: "$3000",
+    color: "linear-gradient(135deg, #FFB64E, #865000ff)",
     icon: <CurrencyExchangeIcon fontSize="large" />,
   },
   {
-    title: "Skills",
-    subtitle: "4hana",
-    color: "#FF5471",
+    title: "Invoices Status",
+    subtitle: "13",
+    color: "linear-gradient(135deg, #FF5471, #860016ff)",
     icon: <BallotIcon fontSize="large" />,
   },
 ];
@@ -135,9 +135,10 @@ const consultantStats: StatCardProps[] = [
 export default function ConsultantDashboard() {
   return (
     <Box>
-      <Box mb={3}>
-        <DashboardStats stats={consultantStats} />
-      </Box>
+      <DashboardStats
+        stats={consultantStats}
+        containerProps={{ marginBottom: "30px" }}
+      />
 
       <Grid container spacing={2}>
         <Grid size={{ xs: 12, md: 9 }}>

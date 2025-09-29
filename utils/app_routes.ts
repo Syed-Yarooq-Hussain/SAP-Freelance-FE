@@ -4,4 +4,8 @@ export const APP_ROUTES = {
   DASHBOARD: "/dashboard",
   PROFILE: "/profile",
   HOME: "/",
+  CALENDAR: "/calendar",
+  PROJECTS: "/dashboard/projects",
+  DOCUMENTS: "/documents",
+  PAYMENTS: "/payments",
 };

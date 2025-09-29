@@ -135,9 +135,10 @@ const taskRows = [
 export default function ConsultantProject() {
   return (
     <Box>
-      <Box mb={3}>
-  <DashboardStats stats={projectStats} />
-</Box>
+<DashboardStats
+        stats={projectStats}
+        containerProps={{ marginBottom: "30px" }}
+      />
 
 
       <Box

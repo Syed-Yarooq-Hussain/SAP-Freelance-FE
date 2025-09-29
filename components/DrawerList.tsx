@@ -1,5 +1,6 @@
 "use client";
 
+import { APP_ROUTES } from "@/utils/app_routes";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import DescriptionIcon from "@mui/icons-material/Description";
@@ -13,8 +14,8 @@ import {
   ListItemText,
 } from "@mui/material";
 import Link from "next/link";
-import { FC } from "react";
 import { usePathname } from "next/navigation";
+import { FC } from "react";
 
 type DrawerItem = {
   icon: React.ReactNode;
@@ -28,11 +29,11 @@ type DrawerListProps = {
 };
 
 const defaultItems: DrawerItem[] = [
-  { icon: <DashboardIcon />, label: "Dashboard", link: "/dashboard" },
-  { icon: <CalendarMonthIcon />, label: "Calendar", link: "/calendar" },
-  { icon: <WorkIcon />, label: "Projects", link: "/dashboard/projects" },
-  { icon: <DescriptionIcon />, label: "Documents", link: "/documents" },
-  { icon: <PaymentIcon />, label: "Payments", link: "/payments" },
+  { icon: <DashboardIcon />, label: "Dashboard", link: APP_ROUTES.DASHBOARD },
+  { icon: <CalendarMonthIcon />, label: "Calendar", link: APP_ROUTES.CALENDAR },
+  { icon: <WorkIcon />, label: "Projects", link: APP_ROUTES.PROJECTS },
+  { icon: <DescriptionIcon />, label: "Documents", link: APP_ROUTES.DOCUMENTS },
+  { icon: <PaymentIcon />, label: "Payments", link: APP_ROUTES.PAYMENTS },
 ];
 
 const DrawerList: FC<DrawerListProps> = ({ items = defaultItems, open }) => {
