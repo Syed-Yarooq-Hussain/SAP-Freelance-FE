@@ -1,11 +1,12 @@
 "use client";
 
+import DashboardStats from "@/components/DashboardStats";
 import ProjectInfoCard from "@/components/ProjectInfoCard";
-import StatCard, { StatCardProps } from "@/components/StatCard";
+import { StatCardProps } from "@/components/StatCard";
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
 import GroupWorkIcon from "@mui/icons-material/GroupWork";
 import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
-import { Box, Chip, ChipProps, Paper, Typography } from "@mui/material";
+import { Box, Chip, ChipProps, Typography } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 
 const projectStats: StatCardProps[] = [
@@ -133,14 +134,20 @@ const taskRows = [
 
 export default function ConsultantProject() {
   return (
-    <main style={{ padding: "10px" }}>
-      <Box mb={3} display="flex" gap={2} flexWrap="wrap">
-        {projectStats.map((stat, index) => (
-          <StatCard key={index} {...stat} />
-        ))}
-      </Box>
+    <Box>
+      <Box mb={3}>
+  <DashboardStats stats={projectStats} />
+</Box>
 
-      <Paper sx={{ p: 2, borderRadius: 2, boxShadow: 2 }}>
+
+      <Box
+        sx={{
+          p: 2,
+          borderRadius: 2,
+          boxShadow: 2,
+          bgcolor: "background.paper",
+        }}
+      >
         <ProjectInfoCard
           projectName="Global Rollout"
           category="Manufacturing"
@@ -163,7 +170,7 @@ export default function ConsultantProject() {
             disableRowSelectionOnClick
           />
         </Box>
-      </Paper>
-    </main>
+      </Box>
+    </Box>
   );
 }

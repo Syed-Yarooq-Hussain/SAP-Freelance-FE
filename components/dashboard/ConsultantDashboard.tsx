@@ -1,16 +1,16 @@
 "use client";
 
 import SidebarInfo from "@/components/DashboardSidebarInfo";
-import { Box, Paper, Typography, Button, Chip, ChipProps } from "@mui/material";
-import Grid from "@mui/material/Grid";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import VisibilityChart from "@/components/VisibilityChart";
 import DashboardStats from "@/components/DashboardStats";
 import { StatCardProps } from "@/components/StatCard";
+import VisibilityChart from "@/components/VisibilityChart";
+import BallotIcon from "@mui/icons-material/Ballot";
+import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import QueryStatsIcon from "@mui/icons-material/QueryStats";
-import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
-import BallotIcon from "@mui/icons-material/Ballot";
+import { Box, Button, Chip, ChipProps, Typography } from "@mui/material";
+import Grid from "@mui/material/Grid";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
 
 const interviewColumns: GridColDef[] = [
   { field: "name", headerName: "Name", flex: 1 },
@@ -134,18 +134,34 @@ const consultantStats: StatCardProps[] = [
 
 export default function ConsultantDashboard() {
   return (
-    <main style={{ padding: "10px" }}>
+    <Box>
       <Box mb={3}>
         <DashboardStats stats={consultantStats} />
       </Box>
 
       <Grid container spacing={2}>
         <Grid size={{ xs: 12, md: 9 }}>
-          <Paper sx={{ p: 2, borderRadius: 2, boxShadow: 2, mb: 2 }}>
+          <Box
+            sx={{
+              p: 2,
+              borderRadius: 2,
+              boxShadow: 2,
+              mb: 2,
+              bgcolor: "background.paper",
+            }}
+          >
             <VisibilityChart />
-          </Paper>
+          </Box>
 
-          <Paper sx={{ p: 2, borderRadius: 2, boxShadow: 2, mb: 2 }}>
+          <Box
+            sx={{
+              p: 2,
+              borderRadius: 2,
+              boxShadow: 2,
+              mb: 2,
+              bgcolor: "background.paper",
+            }}
+          >
             <Typography variant="h6" gutterBottom fontWeight="bold">
               Interviews
             </Typography>
@@ -167,9 +183,16 @@ export default function ConsultantDashboard() {
             <Box textAlign="center" mt={1}>
               <Button size="small">View more</Button>
             </Box>
-          </Paper>
+          </Box>
 
-          <Paper sx={{ p: 2, borderRadius: 2, boxShadow: 2 }}>
+          <Box
+            sx={{
+              p: 2,
+              borderRadius: 2,
+              boxShadow: 2,
+              bgcolor: "background.paper",
+            }}
+          >
             <Typography variant="h6" gutterBottom fontWeight="bold">
               Tasks
             </Typography>
@@ -185,13 +208,13 @@ export default function ConsultantDashboard() {
             <Box textAlign="center" mt={1}>
               <Button size="small">View more</Button>
             </Box>
-          </Paper>
+          </Box>
         </Grid>
 
         <Grid size={{ xs: 12, md: 3 }}>
           <SidebarInfo />
         </Grid>
       </Grid>
-    </main>
+    </Box>
   );
 }

@@ -2,7 +2,7 @@
 
 import getTheme from "@/theme";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
-import { ThemeProvider, CssBaseline, Container } from "@mui/material";
+import { ThemeProvider, CssBaseline, Container, Box } from "@mui/material";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import QueryProvider from "@/providers/QueryProvider";
@@ -46,7 +46,9 @@ export default function RootLayout({
                     pb: 4,
                   }}
                 >
-                  {children}
+                  <Box component="main" sx={{ p: 2 }}>
+                    {children}
+                  </Box>
                 </Container>
               </SessionProvider>
             </QueryProvider>
