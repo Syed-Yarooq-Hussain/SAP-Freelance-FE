@@ -1,14 +1,31 @@
 "use client";
 
-import { Card, CardContent, Typography, Box } from "@mui/material";
-import { FC, ReactNode } from "react";
+import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
+import BallotIcon from "@mui/icons-material/Ballot";
+import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
+import GroupWorkIcon from "@mui/icons-material/GroupWork";
+import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
+import QueryStatsIcon from "@mui/icons-material/QueryStats";
+import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
+import { Box, Card, CardContent, Typography } from "@mui/material";
+import { FC } from "react";
+
+const icons = {
+  WorkOutlineIcon: <WorkOutlineIcon fontSize="large" />,
+  GroupWorkIcon: <GroupWorkIcon fontSize="large" />,
+  AssignmentTurnedInIcon: <AssignmentTurnedInIcon fontSize="large" />,
+  QueryStatsIcon: <QueryStatsIcon fontSize="large" />,
+  PeopleAltIcon: <PeopleAltIcon fontSize="large" />,
+  CurrencyExchangeIcon: <CurrencyExchangeIcon fontSize="large" />,
+  BallotIcon: <BallotIcon fontSize="large" />,
+};
 
 export interface StatCardProps {
   title: string;
   subtitle: string | number;
   description?: string;
   color: string;
-  icon?: ReactNode;
+  icon: keyof typeof icons;
 }
 
 const StatCard: FC<StatCardProps> = ({
@@ -46,7 +63,7 @@ const StatCard: FC<StatCardProps> = ({
               <Typography variant="body2">{description}</Typography>
             )}
           </Box>
-          {icon && <Box>{icon}</Box>}
+          <Box>{icons[icon]}</Box>
         </Box>
       </CardContent>
     </Card>

@@ -1,13 +1,9 @@
 "use client";
 
 import SidebarInfo from "@/components/DashboardSidebarInfo";
-import DashboardStats from "@/components/DashboardStats";
+import DashboardStats from "@/components/StatsCardList";
 import { StatCardProps } from "@/components/StatCard";
 import VisibilityChart from "@/components/VisibilityChart";
-import BallotIcon from "@mui/icons-material/Ballot";
-import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
-import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
-import QueryStatsIcon from "@mui/icons-material/QueryStats";
 import { Box, Button, Chip, ChipProps, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
@@ -15,7 +11,7 @@ import { DataGrid, GridColDef } from "@mui/x-data-grid";
 const interviewColumns: GridColDef[] = [
   { field: "name", headerName: "Name", flex: 1 },
   { field: "product", headerName: "Product", flex: 1 },
-  { field: "datetime", headerName: "Date – Time", flex: 1 },
+  { field: "datetime", headerName: "Date – Time", flex: 2 },
   { field: "duration", headerName: "Duration", flex: 1 },
   {
     field: "status",
@@ -110,25 +106,25 @@ const consultantStats: StatCardProps[] = [
     title: "Appeared in search",
     subtitle: 360,
     color: "linear-gradient(135deg, #4680FF, #002486ff)",
-    icon: <QueryStatsIcon fontSize="large" />,
+    icon: "QueryStatsIcon",
   },
   {
     title: "Interview Scheduled",
     subtitle: 10,
     color: "linear-gradient(135deg, #00997B, #008638ff)",
-    icon: <PeopleAltIcon fontSize="large" />,
+    icon: "PeopleAltIcon",
   },
   {
     title: "Projected Monthly Revenue",
     subtitle: "$3000",
     color: "linear-gradient(135deg, #FFB64E, #865000ff)",
-    icon: <CurrencyExchangeIcon fontSize="large" />,
+    icon: "CurrencyExchangeIcon",
   },
   {
     title: "Invoices Status",
     subtitle: "13",
     color: "linear-gradient(135deg, #FF5471, #860016ff)",
-    icon: <BallotIcon fontSize="large" />,
+    icon: "BallotIcon",
   },
 ];
 
@@ -164,7 +160,7 @@ export default function ConsultantDashboard() {
             }}
           >
             <Typography variant="h6" gutterBottom fontWeight="bold">
-              Interviews
+              Project Pipeline
             </Typography>
             <Box>
               <DataGrid
@@ -195,7 +191,7 @@ export default function ConsultantDashboard() {
             }}
           >
             <Typography variant="h6" gutterBottom fontWeight="bold">
-              Tasks
+              Financial List
             </Typography>
             <Box>
               <DataGrid

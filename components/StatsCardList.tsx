@@ -9,7 +9,7 @@ interface DashboardStatsProps {
   containerProps?: BoxProps;
 }
 
-const DashboardStats: FC<DashboardStatsProps> = ({ stats, containerProps }) => {
+const StatsCardList: FC<DashboardStatsProps> = ({ stats, containerProps }) => {
   return (
     <Box display="flex" gap={2} flexWrap="wrap" {...containerProps}>
       {stats.map((stat, index) => (
@@ -19,4 +19,4 @@ const DashboardStats: FC<DashboardStatsProps> = ({ stats, containerProps }) => {
   );
 };
 
-export default DashboardStats;
+export default StatsCardList;

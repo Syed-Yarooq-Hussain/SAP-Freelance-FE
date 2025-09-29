@@ -42,7 +42,9 @@ const DrawerList: FC<DrawerListProps> = ({ items = defaultItems, open }) => {
   return (
     <List>
       {items.map((item, index) => {
-        const isActive = pathname === item.link;
+        const isActive =
+          (pathname.startsWith(item.link)) &&
+          !pathname.startsWith(item.link + "/");
 
         return (
           <ListItem key={index} disablePadding>

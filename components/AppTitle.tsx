@@ -8,11 +8,13 @@ const AppTitle: React.FC = () => {
   const pathname = usePathname();
 
   const getTitle = () => {
-    if (pathname === APP_ROUTES.DASHBOARD) return "Dashboard";
-    if (pathname === APP_ROUTES.CALENDAR) return "Calendar";
-    if (pathname === APP_ROUTES.PROJECTS) return "Projects";
-    if (pathname === APP_ROUTES.DOCUMENTS) return "Documents";
-    if (pathname === APP_ROUTES.PAYMENTS) return "Payments";
+    if (pathname.startsWith(APP_ROUTES.DASHBOARD)) {
+      return "Dashboard";
+    }
+    if (pathname.startsWith(APP_ROUTES.CALENDAR)) return "Calendar";
+    if (pathname.startsWith(APP_ROUTES.PROJECTS)) return "Projects";
+    if (pathname.startsWith(APP_ROUTES.DOCUMENTS)) return "Documents";
+    if (pathname.startsWith(APP_ROUTES.PAYMENTS)) return "Payments";
     return "App Title";
   };
 
