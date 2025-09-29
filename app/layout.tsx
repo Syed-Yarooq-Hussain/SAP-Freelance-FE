@@ -2,7 +2,7 @@
 
 import getTheme from "@/theme";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
-import { ThemeProvider, CssBaseline } from "@mui/material";
+import { ThemeProvider, CssBaseline, Container } from "@mui/material";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import QueryProvider from "@/providers/QueryProvider";
@@ -35,7 +35,20 @@ export default function RootLayout({
           <ThemeProvider theme={theme}>
             <CssBaseline />
             <QueryProvider>
-              <SessionProvider>{children}</SessionProvider>
+              <SessionProvider>
+                <Container
+                  maxWidth={false}
+                  disableGutters
+                  sx={{
+                    minHeight: "100vh",
+                    display: "flex",
+                    flexDirection: "column",
+                    pb: 4,
+                  }}
+                >
+                  {children}
+                </Container>
+              </SessionProvider>
             </QueryProvider>
           </ThemeProvider>
         </AppRouterCacheProvider>

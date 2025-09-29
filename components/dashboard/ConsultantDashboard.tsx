@@ -108,25 +108,25 @@ const taskRows = [
 const consultantStats: StatCardProps[] = [
   {
     title: "Appeared in search",
-    value: 360,
+    subtitle: 360,
     color: "#4680FF",
     icon: <QueryStatsIcon fontSize="large" />,
   },
   {
     title: "Scheduled Interview",
-    value: 10,
+    subtitle: 10,
     color: "#00997B",
     icon: <PeopleAltIcon fontSize="large" />,
   },
   {
     title: "Hourly rates",
-    value: "$30 / hr",
+    subtitle: "$30 / hr",
     color: "#FFB64E",
     icon: <CurrencyExchangeIcon fontSize="large" />,
   },
   {
     title: "Skills",
-    value: "4hana",
+    subtitle: "4hana",
     color: "#FF5471",
     icon: <BallotIcon fontSize="large" />,
   },

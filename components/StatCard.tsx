@@ -5,12 +5,19 @@ import { FC, ReactNode } from "react";
 
 export interface StatCardProps {
   title: string;
-  value: string | number | ReactNode;
+  subtitle: string | number;
+  description?: string;
   color: string;
   icon?: ReactNode;
 }
 
-const StatCard: FC<StatCardProps> = ({ title, value, color, icon }) => {
+const StatCard: FC<StatCardProps> = ({
+  title,
+  subtitle,
+  description,
+  color,
+  icon,
+}) => {
   return (
     <Card
       sx={{
@@ -25,12 +32,19 @@ const StatCard: FC<StatCardProps> = ({ title, value, color, icon }) => {
       <CardContent>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Box>
-            <Typography variant="subtitle2" sx={{ opacity: 0.9 }}>
-              {title}
-            </Typography>
-            <Typography variant="h5" fontWeight="bold">
-              {value}
-            </Typography>
+            {title && (
+              <Typography variant="subtitle2" sx={{ opacity: 0.9 }}>
+                {title}
+              </Typography>
+            )}
+            {subtitle && (
+              <Typography variant="h6" fontWeight="bold">
+                {subtitle}
+              </Typography>
+            )}
+            {description && (
+              <Typography variant="body2">{description}</Typography>
+            )}
           </Box>
           {icon && <Box>{icon}</Box>}
         </Box>

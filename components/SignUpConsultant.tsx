@@ -79,15 +79,7 @@ const SignUpConsultant: React.FC = () => {
   };
 
   return (
-    <Container
-      maxWidth="sm"
-      sx={{
-        minHeight: "100vh",
-        alignItems: "center",
-        justifyContent: "center",
-        pb: 4,
-      }}
-    >
+    <Container maxWidth="sm">
       <Box
         sx={{
           mt: 8,
@@ -116,7 +108,8 @@ const SignUpConsultant: React.FC = () => {
         />
         <Box sx={{ mt: 2, display: "flex", justifyContent: "center", gap: 1 }}>
           <Typography variant="body2">Already have an account?</Typography>
-          <Link variant="body2"
+          <Link
+            variant="body2"
             href={APP_ROUTES.LOGIN}
             style={{ textDecoration: "none", fontWeight: "bold" }}
           >

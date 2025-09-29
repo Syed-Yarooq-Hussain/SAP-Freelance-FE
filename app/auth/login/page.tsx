@@ -21,14 +21,7 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <Container
-      maxWidth="sm"
-      sx={{
-        minHeight: "100vh",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
+    <Container maxWidth="sm">
       <Box
         sx={{
           mt: 8,
