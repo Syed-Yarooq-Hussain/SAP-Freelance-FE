@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Box, Container } from "@mui/material";
+import { Box, Container, Link, Typography } from "@mui/material";
 import { CreateForm } from "@/components/CreateForm";
 import { FieldValues } from "react-hook-form";
 import { useSearchParams } from "next/navigation";
@@ -9,6 +9,7 @@ import { useSignupConsultant } from "@/actions/auth/signupConsultant";
 import { IConsultantSignupPayload } from "@/types/consultant";
 import AuthHeader from "./AuthHeader";
 import { getConsultantFormFields } from "@/forms/consultantForm";
+import { APP_ROUTES } from "@/utils/app_routes";
 
 interface IConsultantForm {
   fullName: string;
@@ -78,7 +79,15 @@ const SignUpConsultant: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="sm">
+    <Container
+      maxWidth="sm"
+      sx={{
+        minHeight: "100vh",
+        alignItems: "center",
+        justifyContent: "center",
+        pb: 4,
+      }}
+    >
       <Box
         sx={{
           mt: 8,
@@ -105,6 +114,15 @@ const SignUpConsultant: React.FC = () => {
             size: "medium",
           }}
         />
+        <Box sx={{ mt: 2, display: "flex", justifyContent: "center", gap: 1 }}>
+          <Typography variant="body2">Already have an account?</Typography>
+          <Link variant="body2"
+            href={APP_ROUTES.LOGIN}
+            style={{ textDecoration: "none", fontWeight: "bold" }}
+          >
+            Login here
+          </Link>
+        </Box>
       </Box>
     </Container>
   );

@@ -6,8 +6,7 @@ import { CreateForm } from "@/components/CreateForm";
 import { getLoginFormFields } from "@/forms/loginForm";
 import { ILoginForm } from "@/types/common-auth";
 import { APP_ROUTES } from "@/utils/app_routes";
-import { Box, Container, Typography } from "@mui/material";
-import Link from "next/link";
+import { Box, Container, Typography, Link } from "@mui/material";
 import * as React from "react";
 import { FieldValues } from "react-hook-form";
 
@@ -22,7 +21,14 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="sm">
+    <Container
+      maxWidth="sm"
+      sx={{
+        minHeight: "100vh",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
       <Box
         sx={{
           mt: 8,
@@ -50,17 +56,17 @@ const LoginPage: React.FC = () => {
             size: "medium",
           }}
         />
+        <Box sx={{ mt: 2, display: "flex", justifyContent: "center", gap: 1 }}>
+          <Typography variant="body2">Don’t have an account?</Typography>
+          <Link
+            variant="body2"
+            href={APP_ROUTES.HOME}
+            style={{ textDecoration: "none", fontWeight: "bold" }}
+          >
+            Sign up
+          </Link>
+        </Box>
       </Box>
-
-      <Typography variant="body2" align="center" sx={{ mt: 2 }}>
-        Don’t have an account?
-        <Link
-          href={APP_ROUTES.HOME}
-          style={{ textDecoration: "none", fontWeight: "bold" }}
-        >
-          Sign up
-        </Link>
-      </Typography>
     </Container>
   );
 };
