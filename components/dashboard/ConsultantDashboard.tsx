@@ -1,16 +1,17 @@
 "use client";
 
-import DashboardStats from "@/components/ConsultantDashboardStats";
-import SidebarInfo from "@/components/SidebarInfo";
-import { Box, Paper, Typography, Button, Chip, ChipProps } from "@mui/material";
+import SidebarInfo from "@/components/DashboardSidebarInfo";
+import DashboardStats from "@/components/StatsCardList";
+import { StatCardProps } from "@/components/StatCard";
+import VisibilityChart from "@/components/VisibilityChart";
+import { Box, Button, Chip, ChipProps, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import VisibilityChart from "@/components/VisibilityChart";
 
 const interviewColumns: GridColDef[] = [
   { field: "name", headerName: "Name", flex: 1 },
   { field: "product", headerName: "Product", flex: 1 },
-  { field: "datetime", headerName: "Date – Time", flex: 1 },
+  { field: "datetime", headerName: "Date – Time", flex: 2 },
   { field: "duration", headerName: "Duration", flex: 1 },
   {
     field: "status",
@@ -100,22 +101,66 @@ const taskRows = [
   },
 ];
 
+const consultantStats: StatCardProps[] = [
+  {
+    title: "Appeared in search",
+    subtitle: 360,
+    color: "linear-gradient(135deg, #4680FF, #002486ff)",
+    icon: "QueryStatsIcon",
+  },
+  {
+    title: "Interview Scheduled",
+    subtitle: 10,
+    color: "linear-gradient(135deg, #00997B, #008638ff)",
+    icon: "PeopleAltIcon",
+  },
+  {
+    title: "Projected Monthly Revenue",
+    subtitle: "$3000",
+    color: "linear-gradient(135deg, #FFB64E, #865000ff)",
+    icon: "CurrencyExchangeIcon",
+  },
+  {
+    title: "Invoices Status",
+    subtitle: "13",
+    color: "linear-gradient(135deg, #FF5471, #860016ff)",
+    icon: "BallotIcon",
+  },
+];
+
 export default function ConsultantDashboard() {
   return (
-    <main style={{ padding: "10px" }}>
-      <Box mb={3}>
-        <DashboardStats />
-      </Box>
+    <Box>
+      <DashboardStats
+        stats={consultantStats}
+        containerProps={{ marginBottom: "30px" }}
+      />
 
       <Grid container spacing={2}>
         <Grid size={{ xs: 12, md: 9 }}>
-          <Paper sx={{ p: 2, borderRadius: 2, boxShadow: 2, mb: 2 }}>
+          <Box
+            sx={{
+              p: 2,
+              borderRadius: 2,
+              boxShadow: 2,
+              mb: 2,
+              bgcolor: "background.paper",
+            }}
+          >
             <VisibilityChart />
-          </Paper>
+          </Box>
 
-          <Paper sx={{ p: 2, borderRadius: 2, boxShadow: 2, mb: 2 }}>
+          <Box
+            sx={{
+              p: 2,
+              borderRadius: 2,
+              boxShadow: 2,
+              mb: 2,
+              bgcolor: "background.paper",
+            }}
+          >
             <Typography variant="h6" gutterBottom fontWeight="bold">
-              Interviews
+              Project Pipeline
             </Typography>
             <Box>
               <DataGrid
@@ -135,11 +180,18 @@ export default function ConsultantDashboard() {
             <Box textAlign="center" mt={1}>
               <Button size="small">View more</Button>
             </Box>
-          </Paper>
+          </Box>
 
-          <Paper sx={{ p: 2, borderRadius: 2, boxShadow: 2 }}>
+          <Box
+            sx={{
+              p: 2,
+              borderRadius: 2,
+              boxShadow: 2,
+              bgcolor: "background.paper",
+            }}
+          >
             <Typography variant="h6" gutterBottom fontWeight="bold">
-              Tasks
+              Financial List
             </Typography>
             <Box>
               <DataGrid
@@ -153,13 +205,13 @@ export default function ConsultantDashboard() {
             <Box textAlign="center" mt={1}>
               <Button size="small">View more</Button>
             </Box>
-          </Paper>
+          </Box>
         </Grid>
 
         <Grid size={{ xs: 12, md: 3 }}>
           <SidebarInfo />
         </Grid>
       </Grid>
-    </main>
+    </Box>
   );
 }

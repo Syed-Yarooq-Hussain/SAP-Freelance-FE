@@ -1,14 +1,15 @@
 "use client";
 
-import * as React from "react";
-import { Box, Container } from "@mui/material";
-import { CreateForm } from "@/components/CreateForm";
-import { FieldValues } from "react-hook-form";
-import { useSearchParams } from "next/navigation";
 import { useSignupConsultant } from "@/actions/auth/signupConsultant";
-import { IConsultantSignupPayload } from "@/types/consultant";
-import AuthHeader from "./AuthHeader";
+import { CreateForm } from "@/components/CreateForm";
 import { getConsultantFormFields } from "@/forms/consultantForm";
+import { IConsultantSignupPayload } from "@/types/consultant";
+import { Box, Container } from "@mui/material";
+import { useSearchParams } from "next/navigation";
+import * as React from "react";
+import { FieldValues } from "react-hook-form";
+import AuthHeader from "./AuthHeader";
+import LoginLink from "./LoginLink";
 
 interface IConsultantForm {
   fullName: string;
@@ -105,6 +106,7 @@ const SignUpConsultant: React.FC = () => {
             size: "medium",
           }}
         />
+        <LoginLink />
       </Box>
     </Container>
   );

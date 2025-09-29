@@ -1,14 +1,15 @@
 "use client";
 
-import * as React from "react";
-import { Box, Container } from "@mui/material";
-import { CreateForm } from "@/components/CreateForm";
-import { FieldValues } from "react-hook-form";
 import { useSignupClient } from "@/actions/auth/signupClient";
-import { useSearchParams } from "next/navigation";
-import { IBaseSignupDTO } from "@/types/common-auth";
-import AuthHeader from "./AuthHeader";
+import { CreateForm } from "@/components/CreateForm";
 import { getClientFormFields } from "@/forms/clientForm";
+import { IBaseSignupDTO } from "@/types/common-auth";
+import { Box, Container } from "@mui/material";
+import { useSearchParams } from "next/navigation";
+import * as React from "react";
+import { FieldValues } from "react-hook-form";
+import AuthHeader from "./AuthHeader";
+import LoginLink from "./LoginLink";
 
 interface ISignUpClientForm {
   fullName: string;
@@ -75,6 +76,8 @@ const SignUpClient: React.FC = () => {
             size: "medium",
           }}
         />
+
+        <LoginLink />
       </Box>
     </Container>
   );

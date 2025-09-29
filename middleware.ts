@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { auth } from "./auth";
 import { APP_ROUTES } from "./utils/app_routes";
 
-const PUBLIC_ROUTES = [APP_ROUTES.LOGIN, APP_ROUTES.SIGNUP];
+const PUBLIC_ROUTES = [APP_ROUTES.LOGIN, APP_ROUTES.SIGNUP, APP_ROUTES.HOME];
+
 export default auth((req) => {
   const { nextUrl } = req;
   const isPublicRoute = PUBLIC_ROUTES.includes(nextUrl.pathname);
