@@ -7,6 +7,10 @@ import GroupWorkIcon from "@mui/icons-material/GroupWork";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import QueryStatsIcon from "@mui/icons-material/QueryStats";
 import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
+import MarkEmailUnreadIcon from "@mui/icons-material/MarkEmailUnread";
+import EventAvailableIcon from "@mui/icons-material/EventAvailable";
+import UpdateIcon from "@mui/icons-material/Update";
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import { Box, Card, CardContent, Typography } from "@mui/material";
 import { FC } from "react";
 
@@ -18,6 +22,11 @@ const icons = {
   PeopleAltIcon: <PeopleAltIcon fontSize="large" />,
   CurrencyExchangeIcon: <CurrencyExchangeIcon fontSize="large" />,
   BallotIcon: <BallotIcon fontSize="large" />,
+  MarkEmailUnreadIcon: <MarkEmailUnreadIcon fontSize="large" />,
+  EventAvailableIcon: <EventAvailableIcon fontSize="large" />,
+  UpdateIcon: <UpdateIcon fontSize="large" />,
+  HighlightOffIcon: <HighlightOffIcon fontSize="large" />,
+
 };
 
 export interface StatCardProps {

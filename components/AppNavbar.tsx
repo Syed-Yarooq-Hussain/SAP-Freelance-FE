@@ -2,11 +2,11 @@
 
 import { useLogout } from "@/actions/auth/logout";
 import { DESKTOP_DRAWER_WIDTH } from "@/constants/drawer";
-import AccountCircle from "@mui/icons-material/AccountCircle";
-import MailIcon from "@mui/icons-material/Mail";
+import MailOutlineIcon from "@mui/icons-material/MailOutline";
+import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import MenuIcon from "@mui/icons-material/Menu";
-import MoreIcon from "@mui/icons-material/MoreVert";
-import NotificationsIcon from "@mui/icons-material/Notifications";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import {
   AppBar,
   Badge,
@@ -58,7 +58,7 @@ const AppNavbar: React.FC = () => {
         ml: { md: `${DESKTOP_DRAWER_WIDTH}px` },
       }}
     >
-      <Toolbar sx={{ minHeight: 64 }}>
+      <Toolbar>
         <Box sx={{ display: { xs: "flex", md: "none" }, mr: 2 }}>
           <IconButton size="large" edge="start" color="inherit">
             <MenuIcon />
@@ -89,13 +89,13 @@ const AppNavbar: React.FC = () => {
         </Box>
         <Box sx={{ display: { xs: "none", md: "flex" }, gap: 2 }}>
           <IconButton size="large" color="inherit">
-            <Badge badgeContent={4} color="error">
-              <MailIcon />
+            <Badge badgeContent={17} color="error">
+              <NotificationsNoneIcon />
             </Badge>
           </IconButton>
           <IconButton size="large" color="inherit">
-            <Badge badgeContent={17} color="error">
-              <NotificationsIcon />
+            <Badge badgeContent={4} color="error">
+              <MailOutlineIcon />
             </Badge>
           </IconButton>
           <IconButton
@@ -104,13 +104,13 @@ const AppNavbar: React.FC = () => {
             color="inherit"
             onClick={handleProfileMenuOpen}
           >
-            <AccountCircle />
+            <AccountCircleOutlinedIcon />
           </IconButton>
         </Box>
 
         <Box sx={{ display: { xs: "flex", md: "none" } }}>
           <IconButton size="large" color="inherit" onClick={handleMobileMenuOpen}>
-            <MoreIcon />
+            <MoreVertIcon />
           </IconButton>
         </Box>
       </Toolbar>
@@ -136,7 +136,7 @@ const AppNavbar: React.FC = () => {
         <MenuItem>
           <IconButton size="large" color="inherit">
             <Badge badgeContent={4} color="error">
-              <MailIcon />
+              <MailOutlineIcon />
             </Badge>
           </IconButton>
           <p>Messages</p>
@@ -144,14 +144,14 @@ const AppNavbar: React.FC = () => {
         <MenuItem>
           <IconButton size="large" color="inherit">
             <Badge badgeContent={17} color="error">
-              <NotificationsIcon />
+              <NotificationsNoneIcon />
             </Badge>
           </IconButton>
           <p>Notifications</p>
         </MenuItem>
         <MenuItem onClick={handleProfileMenuOpen}>
           <IconButton size="large" color="inherit">
-            <AccountCircle />
+            <AccountCircleOutlinedIcon />
           </IconButton>
           <p>Account</p>
         </MenuItem>

@@ -1,25 +1,35 @@
 "use client";
 
 import SidebarInfo from "@/components/DashboardSidebarInfo";
-import DashboardStats from "@/components/StatsCardList";
 import { StatCardProps } from "@/components/StatCard";
+import DashboardStats from "@/components/StatsCardList";
 import VisibilityChart from "@/components/VisibilityChart";
-import { Box, Button, Chip, ChipProps, Typography } from "@mui/material";
+import statusColors from "@/utils/styles/colors";
+import { Box } from "@mui/material";
 import Grid from "@mui/material/Grid";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { GridColDef } from "@mui/x-data-grid";
+import AppButton from "../Button";
+import DataTable from "../DataTable";
+import StatusChip from "../StatusChip";
 
 const interviewColumns: GridColDef[] = [
-  { field: "name", headerName: "Name", flex: 1 },
-  { field: "product", headerName: "Product", flex: 1 },
-  { field: "datetime", headerName: "Date – Time", flex: 2 },
+  { field: "project", headerName: "Project", flex: 1 },
+  {
+    field: "client",
+    headerName: "Client",
+    flex: 1,
+    renderCell: (params) => <strong>{params.value}</strong>,
+  },
+  { field: "modules", headerName: "Modules", flex: 1 },
   { field: "duration", headerName: "Duration", flex: 1 },
+  { field: "startDate", headerName: "Start Date", flex: 1 },
   {
     field: "status",
     headerName: "Status",
     flex: 1,
     renderCell: (params) => {
-      const color = params.value === "Confirmed" ? "success" : "error";
-      return <Chip label={params.value} color={color} size="small" />;
+      const color = statusColors[params.value as keyof typeof statusColors];
+      return <StatusChip label={params.value} color={color} />;
     },
   },
 ];
@@ -27,52 +37,56 @@ const interviewColumns: GridColDef[] = [
 const interviewRows = [
   {
     id: 1,
-    name: "Apple Watch",
-    product: "Ariba",
-    datetime: "12.09.2019 – 12.53 PM",
-    duration: "30 min",
-    status: "Confirmed",
+    project: "ERP Upgrade",
+    client: "TechFirm",
+    modules: "SAP MM, S/4HANA",
+    duration: "6 months",
+    startDate: "TBD",
+    status: "Under review",
   },
   {
     id: 2,
-    name: "Apple Watch",
-    product: "Ariba",
-    datetime: "12.09.2019 – 12.58 PM",
-    duration: "30 min",
+    project: "Global Rollout – Manufacturing",
+    client: "ManuCorp",
+    modules: "SAP SD, S/4HANA",
+    duration: "14 months",
+    startDate: "2025-07-01",
     status: "Confirmed",
   },
   {
     id: 3,
-    name: "Apple Watch",
-    product: "hana",
-    datetime: "12.09.2019 – 12.53 PM",
-    duration: "30 min",
-    status: "Canceled",
+    project: "Retail Implementation",
+    client: "RetailCo",
+    modules: "SAP SD, Fiori",
+    duration: "8 months",
+    startDate: "2025-10-01",
+    status: "In progress",
   },
 ];
 
 const taskColumns: GridColDef[] = [
-  { field: "name", headerName: "Name", flex: 1 },
-  { field: "details", headerName: "Details", flex: 2 },
-  { field: "deadline", headerName: "Deadline", flex: 1 },
+  { field: "project", headerName: "Project", flex: 2 },
+  { field: "dueDate", headerName: "Due Dates", flex: 1 },
+  { field: "amount", headerName: "Amount", flex: 1 },
   {
     field: "status",
     headerName: "Status",
     flex: 1,
     renderCell: (params) => {
-      let color: ChipProps["color"] = "default";
-      switch (params.value) {
-        case "In progress":
-          color = "success";
-          break;
-        case "Todo":
-          color = "warning";
-          break;
-        case "Delayed":
-          color = "error";
-          break;
-      }
-      return <Chip label={params.value} color={color} size="small" />;
+      const color = statusColors[params.value as keyof typeof statusColors];
+      return <StatusChip label={params.value} color={color} />;
+    },
+  },
+  {
+    field: "invoice",
+    headerName: "Invoice",
+    flex: 1,
+    renderCell: (params) => {
+      return params.value === "Download" ? (
+        <AppButton label="Download" color="primary" />
+      ) : (
+        "-"
+      );
     },
   },
 ];
@@ -80,50 +94,53 @@ const taskColumns: GridColDef[] = [
 const taskRows = [
   {
     id: 1,
-    name: "Blueprint Documentation",
-    details: "Font generator is that you...",
-    deadline: "18.09.2025",
-    status: "In progress",
+    project: "Retail Implementation",
+    dueDate: "15.09.2025",
+    amount: "2,500",
+    status: "Paid",
+    invoice: "Download",
   },
   {
     id: 2,
-    name: "Client workshop",
-    details: "Font generator is that you...",
-    deadline: "15.09.2025",
-    status: "Todo",
+    project: "Retail Implementation",
+    dueDate: "15.09.2025",
+    amount: "3,500",
+    status: "Pending",
+    invoice: "-",
   },
   {
     id: 3,
-    name: "Data entry",
-    details: "Font generator is that you...",
-    deadline: "5.09.2025",
-    status: "Delayed",
+    project: "Retail Implementation",
+    dueDate: "15.09.2025",
+    amount: "3,500",
+    status: "Overdue",
+    invoice: "-",
   },
 ];
 
 const consultantStats: StatCardProps[] = [
   {
-    title: "Appeared in search",
+    title: "Appeared in Search",
     subtitle: 360,
-    color: "linear-gradient(135deg, #4680FF, #002486ff)",
+    color: "linear-gradient(135deg, #4680FF, #97B7FF)",
     icon: "QueryStatsIcon",
   },
   {
     title: "Interview Scheduled",
     subtitle: 10,
-    color: "linear-gradient(135deg, #00997B, #008638ff)",
+    color: "linear-gradient(135deg, #00997B, #4BD7BB)",
     icon: "PeopleAltIcon",
   },
   {
     title: "Projected Monthly Revenue",
     subtitle: "$3000",
-    color: "linear-gradient(135deg, #FFB64E, #865000ff)",
+    color: "linear-gradient(135deg, #FFB64E, #F6BD6C)",
     icon: "CurrencyExchangeIcon",
   },
   {
     title: "Invoices Status",
-    subtitle: "13",
-    color: "linear-gradient(135deg, #FF5471, #860016ff)",
+    subtitle: 13,
+    color: "linear-gradient(135deg, #FF5471, #FF99AB)",
     icon: "BallotIcon",
   },
 ];
@@ -151,60 +168,35 @@ export default function ConsultantDashboard() {
           </Box>
 
           <Box
-            sx={{
-              p: 2,
-              borderRadius: 2,
-              boxShadow: 2,
-              mb: 2,
-              bgcolor: "background.paper",
-            }}
+            mb={2}
+            borderRadius={2}
+            boxShadow={2}
+            bgcolor="background.paper"
+            p={2}
           >
-            <Typography variant="h6" gutterBottom fontWeight="bold">
-              Project Pipeline
-            </Typography>
-            <Box>
-              <DataGrid
-                rows={interviewRows}
-                columns={interviewColumns}
-                hideFooterPagination
-                hideFooterSelectedRowCount
-                disableRowSelectionOnClick
-                sx={{
-                  "& .MuiDataGrid-columnHeaders": {
-                    backgroundColor: "#0066ffff",
-                    fontWeight: "bold",
-                  },
-                }}
-              />
-            </Box>
-            <Box textAlign="center" mt={1}>
-              <Button size="small">View more</Button>
-            </Box>
+            <DataTable
+              title="Project Pipeline"
+              columns={interviewColumns}
+              rows={interviewRows}
+              pageSize={5}
+              showViewMore={true}
+            />
           </Box>
 
           <Box
-            sx={{
-              p: 2,
-              borderRadius: 2,
-              boxShadow: 2,
-              bgcolor: "background.paper",
-            }}
+            mb={2}
+            borderRadius={2}
+            boxShadow={2}
+            bgcolor="background.paper"
+            p={2}
           >
-            <Typography variant="h6" gutterBottom fontWeight="bold">
-              Financial List
-            </Typography>
-            <Box>
-              <DataGrid
-                rows={taskRows}
-                columns={taskColumns}
-                hideFooterPagination
-                hideFooterSelectedRowCount
-                disableRowSelectionOnClick
-              />
-            </Box>
-            <Box textAlign="center" mt={1}>
-              <Button size="small">View more</Button>
-            </Box>
+            <DataTable
+              title="Financial List"
+              columns={taskColumns}
+              rows={taskRows}
+              pageSize={5}
+              showViewMore={true}
+            />
           </Box>
         </Grid>
 

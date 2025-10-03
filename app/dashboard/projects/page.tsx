@@ -1,174 +1,125 @@
 "use client";
 
-import DashboardStats from "@/components/StatsCardList";
-import ProjectInfoCard from "@/components/ProjectInfoCard";
+import DataTable from "@/components/DataTable";
 import { StatCardProps } from "@/components/StatCard";
-import { Box, Chip, ChipProps, Typography } from "@mui/material";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import DashboardStats from "@/components/StatsCardList";
+import StatusChip from "@/components/StatusChip";
+import statusColors from "@/utils/styles/colors";
+import { Box } from "@mui/material";
+import { GridColDef } from "@mui/x-data-grid";
 
 const projectStats: StatCardProps[] = [
-    {
-        title: "Employer",
-        subtitle: "Global Rollout",
-        description: "18-month project – lead consultant",
-        color: "linear-gradient(135deg, #4680FF, #000000ff)",
-        icon: "WorkOutlineIcon",
-    },
-    {
-        title: "Upcoming Employer",
-        subtitle: "Rental Co.",
-        description: "12-5-2025 – for 6 months – SD Lead",
-        color: "linear-gradient(135deg, #00997B, #000000ff)",
-        icon: "GroupWorkIcon",
-    },
-    {
-        title: "Tasks",
-        subtitle: "15",
-        description: "11 in daycycle",
-        color: "linear-gradient(135deg, #FF5471, #000000)",
-        icon: "AssignmentTurnedInIcon",
-    },
+  {
+    title: "Employer",
+    subtitle: "Global Rollout",
+    description: "18/6 month project – lead consultant",
+    color: "linear-gradient(135deg,  #4680FF 50%, #97B7FF 100%)",
+    icon: "WorkOutlineIcon",
+  },
+  {
+    title: "Upcoming Employer",
+    subtitle: "Rental Co.",
+    description: "12-5-2025 – for 6 months – SD Lead",
+    color: "linear-gradient(135deg, #00997B 50%, #4BD7BB 100%)",
+    icon: "GroupWorkIcon",
+  },
+  {
+    title: "Tasks",
+    subtitle: "15",
+    description: "1 is delayed",
+    color: "linear-gradient(135deg, #FF5471 50%, #FF99AB 100%)",
+    icon: "AssignmentTurnedInIcon",
+  },
 ];
 
 const taskColumns: GridColDef[] = [
-    { field: "name", headerName: "Name", flex: 1 },
-    { field: "details", headerName: "Details", flex: 2 },
-    { field: "deadline", headerName: "Deadline", flex: 1 },
-    {
-        field: "status",
-        headerName: "Status",
-        flex: 1,
-        renderCell: (params) => {
-            let color: ChipProps["color"] = "default";
-            switch (params.value) {
-                case "In progress":
-                    color = "success";
-                    break;
-                case "Todo":
-                    color = "warning";
-                    break;
-                case "Delayed":
-                    color = "error";
-                    break;
-            }
-            return <Chip label={params.value} color={color} size="small" />;
+  { field: "name", headerName: "Name", flex: 2 },
+  { field: "clients", headerName: "Clients", flex: 1 },
+  { field: "modules", headerName: "Modules", flex: 2 },
+  { field: "duration", headerName: "Duration", flex: 1 },
+  { field: "startdate", headerName: "Start Date", flex: 1 },
+  {
+    field: "status",
+    headerName: "Status",
+    flex: 1,
+    renderCell: (params) => {
+          const color = statusColors[params.value as keyof typeof statusColors];
+          return <StatusChip label={params.value} color={color} />;
         },
-    },
+  },
 ];
 
 const taskRows = [
-    {
-        id: 1,
-        name: "Blueprint Documentation",
-        details: "Font generator is that you...",
-        deadline: "18.09.2025",
-        status: "In progress",
-    },
-    {
-        id: 2,
-        name: "Client workshop",
-        details: "Font generator is that you...",
-        deadline: "15.09.2025",
-        status: "Todo",
-    },
-    {
-        id: 3,
-        name: "Data entry",
-        details: "Font generator is that you...",
-        deadline: "5.09.2025",
-        status: "Delayed",
-    },
-    {
-        id: 4,
-        name: "Blueprint Documentation",
-        details: "Font generator is that you...",
-        deadline: "18.09.2025",
-        status: "In progress",
-    },
-    {
-        id: 5,
-        name: "Client workshop",
-        details: "Font generator is that you...",
-        deadline: "15.09.2025",
-        status: "Todo",
-    },
-    {
-        id: 6,
-        name: "Data entry",
-        details: "Font generator is that you...",
-        deadline: "5.09.2025",
-        status: "Delayed",
-    },
-    {
-        id: 7,
-        name: "Data entry",
-        details: "Font generator is that you...",
-        deadline: "5.09.2025",
-        status: "Delayed",
-    },
-    {
-        id: 8,
-        name: "Blueprint Documentation",
-        details: "Font generator is that you...",
-        deadline: "18.09.2025",
-        status: "In progress",
-    },
-    {
-        id: 9,
-        name: "Client workshop",
-        details: "Font generator is that you...",
-        deadline: "15.09.2025",
-        status: "Todo",
-    },
-    {
-        id: 10,
-        name: "Data entry",
-        details: "Font generator is that you...",
-        deadline: "5.09.2025",
-        status: "Delayed",
-    },
+  {
+    id: 1,
+    name: "Global Rollout – Manufacturing",
+    clients: "Siemens",
+    modules: "SAP SD, S/4HANA",
+    duration: "6 months",
+    startdate: "2025-07-01",
+    status: "In progress",
+  },
+  {
+    id: 2,
+    name: "Retail Implementation",
+    clients: "Carrefour",
+    modules: "SAP SD, Fiori",
+    duration: "8 months",
+    startdate: "2025-10-01",
+    status: "Todo",
+  },
+  {
+    id: 3,
+    name: "Supply Chain Optimization",
+    clients: "Nestle",
+    modules: "SAP SCM, S/4HANA",
+    duration: "12 months",
+    startdate: "2025-11-01",
+    status: "Delayed",
+  },
+  {
+    id: 4,
+    name: "ERP Upgrade",
+    clients: "Unilever",
+    modules: "SAP MM, S/4HANA",
+    duration: "TBD",
+    startdate: "TBD",
+    status: "Todo",
+  },
+  {
+    id: 5,
+    name: "Finance Integration",
+    clients: "Coca-Cola",
+    modules: "SAP FI, S/4HANA",
+    duration: "N/A",
+    startdate: "N/A",
+    status: "In progress",
+  },
 ];
 
 export default function ConsultantProject() {
-    return (
-        <Box>
-            <DashboardStats
-                stats={projectStats}
-                containerProps={{ marginBottom: "30px" }}
-            />
+  return (
+    <Box>
+      <DashboardStats
+        stats={projectStats}
+        containerProps={{ marginBottom: "30px" }}
+      />
 
-
-            <Box
-                sx={{
-                    p: 2,
-                    borderRadius: 2,
-                    boxShadow: 2,
-                    bgcolor: "background.paper",
-                }}
-            >
-                <ProjectInfoCard
-                    projectName="Global Rollout"
-                    category="Manufacturing"
-                    actionLabel="View Completed tasks"
-                    onActionClick={() => alert("Completed tasks clicked")}
-                />
-
-                <Typography variant="h6" gutterBottom fontWeight="bold">
-                    Tasks
-                </Typography>
-                <Box>
-                    <DataGrid
-                        rows={taskRows}
-                        columns={taskColumns}
-                        pagination
-                        pageSizeOptions={[5, 10, 20]}
-                        initialState={{
-                            pagination: { paginationModel: { pageSize: 10, page: 0 } },
-                        }}
-                        disableRowSelectionOnClick
-                    />
-                </Box>
-            </Box>
-        </Box>
-    );
+      <Box
+        sx={{
+          p: 2,
+          borderRadius: 2,
+          boxShadow: 2,
+          bgcolor: "background.paper",
+        }}
+      >
+        <DataTable
+          title=""
+          columns={taskColumns}
+          rows={taskRows}
+          pageSize={10}
+        />
+      </Box>
+    </Box>
+  );
 }
