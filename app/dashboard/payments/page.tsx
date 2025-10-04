@@ -1,98 +1,87 @@
 "use client";
 
-import { Box, Button, Chip, ChipProps, Typography } from "@mui/material";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import AppButton from "@/components/Button";
+import DataTable from "@/components/DataTable";
+import StatusChip from "@/components/StatusChip";
+import statusColors from "@/utils/styles/colors";
+import { Box } from "@mui/material";
+import { GridColDef } from "@mui/x-data-grid";
 
 const taskColumns: GridColDef[] = [
-    { field: "name", headerName: "Name", flex: 1 },
-    { field: "duedates", headerName: "Due Dates", flex: 1 },
-    { field: "amount", headerName: "Amount", flex: 1 },
-    {
-        field: "status",
-        headerName: "Status",
-        flex: 1,
-        renderCell: (params) => {
-            let color: ChipProps["color"] = "default";
-            switch (params.value) {
-                case "Paid":
-                    color = "success";
-                    break;
-                case "Pending":
-                    color = "warning";
-                    break;
-                case "OverDue":
-                    color = "error";
-                    break;
-            }
-            return <Chip label={params.value} color={color} size="small" />;
-        },
+  { field: "project", headerName: "Project", flex: 2 },
+  {
+    field: "duedates",
+    headerName: "Due Dates",
+    flex: 2,
+    renderCell: (params) => <strong>{params.value}</strong>,
+  },
+  { field: "amount", headerName: "Amount", flex: 2 },
+  {
+    field: "status",
+    headerName: "Status",
+    flex: 2,
+    renderCell: (params) => {
+      const color = statusColors[params.value as keyof typeof statusColors];
+      return <StatusChip label={params.value} color={color} />;
     },
-    {
-        field: "invoice",
-        headerName: "Invoice",
-        flex: 1,
-        renderCell: () => (
-            <Button variant="contained" color="primary" size="small">
-                Download
-            </Button>
-        ),
+  },
+  {
+    field: "invoice",
+    headerName: "Invoice",
+    flex: 2,
+    renderCell: (params) => {
+      return params.value === "Download" ? (
+        <AppButton label="Download" color="primary" />
+      ) : (
+        "-"
+      );
     },
+  },
 ];
 
 const taskRows = [
-    {
-        id: 1,
-        name: "January Fees",
-        duedates: "15.09.2025",
-        amount: "2,500 USD",
-        status: "Paid",
-        invoice: "download-link-1",
-    },
-    {
-        id: 2,
-        name: "February Fees",
-        duedates: "15.09.2025",
-        amount: "3,500 USD",
-        status: "Pending",
-        invoice: "download-link-2",
-    },
-    {
-        id: 3,
-        name: "March Fees",
-        duedates: "5.09.2025",
-        amount: "3,500 USD",
-        status: "OverDue",
-        invoice: "download-link-3",
-    },
+  {
+    id: 1,
+    project: "Retail Implementation",
+    duedates: "10.09.2025",
+    amount: "2,500",
+    status: "Paid",
+    invoice: "Download",
+  },
+  {
+    id: 2,
+    project: "Retail Implementation",
+    duedates: "10.10.2025",
+    amount: "3,500",
+    status: "Pending",
+    invoice: "Download",
+  },
+  {
+    id: 3,
+    project: "Retail Implementation",
+    duedates: "10.11.2025",
+    amount: "3,500",
+    status: "Overdue",
+    invoice: "Download",
+  },
 ];
 
 export default function ConsultantPayments() {
-    return (
-        <Box>
-            <Box
-                sx={{
-                    p: 2,
-                    borderRadius: 2,
-                    boxShadow: 2,
-                    bgcolor: "background.paper",
-                }}
-            >
-                <Typography variant="h6" gutterBottom fontWeight="bold">
-                    Payment
-                </Typography>
-                <Box>
-                    <DataGrid
-                        rows={taskRows}
-                        columns={taskColumns}
-                        pagination
-                        pageSizeOptions={[5, 10, 20]}
-                        initialState={{
-                            pagination: { paginationModel: { pageSize: 10, page: 0 } },
-                        }}
-                        disableRowSelectionOnClick
-                    />
-                </Box>
-            </Box>
-        </Box>
-    );
+  return (
+    <Box
+      sx={{
+        p: 2,
+        borderRadius: 2,
+        boxShadow: 2,
+        bgcolor: "background.paper",
+      }}
+    >
+      <DataTable
+        title="Payment"
+        columns={taskColumns}
+        rows={taskRows}
+        pageSize={10}
+      />
+    </Box>
+  );
 }

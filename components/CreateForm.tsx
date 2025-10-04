@@ -1,21 +1,21 @@
-"use client";
-
+import AppButton from "@/components/Button";
 import { IOption } from "@/types/options";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import {
   Alert,
   BaseTextFieldProps,
   Box,
-  Button,
   ButtonProps,
   FormControl,
-  MenuItem,
+  IconButton,
+  InputAdornment,
   Stack,
   StackProps,
   TextField,
-  Typography,
 } from "@mui/material";
 import { ResponsiveStyleValue } from "@mui/system";
-import { FC } from "react";
+import { FC, useState } from "react";
 import {
   Controller,
   FieldValues,
@@ -76,6 +76,9 @@ export const CreateForm: FC<ICreateFormProps> = ({
   cancelButton,
   actionsContainerProps,
 }) => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const {
     control,
     handleSubmit,
@@ -84,6 +87,14 @@ export const CreateForm: FC<ICreateFormProps> = ({
 
   const submitHandler = (data: FieldValues) => {
     onSuccess(data);
+  };
+
+  const handleClickShowPassword = () => setShowPassword((prev) => !prev);
+  const handleClickShowConfirmPassword = () =>
+    setShowConfirmPassword((prev) => !prev);
+
+  const handleMouseDownPassword = (event: React.MouseEvent) => {
+    event.preventDefault();
   };
 
   return (
@@ -118,37 +129,54 @@ export const CreateForm: FC<ICreateFormProps> = ({
                     fullWidth
                     size="small"
                     variant="outlined"
-                    type={element.type || "text"}
+                    type={
+                      element.name === "password"
+                        ? showPassword
+                          ? "text"
+                          : "password"
+                        : element.name === "confirmPassword"
+                        ? showConfirmPassword
+                          ? "text"
+                          : "password"
+                        : "text"
+                    } // Ensure the toggle is only for password fields
                     error={!!errors[element.name]}
                     helperText={errors[element.name]?.message?.toString()}
                     disabled={loading}
                     placeholder={element.placeholder}
+                    label={element.label}
                     slotProps={{
-                      inputLabel: { shrink: true },
-                      select: {
-                        displayEmpty: true,
-                        renderValue: (value) => {
-                          if (!value) {
-                            return (
-                              <Typography color="gray">
-                                Select {element.label}
-                              </Typography>
-                            );
-                          }
-                          return <>{value}</>;
-                        },
+                      input: {
+                        endAdornment:
+                          element.name === "password" ||
+                          element.name === "confirmPassword" ? ( // Apply the visibility toggle only to Password and Confirm Password
+                            <InputAdornment position="end">
+                              <IconButton
+                                onClick={
+                                  element.name === "password"
+                                    ? handleClickShowPassword
+                                    : handleClickShowConfirmPassword
+                                }
+                                onMouseDown={handleMouseDownPassword}
+                                edge="end"
+                              >
+                                {element.name === "password" ? (
+                                  showPassword ? (
+                                    <VisibilityOff />
+                                  ) : (
+                                    <Visibility />
+                                  )
+                                ) : showConfirmPassword ? (
+                                  <VisibilityOff />
+                                ) : (
+                                  <Visibility />
+                                )}
+                              </IconButton>
+                            </InputAdornment>
+                          ) : undefined,
                       },
                     }}
-                    label={element.label}
-                    {...element}
-                  >
-                    {element.options?.length !== 0 &&
-                      element.options?.map((opt) => (
-                        <MenuItem key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </MenuItem>
-                      ))}
-                  </TextField>
+                  />
                 )}
               />
             </FormControl>
@@ -163,27 +191,20 @@ export const CreateForm: FC<ICreateFormProps> = ({
         sx={{ mt: 3, ...actionsContainerProps?.sx }}
         {...actionsContainerProps}
       >
-        <Button
-          type="submit"
-          variant="contained"
-          size="small"
+        <AppButton
+          label={String(submitButton?.children || "Submit")}
+          color="primary"
+          onClick={handleSubmit(submitHandler)}
           loading={loading}
-          loadingPosition="start"
-          {...submitButton}
-        >
-          {submitButton?.children || "Submit"}
-        </Button>
+          sx={{ width: "auto", minWidth: "160px", ...submitButton?.sx }}
+        />
         {onCancel && (
-          <Button
-            type="button"
-            variant="outlined"
-            color="error"
-            size="small"
+          <AppButton
+            label={String(cancelButton?.children || "Cancel")}
+            color="secondary"
             onClick={onCancel}
-            {...cancelButton}
-          >
-            {cancelButton?.children || "Cancel"}
-          </Button>
+            sx={{ width: "auto", minWidth: "160px", ...cancelButton?.sx }}
+          />
         )}
       </Stack>
     </Box>

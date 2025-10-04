@@ -28,7 +28,18 @@ const getTheme = (mode: "light" | "dark") =>
       MuiAppBar: {
         styleOverrides: {
           root: {
-            background: "linear-gradient(to right, #4099ff, #73b4ff)",
+            background: "#4680FF",
+            color: "#fff",
+          },
+        },
+      },
+      MuiToolbar: {
+        styleOverrides: {
+          root: {
+            minHeight: 50,
+            "@media (min-width:600px)": {
+              minHeight: 50,
+            },
           },
         },
       },

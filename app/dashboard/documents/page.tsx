@@ -1,98 +1,168 @@
 "use client";
 
-import { Box, Chip, ChipProps, Typography } from "@mui/material";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import DataTable from "@/components/DataTable";
+import StatusChip from "@/components/StatusChip";
+import statusColors from "@/utils/styles/colors";
+import { Box } from "@mui/material";
+import { GridColDef } from "@mui/x-data-grid";
 
 const taskColumns: GridColDef[] = [
-    { field: "name", headerName: "Name", flex: 1 },
-    { field: "deadline", headerName: "Deadline", flex: 1 },
-    { field: "expirationdate", headerName: "Expiration Date", flex: 1 },
-    {
-        field: "projectname",
-        headerName: "Project Name",
-        flex: 1,
-        renderCell: (params) => (
-            <Typography variant="body1" fontWeight="bold">
-                {params.value}
-            </Typography>
-        ),
+  { field: "name", headerName: "Name", flex: 2 },
+  { field: "deadline", headerName: "Deadline", flex: 2 },
+  { field: "expirationDate", headerName: "Expiration Date", flex: 2 },
+  { field: "client", headerName: "Client Name", flex: 2 },
+  {
+    field: "status",
+    headerName: "Status",
+    flex: 1,
+    renderCell: (params) => {
+      const color = statusColors[params.value as keyof typeof statusColors];
+      return <StatusChip label={params.value} color={color} />;
     },
-    {
-        field: "status",
-        headerName: "Status",
-        flex: 1,
-        renderCell: (params) => {
-            let color: ChipProps["color"] = "default";
-            switch (params.value) {
-                case "Signed":
-                    color = "success";
-                    break;
-                case "Pending":
-                    color = "warning";
-                    break;
-                case "Rejected":
-                    color = "error";
-                    break;
-            }
-            return <Chip label={params.value} color={color} size="small" />;
-        },
-    },
+  },
 ];
 
 const taskRows = [
-    {
-        id: 1,
-        name: "NDA",
-        deadline: "15.09.2025",
-        expirationdate: "15.09.2025",
-        projectname: "Global Rollout",
-        status: "Signed",
-    },
-    {
-        id: 2,
-        name: "Service",
-        deadline: "15.09.2025",
-        expirationdate: "15.09.2025",
-        projectname: "Global Rollout",
-        status: "Pending",
-    },
-    {
-        id: 3,
-        name: "Property ownership",
-        deadline: "5.09.2025",
-        expirationdate: "15.09.2025",
-        projectname: "Global Rollout",
-        status: "Rejected",
-    },
+  {
+    id: 1,
+    name: "NDA",
+    deadline: "15.09.2025",
+    expirationDate: "15.09.2028",
+    client: "ManuCorp",
+    status: "Signed",
+  },
+  {
+    id: 2,
+    name: "Service",
+    deadline: "15.09.2025",
+    expirationDate: "15.09.2028",
+    client: "ManuCorp",
+    status: "Pending",
+  },
+  {
+    id: 3,
+    name: "Property ownership",
+    deadline: "15.09.2025",
+    expirationDate: "15.09.2028",
+    client: "ManuCorp",
+    status: "Rejected",
+  },
+  {
+    id: 4,
+    name: "NDA",
+    deadline: "15.09.2025",
+    expirationDate: "15.09.2028",
+    client: "RetailCo",
+    status: "Signed",
+  },
+  {
+    id: 5,
+    name: "Service",
+    deadline: "15.09.2025",
+    expirationDate: "15.09.2028",
+    client: "RetailCo",
+    status: "Pending",
+  },
+  {
+    id: 6,
+    name: "Property ownership",
+    deadline: "15.09.2025",
+    expirationDate: "15.09.2028",
+    client: "RetailCo",
+    status: "Rejected",
+  },
+  {
+    id: 7,
+    name: "NDA",
+    deadline: "15.09.2025",
+    expirationDate: "15.09.2028",
+    client: "LogicCo",
+    status: "Signed",
+  },
+  {
+    id: 8,
+    name: "Service",
+    deadline: "15.09.2025",
+    expirationDate: "15.09.2028",
+    client: "LogicCo",
+    status: "Pending",
+  },
+  {
+    id: 9,
+    name: "Property ownership",
+    deadline: "15.09.2025",
+    expirationDate: "15.09.2028",
+    client: "LogicCo",
+    status: "Rejected",
+  },
+  {
+    id: 10,
+    name: "NDA",
+    deadline: "15.09.2025",
+    expirationDate: "15.09.2028",
+    client: "TechFirm",
+    status: "Signed",
+  },
+  {
+    id: 11,
+    name: "Service",
+    deadline: "15.09.2025",
+    expirationDate: "15.09.2028",
+    client: "TechFirm",
+    status: "Pending",
+  },
+  {
+    id: 12,
+    name: "Property ownership",
+    deadline: "15.09.2025",
+    expirationDate: "15.09.2028",
+    client: "TechFirm",
+    status: "Rejected",
+  },
+  {
+    id: 13,
+    name: "NDA",
+    deadline: "15.09.2025",
+    expirationDate: "15.09.2028",
+    client: "BankCorp",
+    status: "Signed",
+  },
+  {
+    id: 14,
+    name: "Service",
+    deadline: "15.09.2025",
+    expirationDate: "15.09.2028",
+    client: "BankCorp",
+    status: "Pending",
+  },
+  {
+    id: 15,
+    name: "Property ownership",
+    deadline: "15.09.2025",
+    expirationDate: "15.09.2028",
+    client: "BankCorp",
+    status: "Rejected",
+  },
 ];
 
 export default function ConsultantDocuments() {
-    return (
-        <Box>
-            <Box
-                sx={{
-                    p: 2,
-                    borderRadius: 2,
-                    boxShadow: 2,
-                    bgcolor: "background.paper",
-                }}
-            >
-                <Typography variant="h6" gutterBottom fontWeight="bold">
-                    Signed Contract
-                </Typography>
-                <Box>
-                    <DataGrid
-                        rows={taskRows}
-                        columns={taskColumns}
-                        pagination
-                        pageSizeOptions={[5, 10, 20]}
-                        initialState={{
-                            pagination: { paginationModel: { pageSize: 10, page: 0 } },
-                        }}
-                        disableRowSelectionOnClick
-                    />
-                </Box>
-            </Box>
-        </Box>
-    );
+  return (
+    <Box>
+      <Box
+        sx={{
+          p: 2,
+          borderRadius: 2,
+          boxShadow: 2,
+          bgcolor: "background.paper",
+        }}
+      >
+        <DataTable
+          title="Signed Contract"
+          columns={taskColumns}
+          rows={taskRows}
+          pageSize={10}
+        />
+      </Box>
+    </Box>
+  );
 }

@@ -1,22 +1,19 @@
 "use client";
 
-import getTheme from "@/theme";
-import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
-import { ThemeProvider, CssBaseline, Container, Box } from "@mui/material";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
 import QueryProvider from "@/providers/QueryProvider";
-import { useState, useMemo } from "react";
+import getTheme from "@/theme";
+import { Box, Container, CssBaseline, ThemeProvider } from "@mui/material";
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import { SessionProvider } from "next-auth/react";
+import { Poppins } from "next/font/google";
+import { useMemo, useState } from "react";
+import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const poppins = Poppins({
+  variable: "--font-poppins",
+  weight: ["400", "600"],
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  display: "swap",
 });
 
 export default function RootLayout({
@@ -29,7 +26,7 @@ export default function RootLayout({
   const theme = useMemo(() => getTheme(mode), [mode]);
 
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html lang="en" className={`${poppins.variable} ${poppins.variable}`}>
       <body>
         <AppRouterCacheProvider options={{ key: "css", enableCssLayer: true }}>
           <ThemeProvider theme={theme}>
@@ -46,7 +43,7 @@ export default function RootLayout({
                     pb: 4,
                   }}
                 >
-                  <Box component="main" sx={{ p: 2 }}>
+                  <Box component="main" sx={{ p: 1 }}>
                     {children}
                   </Box>
                 </Container>
