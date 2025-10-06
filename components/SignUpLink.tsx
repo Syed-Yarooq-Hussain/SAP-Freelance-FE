@@ -4,7 +4,7 @@ import { Link, Typography } from '@mui/material'
 const SignUpLink = () => {
   return (
     <Typography variant="body2" textAlign="center" mt={3}>
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link
             variant="body2"
             href={APP_ROUTES.HOME}
