@@ -147,7 +147,6 @@ const taskRows = [
 
 export default function ConsultantDocuments() {
   return (
-    <Box>
       <Box
         sx={{
           p: 2,
@@ -163,6 +162,5 @@ export default function ConsultantDocuments() {
           pageSize={10}
         />
       </Box>
-    </Box>
   );
 }

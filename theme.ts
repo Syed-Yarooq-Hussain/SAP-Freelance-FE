@@ -22,7 +22,7 @@ const getTheme = (mode: "light" | "dark") =>
       },
     },
     typography: {
-      fontFamily: "var(--font-roboto)",
+      fontFamily: "var(--font-poppins)",
     },
     components: {
       MuiAppBar: {

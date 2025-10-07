@@ -32,12 +32,12 @@ type DrawerListProps = {
 
 const defaultItems: DrawerItem[] = [
   { icon: <DashboardIcon />, label: "Dashboard", link: APP_ROUTES.DASHBOARD },
+  { icon: <ProfileIcon />, label: "Profile", link: APP_ROUTES.PROFILE },
   { icon: <CalendarMonthIcon />, label: "Calendar", link: APP_ROUTES.CALENDAR },
   { icon: <EventNoteIcon />, label: "Interviews", link: APP_ROUTES.INTERVIEWS },
   { icon: <WorkIcon />, label: "Projects", link: APP_ROUTES.PROJECTS },
   { icon: <DescriptionIcon />, label: "Documents", link: APP_ROUTES.DOCUMENTS },
   { icon: <PaymentIcon />, label: "Payments", link: APP_ROUTES.PAYMENTS },
-  { icon: <ProfileIcon />, label: "Profile", link: APP_ROUTES.PROFILE },
 ];
 
 const DrawerList: FC<DrawerListProps> = ({ items = defaultItems, open }) => {
