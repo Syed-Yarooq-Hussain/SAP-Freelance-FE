@@ -11,6 +11,8 @@ import { GridColDef } from "@mui/x-data-grid";
 import AppButton from "../Button";
 import DataTable from "../DataTable";
 import StatusChip from "../StatusChip";
+import { getCurrentMonth } from "@/utils/dateUtils";
+import Announcement from "../Announcement";
 
 const interviewColumns: GridColDef[] = [
   { field: "project", headerName: "Project", flex: 1 },
@@ -138,8 +140,8 @@ const consultantStats: StatCardProps[] = [
     icon: "CurrencyExchangeIcon",
   },
   {
-    title: "Invoices Status",
-    subtitle: 13,
+    title: `Invoices Values (${getCurrentMonth()})`, 
+    subtitle: "$12,000",
     color: "linear-gradient(135deg, #FF5471, #FF99AB)",
     icon: "BallotIcon",
   },
@@ -148,6 +150,7 @@ const consultantStats: StatCardProps[] = [
 export default function ConsultantDashboard() {
   return (
     <Box>
+       <Announcement /> 
       <DashboardStats
         stats={consultantStats}
         containerProps={{ marginBottom: "30px" }}
@@ -168,11 +171,13 @@ export default function ConsultantDashboard() {
           </Box>
 
           <Box
-            mb={2}
-            borderRadius={2}
-            boxShadow={2}
-            bgcolor="background.paper"
-            p={2}
+            sx={{
+              p: 2,
+              borderRadius: 2,
+              boxShadow: 2,
+              bgcolor: "background.paper",
+              mb: 2,
+            }}
           >
             <DataTable
               title="Project Pipeline"
@@ -184,11 +189,12 @@ export default function ConsultantDashboard() {
           </Box>
 
           <Box
-            mb={2}
-            borderRadius={2}
-            boxShadow={2}
-            bgcolor="background.paper"
-            p={2}
+            sx={{
+              p: 2,
+              borderRadius: 2,
+              boxShadow: 2,
+              bgcolor: "background.paper",
+            }}
           >
             <DataTable
               title="Financial List"
