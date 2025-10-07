@@ -78,7 +78,7 @@ const notifications = [
   { id: 1, message: "Your meeting has been scheduled!" },
   {
     id: 2,
-    message: "Meeting starts in 20 min — join via the link",
+    message: "Meeting starts in 20 min — join via the link:",
     link: "sklankfskdfslfdnslds.com",
   },
 ];
