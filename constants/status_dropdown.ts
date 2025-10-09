@@ -1,0 +1,12 @@
+export enum STATUS {
+  REQUEST = "Request",
+  CONFIRMED = "Confirmed",
+  RESCHEDULE = "Reschedule",
+  REJECTED = "Rejected",
+  UNDER_REVIEW = "Under review",
+  IN_PROGRESS = "In progress",
+  PENDING = "Pending",
+  PAID = "Paid",
+  OVERDUE = "Overdue",
+  SIGNED = "Signed",
+}

@@ -1,6 +1,9 @@
 "use client";
 
-import { DESKTOP_DRAWER_WIDTH, MOBILE_DRAWER_WIDTH } from "@/constants/drawer";
+import {
+  DESKTOP_DRAWER_WIDTH,
+  MOBILE_DRAWER_WIDTH,
+} from "@/constants/dimensions";
 import { Box, CssBaseline, Drawer, useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import Image from "next/image";
@@ -84,7 +87,6 @@ const Sidebar: FC<ISidebarProps> = ({ children }) => {
             />
           </Box>
         </Box>
-
 
         <DrawerList open={open} />
       </Drawer>

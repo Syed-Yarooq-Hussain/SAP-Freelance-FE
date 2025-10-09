@@ -1,11 +1,13 @@
 "use client";
 
-import * as React from "react";
+import { BUTTON_WIDTH } from "@/constants/dimensions";
+import { colors } from "@/utils/styles/colors";
 import MuiButton, { ButtonProps } from "@mui/material/Button";
+import * as React from "react";
 
 interface IAppButtonProps extends ButtonProps {
   label: string;
-  color?: "primary" | "secondary" | "error" | "success" | "info" | "warning";
+  colorKey?: keyof typeof colors;
   variant?: "contained" | "outlined" | "text";
   onClick?: () => void;
   width?: number | string;
@@ -14,31 +16,39 @@ interface IAppButtonProps extends ButtonProps {
 
 const AppButton: React.FC<IAppButtonProps> = ({
   label,
-  color = "primary",
+  colorKey = "BLUE",
   variant = "contained",
   onClick,
-  width = "auto", 
-  fontColor = "#ffffff",
+  width = BUTTON_WIDTH,
+  fontColor,
   ...props
 }) => {
+  const mainColor = colors[colorKey];
+  const textColor = variant === "outlined" ? mainColor : fontColor || "#ffffff";
+  const bgColor = variant === "outlined" ? "transparent" : mainColor;
+  
   return (
     <MuiButton
       {...props}
       variant={variant}
-      color={color}
-      size="small"
       onClick={onClick}
+      size="small"
       sx={{
         textTransform: "none",
         borderRadius: 1,
         px: 2,
-        py: 0.5,
+        py: 0.6,
         fontWeight: 500,
         fontSize: "0.875rem",
         width,
         textAlign: "center",
         boxShadow: "none",
-        color: fontColor,
+        backgroundColor: bgColor,
+        color: textColor,
+        "&:hover": {
+          backgroundColor: bgColor,
+          opacity: 0.9,
+        },
         ...props.sx,
       }}
     >

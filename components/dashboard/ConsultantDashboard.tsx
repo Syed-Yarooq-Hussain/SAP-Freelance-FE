@@ -4,15 +4,16 @@ import SidebarInfo from "@/components/DashboardSidebarInfo";
 import { StatCardProps } from "@/components/StatCard";
 import DashboardStats from "@/components/StatsCardList";
 import VisibilityChart from "@/components/VisibilityChart";
-import statusColors from "@/utils/styles/colors";
+import { getCurrentMonth } from "@/utils/dateUtils";
+import { buttonColors, statusColors } from "@/utils/styles/colors";
 import { Box } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { GridColDef } from "@mui/x-data-grid";
+import Announcement from "../Announcement";
 import AppButton from "../Button";
 import DataTable from "../DataTable";
 import StatusChip from "../StatusChip";
-import { getCurrentMonth } from "@/utils/dateUtils";
-import Announcement from "../Announcement";
+import StatusDropdown from "../StatusDropdown";
 
 const interviewColumns: GridColDef[] = [
   { field: "project", headerName: "Project", flex: 1 },
@@ -30,8 +31,9 @@ const interviewColumns: GridColDef[] = [
     headerName: "Status",
     flex: 1,
     renderCell: (params) => {
-      const color = statusColors[params.value as keyof typeof statusColors];
-      return <StatusChip label={params.value} color={color} />;
+      const colorName =
+        statusColors[params.value as keyof typeof statusColors] || "GREY";
+      return <StatusChip label={params.value} color={colorName} />;
     },
   },
 ];
@@ -67,28 +69,38 @@ const interviewRows = [
 ];
 
 const taskColumns: GridColDef[] = [
-  { field: "project", headerName: "Project", flex: 2 },
+  { field: "project", headerName: "Project", flex: 1 },
   { field: "dueDate", headerName: "Due Dates", flex: 1 },
   { field: "amount", headerName: "Amount", flex: 1 },
   {
     field: "status",
     headerName: "Status",
     flex: 1,
-    renderCell: (params) => {
-      const color = statusColors[params.value as keyof typeof statusColors];
-      return <StatusChip label={params.value} color={color} />;
-    },
+    renderCell: (params) => <StatusDropdown value={params.value} />,
   },
   {
     field: "invoice",
     headerName: "Invoice",
     flex: 1,
     renderCell: (params) => {
-      return params.value === "Download" ? (
-        <AppButton label="Download" color="primary" />
-      ) : (
-        "-"
-      );
+      const label = params.value;
+
+      if (label === "-") {
+        return (
+          <Box
+            component="span"
+            sx={{
+              color: "text.secondary",
+              fontSize: "0.875rem",
+            }}
+          >
+            {label}
+          </Box>
+        );
+      }
+
+      const colorKey = buttonColors[label] || "GREY";
+      return <AppButton label={label} colorKey={colorKey} />;
     },
   },
 ];
@@ -140,17 +152,24 @@ const consultantStats: StatCardProps[] = [
     icon: "CurrencyExchangeIcon",
   },
   {
-    title: `Invoices Values (${getCurrentMonth()})`, 
+    title: `Invoices Values (${getCurrentMonth()})`,
     subtitle: "$12,000",
     color: "linear-gradient(135deg, #FF5471, #FF99AB)",
     icon: "BallotIcon",
   },
 ];
 
+const consultantAnnouncements = [
+  "You appeared in 25 searches this week — great job!",
+  "Reminder: Add your latest certification to improve visibility.",
+  "New dashboard insights are now live in your analytics panel!",
+  "System Alert: Scheduled downtime on Saturday 3–4 AM UTC.",
+];
+
 export default function ConsultantDashboard() {
   return (
     <Box>
-       <Announcement /> 
+      <Announcement items={consultantAnnouncements} />
       <DashboardStats
         stats={consultantStats}
         containerProps={{ marginBottom: "30px" }}
@@ -207,7 +226,54 @@ export default function ConsultantDashboard() {
         </Grid>
 
         <Grid size={{ xs: 12, md: 3 }}>
-          <SidebarInfo />
+          <SidebarInfo
+            sections={[
+              {
+                title: "Skills & Certifications",
+                items: [
+                  {
+                    type: "text",
+                    label: "Primary SAP modules",
+                    value: "SAP FI, SAP S/4HANA",
+                    subValue: "4 year experience",
+                  },
+                  {
+                    type: "text",
+                    label: "Technical skills",
+                    value: "ABAP, Fiori",
+                    subValue: "4 year experience",
+                  },
+                ],
+              },
+              {
+                title: "Engagement",
+                items: [
+                  {
+                    type: "text",
+                    label: "Current Employer",
+                    value: "Global Rollout",
+                    subValue: "14 months – lead consultant\nSAP SD, S/4HANA",
+                  },
+                  {
+                    type: "text",
+                    label: "Upcoming Employer",
+                    value: "Rental Co.",
+                    subValue: "6 months – SD Team lead\nSAP SD, Fiori",
+                  },
+                ],
+              },
+              {
+                title: "System Alert",
+                items: [
+                  {
+                    type: "text",
+                    label: "Interview invite from RetailCo – 02-Aug",
+                  },
+                  { type: "text", label: "Profile approved by Admin" },
+                ],
+              },
+            ]}
+          />
         </Grid>
       </Grid>
     </Box>

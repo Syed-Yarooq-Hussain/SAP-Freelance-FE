@@ -1,16 +1,39 @@
-export const statusColors = {
-  "Under review": "#f9a825",
-  Confirmed: "#1976d2",
-  "In progress": "#2e7d32",
-  Paid: "#2e7d32",
-  Pending: "#f57c00",
-  Overdue: "#d32f2f",
-  Request: "#0288d1",
-  Reschedule: "#fbc02d",
-  Rejected: "#e53935",
-  Todo: "#ff9800",
-  Delayed: "#c62828",
-  Signed: "#388e3c",
+export const colors = {
+  BLUE: "#4680FF",
+  GREEN: "#00997B",
+  YELLOW: "#f9a825",
+  ORANGE: "#FFB64E",
+  RED: "#FF5471",
+  LIGHT_BLUE: "#0288d1",
+  GOLD: "#fbc02d",
+  DARK_RED: "#c62828",
+  DARK_GREEN: "#388e3c",
+  GREY: "#9e9e9e",
+  PURPLE: "#8e24aa",
 };
 
-export default statusColors;
+export const statusColors: Record<string, keyof typeof colors> = {
+  "Under review": "YELLOW",
+  Confirmed: "BLUE",
+  "In progress": "GREEN",
+  Paid: "GREEN",
+  Pending: "ORANGE",
+  Overdue: "RED",
+  Request: "LIGHT_BLUE",
+  Reschedule: "GOLD",
+  Rejected: "RED",
+  "To do": "ORANGE",
+  Delayed: "DARK_RED",
+  Signed: "DARK_GREEN",
+  "Project started": "PURPLE",
+  Negotiating: "LIGHT_BLUE",
+  Interviewing: "YELLOW",
+};
+
+export const buttonColors: Record<string, keyof typeof colors> = {
+  Download: "BLUE",
+  "Upload receipt": "GREEN",
+  "Make payment": "ORANGE",
+};
+
+export default colors;
