@@ -1,6 +1,7 @@
 "use client";
 
 import { APP_ROUTES } from "@/utils/app_routes";
+import colors from "@/utils/styles/colors";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import DescriptionIcon from "@mui/icons-material/Description";
@@ -59,7 +60,7 @@ const DrawerList: FC<DrawerListProps> = ({ items = defaultItems, open }) => {
                 py: 1.5,
                 px: 2,
                 alignItems: "center",
-                bgcolor: isActive ? "grey.200" : "transparent",
+                bgcolor: isActive ? "#F2F3F7" : "transparent",
                 "&:hover": {
                   bgcolor: isActive ? "grey.300" : "grey.100",
                 },
@@ -67,7 +68,7 @@ const DrawerList: FC<DrawerListProps> = ({ items = defaultItems, open }) => {
             >
               <ListItemIcon
                 sx={{
-                  color: isActive ? "primary.main" : "grey.700",
+                  color: isActive ? colors.BLUE : "grey.700",
                   minWidth: 32,
                 }}
               >

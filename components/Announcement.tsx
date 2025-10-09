@@ -37,8 +37,7 @@ export default function Announcement({
       sx={{
         display: "flex",
         alignItems: "center",
-        bgcolor: "#F3F6FA",
-        borderBottom: "1px solid #E0E0E0",
+        bgcolor: "#F2F3F7",
         borderRadius: 2,
         px: 2,
         py: 1,
