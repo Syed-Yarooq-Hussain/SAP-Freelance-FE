@@ -5,6 +5,13 @@ import { MODULE_OPTIONS } from "@/data/moduleOptions";
 export function getConsultantFormFields(): IFieldConfig[] {
   return [
     {
+      name: "cv",
+      label: "Upload CV",
+      type: "file",
+      rules: { required: "CV is required" },
+      inputProps: { accept: ".pdf,.doc,.docx" },
+    },
+    {
       name: "fullName",
       label: "Full Name",
       placeholder: "Enter full name",
@@ -84,13 +91,6 @@ export function getConsultantFormFields(): IFieldConfig[] {
       placeholder: "Enter rate",
       type: "number",
       rules: { required: "Rate is required", min: 1 },
-    },
-    {
-      name: "cv",
-      label: "Upload CV",
-      type: "file",
-      rules: { required: "CV is required" },
-      inputProps: { accept: ".pdf,.doc,.docx" },
     },
   ];
 }

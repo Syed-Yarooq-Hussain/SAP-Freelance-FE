@@ -1,32 +1,50 @@
 "use client";
 
 import { colors } from "@/utils/styles/colors";
-import { Box, Typography } from "@mui/material";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { Box, IconButton, Stack, Typography } from "@mui/material";
+import { DataGrid, GridColDef, GridRowParams, GridValidRowModel, MuiEvent } from "@mui/x-data-grid";
 import * as React from "react";
 
-export type DataTableProps<T> = {
+export type DataTableProps<T extends GridValidRowModel> = {
   title: React.ReactNode;
   columns: GridColDef[];
   rows: T[];
   pageSize?: number;
   showViewMore?: boolean;
   onViewMoreClick?: () => void;
+  onRowClick?: (params: GridRowParams<T>, event: MuiEvent<React.MouseEvent>) => void;
+  showBackButton?: boolean;
+  onBackClick?: () => void;
 };
 
-export default function DataTable<T>({
+export default function DataTable<T extends GridValidRowModel>({
   title,
   columns,
   rows,
   pageSize = 10,
   showViewMore = false,
   onViewMoreClick,
+  onRowClick,
+  showBackButton = false,
+  onBackClick,
 }: DataTableProps<T>) {
   return (
     <>
-      <Typography variant="h6" fontWeight="bold" mb={1}>
-        {title}
-      </Typography>
+      <Stack direction="row" alignItems="center" spacing={1} mb={1}>
+        {showBackButton && (
+          <IconButton
+            onClick={onBackClick}
+            size="small"
+            sx={{ color: "text.primary" }}
+          >
+            <ArrowBackIcon fontSize="small" />
+          </IconButton>
+        )}
+        <Typography variant="h6" fontWeight="bold">
+          {title}
+        </Typography>
+      </Stack>
 
       <Box sx={{ width: "100%" }}>
         <DataGrid
@@ -35,6 +53,7 @@ export default function DataTable<T>({
           initialState={{ pagination: { paginationModel: { pageSize } } }}
           pageSizeOptions={[pageSize]}
           rowSelection={false}
+          onRowClick={onRowClick}
           sx={{
             "& .MuiDataGrid-columnHeaders": {
               backgroundColor: "#f8fbff",
@@ -48,6 +67,7 @@ export default function DataTable<T>({
               fontSize: "0.875rem",
               display: "flex",
               alignItems: "center",
+              cursor: "pointer",
             },
             "& .MuiDataGrid-row": {
               backgroundColor: "#fff",

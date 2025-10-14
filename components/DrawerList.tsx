@@ -48,8 +48,11 @@ const DrawerList: FC<DrawerListProps> = ({ items = defaultItems, open }) => {
     <List>
       {items.map((item, index) => {
         const isActive =
-          pathname.startsWith(item.link) &&
-          !pathname.startsWith(item.link + "/");
+          (pathname === item.link || pathname.startsWith(`${item.link}/`)) &&
+          !(
+            item.link === APP_ROUTES.DASHBOARD &&
+            pathname !== APP_ROUTES.DASHBOARD
+          );
 
         return (
           <ListItem key={index} disablePadding>
@@ -77,10 +80,14 @@ const DrawerList: FC<DrawerListProps> = ({ items = defaultItems, open }) => {
               {open && (
                 <ListItemText
                   primary={item.label}
-                  primaryTypographyProps={{
-                    fontWeight: isActive ? "bold" : 500,
-                    fontSize: 14,
-                    color: isActive ? "primary.main" : "inherit",
+                  slotProps={{
+                    primary: {
+                      sx: {
+                        fontWeight: isActive ? "bold" : 500,
+                        fontSize: 14,
+                        color: isActive ? "primary.main" : "inherit",
+                      },
+                    },
                   }}
                 />
               )}

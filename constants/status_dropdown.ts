@@ -9,4 +9,6 @@ export enum STATUS {
   PAID = "Paid",
   OVERDUE = "Overdue",
   SIGNED = "Signed",
+  TODO = "To do",
+  DELAYED = "Delayed",
 }

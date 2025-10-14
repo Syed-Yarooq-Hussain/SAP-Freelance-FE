@@ -5,6 +5,8 @@ import { StatCardProps } from "@/components/StatCard";
 import DashboardStats from "@/components/StatsCardList";
 import { Box } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
+import { useState } from "react";
+import DynamicPopup from "../Popup";
 import StatusDropdown from "../StatusDropdown";
 
 const interviewStats: StatCardProps[] = [
@@ -31,20 +33,6 @@ const interviewStats: StatCardProps[] = [
     subtitle: 3,
     color: "linear-gradient(135deg, #FF5471, #FF99AB)",
     icon: "HighlightOffIcon",
-  },
-];
-
-const taskColumns: GridColDef[] = [
-  { field: "client", headerName: "Client", flex: 1 },
-  { field: "modules", headerName: "Modules", flex: 2 },
-  { field: "requestDate", headerName: "Request date", flex: 1 },
-  { field: "datetime", headerName: "Date – Time", flex: 2 },
-  { field: "duration", headerName: "Duration", flex: 1 },
-  {
-    field: "status",
-    headerName: "Status",
-    flex: 1,
-    renderCell: (params) => <StatusDropdown value={params.value} />,
   },
 ];
 
@@ -151,6 +139,29 @@ const taskRows = [
 ];
 
 export default function ConsultantInterview() {
+  const [rescheduleOpen, setRescheduleOpen] = useState(false);
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
+
+  const taskColumns: GridColDef[] = [
+    { field: "client", headerName: "Client", flex: 1 },
+    { field: "modules", headerName: "Modules", flex: 2 },
+    { field: "requestDate", headerName: "Request date", flex: 1 },
+    { field: "datetime", headerName: "Date – Time", flex: 2 },
+    { field: "duration", headerName: "Duration", flex: 1 },
+    {
+      field: "status",
+      headerName: "Status",
+      flex: 1,
+      renderCell: (params) => (
+        <StatusDropdown
+          value={params.value}
+          onRescheduleClick={() => setRescheduleOpen(true)}
+        />
+      ),
+    },
+  ];
+
   return (
     <Box>
       <DashboardStats
@@ -173,6 +184,34 @@ export default function ConsultantInterview() {
           pageSize={10}
         />
       </Box>
+
+      <DynamicPopup
+        open={rescheduleOpen}
+        onClose={() => setRescheduleOpen(false)}
+        title="Reschedule"
+        description="Suggest a date and time for interview."
+        fields={[
+          {
+            id: "date",
+            label: "Date",
+            type: "date",
+            value: date,
+            onChange: setDate,
+          },
+          {
+            id: "time",
+            label: "Time",
+            type: "time",
+            value: time,
+            onChange: setTime,
+          },
+        ]}
+        buttonText="Request"
+        buttonColor="BLUE"
+        onSubmit={() => {
+          setRescheduleOpen(false);
+        }}
+      />
     </Box>
   );
 }

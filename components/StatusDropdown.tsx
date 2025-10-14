@@ -9,13 +9,31 @@ import React, { useState } from "react";
 interface StatusDropdownProps {
   value: STATUS;
   onChange?: (value: STATUS) => void;
+  onRescheduleClick?: () => void;
+  onRejectClick?: () => void;
 }
 
-const StatusDropdown: React.FC<StatusDropdownProps> = ({ value, onChange }) => {
+const StatusDropdown: React.FC<StatusDropdownProps> = ({
+  value,
+  onChange,
+  onRescheduleClick,
+  onRejectClick,
+}) => {
   const [selectedStatus, setSelectedStatus] = useState<STATUS>(value);
 
   const handleChange = (event: SelectChangeEvent) => {
     const newStatus = event.target.value as STATUS;
+
+    if (
+      newStatus === STATUS.RESCHEDULE &&
+      selectedStatus !== STATUS.RESCHEDULE
+    ) {
+      onRescheduleClick?.();
+    }
+    if (newStatus === STATUS.REJECTED && selectedStatus !== STATUS.REJECTED) {
+      onRejectClick?.();
+    }
+
     setSelectedStatus(newStatus);
     onChange?.(newStatus);
   };

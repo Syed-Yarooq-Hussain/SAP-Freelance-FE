@@ -4,9 +4,11 @@ import DataTable from "@/components/DataTable";
 import { StatCardProps } from "@/components/StatCard";
 import DashboardStats from "@/components/StatsCardList";
 import StatusChip from "@/components/StatusChip";
+import { APP_ROUTES } from "@/utils/app_routes";
 import { statusColors } from "@/utils/styles/colors";
 import { Box } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
+import { useRouter } from "next/navigation";
 
 const projectStats: StatCardProps[] = [
   {
@@ -99,6 +101,8 @@ const taskRows = [
 ];
 
 export default function ConsultantProject() {
+  const router = useRouter();
+
   return (
     <Box>
       <DashboardStats
@@ -115,10 +119,13 @@ export default function ConsultantProject() {
         }}
       >
         <DataTable
-          title=""
+          title="Project List"
           columns={taskColumns}
           rows={taskRows}
           pageSize={10}
+          onRowClick={(params) =>
+            router.push(`${APP_ROUTES.PROJECTS}/${params.id}`)
+          }
         />
       </Box>
     </Box>
