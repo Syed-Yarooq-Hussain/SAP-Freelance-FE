@@ -13,7 +13,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 
 interface FieldConfig {
   id: string;
@@ -21,7 +21,7 @@ interface FieldConfig {
   type?: string;
   value?: string;
   placeholder?: string;
-  onChange?: (value: string) => void;
+  onChange?: (value: string | File) => void;
   helperText?: string;
 }
 
@@ -29,7 +29,10 @@ interface DynamicPopupProps {
   open: boolean;
   onClose: () => void;
   title: string;
-  fields: FieldConfig[];
+  fields?: FieldConfig[];
+  fileUpload?: boolean;
+  fileValue?: File | null;
+  onFileChange?: (file: File) => void;
   buttonText: string;
   buttonColor?: keyof typeof colors;
   onSubmit: () => void;
@@ -42,7 +45,10 @@ const DynamicPopup: React.FC<DynamicPopupProps> = ({
   open,
   onClose,
   title,
-  fields,
+  fields = [],
+  fileUpload = false,
+  fileValue = null,
+  onFileChange,
   buttonText,
   buttonColor = "BLUE",
   onSubmit,
@@ -50,6 +56,14 @@ const DynamicPopup: React.FC<DynamicPopupProps> = ({
   noteText,
   disableSubmit = false,
 }) => {
+  const [selectedFile, setSelectedFile] = useState<File | null>(fileValue);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setSelectedFile(file);
+    if (file && onFileChange) onFileChange(file);
+  };
+
   return (
     <Dialog
       open={open}
@@ -57,9 +71,7 @@ const DynamicPopup: React.FC<DynamicPopupProps> = ({
       fullWidth
       maxWidth="xs"
       slotProps={{
-        paper: {
-          sx: { borderRadius: 2, p: 1 },
-        },
+        paper: { sx: { borderRadius: 2, p: 1 } },
       }}
     >
       <DialogTitle
@@ -90,6 +102,37 @@ const DynamicPopup: React.FC<DynamicPopupProps> = ({
       )}
 
       <DialogContent sx={{ pt: 1, pb: 0 }}>
+        {fileUpload && (
+          <Box
+            sx={{
+              border: "1px dashed #4680FF",
+              borderRadius: 2,
+              py: 4,
+              textAlign: "center",
+              cursor: "pointer",
+              bgcolor: "#f5faff",
+              mb: 2,
+              "&:hover": { bgcolor: "#e6f0ff" },
+            }}
+          >
+            <input
+              type="file"
+              style={{ display: "none" }}
+              id="dynamic-popup-file"
+              onChange={handleFileChange}
+              accept=".pdf,.doc,.docx"
+            />
+            <label htmlFor="dynamic-popup-file">
+              <Typography variant="subtitle1" fontWeight="bold" color="#4680FF">
+                {selectedFile ? selectedFile.name : "Select file"}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Click to choose a file (.pdf, .doc, .docx)
+              </Typography>
+            </label>
+          </Box>
+        )}
+
         {fields.map((field) => (
           <Box key={field.id} mb={2}>
             <TextField
@@ -141,12 +184,7 @@ const DynamicPopup: React.FC<DynamicPopupProps> = ({
           colorKey={buttonColor}
           onClick={onSubmit}
           disabled={disableSubmit}
-          sx={{
-            width: "auto",
-            px: 3,
-            py: 0.8,
-            fontWeight: 500,
-          }}
+          sx={{ width: "auto", px: 3, py: 0.8, fontWeight: 500 }}
         />
       </DialogActions>
     </Dialog>

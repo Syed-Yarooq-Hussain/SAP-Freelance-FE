@@ -1,20 +1,33 @@
 "use client";
 
+import AppButton from "@/components/Button";
 import DataTable from "@/components/DataTable";
-import StatusDropdown from "@/components/StatusDropdown";
-import { Box } from "@mui/material";
+import DynamicPopup from "@/components/Popup";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import { Box, Stack, Typography } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
+import { useState } from "react";
 
 const taskColumns: GridColDef[] = [
   { field: "name", headerName: "Name", flex: 2 },
   { field: "deadline", headerName: "Deadline", flex: 2 },
   { field: "expirationDate", headerName: "Expiration Date", flex: 2 },
-  { field: "client", headerName: "Client Name", flex: 2 },
+  { field: "projects", headerName: "Projects", flex: 1 },
+  { field: "used", headerName: "Used", flex: 1 },
   {
-    field: "status",
-    headerName: "Status",
+    field: "actions",
+    headerName: "Actions",
     flex: 1,
-    renderCell: (params) => <StatusDropdown value={params.value} />,
+    sortable: false,
+    filterable: false,
+    disableColumnMenu: true,
+    renderCell: () => (
+      <Stack direction="row" spacing={1}>
+        <EditIcon color="primary" fontSize="small" />
+        <DeleteIcon color="error" fontSize="small" />
+      </Stack>
+    ),
   },
 ];
 
@@ -22,126 +35,47 @@ const taskRows = [
   {
     id: 1,
     name: "NDA",
-    deadline: "15.09.2025",
+    deadline: "15.09.2028",
     expirationDate: "15.09.2028",
-    client: "ManuCorp",
-    status: "Signed",
+    projects: 5,
+    used: 50,
   },
   {
     id: 2,
     name: "Service",
-    deadline: "15.09.2025",
+    deadline: "15.09.2028",
     expirationDate: "15.09.2028",
-    client: "ManuCorp",
-    status: "Pending",
+    projects: 5,
+    used: 50,
   },
   {
     id: 3,
     name: "Property ownership",
-    deadline: "15.09.2025",
+    deadline: "15.09.2028",
     expirationDate: "15.09.2028",
-    client: "ManuCorp",
-    status: "Rejected",
+    projects: 5,
+    used: 50,
   },
   {
     id: 4,
-    name: "NDA",
-    deadline: "15.09.2025",
+    name: "Project contract",
+    deadline: "15.09.2028",
     expirationDate: "15.09.2028",
-    client: "RetailCo",
-    status: "Signed",
-  },
-  {
-    id: 5,
-    name: "Service",
-    deadline: "15.09.2025",
-    expirationDate: "15.09.2028",
-    client: "RetailCo",
-    status: "Pending",
-  },
-  {
-    id: 6,
-    name: "Property ownership",
-    deadline: "15.09.2025",
-    expirationDate: "15.09.2028",
-    client: "RetailCo",
-    status: "Rejected",
-  },
-  {
-    id: 7,
-    name: "NDA",
-    deadline: "15.09.2025",
-    expirationDate: "15.09.2028",
-    client: "LogicCo",
-    status: "Signed",
-  },
-  {
-    id: 8,
-    name: "Service",
-    deadline: "15.09.2025",
-    expirationDate: "15.09.2028",
-    client: "LogicCo",
-    status: "Pending",
-  },
-  {
-    id: 9,
-    name: "Property ownership",
-    deadline: "15.09.2025",
-    expirationDate: "15.09.2028",
-    client: "LogicCo",
-    status: "Rejected",
-  },
-  {
-    id: 10,
-    name: "NDA",
-    deadline: "15.09.2025",
-    expirationDate: "15.09.2028",
-    client: "TechFirm",
-    status: "Signed",
-  },
-  {
-    id: 11,
-    name: "Service",
-    deadline: "15.09.2025",
-    expirationDate: "15.09.2028",
-    client: "TechFirm",
-    status: "Pending",
-  },
-  {
-    id: 12,
-    name: "Property ownership",
-    deadline: "15.09.2025",
-    expirationDate: "15.09.2028",
-    client: "TechFirm",
-    status: "Rejected",
-  },
-  {
-    id: 13,
-    name: "NDA",
-    deadline: "15.09.2025",
-    expirationDate: "15.09.2028",
-    client: "BankCorp",
-    status: "Signed",
-  },
-  {
-    id: 14,
-    name: "Service",
-    deadline: "15.09.2025",
-    expirationDate: "15.09.2028",
-    client: "BankCorp",
-    status: "Pending",
-  },
-  {
-    id: 15,
-    name: "Property ownership",
-    deadline: "15.09.2025",
-    expirationDate: "15.09.2028",
-    client: "BankCorp",
-    status: "Rejected",
+    projects: 5,
+    used: 50,
   },
 ];
 
 export default function ClientDocuments() {
+  const [openPopup, setOpenPopup] = useState(false);
+
+  const handleUploadClick = () => setOpenPopup(true);
+  const handleClosePopup = () => setOpenPopup(false);
+  const handleSubmitUpload = () => {
+    console.log("File uploaded!");
+    setOpenPopup(false);
+  };
+
   return (
     <Box
       sx={{
@@ -151,11 +85,38 @@ export default function ClientDocuments() {
         bgcolor: "background.paper",
       }}
     >
-      <DataTable
-        title="Signed Contract"
-        columns={taskColumns}
-        rows={taskRows}
-        pageSize={10}
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 2,
+        }}
+      >
+        <Typography variant="h6" fontWeight="bold">
+          Contract
+        </Typography>
+
+        <Stack direction="row" spacing={2}>
+          <AppButton
+            label="Upload"
+            colorKey="GREEN"
+            onClick={handleUploadClick}
+          />
+          <AppButton label="Create" colorKey="BLUE" />
+        </Stack>
+      </Box>
+
+      <DataTable title="" columns={taskColumns} rows={taskRows} pageSize={10} />
+
+      <DynamicPopup
+        open={openPopup}
+        onClose={handleClosePopup}
+        title="Upload Document"
+        fileUpload={true}
+        buttonText="Save"
+        buttonColor="BLUE"
+        onSubmit={handleSubmitUpload}
       />
     </Box>
   );

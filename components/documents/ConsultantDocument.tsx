@@ -187,7 +187,9 @@ export default function ConsultantDocuments() {
             label: "",
             type: "text",
             value: reason,
-            onChange: setReason,
+            onChange: (val: string | File) => {
+              if (typeof val === "string") setReason(val);
+            },
             placeholder: "Describe",
           },
         ]}

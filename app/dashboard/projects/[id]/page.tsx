@@ -1,4 +1,5 @@
 import { auth } from "@/auth";
+import ClientProjectDetails from "@/components/projects/ClientProjectDetails";
 import ConsultantProjectDetails from "@/components/projects/ConsultantProjectDetails";
 import { Roles } from "@/constants/roles";
 import { IUser } from "@/types/common-auth";
@@ -22,8 +23,8 @@ export default async function ProjectDetailsPage() {
     //   return <AdminProject />;
     case Roles.CONSULTANT:
       return <ConsultantProjectDetails />;
-    // case Roles.CLIENT:
-    //   return <ClientProject />;
+    case Roles.CLIENT:
+      return <ClientProjectDetails />;
     default:
       return <div>Unauthorized access</div>;
   }

@@ -196,21 +196,23 @@ export default function ConsultantInterview() {
             label: "Date",
             type: "date",
             value: date,
-            onChange: setDate,
+            onChange: (val: string | File) => {
+              if (typeof val === "string") setDate(val);
+            },
           },
           {
             id: "time",
             label: "Time",
             type: "time",
             value: time,
-            onChange: setTime,
+            onChange: (val: string | File) => {
+              if (typeof val === "string") setTime(val);
+            },
           },
         ]}
         buttonText="Request"
         buttonColor="BLUE"
-        onSubmit={() => {
-          setRescheduleOpen(false);
-        }}
+        onSubmit={() => setRescheduleOpen(false)}
       />
     </Box>
   );
