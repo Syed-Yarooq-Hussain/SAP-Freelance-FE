@@ -1,12 +1,11 @@
 import { auth } from "@/auth";
-import AdminInterview from "@/components/interviews/AdminInterview";
-import ClientInterview from "@/components/interviews/ClientInterview";
-import ConsultantInterview from "@/components/interviews/ConsultantInterview";
+import ClientProjectDetails from "@/components/projects/ClientProjectDetails";
+import ConsultantProjectDetails from "@/components/projects/ConsultantProjectDetails";
 import { Roles } from "@/constants/roles";
 import { IUser } from "@/types/common-auth";
 import { redirect } from "next/navigation";
 
-export default async function InterviewPage() {
+export default async function ProjectDetailsPage() {
   const session = await auth();
 
   if (!session || !session.user) {
@@ -20,12 +19,12 @@ export default async function InterviewPage() {
   console.log("Role:", user.role);
 
   switch (role) {
-    case Roles.ADMIN:
-      return <AdminInterview />;
+    // case Roles.ADMIN:
+    //   return <AdminProject />;
     case Roles.CONSULTANT:
-      return <ConsultantInterview />;
+      return <ConsultantProjectDetails />;
     case Roles.CLIENT:
-      return <ClientInterview />;
+      return <ClientProjectDetails />;
     default:
       return <div>Unauthorized access</div>;
   }

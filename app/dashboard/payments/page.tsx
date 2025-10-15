@@ -1,87 +1,32 @@
-"use client";
+import { auth } from "@/auth";
+import AdminPayment from "@/components/payments/AdminPayment";
+import ClientPayment from "@/components/payments/ClientPayment";
+import ConsultantPayment from "@/components/payments/ConsultantPayment";
+import { Roles } from "@/constants/roles";
+import { IUser } from "@/types/common-auth";
+import { redirect } from "next/navigation";
 
-import AppButton from "@/components/Button";
-import DataTable from "@/components/DataTable";
-import StatusChip from "@/components/StatusChip";
-import statusColors from "@/utils/styles/colors";
-import { Box } from "@mui/material";
-import { GridColDef } from "@mui/x-data-grid";
+export default async function InterviewPage() {
+  const session = await auth();
 
-const taskColumns: GridColDef[] = [
-  { field: "project", headerName: "Project", flex: 2 },
-  {
-    field: "duedates",
-    headerName: "Due Dates",
-    flex: 2,
-    renderCell: (params) => <strong>{params.value}</strong>,
-  },
-  { field: "amount", headerName: "Amount", flex: 2 },
-  {
-    field: "status",
-    headerName: "Status",
-    flex: 2,
-    renderCell: (params) => {
-      const color = statusColors[params.value as keyof typeof statusColors];
-      return <StatusChip label={params.value} color={color} />;
-    },
-  },
-  {
-    field: "invoice",
-    headerName: "Invoice",
-    flex: 2,
-    renderCell: (params) => {
-      return params.value === "Download" ? (
-        <AppButton label="Download" color="primary" />
-      ) : (
-        "-"
-      );
-    },
-  },
-];
+  if (!session || !session.user) {
+    redirect("/auth/login");
+  }
 
-const taskRows = [
-  {
-    id: 1,
-    project: "Retail Implementation",
-    duedates: "10.09.2025",
-    amount: "2,500",
-    status: "Paid",
-    invoice: "Download",
-  },
-  {
-    id: 2,
-    project: "Retail Implementation",
-    duedates: "10.10.2025",
-    amount: "3,500",
-    status: "Pending",
-    invoice: "Download",
-  },
-  {
-    id: 3,
-    project: "Retail Implementation",
-    duedates: "10.11.2025",
-    amount: "3,500",
-    status: "Overdue",
-    invoice: "Download",
-  },
-];
+  const user = session.user as IUser;
+  console.log("Session:", session);
 
-export default function ConsultantPayments() {
-  return (
-    <Box
-      sx={{
-        p: 2,
-        borderRadius: 2,
-        boxShadow: 2,
-        bgcolor: "background.paper",
-      }}
-    >
-      <DataTable
-        title="Payment"
-        columns={taskColumns}
-        rows={taskRows}
-        pageSize={10}
-      />
-    </Box>
-  );
+  const role = user.role;
+  console.log("Role:", user.role);
+
+  switch (role) {
+    case Roles.ADMIN:
+      return <AdminPayment />;
+    case Roles.CONSULTANT:
+      return <ConsultantPayment />;
+    case Roles.CLIENT:
+      return <ClientPayment />;
+    default:
+      return <div>Unauthorized access</div>;
+  }
 }

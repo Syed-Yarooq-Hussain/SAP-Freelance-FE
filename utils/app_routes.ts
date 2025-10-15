@@ -9,4 +9,5 @@ export const APP_ROUTES = {
   DOCUMENTS: "/dashboard/documents",
   PAYMENTS: "/dashboard/payments",
   PROFILE: "/dashboard/profile",
+  CONSULTANTS: "/dashboard/consultants",
 };

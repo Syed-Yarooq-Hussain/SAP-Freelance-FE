@@ -1,40 +1,43 @@
 "use client";
 
-import { Box, IconButton, Typography } from "@mui/material";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import { useState, useEffect } from "react";
+import { Box, IconButton, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
 
-const announcements = [
-  "System maintenance scheduled for this weekend. Expect brief downtime.",
-  "Check out our new blog post on maximizing your freelance opportunities!",
-  "New feature rollout: Enhanced invoice tracking module launching next week!",
-  "Reminder: Update your profile to get more relevant project matches.",
-];
+interface AnnouncementProps {
+  items: string[];
+  autoScrollInterval?: number;
+}
 
-export default function Announcement() {
+export default function Announcement({
+  items,
+  autoScrollInterval = 8000,
+}: AnnouncementProps) {
   const [index, setIndex] = useState(0);
 
   const handlePrev = () => {
-    setIndex((prev) => (prev === 0 ? announcements.length - 1 : prev - 1));
+    setIndex((prev) => (prev === 0 ? items.length - 1 : prev - 1));
   };
 
   const handleNext = () => {
-    setIndex((prev) => (prev === announcements.length - 1 ? 0 : prev + 1));
+    setIndex((prev) => (prev === items.length - 1 ? 0 : prev + 1));
   };
 
   useEffect(() => {
-    const interval = setInterval(handleNext, 8000);
+    const interval = setInterval(() => {
+      setIndex((prev) => (prev === items.length - 1 ? 0 : prev + 1));
+    }, autoScrollInterval);
+
     return () => clearInterval(interval);
-  }, []);
+  }, [items.length, autoScrollInterval]);
 
   return (
     <Box
       sx={{
         display: "flex",
         alignItems: "center",
-        bgcolor: "#F3F6FA",
-        borderBottom: "1px solid #E0E0E0",
+        bgcolor: "#F2F3F7",
         borderRadius: 2,
         px: 2,
         py: 1,
@@ -73,7 +76,7 @@ export default function Announcement() {
           px: 1,
         }}
       >
-        {announcements[index]}
+        {items[index]}
       </Typography>
 
       <IconButton

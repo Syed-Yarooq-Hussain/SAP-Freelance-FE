@@ -1,21 +1,19 @@
 import AppButton from "@/components/Button";
 import { IOption } from "@/types/options";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import {
   Alert,
   BaseTextFieldProps,
   Box,
   ButtonProps,
   FormControl,
-  IconButton,
-  InputAdornment,
+  MenuItem,
   Stack,
   StackProps,
   TextField,
+  Typography,
 } from "@mui/material";
 import { ResponsiveStyleValue } from "@mui/system";
-import { FC, useState } from "react";
+import { FC } from "react";
 import {
   Controller,
   FieldValues,
@@ -76,9 +74,6 @@ export const CreateForm: FC<ICreateFormProps> = ({
   cancelButton,
   actionsContainerProps,
 }) => {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
   const {
     control,
     handleSubmit,
@@ -87,14 +82,6 @@ export const CreateForm: FC<ICreateFormProps> = ({
 
   const submitHandler = (data: FieldValues) => {
     onSuccess(data);
-  };
-
-  const handleClickShowPassword = () => setShowPassword((prev) => !prev);
-  const handleClickShowConfirmPassword = () =>
-    setShowConfirmPassword((prev) => !prev);
-
-  const handleMouseDownPassword = (event: React.MouseEvent) => {
-    event.preventDefault();
   };
 
   return (
@@ -129,54 +116,37 @@ export const CreateForm: FC<ICreateFormProps> = ({
                     fullWidth
                     size="small"
                     variant="outlined"
-                    type={
-                      element.name === "password"
-                        ? showPassword
-                          ? "text"
-                          : "password"
-                        : element.name === "confirmPassword"
-                        ? showConfirmPassword
-                          ? "text"
-                          : "password"
-                        : "text"
-                    } // Ensure the toggle is only for password fields
+                    type={element.type || "text"}
                     error={!!errors[element.name]}
                     helperText={errors[element.name]?.message?.toString()}
                     disabled={loading}
                     placeholder={element.placeholder}
-                    label={element.label}
                     slotProps={{
-                      input: {
-                        endAdornment:
-                          element.name === "password" ||
-                          element.name === "confirmPassword" ? ( // Apply the visibility toggle only to Password and Confirm Password
-                            <InputAdornment position="end">
-                              <IconButton
-                                onClick={
-                                  element.name === "password"
-                                    ? handleClickShowPassword
-                                    : handleClickShowConfirmPassword
-                                }
-                                onMouseDown={handleMouseDownPassword}
-                                edge="end"
-                              >
-                                {element.name === "password" ? (
-                                  showPassword ? (
-                                    <VisibilityOff />
-                                  ) : (
-                                    <Visibility />
-                                  )
-                                ) : showConfirmPassword ? (
-                                  <VisibilityOff />
-                                ) : (
-                                  <Visibility />
-                                )}
-                              </IconButton>
-                            </InputAdornment>
-                          ) : undefined,
+                      inputLabel: { shrink: true },
+                      select: {
+                        displayEmpty: true,
+                        renderValue: (value) => {
+                          if (!value) {
+                            return (
+                              <Typography color="gray">
+                                Select {element.label}
+                              </Typography>
+                            );
+                          }
+                          return <>{value}</>;
+                        },
                       },
                     }}
-                  />
+                    label={element.label}
+                    {...element}
+                  >
+                    {element.options?.length !== 0 &&
+                      element.options?.map((opt) => (
+                        <MenuItem key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </MenuItem>
+                      ))}
+                  </TextField>
                 )}
               />
             </FormControl>

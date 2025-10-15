@@ -1,20 +1,48 @@
 "use client";
 
-import { Box, Card, CardContent, Divider, Typography } from "@mui/material";
-import { FC } from "react";
+import { colors } from "@/utils/styles/colors";
+import {
+  Avatar,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Divider,
+  Stack,
+  Typography,
+} from "@mui/material";
+import { FC, ReactNode } from "react";
 
-interface SectionProps {
-  title: string;
-  children: React.ReactNode;
+interface SidebarSectionItem {
+  label?: string;
+  value?: string;
+  subValue?: string;
+  type?: "text" | "avatars" | "button";
+  avatars?: string[];
+  buttonText?: string;
+  buttonColor?: keyof typeof colors;
+  onButtonClick?: () => void;
 }
 
-const Section: FC<SectionProps> = ({ title, children }) => (
+interface SidebarSection {
+  title: string;
+  items: SidebarSectionItem[];
+}
+
+interface SidebarInfoProps {
+  sections: SidebarSection[];
+}
+
+const Section: FC<{ title: string; children: ReactNode }> = ({
+  title,
+  children,
+}) => (
   <Card
     sx={{
       mb: 2,
       borderRadius: 2,
       boxShadow: 1,
-      bgcolor: "#ffffffff",
+      bgcolor: "#ffffff",
     }}
   >
     <CardContent>
@@ -32,83 +60,79 @@ const Section: FC<SectionProps> = ({ title, children }) => (
   </Card>
 );
 
-const SidebarInfo: FC = () => {
+const SidebarInfo: FC<SidebarInfoProps> = ({ sections }) => {
   return (
     <Box display="flex" flexDirection="column">
-      <Section title="Skills & Certifications">
-        <Box mb={2}>
-          <Typography variant="body2" color="text.secondary">
-            Primary SAP modules
-          </Typography>
-          <Typography variant="subtitle2" fontWeight="bold">
-            SAP FI, SAP S/4HANA
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            4 year experience
-          </Typography>
-        </Box>
+      {sections.map((section, idx) => (
+        <Section key={idx} title={section.title}>
+          {section.items.map((item, index) => {
+            const buttonBg =
+              item.buttonColor && colors[item.buttonColor]
+                ? colors[item.buttonColor]
+                : colors.GREY;
 
-        <Divider sx={{ my: 1 }} />
+            return (
+              <Box key={index} mb={item.type !== "avatars" ? 2 : 1}>
+                {item.type === "button" && (
+                  <Button
+                    variant="contained"
+                    fullWidth
+                    size="small"
+                    sx={{
+                      textTransform: "none",
+                      fontWeight: 500,
+                      borderRadius: 1,
+                      bgcolor: buttonBg,
+                      color: "#ffffff",
+                      "&:hover": {
+                        bgcolor: buttonBg,
+                        opacity: 0.9,
+                      },
+                    }}
+                    onClick={item.onButtonClick}
+                  >
+                    {item.buttonText}
+                  </Button>
+                )}
 
-        <Box>
-          <Typography variant="body2" color="text.secondary">
-            Technical skills
-          </Typography>
-          <Typography variant="subtitle2" fontWeight="bold">
-            ABAP, Fiori
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            4 year experience
-          </Typography>
-        </Box>
-      </Section>
+                {item.type === "avatars" && item.avatars && (
+                  <Stack direction="row" spacing={1}>
+                    {item.avatars.map((src, i) => (
+                      <Avatar
+                        key={i}
+                        src={src}
+                        sx={{ width: 28, height: 28 }}
+                      />
+                    ))}
+                  </Stack>
+                )}
 
-      <Section title="Engagement">
-        <Box mb={2}>
-          <Typography variant="body2" color="text.secondary">
-            Current Employer
-          </Typography>
-          <Typography variant="subtitle2" fontWeight="bold">
-            Global Rollout
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            14 months – lead consultant
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            SAP SD, S/4HANA
-          </Typography>
-        </Box>
+                {item.type === "text" && (
+                  <>
+                    {item.label && (
+                      <Typography variant="body2" color="text.secondary">
+                        {item.label}
+                      </Typography>
+                    )}
+                    {item.value && (
+                      <Typography variant="subtitle2" fontWeight="bold">
+                        {item.value}
+                      </Typography>
+                    )}
+                    {item.subValue && (
+                      <Typography variant="body2" color="text.secondary">
+                        {item.subValue}
+                      </Typography>
+                    )}
+                  </>
+                )}
 
-        <Divider sx={{ my: 1 }} />
-
-        <Box>
-          <Typography variant="body2" color="text.secondary">
-            Upcoming Employer
-          </Typography>
-          <Typography variant="subtitle2" fontWeight="bold">
-            Rental Co.
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            6 months – SD Team lead
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            SAP SD, Fiori
-          </Typography>
-        </Box>
-      </Section>
-
-      <Section title="System Alert">
-        <Box mb={1}>
-          <Typography variant="body2" color="text.primary">
-            Interview invite from RetailCo – 02-Aug
-          </Typography>
-        </Box>
-        <Box>
-          <Typography variant="body2" color="text.secondary">
-            Profile approved by Admin
-          </Typography>
-        </Box>
-      </Section>
+                {index < section.items.length - 1 && <Divider sx={{ my: 1 }} />}
+              </Box>
+            );
+          })}
+        </Section>
+      ))}
     </Box>
   );
 };

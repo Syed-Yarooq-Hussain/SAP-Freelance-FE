@@ -1,11 +1,14 @@
 "use client";
 
+import { Roles } from "@/constants/roles";
 import { APP_ROUTES } from "@/utils/app_routes";
+import colors from "@/utils/styles/colors";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import DescriptionIcon from "@mui/icons-material/Description";
 import EventNoteIcon from "@mui/icons-material/EventNote";
 import PaymentIcon from "@mui/icons-material/Payment";
+import PeopleIcon from "@mui/icons-material/People";
 import ProfileIcon from "@mui/icons-material/Person";
 import WorkIcon from "@mui/icons-material/Work";
 import {
@@ -15,9 +18,10 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FC } from "react";
+import { FC, useMemo } from "react";
 
 type DrawerItem = {
   icon: React.ReactNode;
@@ -26,29 +30,63 @@ type DrawerItem = {
 };
 
 type DrawerListProps = {
-  items?: DrawerItem[];
   open: boolean;
 };
 
-const defaultItems: DrawerItem[] = [
-  { icon: <DashboardIcon />, label: "Dashboard", link: APP_ROUTES.DASHBOARD },
-  { icon: <ProfileIcon />, label: "Profile", link: APP_ROUTES.PROFILE },
-  { icon: <CalendarMonthIcon />, label: "Calendar", link: APP_ROUTES.CALENDAR },
-  { icon: <EventNoteIcon />, label: "Interviews", link: APP_ROUTES.INTERVIEWS },
-  { icon: <WorkIcon />, label: "Projects", link: APP_ROUTES.PROJECTS },
-  { icon: <DescriptionIcon />, label: "Documents", link: APP_ROUTES.DOCUMENTS },
-  { icon: <PaymentIcon />, label: "Payments", link: APP_ROUTES.PAYMENTS },
-];
-
-const DrawerList: FC<DrawerListProps> = ({ items = defaultItems, open }) => {
+const DrawerList: FC<DrawerListProps> = ({ open }) => {
   const pathname = usePathname();
+  const { data: session } = useSession();
+  const role = session?.user?.role;
+  const items: DrawerItem[] = useMemo(() => {
+    const baseItems: DrawerItem[] = [
+      {
+        icon: <DashboardIcon />,
+        label: "Dashboard",
+        link: APP_ROUTES.DASHBOARD,
+      },
+      { icon: <ProfileIcon />, label: "Profile", link: APP_ROUTES.PROFILE },
+    ];
+
+    if (role === Roles.CLIENT) {
+      baseItems.push({
+        icon: <PeopleIcon />,
+        label: "Consultant",
+        link: APP_ROUTES.CONSULTANTS,
+      });
+    }
+
+    baseItems.push(
+      {
+        icon: <CalendarMonthIcon />,
+        label: "Calendar",
+        link: APP_ROUTES.CALENDAR,
+      },
+      {
+        icon: <EventNoteIcon />,
+        label: "Interviews",
+        link: APP_ROUTES.INTERVIEWS,
+      },
+      { icon: <WorkIcon />, label: "Projects", link: APP_ROUTES.PROJECTS },
+      {
+        icon: <DescriptionIcon />,
+        label: "Documents",
+        link: APP_ROUTES.DOCUMENTS,
+      },
+      { icon: <PaymentIcon />, label: "Payments", link: APP_ROUTES.PAYMENTS }
+    );
+
+    return baseItems;
+  }, [role]);
 
   return (
     <List>
       {items.map((item, index) => {
         const isActive =
-          pathname.startsWith(item.link) &&
-          !pathname.startsWith(item.link + "/");
+          (pathname === item.link || pathname.startsWith(`${item.link}/`)) &&
+          !(
+            item.link === APP_ROUTES.DASHBOARD &&
+            pathname !== APP_ROUTES.DASHBOARD
+          );
 
         return (
           <ListItem key={index} disablePadding>
@@ -59,7 +97,7 @@ const DrawerList: FC<DrawerListProps> = ({ items = defaultItems, open }) => {
                 py: 1.5,
                 px: 2,
                 alignItems: "center",
-                bgcolor: isActive ? "grey.200" : "transparent",
+                bgcolor: isActive ? "#F2F3F7" : "transparent",
                 "&:hover": {
                   bgcolor: isActive ? "grey.300" : "grey.100",
                 },
@@ -67,7 +105,7 @@ const DrawerList: FC<DrawerListProps> = ({ items = defaultItems, open }) => {
             >
               <ListItemIcon
                 sx={{
-                  color: isActive ? "primary.main" : "grey.700",
+                  color: isActive ? colors.BLUE : "grey.700",
                   minWidth: 32,
                 }}
               >
@@ -76,10 +114,14 @@ const DrawerList: FC<DrawerListProps> = ({ items = defaultItems, open }) => {
               {open && (
                 <ListItemText
                   primary={item.label}
-                  primaryTypographyProps={{
-                    fontWeight: isActive ? "bold" : 500,
-                    fontSize: 14,
-                    color: isActive ? "primary.main" : "inherit",
+                  slotProps={{
+                    primary: {
+                      sx: {
+                        fontWeight: isActive ? "bold" : 500,
+                        fontSize: 14,
+                        color: isActive ? "primary.main" : "inherit",
+                      },
+                    },
                   }}
                 />
               )}

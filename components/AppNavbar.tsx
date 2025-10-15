@@ -1,7 +1,7 @@
 "use client";
 
 import { useLogout } from "@/actions/auth/logout";
-import { DESKTOP_DRAWER_WIDTH } from "@/constants/drawer";
+import { DESKTOP_DRAWER_WIDTH } from "@/constants/dimensions";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
 import MenuIcon from "@mui/icons-material/Menu";

@@ -1,166 +1,29 @@
-"use client";
+import { auth } from "@/auth";
+import ClientDocument from "@/components/documents/ClientDocument";
+import ConsultantDocument from "@/components/documents/ConsultantDocument";
+import { Roles } from "@/constants/roles";
+import { IUser } from "@/types/common-auth";
+import { redirect } from "next/navigation";
 
-import DataTable from "@/components/DataTable";
-import StatusChip from "@/components/StatusChip";
-import statusColors from "@/utils/styles/colors";
-import { Box } from "@mui/material";
-import { GridColDef } from "@mui/x-data-grid";
+export default async function DocumentPage() {
+  const session = await auth();
 
-const taskColumns: GridColDef[] = [
-  { field: "name", headerName: "Name", flex: 2 },
-  { field: "deadline", headerName: "Deadline", flex: 2 },
-  { field: "expirationDate", headerName: "Expiration Date", flex: 2 },
-  { field: "client", headerName: "Client Name", flex: 2 },
-  {
-    field: "status",
-    headerName: "Status",
-    flex: 1,
-    renderCell: (params) => {
-      const color = statusColors[params.value as keyof typeof statusColors];
-      return <StatusChip label={params.value} color={color} />;
-    },
-  },
-];
+  if (!session || !session.user) {
+    redirect("/auth/login");
+  }
 
-const taskRows = [
-  {
-    id: 1,
-    name: "NDA",
-    deadline: "15.09.2025",
-    expirationDate: "15.09.2028",
-    client: "ManuCorp",
-    status: "Signed",
-  },
-  {
-    id: 2,
-    name: "Service",
-    deadline: "15.09.2025",
-    expirationDate: "15.09.2028",
-    client: "ManuCorp",
-    status: "Pending",
-  },
-  {
-    id: 3,
-    name: "Property ownership",
-    deadline: "15.09.2025",
-    expirationDate: "15.09.2028",
-    client: "ManuCorp",
-    status: "Rejected",
-  },
-  {
-    id: 4,
-    name: "NDA",
-    deadline: "15.09.2025",
-    expirationDate: "15.09.2028",
-    client: "RetailCo",
-    status: "Signed",
-  },
-  {
-    id: 5,
-    name: "Service",
-    deadline: "15.09.2025",
-    expirationDate: "15.09.2028",
-    client: "RetailCo",
-    status: "Pending",
-  },
-  {
-    id: 6,
-    name: "Property ownership",
-    deadline: "15.09.2025",
-    expirationDate: "15.09.2028",
-    client: "RetailCo",
-    status: "Rejected",
-  },
-  {
-    id: 7,
-    name: "NDA",
-    deadline: "15.09.2025",
-    expirationDate: "15.09.2028",
-    client: "LogicCo",
-    status: "Signed",
-  },
-  {
-    id: 8,
-    name: "Service",
-    deadline: "15.09.2025",
-    expirationDate: "15.09.2028",
-    client: "LogicCo",
-    status: "Pending",
-  },
-  {
-    id: 9,
-    name: "Property ownership",
-    deadline: "15.09.2025",
-    expirationDate: "15.09.2028",
-    client: "LogicCo",
-    status: "Rejected",
-  },
-  {
-    id: 10,
-    name: "NDA",
-    deadline: "15.09.2025",
-    expirationDate: "15.09.2028",
-    client: "TechFirm",
-    status: "Signed",
-  },
-  {
-    id: 11,
-    name: "Service",
-    deadline: "15.09.2025",
-    expirationDate: "15.09.2028",
-    client: "TechFirm",
-    status: "Pending",
-  },
-  {
-    id: 12,
-    name: "Property ownership",
-    deadline: "15.09.2025",
-    expirationDate: "15.09.2028",
-    client: "TechFirm",
-    status: "Rejected",
-  },
-  {
-    id: 13,
-    name: "NDA",
-    deadline: "15.09.2025",
-    expirationDate: "15.09.2028",
-    client: "BankCorp",
-    status: "Signed",
-  },
-  {
-    id: 14,
-    name: "Service",
-    deadline: "15.09.2025",
-    expirationDate: "15.09.2028",
-    client: "BankCorp",
-    status: "Pending",
-  },
-  {
-    id: 15,
-    name: "Property ownership",
-    deadline: "15.09.2025",
-    expirationDate: "15.09.2028",
-    client: "BankCorp",
-    status: "Rejected",
-  },
-];
+  const user = session.user as IUser;
+  console.log("Session:", session);
 
-export default function ConsultantDocuments() {
-  return (
-      <Box
-        sx={{
-          p: 2,
-          borderRadius: 2,
-          boxShadow: 2,
-          bgcolor: "background.paper",
-        }}
-      >
-        <DataTable
-          title="Signed Contract"
-          columns={taskColumns}
-          rows={taskRows}
-          pageSize={10}
-        />
-      </Box>
-  );
+  const role = user.role;
+  console.log("Role:", user.role);
+
+  switch (role) {
+    case Roles.CONSULTANT:
+      return <ConsultantDocument />;
+    case Roles.CLIENT:
+      return <ClientDocument />;
+    default:
+      return <div>Unauthorized access</div>;
+  }
 }

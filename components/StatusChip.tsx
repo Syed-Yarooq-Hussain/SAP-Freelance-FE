@@ -2,43 +2,31 @@
 
 import { Chip } from "@mui/material";
 import React from "react";
-
-export type StatusType =
-  | "Under review"
-  | "Confirmed"
-  | "In progress"
-  | "Paid"
-  | "Pending"
-  | "Overdue"
-  | "Request"
-  | "Reschedule"
-  | "Rejected"
-  | "Todo"
-  | "Delayed"
-  | "Signed";
+import { colors } from "@/utils/styles/colors";
+import { DIMENSIONS } from "@/constants/dimensions";
 
 interface StatusChipProps {
-  label: StatusType;
-  color: string;
+  label: string;
+  color: keyof typeof colors;
 }
 
-const chipWidth = 100;
-
 export default function StatusChip({ label, color }: StatusChipProps) {
+  const borderColor = colors[color] || colors.GREY;
+
   return (
     <Chip
       label={label}
       size="small"
       sx={{
-        borderLeft: `4px solid ${color}`,
-        borderRight: `4px solid ${color}`,
+        borderLeft: `4px solid ${borderColor}`,
+        borderRight: `4px solid ${borderColor}`,
         paddingX: 1,
-        backgroundColor: "#f5f5f5",
+        backgroundColor: "#f9f9f9",
         color: "#000",
         fontWeight: 500,
         fontSize: "0.75rem",
         borderRadius: 1,
-        width: chipWidth,
+        width: DIMENSIONS.CHIP_WIDTH,
         textAlign: "center",
       }}
     />
