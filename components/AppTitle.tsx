@@ -8,6 +8,7 @@ const AppTitle: React.FC = () => {
   const pathname = usePathname();
 
   const getTitle = () => {
+    if (pathname?.startsWith(APP_ROUTES.CONSULTANTS)) return "Consultant";
     if (pathname?.startsWith(APP_ROUTES.PAYMENTS)) return "Payments";
     if (pathname?.startsWith(APP_ROUTES.DOCUMENTS)) return "Documents";
     if (pathname?.startsWith(APP_ROUTES.PROJECTS)) return "Projects";

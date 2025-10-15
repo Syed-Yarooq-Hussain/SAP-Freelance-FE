@@ -133,8 +133,17 @@ const DynamicPopup: React.FC<DynamicPopupProps> = ({
           </Box>
         )}
 
-        {fields.map((field) => (
-          <Box key={field.id} mb={2}>
+        {fields.map((field, index) => (
+          <Box
+            key={field.id}
+            mb={2}
+            sx={{
+              mt:
+                index === 0 && (field.type === "date" || field.type === "time")
+                  ? 1.5
+                  : 0,
+            }}
+          >
             <TextField
               fullWidth
               label={field.label}

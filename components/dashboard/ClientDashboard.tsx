@@ -275,9 +275,19 @@ export default function ClientDashboard() {
                 items: [
                   {
                     type: "text",
-                    label: "Interview invite from RetailCo – 02-Aug",
+                    label: "Interview invite from RetailCo. – 02-Aug",
                   },
                   { type: "text", label: "Profile approved by Admin" },
+                ],
+              },
+              {
+                title: "Payment Alert",
+                items: [
+                  {
+                    type: "text",
+                    label: 'Payment made on "RetailCo."',
+                  },
+                  { type: "text", label: 'Payment due for "RetailCo."' },
                 ],
               },
             ]}

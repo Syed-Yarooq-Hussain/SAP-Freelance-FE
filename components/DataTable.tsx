@@ -2,8 +2,15 @@
 
 import { colors } from "@/utils/styles/colors";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { Box, IconButton, Stack, Typography } from "@mui/material";
-import { DataGrid, GridColDef, GridRowParams, GridValidRowModel, MuiEvent } from "@mui/x-data-grid";
+import { Avatar, Box, IconButton, Stack, Typography } from "@mui/material";
+import {
+  DataGrid,
+  GridColDef,
+  GridRenderCellParams,
+  GridRowParams,
+  GridValidRowModel,
+  MuiEvent,
+} from "@mui/x-data-grid";
 import * as React from "react";
 
 export type DataTableProps<T extends GridValidRowModel> = {
@@ -13,9 +20,14 @@ export type DataTableProps<T extends GridValidRowModel> = {
   pageSize?: number;
   showViewMore?: boolean;
   onViewMoreClick?: () => void;
-  onRowClick?: (params: GridRowParams<T>, event: MuiEvent<React.MouseEvent>) => void;
+  onRowClick?: (
+    params: GridRowParams<T>,
+    event: MuiEvent<React.MouseEvent>
+  ) => void;
   showBackButton?: boolean;
   onBackClick?: () => void;
+  showAvatar?: boolean;
+  avatarField?: keyof T;
 };
 
 export default function DataTable<T extends GridValidRowModel>({
@@ -28,7 +40,29 @@ export default function DataTable<T extends GridValidRowModel>({
   onRowClick,
   showBackButton = false,
   onBackClick,
+  showAvatar = false,
+  avatarField,
 }: DataTableProps<T>) {
+  const updatedColumns = React.useMemo(() => {
+    if (!showAvatar || !avatarField) return columns;
+    return [
+      {
+        field: "avatar",
+        headerName: "",
+        width: 60,
+        sortable: false,
+        renderCell: (params: GridRenderCellParams<T>) => (
+          <Avatar
+            src={params.row[avatarField] as string}
+            alt={params.row.name}
+            sx={{ width: 32, height: 32 }}
+          />
+        ),
+      },
+      ...columns,
+    ];
+  }, [showAvatar, avatarField, columns]);
+
   return (
     <>
       <Stack direction="row" alignItems="center" spacing={1} mb={1}>
@@ -49,7 +83,7 @@ export default function DataTable<T extends GridValidRowModel>({
       <Box sx={{ width: "100%" }}>
         <DataGrid
           rows={rows}
-          columns={columns}
+          columns={updatedColumns}
           initialState={{ pagination: { paginationModel: { pageSize } } }}
           pageSizeOptions={[pageSize]}
           rowSelection={false}
@@ -67,7 +101,6 @@ export default function DataTable<T extends GridValidRowModel>({
               fontSize: "0.875rem",
               display: "flex",
               alignItems: "center",
-              cursor: "pointer",
             },
             "& .MuiDataGrid-row": {
               backgroundColor: "#fff",
