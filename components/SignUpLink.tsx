@@ -7,7 +7,7 @@ const SignUpLink = () => {
           Don&apos;t have an account?{" "}
           <Link
             variant="body2"
-            href={APP_ROUTES.HOME}
+            href={APP_ROUTES.SIGNUP_SELECT}
             style={{ textDecoration: "none", fontWeight: "bold" }}
           >
             Sign up here

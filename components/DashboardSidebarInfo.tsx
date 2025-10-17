@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import { FC, ReactNode } from "react";
 
-interface SidebarSectionItem {
+export interface SidebarSectionItem {
   label?: string;
   value?: string;
   subValue?: string;
@@ -24,13 +24,13 @@ interface SidebarSectionItem {
   onButtonClick?: () => void;
 }
 
-interface SidebarSection {
+export interface SidebarSectionInfo {
   title: string;
   items: SidebarSectionItem[];
 }
 
 interface SidebarInfoProps {
-  sections: SidebarSection[];
+  sections: SidebarSectionInfo[];
 }
 
 const Section: FC<{ title: string; children: ReactNode }> = ({
@@ -84,10 +84,7 @@ const SidebarInfo: FC<SidebarInfoProps> = ({ sections }) => {
                       borderRadius: 1,
                       bgcolor: buttonBg,
                       color: "#ffffff",
-                      "&:hover": {
-                        bgcolor: buttonBg,
-                        opacity: 0.9,
-                      },
+                      "&:hover": { bgcolor: buttonBg, opacity: 0.9 },
                     }}
                     onClick={item.onButtonClick}
                   >

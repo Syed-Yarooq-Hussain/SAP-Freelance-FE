@@ -1,8 +1,8 @@
-import { useMutation } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
-import { APP_ROUTES } from "@/utils/app_routes";
 import { ILoginForm } from "@/types/common-auth";
-import { signIn, SignInResponse } from "next-auth/react";
+import { APP_ROUTES } from "@/utils/app_routes";
+import { useMutation } from "@tanstack/react-query";
+import { getSession, signIn, SignInResponse } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export const useLogin = () => {
   const router = useRouter();
@@ -18,9 +18,28 @@ export const useLogin = () => {
       if (response?.error) throw new Error(response.error);
       return response;
     },
-    onSuccess(data) {
-      console.log("Login successful:", data);
-      router.push(APP_ROUTES.DASHBOARD);
+    async onSuccess() {
+      const session = await getSession();
+      const role = session?.user?.role;
+
+      if (!role) {
+        router.push(APP_ROUTES.LOGIN);
+        return;
+      }
+
+      switch (role) {
+        case 1:
+          router.push(APP_ROUTES.CLIENT.DASHBOARD);
+          break;
+        case 2:
+          router.push(APP_ROUTES.CONSULTANT.DASHBOARD);
+          break;
+        case 3:
+          router.push(APP_ROUTES.ADMIN.DASHBOARD);
+          break;
+        default:
+          router.push(APP_ROUTES.HOME);
+      }
     },
   });
 };

@@ -7,7 +7,6 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import { SessionProvider } from "next-auth/react";
 import { Poppins } from "next/font/google";
 import { useMemo, useState } from "react";
-import "./globals.css";
 
 const poppins = Poppins({
   variable: "--font-poppins",
