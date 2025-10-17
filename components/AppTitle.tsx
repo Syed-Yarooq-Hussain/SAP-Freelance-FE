@@ -8,15 +8,45 @@ const AppTitle: React.FC = () => {
   const pathname = usePathname();
 
   const getTitle = () => {
-    if (pathname?.startsWith(APP_ROUTES.CONSULTANTS)) return "Consultant";
-    if (pathname?.startsWith(APP_ROUTES.PAYMENTS)) return "Payments";
-    if (pathname?.startsWith(APP_ROUTES.DOCUMENTS)) return "Documents";
-    if (pathname?.startsWith(APP_ROUTES.PROJECTS)) return "Projects";
-    if (pathname?.startsWith(APP_ROUTES.CALENDAR)) return "Calendar";
-    if (pathname?.startsWith(APP_ROUTES.PROFILE)) return "Profile";
-    if (pathname?.startsWith(APP_ROUTES.INTERVIEWS)) return "Interviews";
-    if (pathname?.startsWith(APP_ROUTES.DASHBOARD)) return "Dashboard";
-    return "App Title";
+    if (pathname.startsWith("/consultant")) {
+      if (pathname.startsWith(APP_ROUTES.CONSULTANT.PROJECTS))
+        return "Projects";
+      if (pathname.startsWith(APP_ROUTES.CONSULTANT.INTERVIEWS))
+        return "Interviews";
+      if (pathname.startsWith(APP_ROUTES.CONSULTANT.DOCUMENTS))
+        return "Documents";
+      if (pathname.startsWith(APP_ROUTES.CONSULTANT.PAYMENTS))
+        return "Payments";
+      if (pathname.startsWith(APP_ROUTES.CONSULTANT.PROFILE)) return "Profile";
+      if (pathname.startsWith(APP_ROUTES.CONSULTANT.CALENDAR))
+        return "Calendar";
+      return "Dashboard";
+    }
+
+    if (pathname.startsWith("/client")) {
+      if (pathname.startsWith(APP_ROUTES.CLIENT.PROJECTS)) return "Projects";
+      if (pathname.startsWith(APP_ROUTES.CLIENT.INTERVIEWS))
+        return "Interviews";
+      if (pathname.startsWith(APP_ROUTES.CLIENT.DOCUMENTS)) return "Documents";
+      if (pathname.startsWith(APP_ROUTES.CLIENT.PAYMENTS)) return "Payments";
+      if (pathname.startsWith(APP_ROUTES.CLIENT.PROFILE)) return "Profile";
+      if (pathname.startsWith(APP_ROUTES.CLIENT.CONSULTANT))
+        return "Consultant";
+      return "Dashboard";
+    }
+
+    if (pathname.startsWith("/admin")) {
+      if (pathname.startsWith(APP_ROUTES.ADMIN.PROJECTS)) return "Projects";
+      if (pathname.startsWith(APP_ROUTES.ADMIN.INTERVIEWS)) return "Interviews";
+      if (pathname.startsWith(APP_ROUTES.ADMIN.PAYMENTS)) return "Payments";
+      if (pathname.startsWith(APP_ROUTES.ADMIN.PROFILE)) return "Profile";
+      if (pathname.startsWith(APP_ROUTES.ADMIN.CONSULTANTS))
+        return "Consultants";
+      if (pathname.startsWith(APP_ROUTES.ADMIN.CLIENT)) return "Client";
+      return "Dashboard";
+    }
+
+    return "SAP Portal";
   };
 
   return (

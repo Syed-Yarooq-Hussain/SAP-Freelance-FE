@@ -33,46 +33,80 @@ type DrawerListProps = {
   open: boolean;
 };
 
+type RoleRoutes = {
+  DASHBOARD: string;
+  PROFILE?: string;
+  INTERVIEWS?: string;
+  PROJECTS?: string;
+  DOCUMENTS?: string;
+  PAYMENTS?: string;
+  CALENDAR?: string;
+  CONSULTANT?: string;
+};
+
 const DrawerList: FC<DrawerListProps> = ({ open }) => {
   const pathname = usePathname();
   const { data: session } = useSession();
   const role = session?.user?.role;
+
   const items: DrawerItem[] = useMemo(() => {
+    if (!role) return [];
+
+    const routeSet: RoleRoutes =
+      role === Roles.CLIENT
+        ? APP_ROUTES.CLIENT
+        : role === Roles.CONSULTANT
+        ? APP_ROUTES.CONSULTANT
+        : APP_ROUTES.ADMIN;
+
     const baseItems: DrawerItem[] = [
       {
         icon: <DashboardIcon />,
         label: "Dashboard",
-        link: APP_ROUTES.DASHBOARD,
+        link: routeSet.DASHBOARD,
       },
-      { icon: <ProfileIcon />, label: "Profile", link: APP_ROUTES.PROFILE },
+      {
+        icon: <ProfileIcon />,
+        label: "Profile",
+        link: routeSet.PROFILE || "#",
+      },
     ];
 
-    if (role === Roles.CLIENT) {
+    if (role === Roles.CLIENT && routeSet.CONSULTANT) {
       baseItems.push({
         icon: <PeopleIcon />,
         label: "Consultant",
-        link: APP_ROUTES.CONSULTANTS,
+        link: routeSet.CONSULTANT,
+      });
+    } else if (role === Roles.CONSULTANT && routeSet.CALENDAR) {
+      baseItems.push({
+        icon: <CalendarMonthIcon />,
+        label: "Calendar",
+        link: routeSet.CALENDAR,
       });
     }
 
     baseItems.push(
       {
-        icon: <CalendarMonthIcon />,
-        label: "Calendar",
-        link: APP_ROUTES.CALENDAR,
-      },
-      {
         icon: <EventNoteIcon />,
         label: "Interviews",
-        link: APP_ROUTES.INTERVIEWS,
+        link: routeSet.INTERVIEWS || "#",
       },
-      { icon: <WorkIcon />, label: "Projects", link: APP_ROUTES.PROJECTS },
+      {
+        icon: <WorkIcon />,
+        label: "Projects",
+        link: routeSet.PROJECTS || "#",
+      },
       {
         icon: <DescriptionIcon />,
         label: "Documents",
-        link: APP_ROUTES.DOCUMENTS,
+        link: routeSet.DOCUMENTS || "#",
       },
-      { icon: <PaymentIcon />, label: "Payments", link: APP_ROUTES.PAYMENTS }
+      {
+        icon: <PaymentIcon />,
+        label: "Payments",
+        link: routeSet.PAYMENTS || "#",
+      }
     );
 
     return baseItems;
@@ -82,11 +116,7 @@ const DrawerList: FC<DrawerListProps> = ({ open }) => {
     <List>
       {items.map((item, index) => {
         const isActive =
-          (pathname === item.link || pathname.startsWith(`${item.link}/`)) &&
-          !(
-            item.link === APP_ROUTES.DASHBOARD &&
-            pathname !== APP_ROUTES.DASHBOARD
-          );
+          pathname === item.link || pathname.startsWith(`${item.link}/`);
 
         return (
           <ListItem key={index} disablePadding>

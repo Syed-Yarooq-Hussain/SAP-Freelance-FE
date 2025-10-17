@@ -2,18 +2,63 @@ import { NextResponse } from "next/server";
 import { auth } from "./auth";
 import { APP_ROUTES } from "./utils/app_routes";
 
-const PUBLIC_ROUTES = [APP_ROUTES.LOGIN, APP_ROUTES.SIGNUP, APP_ROUTES.HOME];
+const PUBLIC_ROUTES = [
+  APP_ROUTES.HOME,
+  APP_ROUTES.LOGIN,
+  APP_ROUTES.SIGNUP_SELECT,
+  APP_ROUTES.SIGNUP,
+];
 
 export default auth((req) => {
   const { nextUrl } = req;
-  const isPublicRoute = PUBLIC_ROUTES.includes(nextUrl.pathname);
   const session = req.auth;
+  const pathname = nextUrl.pathname;
+
+  const isPublicRoute = PUBLIC_ROUTES.includes(pathname);
+
+  if (!session && !isPublicRoute) {
+    return NextResponse.redirect(new URL(APP_ROUTES.LOGIN, nextUrl));
+  }
 
   if (session && isPublicRoute) {
-    return NextResponse.redirect(new URL(APP_ROUTES.DASHBOARD, nextUrl));
-  } else if (!session && !isPublicRoute) {
-    return NextResponse.redirect(new URL(APP_ROUTES.LOGIN, nextUrl));
-  } else return NextResponse.next();
+    const role = session.user?.role;
+
+    switch (role) {
+      case 1:
+        return NextResponse.redirect(
+          new URL(APP_ROUTES.CLIENT.DASHBOARD, nextUrl)
+        );
+      case 2:
+        return NextResponse.redirect(
+          new URL(APP_ROUTES.CONSULTANT.DASHBOARD, nextUrl)
+        );
+      case 3:
+        return NextResponse.redirect(
+          new URL(APP_ROUTES.ADMIN.DASHBOARD, nextUrl)
+        );
+      default:
+        return NextResponse.redirect(new URL(APP_ROUTES.HOME, nextUrl));
+    }
+  }
+
+  if (session) {
+    const role = session.user?.role;
+
+    const isConsultantRoute = pathname.startsWith("/consultant");
+    const isClientRoute = pathname.startsWith("/client");
+    const isAdminRoute = pathname.startsWith("/admin");
+
+    if (isConsultantRoute && role !== 2)
+      return NextResponse.redirect(new URL(APP_ROUTES.LOGIN, nextUrl));
+
+    if (isClientRoute && role !== 1)
+      return NextResponse.redirect(new URL(APP_ROUTES.LOGIN, nextUrl));
+
+    if (isAdminRoute && role !== 3)
+      return NextResponse.redirect(new URL(APP_ROUTES.LOGIN, nextUrl));
+  }
+
+  return NextResponse.next();
 });
 
 export const config = {
