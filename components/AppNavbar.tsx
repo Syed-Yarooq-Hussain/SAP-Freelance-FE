@@ -21,20 +21,23 @@ import AppTitle from "./AppTitle";
 import ProfileMenu from "./ProfileMenu";
 import RIghtSideDrawer from "./RIghtSideDrawer";
 
-const AppNavbar: React.FC = () => {
+interface AppNavbarProps {
+  showSidebar?: boolean;
+}
+
+const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
   const { mutate: logout } = useLogout();
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const isMenuOpen = Boolean(anchorEl);
-
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
     React.useState<null | HTMLElement>(null);
-  const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const [drawerType, setDrawerType] = React.useState<
     "chat" | "notification" | null
   >(null);
+
+  const isMenuOpen = Boolean(anchorEl);
+  const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
   const openDrawer = (type: "chat" | "notification") => {
     setDrawerType(type);
@@ -55,9 +58,12 @@ const AppNavbar: React.FC = () => {
         position="fixed"
         elevation={0}
         sx={{
-          width: { md: `calc(100% - ${DESKTOP_DRAWER_WIDTH}px)` },
-          ml: { md: `${DESKTOP_DRAWER_WIDTH}px` },
+          width: showSidebar
+            ? { md: `calc(100% - ${DESKTOP_DRAWER_WIDTH}px)` }
+            : "100%",
+          ml: showSidebar ? { md: `${DESKTOP_DRAWER_WIDTH}px` } : 0,
           backgroundColor: "#4285f4",
+          transition: "all 0.3s ease",
         }}
       >
         <Toolbar
@@ -68,11 +74,13 @@ const AppNavbar: React.FC = () => {
           }}
         >
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <Box sx={{ display: { xs: "flex", md: "none" }, mr: 1 }}>
-              <IconButton size="large" edge="start" color="inherit">
-                <MenuIcon />
-              </IconButton>
-            </Box>
+            {showSidebar && (
+              <Box sx={{ display: { xs: "flex", md: "none" }, mr: 1 }}>
+                <IconButton size="large" edge="start" color="inherit">
+                  <MenuIcon />
+                </IconButton>
+              </Box>
+            )}
             <AppTitle />
           </Box>
 

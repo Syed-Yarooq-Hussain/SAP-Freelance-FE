@@ -2,7 +2,14 @@
 
 import { colors } from "@/utils/styles/colors";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { Avatar, Box, IconButton, Stack, Typography } from "@mui/material";
+import {
+  Avatar,
+  Box,
+  Checkbox,
+  IconButton,
+  Stack,
+  Typography,
+} from "@mui/material";
 import {
   DataGrid,
   GridColDef,
@@ -28,6 +35,7 @@ export type DataTableProps<T extends GridValidRowModel> = {
   onBackClick?: () => void;
   showAvatar?: boolean;
   avatarField?: keyof T;
+  enableSelection?: boolean;
 };
 
 export default function DataTable<T extends GridValidRowModel>({
@@ -42,26 +50,94 @@ export default function DataTable<T extends GridValidRowModel>({
   onBackClick,
   showAvatar = false,
   avatarField,
+  enableSelection = false,
 }: DataTableProps<T>) {
+  const [selectedRows, setSelectedRows] = React.useState<Set<string>>(
+    new Set()
+  );
+
+  const handleSelect = (id: string) => {
+    setSelectedRows((prev) => {
+      const updated = new Set(prev);
+      if (updated.has(id)) {
+        updated.delete(id);
+      } else {
+        updated.add(id);
+      }
+      return updated;
+    });
+  };
+
+  const handleSelectAll = React.useCallback(() => {
+    setSelectedRows((prev) => {
+      if (prev.size === rows.length) return new Set();
+      return new Set(rows.map((r) => r.id.toString()));
+    });
+  }, [rows]);
+
   const updatedColumns = React.useMemo(() => {
     if (!showAvatar || !avatarField) return columns;
-    return [
-      {
-        field: "avatar",
-        headerName: "",
-        width: 60,
-        sortable: false,
-        renderCell: (params: GridRenderCellParams<T>) => (
+
+    const avatarCol: GridColDef = {
+      field: "avatar",
+      headerName: "",
+      width: enableSelection ? 90 : 60,
+      sortable: false,
+      disableColumnMenu: true,
+      renderHeader: enableSelection
+        ? () => (
+            <Checkbox
+              indeterminate={
+                selectedRows.size > 0 && selectedRows.size < rows.length
+              }
+              checked={selectedRows.size === rows.length && rows.length > 0}
+              onChange={handleSelectAll}
+              sx={{
+                color: colors.BLUE,
+                "&.Mui-checked": { color: colors.BLUE },
+                "& .MuiSvgIcon-root": { fontSize: 22 },
+              }}
+            />
+          )
+        : undefined,
+      renderCell: (params: GridRenderCellParams<T>) => (
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          {enableSelection && (
+            <Checkbox
+              checked={selectedRows.has(params.id.toString())}
+              onChange={() => handleSelect(params.id.toString())}
+              sx={{
+                color: colors.BLUE,
+                "&.Mui-checked": { color: colors.BLUE },
+                "& .MuiSvgIcon-root": { fontSize: 22 },
+              }}
+            />
+          )}
           <Avatar
             src={params.row[avatarField] as string}
             alt={params.row.name}
-            sx={{ width: 32, height: 32 }}
+            sx={{
+              width: 32,
+              height: 32,
+              border: selectedRows.has(params.id.toString())
+                ? `2px solid ${colors.BLUE}`
+                : "2px solid transparent",
+            }}
           />
-        ),
-      },
-      ...columns,
-    ];
-  }, [showAvatar, avatarField, columns]);
+        </Box>
+      ),
+    };
+
+    return [avatarCol, ...columns];
+  }, [
+    showAvatar,
+    avatarField,
+    columns,
+    enableSelection,
+    selectedRows,
+    rows.length,
+    handleSelectAll,
+  ]);
 
   return (
     <>
@@ -84,9 +160,12 @@ export default function DataTable<T extends GridValidRowModel>({
         <DataGrid
           rows={rows}
           columns={updatedColumns}
-          initialState={{ pagination: { paginationModel: { pageSize } } }}
+          initialState={{
+            pagination: { paginationModel: { pageSize } },
+          }}
           pageSizeOptions={[pageSize]}
-          rowSelection={false}
+          pagination
+          disableRowSelectionOnClick
           onRowClick={onRowClick}
           sx={{
             "& .MuiDataGrid-columnHeaders": {
@@ -108,6 +187,17 @@ export default function DataTable<T extends GridValidRowModel>({
           }}
         />
       </Box>
+
+      {enableSelection && selectedRows.size > 0 && (
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          mt={1.5}
+          sx={{ fontWeight: 500 }}
+        >
+          {selectedRows.size} selected
+        </Typography>
+      )}
 
       {showViewMore && (
         <Box textAlign="center" mt={2}>
