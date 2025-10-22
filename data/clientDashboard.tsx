@@ -5,9 +5,11 @@ import { SidebarSectionInfo } from "@/components/DashboardSidebarInfo";
 import { StatCardProps } from "@/components/StatCard";
 import StatusChip from "@/components/StatusChip";
 import StatusDropdown from "@/components/StatusDropdown";
+import { APP_ROUTES } from "@/utils/app_routes";
 import { buttonColors, statusColors } from "@/utils/styles/colors";
 import { Box } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 export const clientStats: StatCardProps[] = [
   {
@@ -155,7 +157,7 @@ export const clientTaskRows = [
   },
 ];
 
-export const clientSidebar: SidebarSectionInfo[] = [
+export const getClientSidebar = (router: AppRouterInstance): SidebarSectionInfo[] => [
   {
     title: "Initialize Projects",
     items: [
@@ -163,6 +165,7 @@ export const clientSidebar: SidebarSectionInfo[] = [
         type: "button",
         buttonText: "Start new project",
         buttonColor: "GREEN",
+        onButtonClick: () => router.push(APP_ROUTES.TEAMBUILDER),
       },
       {
         type: "text",

@@ -46,6 +46,8 @@ const AppTitle: React.FC = () => {
       return "Dashboard";
     }
 
+    if (pathname.startsWith(APP_ROUTES.TEAMBUILDER)) return "Team Builder";
+
     return "SAP Portal";
   };
 

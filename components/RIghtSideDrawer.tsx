@@ -1,5 +1,7 @@
 "use client";
 
+import { chatList, messages, notifications } from "@/data/rightSideDrawer";
+import type { Chat } from "@/types/rightSideDrawer";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CloseIcon from "@mui/icons-material/Close";
 import SendIcon from "@mui/icons-material/Send";
@@ -25,70 +27,6 @@ interface RightSideDrawerProps {
   type: "chat" | "notification";
   onClose: () => void;
 }
-
-const chatList = [
-  {
-    id: 1,
-    name: "Albert Flores",
-    message: "Hello! Interested in this load?",
-    avatar: "/images/a1.png",
-  },
-  {
-    id: 2,
-    name: "Darlene Robertson",
-    message: "It’s really nice working with you",
-    avatar: "/images/a2.png",
-  },
-  {
-    id: 3,
-    name: "Guy Hawkins",
-    message: "Can we continue to talk?",
-    avatar: "/images/a3.png",
-  },
-  {
-    id: 4,
-    name: "Ralph Edwards",
-    message: "I’m busy yesterday.",
-    avatar: "/images/a4.png",
-  },
-];
-
-const messages = [
-  {
-    id: 1,
-    sender: "them",
-    text: "It is a long established fact",
-    time: "12/12/2025 - 6:34 pm",
-  },
-  {
-    id: 2,
-    sender: "me",
-    text: "There are many variations of passages",
-    time: "12/12/2025 - 6:34 pm",
-  },
-  {
-    id: 3,
-    sender: "them",
-    text: "The point of using Lorem Ipsum is...",
-    time: "12/12/2025 - 6:34 pm",
-  },
-];
-
-const notifications = [
-  { id: 1, message: "Your meeting has been scheduled!" },
-  {
-    id: 2,
-    message: "Meeting starts in 20 min — join via the link:",
-    link: "sklankfskdfslfdnslds.com",
-  },
-];
-
-type Chat = {
-  id: number;
-  name: string;
-  message: string;
-  avatar: string;
-};
 
 const RightSideDrawer: React.FC<RightSideDrawerProps> = ({
   open,
@@ -169,20 +107,17 @@ const RightSideDrawer: React.FC<RightSideDrawerProps> = ({
                       <Avatar src={chat.avatar} />
                     </ListItemAvatar>
                     <ListItemText
-                      slotProps={{
-                        primary: {
-                          sx: { fontSize: "0.875rem", fontWeight: 500 },
-                        },
-                        secondary: {
-                          sx: { fontSize: "0.75rem", color: "text.secondary" },
-                        },
-                      }}
                       primary={chat.name}
                       secondary={chat.message}
+                      primaryTypographyProps={{
+                        sx: { fontSize: "0.875rem", fontWeight: 500 },
+                      }}
+                      secondaryTypographyProps={{
+                        sx: { fontSize: "0.75rem", color: "text.secondary" },
+                      }}
                     />
                   </ListItemButton>
                 </ListItem>
-
                 <Divider variant="inset" component="li" />
               </React.Fragment>
             ))}
@@ -198,10 +133,8 @@ const RightSideDrawer: React.FC<RightSideDrawerProps> = ({
                 </ListItemAvatar>
                 <ListItemText
                   primary={selectedChat.name}
-                  slotProps={{
-                    primary: {
-                      sx: { fontSize: "0.9rem", fontWeight: 600 },
-                    },
+                  primaryTypographyProps={{
+                    sx: { fontSize: "0.9rem", fontWeight: 600 },
                   }}
                 />
               </ListItem>
@@ -257,17 +190,15 @@ const RightSideDrawer: React.FC<RightSideDrawerProps> = ({
                 placeholder="Message"
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
-                slotProps={{
-                  input: {
-                    sx: { fontSize: "0.8rem" },
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton color="primary" onClick={handleSend}>
-                          <SendIcon fontSize="small" />
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  },
+                InputProps={{
+                  sx: { fontSize: "0.8rem" },
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton color="primary" onClick={handleSend}>
+                        <SendIcon fontSize="small" />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
                 }}
               />
             </Box>
