@@ -28,6 +28,8 @@ export const statusColors: Record<string, keyof typeof colors> = {
   "Project started": "PURPLE",
   Negotiating: "LIGHT_BLUE",
   Interviewing: "YELLOW",
+  Waiting: "ORANGE",
+  Accepted: "GREEN",
 };
 
 export const buttonColors: Record<string, keyof typeof colors> = {

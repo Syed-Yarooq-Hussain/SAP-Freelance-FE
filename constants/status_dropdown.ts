@@ -11,4 +11,6 @@ export enum STATUS {
   SIGNED = "Signed",
   TODO = "To do",
   DELAYED = "Delayed",
+  WAITING = "Waiting",
+  ACCEPTED = "Accepted",
 }
