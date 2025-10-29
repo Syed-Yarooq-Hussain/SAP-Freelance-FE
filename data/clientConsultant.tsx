@@ -7,7 +7,7 @@ export const clientConsultantColumns: GridColDef[] = [
   { field: "modules", headerName: "Modules", flex: 2 },
   { field: "experience", headerName: "Experience", flex: 1 },
   { field: "hourlyRate", headerName: "Hourly Rate", flex: 1 },
-  { field: "projectName", headerName: "Project Name", flex: 2 },
+  { field: "projectName", headerName: "Project Name", flex: 1 },
 ];
 
 export const clientConsultantRows = [
