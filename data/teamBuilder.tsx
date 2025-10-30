@@ -1,13 +1,24 @@
+import { IFieldConfig } from "@/components/CreateForm";
+import { MilestoneRow } from "@/components/specific/teambuilder/TeamProjects";
 import StatusDropdown from "@/components/StatusDropdown";
 import { STATUS } from "@/constants/status_dropdown";
 import type { CandidateRow } from "@/types/teamBuilder";
 import { colors } from "@/utils/styles/colors";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import AssignmentIcon from "@mui/icons-material/Assignment";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import EditIcon from "@mui/icons-material/Edit";
 import EventSeatIcon from "@mui/icons-material/EventSeat";
 import Groups2Icon from "@mui/icons-material/Groups2";
-import { Box, MenuItem, Select, Typography } from "@mui/material";
-import { GridRenderCellParams, GridValidRowModel } from "@mui/x-data-grid";
+import { Box, IconButton, MenuItem, Select, Typography } from "@mui/material";
+import {
+  GridColDef,
+  GridRenderCellParams,
+  GridValidRowModel,
+} from "@mui/x-data-grid";
 
 export const teamBuilderSteps = [
   {
@@ -312,6 +323,79 @@ export const getShortlistedColumns = (
   },
 ];
 
+export const getMilestoneCols = (
+  expandedMilestoneId: number | null,
+  setExpandedMilestoneId: React.Dispatch<React.SetStateAction<number | null>>
+): GridColDef[] => [
+  { field: "name", headerName: "Name", flex: 1 },
+  {
+    field: "date",
+    headerName: "Date",
+    flex: 0.6,
+    renderCell: (p: GridRenderCellParams) => {
+      const iso = String(p.row.date ?? "");
+      if (!iso) return <>-</>;
+      const [y, m, d] = iso.split("-");
+      return <>{`${d}.${m}.${y}`}</>;
+    },
+  },
+  { field: "description", headerName: "Description", flex: 1.6 },
+  { field: "approval", headerName: "Approval", flex: 0.8 },
+  {
+    field: "tasks",
+    headerName: "Tasks",
+    flex: 0.6,
+    sortable: false,
+    renderCell: (p: GridRenderCellParams) => {
+      const row = p.row;
+      const isOpen = expandedMilestoneId === row.id;
+      return (
+        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+          <Typography
+            sx={{
+              color: colors.BLUE,
+              fontWeight: 600,
+              cursor: "pointer",
+              "&:hover": { textDecoration: "underline" },
+            }}
+            onClick={() =>
+              setExpandedMilestoneId((prev) =>
+                prev === row.id ? null : row.id
+              )
+            }
+          >
+            {row.tasks}
+          </Typography>
+          {isOpen ? (
+            <ArrowDropUpIcon fontSize="small" sx={{ color: "#8f9bb3" }} />
+          ) : (
+            <ArrowDropDownIcon fontSize="small" sx={{ color: "#8f9bb3" }} />
+          )}
+        </Box>
+      );
+    },
+  },
+  {
+    field: "actions",
+    headerName: "Actions",
+    flex: 0.7,
+    sortable: false,
+    renderCell: () => (
+      <Box sx={{ display: "flex", gap: 0.5 }}>
+        <IconButton size="small">
+          <EditIcon fontSize="small" />
+        </IconButton>
+        <IconButton size="small">
+          <ContentCopyIcon fontSize="small" />
+        </IconButton>
+        <IconButton size="small">
+          <DeleteOutlineIcon fontSize="small" />
+        </IconButton>
+      </Box>
+    ),
+  },
+];
+
 export const getCandidateColumns = (
   addToShortlist: (row: CandidateRow) => void,
   rejectCandidate: (row: CandidateRow) => void,
@@ -401,3 +485,251 @@ export const getCandidateColumns = (
     },
   },
 ];
+
+export const assigneeOptions = [
+  "Savannah Nguyen",
+  "Courtney Henry",
+  "Dianne Russell",
+  "Guy Hawkins",
+];
+
+export const taskColumns: GridColDef[] = [
+  { field: "name", headerName: "Name", flex: 1 },
+  {
+    field: "date",
+    headerName: "Date",
+    flex: 0.6,
+    renderCell: (p: GridRenderCellParams) => {
+      const iso = String(p.row.date ?? "");
+      if (!iso) return <>-</>;
+      const [y, m, d] = iso.split("-");
+      return <>{`${d}.${m}.${y}`}</>;
+    },
+  },
+  { field: "description", headerName: "Description", flex: 1.6 },
+  { field: "assignees", headerName: "Assignees", flex: 1 },
+  {
+    field: "actions",
+    headerName: "Actions",
+    flex: 0.6,
+    sortable: false,
+    renderCell: () => (
+      <Box sx={{ display: "flex", gap: 0.5 }}>
+        <IconButton size="small">
+          <EditIcon fontSize="small" />
+        </IconButton>
+        <IconButton size="small">
+          <ContentCopyIcon fontSize="small" />
+        </IconButton>
+        <IconButton size="small">
+          <DeleteOutlineIcon fontSize="small" />
+        </IconButton>
+      </Box>
+    ),
+  },
+];
+
+export const milestoneCols: GridColDef[] = [
+  { field: "name", headerName: "Name", flex: 1 },
+  {
+    field: "date",
+    headerName: "Date",
+    flex: 0.6,
+    renderCell: (p: GridRenderCellParams) => {
+      const iso = String(p.row.date ?? "");
+      if (!iso) return <>-</>;
+      const [y, m, d] = iso.split("-");
+      return <>{`${d}.${m}.${y}`}</>;
+    },
+  },
+  { field: "description", headerName: "Description", flex: 1.6 },
+  { field: "approval", headerName: "Approval", flex: 0.8 },
+  {
+    field: "tasks",
+    headerName: "Tasks",
+    flex: 0.6,
+    sortable: false,
+    renderCell: (p: GridRenderCellParams) => {
+      const row = p.row;
+      return (
+        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+          <Typography
+            sx={{
+              color: colors.BLUE,
+              fontWeight: 600,
+              cursor: "pointer",
+              "&:hover": { textDecoration: "underline" },
+            }}
+          >
+            {row.tasks}
+          </Typography>
+          <ArrowDropDownIcon fontSize="small" sx={{ color: "#8f9bb3" }} />
+        </Box>
+      );
+    },
+  },
+  {
+    field: "actions",
+    headerName: "Actions",
+    flex: 0.7,
+    sortable: false,
+    renderCell: () => (
+      <Box sx={{ display: "flex", gap: 0.5 }}>
+        <IconButton size="small">
+          <EditIcon fontSize="small" />
+        </IconButton>
+        <IconButton size="small">
+          <ContentCopyIcon fontSize="small" />
+        </IconButton>
+        <IconButton size="small">
+          <DeleteOutlineIcon fontSize="small" />
+        </IconButton>
+      </Box>
+    ),
+  },
+];
+
+export const projectFormElements: IFieldConfig[] = [
+  {
+    name: "projectName",
+    label: "Project name",
+    placeholder: "Enter name",
+    rules: { required: "Project name is required" },
+    column: { xs: 12, md: 4 },
+  },
+  {
+    name: "client",
+    label: "Client",
+    placeholder: "Enter client",
+    column: { xs: 12, md: 4 },
+  },
+  {
+    name: "industry",
+    label: "Industry",
+    placeholder: "Enter industry",
+    column: { xs: 12, md: 4 },
+  },
+  {
+    name: "startDate",
+    label: "Start date",
+    type: "date",
+    rules: { required: "Start date is required" },
+    column: { xs: 12, md: 4 },
+  },
+  {
+    name: "endDate",
+    label: "End date",
+    type: "date",
+    rules: { required: "End date is required" },
+    column: { xs: 12, md: 4 },
+  },
+  {
+    name: "duration",
+    label: "Duration",
+    type: "number",
+    placeholder: "in hours",
+    column: { xs: 12, md: 4 },
+    inputProps: { min: 0 },
+  },
+];
+
+export const milestoneFormElements: IFieldConfig[] = [
+  {
+    name: "milestoneName",
+    label: "Milestone name",
+    placeholder: "Enter name",
+    column: { xs: 12, md: 4 },
+    rules: { required: "Milestone name is required" },
+  },
+  {
+    name: "milestoneEnd",
+    label: "End date",
+    type: "date",
+    column: { xs: 12, md: 4 },
+    rules: { required: "End date is required" },
+  },
+  {
+    name: "milestoneDeps",
+    label: "Dependencies",
+    placeholder: "Select document",
+    column: { xs: 12, md: 4 },
+  },
+  {
+    name: "milestoneDescDoc",
+    label: "Description",
+    placeholder: "Select document",
+    column: { xs: 12 },
+  },
+];
+
+export const taskFormElements: IFieldConfig[] = [
+  {
+    name: "taskName",
+    label: "Task name",
+    placeholder: "Select name",
+    column: { xs: 12, md: 4 },
+    rules: { required: "Task name is required" },
+  },
+  {
+    name: "taskEnd",
+    label: "End date",
+    type: "date",
+    column: { xs: 12, md: 4 },
+    rules: { required: "End date is required" },
+  },
+  {
+    name: "taskAssignee",
+    label: "Assignee",
+    select: true,
+    options: assigneeOptions.map((a) => ({ label: a, value: a })),
+    column: { xs: 12, md: 4 },
+    rules: { required: "Assignee is required" },
+  },
+  {
+    name: "taskDoc",
+    label: "Description",
+    placeholder: "Select document",
+    column: { xs: 12, md: 6 },
+  },
+  {
+    name: "taskMilestone",
+    label: "Milestone",
+    select: true,
+    options: [],
+    column: { xs: 12, md: 6 },
+  },
+];
+
+export const initialMilestones: MilestoneRow[] = [
+  {
+    id: 1,
+    name: "milestone 1",
+    date: "2025-09-15",
+    description: "Functional setup completed",
+    approval: "Required",
+    tasks: 13,
+  },
+  {
+    id: 2,
+    name: "milestone 2",
+    date: "2025-09-15",
+    description: "Integration stage",
+    approval: "Not required",
+    tasks: 4,
+  },
+];
+
+export const initialTasksByMilestone = {
+  1: [
+    {
+      id: "t1",
+      name: "task 1",
+      date: "2025-09-15",
+      description: "Initial configuration",
+      assignees: "Savannah Nguyen",
+    },
+  ],
+  2: [],
+  3: [],
+  4: [],
+};
