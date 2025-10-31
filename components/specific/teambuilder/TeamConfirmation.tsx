@@ -130,13 +130,13 @@ export default function TeamConfirmation({ onNext }: TeamConfirmationProps) {
     </Typography>
 
     <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+      <AppButton label="Discard" colorKey="RED" width={180} />
       <AppButton
         label="Proceed to next step"
         colorKey="BLUE"
         width={180}
         onClick={onNext}
       />
-      <AppButton label="Discard" colorKey="RED" width={180} />
     </Box>
   </Box>;
 

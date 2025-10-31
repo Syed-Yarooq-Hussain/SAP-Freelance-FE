@@ -7,6 +7,7 @@ import {
   default as Step01,
   default as TeamCreation,
 } from "@/components/specific/teambuilder/TeamCreation";
+import TeamPayments from "@/components/specific/teambuilder/TeamPayments";
 import TeamProjects from "@/components/specific/teambuilder/TeamProjects";
 import { teamBuilderSteps } from "@/data/teamBuilder";
 import colors from "@/utils/styles/colors";
@@ -47,7 +48,7 @@ function TeamBuilderContent() {
       case 3:
         return <TeamProjects onBack={goStep2} onNext={goStep4} />;
       case 4:
-        return <Box sx={{ mt: 3 }}>Payments (Step 04) — TODO</Box>;
+        return <TeamPayments />;
       default:
         return <TeamCreation onNext={goStep2} />;
     }
