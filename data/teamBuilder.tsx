@@ -688,7 +688,14 @@ export const teamBuilderPaymentStats = [
 ];
 
 export const teamBuilderPaymentColumns = [
-  { field: "milestone", headerName: "Milestone", flex: 3 },
+  {
+    field: "milestone",
+    headerName: "Milestone",
+    renderCell: (params: GridRenderCellParams) => (
+      <strong style={{ textDecoration: "underline" }}>{params.value}</strong>
+    ),
+    flex: 3,
+  },
   { field: "duedate", headerName: "Due Date", flex: 3 },
   { field: "amount", headerName: "Amount", flex: 1 },
 ];
@@ -711,7 +718,7 @@ export const teamBuilderPaymentRows = [
     milestone: "Milestone 3",
     duedate: "10.11.2025",
     amount: "$3,500",
-  }
+  },
 ];
 
 export const teamBuilderPaymentWiseColumns = [
@@ -748,5 +755,5 @@ export const teamBuilderPaymentWiseRows = [
     accountnumber: "123556332255663151155315",
     amount: "$2,500",
     invoice: "Upload receipt",
-  }
+  },
 ];
