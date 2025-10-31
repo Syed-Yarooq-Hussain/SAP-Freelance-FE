@@ -249,15 +249,15 @@ export default function TeamProjects({ onBack, onNext }: TeamProjectsProps) {
         <Box />
         <Box sx={{ display: "flex", gap: 1.5 }}>
           <AppButton
-            label="Proceed to next step"
-            colorKey="BLUE"
-            onClick={onNext}
-            width={180}
-          />
-          <AppButton
             label="Discard"
             colorKey="RED"
             onClick={onBack}
+            width={180}
+          />
+          <AppButton
+            label="Proceed to next step"
+            colorKey="BLUE"
+            onClick={onNext}
             width={180}
           />
         </Box>

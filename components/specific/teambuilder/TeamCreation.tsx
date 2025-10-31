@@ -124,16 +124,16 @@ export default function TeamCreation({ onNext, onDiscard }: TeamCreationProps) {
 
           <Box display="flex" alignItems="center" gap={1.5}>
             <AppButton
-              label="Add to Shortlist"
-              colorKey="BLUE"
-              width={180}
-              onClick={onNext}
-            />
-            <AppButton
               label="Discard"
               colorKey="RED"
               width={180}
               onClick={onDiscard}
+            />
+            <AppButton
+              label="Add to Shortlist"
+              colorKey="BLUE"
+              width={180}
+              onClick={onNext}
             />
           </Box>
         </Box>

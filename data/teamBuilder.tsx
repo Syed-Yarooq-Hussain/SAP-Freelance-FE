@@ -1,9 +1,10 @@
+import AppButton from "@/components/Button";
 import { IFieldConfig } from "@/components/CreateForm";
 import { MilestoneRow } from "@/components/specific/teambuilder/TeamProjects";
 import StatusDropdown from "@/components/StatusDropdown";
 import { STATUS } from "@/constants/status_dropdown";
 import type { CandidateRow } from "@/types/teamBuilder";
-import { colors } from "@/utils/styles/colors";
+import { buttonColors, colors } from "@/utils/styles/colors";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import AssignmentIcon from "@mui/icons-material/Assignment";
@@ -658,3 +659,94 @@ export const initialTasksByMilestone = {
   3: [],
   4: [],
 };
+
+export const teamBuilderPaymentStats = [
+  {
+    title: "Total Project Cost",
+    subtitle: "$12,000",
+    color: "linear-gradient(135deg, #5AA9FF, #80C4FF)",
+    icon: "QueryStatsIcon" as const,
+  },
+  {
+    title: "System Charges",
+    subtitle: "$1,500",
+    color: "linear-gradient(135deg, #00997B, #4BD7BB)",
+    icon: "CurrencyExchangeIcon" as const,
+  },
+  {
+    title: "Consultant Cost",
+    subtitle: "$10,500",
+    color: "linear-gradient(135deg, #FFB64E, #FFD27F)",
+    icon: "EventAvailableIcon" as const,
+  },
+  {
+    title: "Monthly Milestone",
+    subtitle: "$5,000",
+    color: "linear-gradient(135deg, #FF5471, #FF99AB)",
+    icon: "BallotIcon" as const,
+  },
+];
+
+export const teamBuilderPaymentColumns = [
+  { field: "milestone", headerName: "Milestone", flex: 3 },
+  { field: "duedate", headerName: "Due Date", flex: 3 },
+  { field: "amount", headerName: "Amount", flex: 1 },
+];
+
+export const teamBuilderPaymentRows = [
+  {
+    id: 1,
+    milestone: "Milestone 1",
+    duedate: "10.09.2025",
+    amount: "$2,500",
+  },
+  {
+    id: 2,
+    milestone: "Milestone 2",
+    duedate: "10.10.2025",
+    amount: "$3,500",
+  },
+  {
+    id: 3,
+    milestone: "Milestone 3",
+    duedate: "10.11.2025",
+    amount: "$3,500",
+  }
+];
+
+export const teamBuilderPaymentWiseColumns = [
+  { field: "accountnumber", headerName: "Account Number", flex: 3 },
+  { field: "amount", headerName: "Amount", flex: 3 },
+  {
+    field: "invoice",
+    headerName: "Invoice",
+    flex: 1,
+    renderCell: (params: GridRenderCellParams) => {
+      const label = params.value;
+      if (!label) return null;
+
+      if (label === "-") {
+        return (
+          <Box
+            component="span"
+            sx={{ color: "text.secondary", fontSize: "0.875rem" }}
+          >
+            {label}
+          </Box>
+        );
+      }
+
+      const colorKey = buttonColors[label] || "GREY";
+      return <AppButton label={label} colorKey={colorKey} />;
+    },
+  },
+];
+
+export const teamBuilderPaymentWiseRows = [
+  {
+    id: 1,
+    accountnumber: "123556332255663151155315",
+    amount: "$2,500",
+    invoice: "Upload receipt",
+  }
+];
