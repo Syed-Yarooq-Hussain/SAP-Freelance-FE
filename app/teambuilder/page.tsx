@@ -7,6 +7,7 @@ import {
   default as Step01,
   default as TeamCreation,
 } from "@/components/specific/teambuilder/TeamCreation";
+import TeamProjects from "@/components/specific/teambuilder/TeamProjects";
 import { teamBuilderSteps } from "@/data/teamBuilder";
 import colors from "@/utils/styles/colors";
 import { Box } from "@mui/material";
@@ -29,6 +30,8 @@ function TeamBuilderContent() {
   }, [activeStep, searchParams, router]);
 
   const goStep2 = () => setActiveStep(2);
+  const goStep3 = () => setActiveStep(3);
+  const goStep4 = () => setActiveStep(4);
 
   const current = useMemo(() => {
     switch (activeStep) {
@@ -40,7 +43,11 @@ function TeamBuilderContent() {
           />
         );
       case 2:
-        return <TeamConfirmation />;
+        return <TeamConfirmation onNext={goStep3} />;
+      case 3:
+        return <TeamProjects onBack={goStep2} onNext={goStep4} />;
+      case 4:
+        return <Box sx={{ mt: 3 }}>Payments (Step 04) — TODO</Box>;
       default:
         return <TeamCreation onNext={goStep2} />;
     }
