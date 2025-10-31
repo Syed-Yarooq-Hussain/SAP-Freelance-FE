@@ -134,7 +134,7 @@ export default function TeamConfirmation({ onNext }: TeamConfirmationProps) {
         label="Proceed to next step"
         colorKey="BLUE"
         width={180}
-        onClick={onNext}   // ← navigate to Step 03
+        onClick={onNext}
       />
       <AppButton label="Discard" colorKey="RED" width={180} />
     </Box>

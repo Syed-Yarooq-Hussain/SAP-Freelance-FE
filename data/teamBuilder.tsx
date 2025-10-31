@@ -7,13 +7,12 @@ import { colors } from "@/utils/styles/colors";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import AssignmentIcon from "@mui/icons-material/Assignment";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import EventSeatIcon from "@mui/icons-material/EventSeat";
 import Groups2Icon from "@mui/icons-material/Groups2";
-import { Box, IconButton, MenuItem, Select, Typography } from "@mui/material";
+import { Box, MenuItem, Select, Stack, Typography } from "@mui/material";
 import {
   GridColDef,
   GridRenderCellParams,
@@ -381,17 +380,10 @@ export const getMilestoneCols = (
     flex: 0.7,
     sortable: false,
     renderCell: () => (
-      <Box sx={{ display: "flex", gap: 0.5 }}>
-        <IconButton size="small">
-          <EditIcon fontSize="small" />
-        </IconButton>
-        <IconButton size="small">
-          <ContentCopyIcon fontSize="small" />
-        </IconButton>
-        <IconButton size="small">
-          <DeleteOutlineIcon fontSize="small" />
-        </IconButton>
-      </Box>
+      <Stack direction="row" spacing={1}>
+        <EditIcon color="primary" fontSize="small" />
+        <DeleteIcon color="error" fontSize="small" />
+      </Stack>
     ),
   },
 ];
@@ -514,77 +506,10 @@ export const taskColumns: GridColDef[] = [
     flex: 0.6,
     sortable: false,
     renderCell: () => (
-      <Box sx={{ display: "flex", gap: 0.5 }}>
-        <IconButton size="small">
-          <EditIcon fontSize="small" />
-        </IconButton>
-        <IconButton size="small">
-          <ContentCopyIcon fontSize="small" />
-        </IconButton>
-        <IconButton size="small">
-          <DeleteOutlineIcon fontSize="small" />
-        </IconButton>
-      </Box>
-    ),
-  },
-];
-
-export const milestoneCols: GridColDef[] = [
-  { field: "name", headerName: "Name", flex: 1 },
-  {
-    field: "date",
-    headerName: "Date",
-    flex: 0.6,
-    renderCell: (p: GridRenderCellParams) => {
-      const iso = String(p.row.date ?? "");
-      if (!iso) return <>-</>;
-      const [y, m, d] = iso.split("-");
-      return <>{`${d}.${m}.${y}`}</>;
-    },
-  },
-  { field: "description", headerName: "Description", flex: 1.6 },
-  { field: "approval", headerName: "Approval", flex: 0.8 },
-  {
-    field: "tasks",
-    headerName: "Tasks",
-    flex: 0.6,
-    sortable: false,
-    renderCell: (p: GridRenderCellParams) => {
-      const row = p.row;
-      return (
-        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-          <Typography
-            sx={{
-              color: colors.BLUE,
-              fontWeight: 600,
-              cursor: "pointer",
-              "&:hover": { textDecoration: "underline" },
-            }}
-          >
-            {row.tasks}
-          </Typography>
-          <ArrowDropDownIcon fontSize="small" sx={{ color: "#8f9bb3" }} />
-        </Box>
-      );
-    },
-  },
-  {
-    field: "actions",
-    headerName: "Actions",
-    flex: 0.7,
-    sortable: false,
-    renderCell: () => (
-      <Box sx={{ display: "flex", gap: 0.5 }}>
-        <IconButton size="small">
-          <EditIcon fontSize="small" />
-        </IconButton>
-        <IconButton size="small">
-          <ContentCopyIcon fontSize="small" />
-        </IconButton>
-        <IconButton size="small">
-          <DeleteOutlineIcon fontSize="small" />
-        </IconButton>
-      </Box>
+      <Stack direction="row" spacing={1}>
+        <EditIcon color="primary" fontSize="small" />
+        <DeleteIcon color="error" fontSize="small" />
+      </Stack>
     ),
   },
 ];

@@ -2,12 +2,12 @@
 
 import AppNavbar from "@/components/AppNavbar";
 import StepProgress from "@/components/StepProgress";
-import TeamConfirmation from "@/components/specific/teambuilder/TeamConfirmation"; // step 02
-import TeamProjects from "@/components/specific/teambuilder/TeamProjects";       // step 03 (new)
+import TeamConfirmation from "@/components/specific/teambuilder/TeamConfirmation";
 import {
   default as Step01,
   default as TeamCreation,
 } from "@/components/specific/teambuilder/TeamCreation";
+import TeamProjects from "@/components/specific/teambuilder/TeamProjects";
 import { teamBuilderSteps } from "@/data/teamBuilder";
 import colors from "@/utils/styles/colors";
 import { Box } from "@mui/material";
@@ -19,7 +19,9 @@ function TeamBuilderContent() {
   const searchParams = useSearchParams();
   const stepParam = searchParams.get("step");
   const initialStep = stepParam ? Number(stepParam) : 1;
-  const [activeStep, setActiveStep] = useState(Math.max(1, Math.min(4, initialStep)));
+  const [activeStep, setActiveStep] = useState(
+    Math.max(1, Math.min(4, initialStep))
+  );
 
   useEffect(() => {
     const q = new URLSearchParams(Array.from(searchParams.entries()));
@@ -34,11 +36,16 @@ function TeamBuilderContent() {
   const current = useMemo(() => {
     switch (activeStep) {
       case 1:
-        return <Step01 onNext={goStep2} onDiscard={() => console.log("Discard clicked")} />;
+        return (
+          <Step01
+            onNext={goStep2}
+            onDiscard={() => console.log("Discard clicked")}
+          />
+        );
       case 2:
-        return <TeamConfirmation onNext={goStep3} />;            // ← Proceed → Step 03
+        return <TeamConfirmation onNext={goStep3} />;
       case 3:
-        return <TeamProjects onBack={goStep2} onNext={goStep4} />; // ← Back/Next wiring
+        return <TeamProjects onBack={goStep2} onNext={goStep4} />;
       case 4:
         return <Box sx={{ mt: 3 }}>Payments (Step 04) — TODO</Box>;
       default:
@@ -48,7 +55,11 @@ function TeamBuilderContent() {
 
   return (
     <Box sx={{ mt: 10, px: 4 }}>
-      <StepProgress steps={teamBuilderSteps} activeStep={activeStep} activeColor={colors.RED} />
+      <StepProgress
+        steps={teamBuilderSteps}
+        activeStep={activeStep}
+        activeColor={colors.RED}
+      />
       {current}
     </Box>
   );
