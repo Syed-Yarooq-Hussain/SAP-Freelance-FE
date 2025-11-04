@@ -21,7 +21,7 @@ export type AdminClientRow = {
 export const getAdminClientColumns = (
   onToggleLock: (id: number) => void
 ): GridColDef<AdminClientRow>[] => [
-  { field: "name", headerName: "Name", flex: 2 },
+  { field: "name", headerName: "Name", flex: 1 },
   { field: "activeprojects", headerName: "Active Projects", flex: 1 },
   { field: "completedprojects", headerName: "Completed Projects", flex: 1 },
   { field: "draftprojects", headerName: "Draft Projects", flex: 1 },
