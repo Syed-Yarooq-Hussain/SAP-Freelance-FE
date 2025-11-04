@@ -53,21 +53,21 @@ export default function Payment<
               colorKey="BLUE"
               variant={active === "upcoming" ? "contained" : "outlined"}
               onClick={() => setActive("upcoming")}
-              width="auto"
+              width={200}
             />
             <AppButton
               label="Made payment"
               colorKey="BLUE"
               variant={active === "made" ? "contained" : "outlined"}
               onClick={() => setActive("made")}
-              width="auto"
+              width={200}
             />
             <AppButton
               label="Outstanding"
               colorKey="BLUE"
               variant={active === "outstanding" ? "contained" : "outlined"}
               onClick={() => setActive("outstanding")}
-              width="auto"
+              width={200}
             />
           </Box>
 
