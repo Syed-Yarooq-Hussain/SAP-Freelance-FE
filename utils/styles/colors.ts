@@ -10,6 +10,7 @@ export const colors = {
   DARK_GREEN: "#388e3c",
   GREY: "#9e9e9e",
   PURPLE: "#8e24aa",
+  GRAY_DARK: "#616161",
 };
 
 export const statusColors: Record<string, keyof typeof colors> = {
@@ -30,6 +31,8 @@ export const statusColors: Record<string, keyof typeof colors> = {
   Interviewing: "YELLOW",
   Waiting: "ORANGE",
   Accepted: "GREEN",
+  Planning: "BLUE",
+  "Not selected": "RED",
 };
 
 export const buttonColors: Record<string, keyof typeof colors> = {

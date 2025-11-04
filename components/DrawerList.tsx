@@ -42,6 +42,8 @@ type RoleRoutes = {
   PAYMENTS?: string;
   CALENDAR?: string;
   CONSULTANT?: string;
+  CONSULTANTS?: string;
+  CLIENT?: string;
 };
 
 const DrawerList: FC<DrawerListProps> = ({ open }) => {
@@ -59,12 +61,44 @@ const DrawerList: FC<DrawerListProps> = ({ open }) => {
         ? APP_ROUTES.CONSULTANT
         : APP_ROUTES.ADMIN;
 
-    const baseItems: DrawerItem[] = [
-      {
-        icon: <DashboardIcon />,
-        label: "Dashboard",
-        link: routeSet.DASHBOARD,
-      },
+    if (role === Roles.ADMIN) {
+      return [
+        {
+          icon: <DashboardIcon />,
+          label: "Dashboard",
+          link: routeSet.DASHBOARD,
+        },
+        {
+          icon: <ProfileIcon />,
+          label: "Profile",
+          link: routeSet.PROFILE || "#",
+        },
+        {
+          icon: <PeopleIcon />,
+          label: "Consultant",
+          link: routeSet.CONSULTANTS || "#",
+        },
+        { icon: <PeopleIcon />, label: "Clients", link: routeSet.CLIENT || "#" },
+        {
+          icon: <WorkIcon />,
+          label: "Projects",
+          link: routeSet.PROJECTS || "#",
+        },
+        {
+          icon: <EventNoteIcon />,
+          label: "Interviews",
+          link: routeSet.INTERVIEWS || "#",
+        },
+        {
+          icon: <PaymentIcon />,
+          label: "Payments",
+          link: routeSet.PAYMENTS || "#",
+        },
+      ];
+    }
+
+    const base: DrawerItem[] = [
+      { icon: <DashboardIcon />, label: "Dashboard", link: routeSet.DASHBOARD },
       {
         icon: <ProfileIcon />,
         label: "Profile",
@@ -73,30 +107,26 @@ const DrawerList: FC<DrawerListProps> = ({ open }) => {
     ];
 
     if (role === Roles.CLIENT && routeSet.CONSULTANT) {
-      baseItems.push({
+      base.push({
         icon: <PeopleIcon />,
         label: "Consultant",
         link: routeSet.CONSULTANT,
       });
     } else if (role === Roles.CONSULTANT && routeSet.CALENDAR) {
-      baseItems.push({
+      base.push({
         icon: <CalendarMonthIcon />,
         label: "Calendar",
         link: routeSet.CALENDAR,
       });
     }
 
-    baseItems.push(
+    base.push(
       {
         icon: <EventNoteIcon />,
         label: "Interviews",
         link: routeSet.INTERVIEWS || "#",
       },
-      {
-        icon: <WorkIcon />,
-        label: "Projects",
-        link: routeSet.PROJECTS || "#",
-      },
+      { icon: <WorkIcon />, label: "Projects", link: routeSet.PROJECTS || "#" },
       {
         icon: <DescriptionIcon />,
         label: "Documents",
@@ -109,7 +139,7 @@ const DrawerList: FC<DrawerListProps> = ({ open }) => {
       }
     );
 
-    return baseItems;
+    return base;
   }, [role]);
 
   return (
@@ -117,7 +147,6 @@ const DrawerList: FC<DrawerListProps> = ({ open }) => {
       {items.map((item, index) => {
         const isActive =
           pathname === item.link || pathname.startsWith(`${item.link}/`);
-
         return (
           <ListItem key={index} disablePadding>
             <ListItemButton
@@ -128,9 +157,7 @@ const DrawerList: FC<DrawerListProps> = ({ open }) => {
                 px: 2,
                 alignItems: "center",
                 bgcolor: isActive ? "#F2F3F7" : "transparent",
-                "&:hover": {
-                  bgcolor: isActive ? "grey.300" : "grey.100",
-                },
+                "&:hover": { bgcolor: isActive ? "grey.300" : "grey.100" },
               }}
             >
               <ListItemIcon

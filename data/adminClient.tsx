@@ -8,23 +8,23 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { Box, IconButton, Tooltip } from "@mui/material";
 import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 
-export type AdminConsultantRow = {
+export type AdminClientRow = {
   id: number;
   avatar: string;
   name: string;
-  modules: string;
-  experience: string;
-  hourlyRate: string;
+  activeprojects: number;
+  completedprojects: number;
+  draftprojects: number;
   locked?: boolean;
 };
 
-export const getAdminConsultantColumns = (
+export const getAdminClientColumns = (
   onToggleLock: (id: number) => void
-): GridColDef<AdminConsultantRow>[] => [
+): GridColDef<AdminClientRow>[] => [
   { field: "name", headerName: "Name", flex: 2 },
-  { field: "modules", headerName: "Modules", flex: 2 },
-  { field: "experience", headerName: "Experience", flex: 1 },
-  { field: "hourlyRate", headerName: "Hourly Rate", flex: 1 },
+  { field: "activeprojects", headerName: "Active Projects", flex: 1 },
+  { field: "completedprojects", headerName: "Completed Projects", flex: 1 },
+  { field: "draftprojects", headerName: "Draft Projects", flex: 1 },
   {
     field: "action",
     headerName: "Action",
@@ -32,7 +32,7 @@ export const getAdminConsultantColumns = (
     sortable: false,
     filterable: false,
     disableColumnMenu: true,
-    renderCell: (params: GridRenderCellParams<AdminConsultantRow>) => {
+    renderCell: (params: GridRenderCellParams<AdminClientRow>) => {
       const row = params.row;
       const isLocked = !!row.locked;
 
@@ -88,122 +88,122 @@ export const getAdminConsultantColumns = (
   },
 ];
 
-export const adminConsultantRows: AdminConsultantRow[] = [
+export const adminClientRows: AdminClientRow[] = [
   {
     id: 1,
     avatar: "/images/team1.jpg",
     name: "Marvin McKinney",
-    modules: "SAP MM, S/4HANA",
-    experience: "9 Years",
-    hourlyRate: "$15/hour",
+    activeprojects: 4,
+    completedprojects: 0,
+    draftprojects: 3,
     locked: false,
   },
   {
     id: 2,
     avatar: "/images/team2.jpg",
     name: "Savannah Nguyen",
-    modules: "SAP SD, S/4HANA",
-    experience: "9 Years",
-    hourlyRate: "$20/hour",
+    activeprojects: 0,
+    completedprojects: 2,
+    draftprojects: 2,
     locked: true,
   },
   {
     id: 3,
     avatar: "/images/team3.jpg",
     name: "Albert Flores",
-    modules: "SAP SD, Fiori",
-    experience: "9 Years",
-    hourlyRate: "$18/hour",
+    activeprojects: 1,
+    completedprojects: 0,
+    draftprojects: 4,
     locked: false,
   },
   {
     id: 4,
     avatar: "/images/team1.jpg",
     name: "Marvin McKinney",
-    modules: "SAP MM, S/4HANA",
-    experience: "9 Years",
-    hourlyRate: "$15/hour",
+    activeprojects: 1,
+    completedprojects: 4,
+    draftprojects: 5,
     locked: false,
   },
   {
     id: 5,
     avatar: "/images/team2.jpg",
     name: "Savannah Nguyen",
-    modules: "SAP SD, S/4HANA",
-    experience: "9 Years",
-    hourlyRate: "$20/hour",
+    activeprojects: 2,
+    completedprojects: 0,
+    draftprojects: 4,
     locked: true,
   },
   {
     id: 6,
     avatar: "/images/team3.jpg",
     name: "Albert Flores",
-    modules: "SAP SD, Fiori",
-    experience: "9 Years",
-    hourlyRate: "$18/hour",
+    activeprojects: 2,
+    completedprojects: 5,
+    draftprojects: 0,
     locked: false,
   },
   {
     id: 7,
     avatar: "/images/team1.jpg",
     name: "Marvin McKinney",
-    modules: "SAP MM, S/4HANA",
-    experience: "9 Years",
-    hourlyRate: "$15/hour",
+    activeprojects: 1,
+    completedprojects: 2,
+    draftprojects: 1,
     locked: false,
   },
   {
     id: 8,
     avatar: "/images/team2.jpg",
     name: "Savannah Nguyen",
-    modules: "SAP SD, S/4HANA",
-    experience: "9 Years",
-    hourlyRate: "$20/hour",
+    activeprojects: 5,
+    completedprojects: 3,
+    draftprojects: 0,
     locked: true,
   },
   {
     id: 9,
     avatar: "/images/team3.jpg",
     name: "Albert Flores",
-    modules: "SAP SD, Fiori",
-    experience: "9 Years",
-    hourlyRate: "$18/hour",
+    activeprojects: 5,
+    completedprojects: 1,
+    draftprojects: 1,
     locked: false,
   },
   {
     id: 10,
     avatar: "/images/team1.jpg",
     name: "Marvin McKinney",
-    modules: "SAP MM, S/4HANA",
-    experience: "9 Years",
-    hourlyRate: "$15/hour",
+    activeprojects: 3,
+    completedprojects: 5,
+    draftprojects: 5,
     locked: false,
   },
   {
     id: 11,
     avatar: "/images/team2.jpg",
     name: "Savannah Nguyen",
-    modules: "SAP SD, S/4HANA",
-    experience: "9 Years",
-    hourlyRate: "$20/hour",
+    activeprojects: 2,
+    completedprojects: 4,
+    draftprojects: 4,
     locked: true,
   },
   {
     id: 12,
     avatar: "/images/team3.jpg",
     name: "Albert Flores",
-    modules: "SAP SD, Fiori",
-    experience: "9 Years",
-    hourlyRate: "$18/hour",
+    activeprojects: 3,
+    completedprojects: 5,
+    draftprojects: 0,
     locked: false,
   },
   {
     id: 13,
     avatar: "/images/team1.jpg",
     name: "Marvin McKinney",
-    modules: "SAP MM, S/4HANA",
-    experience: "9 Years",
-    hourlyRate: "$15/hour",
+    activeprojects: 3,
+    completedprojects: 3,
+    draftprojects: 0,
     locked: false,
   },
 ];

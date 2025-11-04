@@ -25,11 +25,13 @@ export default function ClientDashboardPage() {
           title: "Project Highlights",
           columns: clientInterviewColumns,
           rows: clientInterviewRows,
+          showViewMore: true,
         }}
         financeTable={{
           title: "Payment Pending",
           columns: clientTaskColumns,
           rows: clientTaskRows,
+          showViewMore: true,
         }}
         sidebarSections={getClientSidebar(router)}
       />

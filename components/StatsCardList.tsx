@@ -11,7 +11,20 @@ interface DashboardStatsProps {
 
 const StatsCardList: FC<DashboardStatsProps> = ({ stats, containerProps }) => {
   return (
-    <Box display="flex" gap={2} flexWrap="wrap" {...containerProps}>
+    <Box
+      {...containerProps}
+      sx={{
+        display: "grid",
+        gap: 2,
+        gridTemplateColumns: {
+          xs: "1fr",
+          sm: "repeat(2, 1fr)",
+          md: "repeat(auto-fit, minmax(260px, 1fr))",
+        },
+        alignItems: "stretch",
+        ...(containerProps?.sx || {}),
+      }}
+    >
       {stats.map((stat, index) => (
         <StatCard key={index} {...stat} />
       ))}

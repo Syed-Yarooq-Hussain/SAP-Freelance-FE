@@ -36,6 +36,7 @@ export type DataTableProps<T extends GridValidRowModel> = {
   showAvatar?: boolean;
   avatarField?: keyof T;
   enableSelection?: boolean;
+  selectionActions?: React.ReactNode;
 };
 
 export default function DataTable<T extends GridValidRowModel>({
@@ -51,6 +52,7 @@ export default function DataTable<T extends GridValidRowModel>({
   showAvatar = false,
   avatarField,
   enableSelection = false,
+  selectionActions,
 }: DataTableProps<T>) {
   const [selectedRows, setSelectedRows] = React.useState<Set<string>>(
     new Set()
@@ -189,14 +191,28 @@ export default function DataTable<T extends GridValidRowModel>({
       </Box>
 
       {enableSelection && selectedRows.size > 0 && (
-        <Typography
-          variant="body2"
-          color="text.secondary"
+        <Box
           mt={1.5}
-          sx={{ fontWeight: 500 }}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 2,
+            flexWrap: "wrap",
+          }}
         >
-          {selectedRows.size} selected
-        </Typography>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{ fontWeight: 500 }}
+          >
+            {selectedRows.size} selected
+          </Typography>
+
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+            {selectionActions}
+          </Box>
+        </Box>
       )}
 
       {showViewMore && (

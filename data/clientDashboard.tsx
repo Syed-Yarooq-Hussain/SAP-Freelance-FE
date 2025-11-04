@@ -176,7 +176,7 @@ export const getClientSidebar = (router: AppRouterInstance): SidebarSectionInfo[
         type: "button",
         buttonText: "Go to completion",
         buttonColor: "BLUE",
-      },
+        onButtonClick: () => router.push("/admin/dashboard"),},
       {
         type: "text",
         label: "Project Scope",
