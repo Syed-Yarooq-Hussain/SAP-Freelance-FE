@@ -32,28 +32,26 @@ export const adminStats = [
     color: "linear-gradient(135deg, #FF5471, #FF99AB)",
     icon: "BallotIcon" as const,
   },
-
-  // NEW 4
   {
-    title: "Active consultant",
+    title: "Active Consultant",
     subtitle: 230,
     color: "linear-gradient(135deg, #002DFF, #00125B)",
     icon: "WorkOutlineIcon" as const,
   },
   {
-    title: "Active clients",
+    title: "Active Clients",
     subtitle: 160,
     color: "linear-gradient(135deg, #0DBA7C, #004A2D)",
     icon: "GroupWorkIcon" as const,
   },
   {
-    title: "Interviews this week",
+    title: "Interviews this Week",
     subtitle: 20,
     color: "linear-gradient(135deg, #FF9800, #7A4300)",
     icon: "EventAvailableIcon" as const,
   },
   {
-    title: "Upcoming projects",
+    title: "Upcoming Projects",
     subtitle: 5,
     color: "linear-gradient(135deg, #FF3B5F, #2B0010)",
     icon: "UpdateIcon" as const,
