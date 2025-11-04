@@ -1,13 +1,15 @@
 "use client";
 
 import DataTable from "@/components/DataTable";
+import FilterDrawer from "@/components/FilterDrawer";
 import DynamicPopup from "@/components/Popup";
 import colors from "@/utils/styles/colors";
-import { Box, Link } from "@mui/material";
+import FilterListIcon from "@mui/icons-material/FilterList";
+import { Box, Button, Link, Typography } from "@mui/material";
 import {
-    GridColDef,
-    GridRenderCellParams,
-    GridValidRowModel,
+  GridColDef,
+  GridRenderCellParams,
+  GridValidRowModel,
 } from "@mui/x-data-grid";
 import { useState } from "react";
 
@@ -22,14 +24,21 @@ interface ConsultantProps<T extends GridValidRowModel = GridValidRowModel> {
   columns: GridColDef<T>[];
   rows: T[];
   showMeetingActions?: boolean;
+  showFilters?: boolean;
 }
 
 export default function Consultant<
   T extends GridValidRowModel = GridValidRowModel
->({ title, columns, rows, showMeetingActions = false }: ConsultantProps<T>) {
+>({
+  title,
+  columns,
+  rows,
+  showMeetingActions = false,
+  showFilters = false,
+}: ConsultantProps<T>) {
+  const [filterOpen, setFilterOpen] = useState(false);
   const [scheduleOpen, setScheduleOpen] = useState(false);
   const [rescheduleOpen, setRescheduleOpen] = useState(false);
-
   const [scheduleData, setScheduleData] = useState<MeetingData>({
     date: "",
     time: "",
@@ -101,8 +110,47 @@ export default function Consultant<
           bgcolor: "background.paper",
         }}
       >
+        {showFilters && (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 1.5,
+            }}
+          >
+            <Typography variant="h6" sx={{ fontWeight: 600 }}>
+              {title}
+            </Typography>
+
+            <Button
+              onClick={() => setFilterOpen(true)}
+              startIcon={<FilterListIcon />}
+              sx={{
+                border: `1px solid ${colors.BLUE}`,
+                color: colors.BLUE,
+                textTransform: "none",
+                borderRadius: "50px",
+                fontWeight: 500,
+                px: 2,
+                py: 0.5,
+                fontSize: "0.875rem",
+                bgcolor: "white",
+                "&:hover": {
+                  bgcolor: `${colors.BLUE}10`,
+                  borderColor: colors.BLUE,
+                },
+                boxShadow: "0px 1px 2px rgba(0,0,0,0.05)",
+                transition: "all 0.2s ease",
+              }}
+            >
+              Filters
+            </Button>
+          </Box>
+        )}
+
         <DataTable
-          title={title}
+          title={showFilters ? "" : title}
           columns={finalColumns}
           rows={rows}
           pageSize={10}
@@ -110,6 +158,10 @@ export default function Consultant<
           avatarField="avatar"
         />
       </Box>
+
+      {showFilters && (
+        <FilterDrawer open={filterOpen} onClose={() => setFilterOpen(false)} />
+      )}
 
       <DynamicPopup
         open={scheduleOpen}

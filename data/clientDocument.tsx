@@ -1,23 +1,21 @@
 "use client";
 
+import colors from "@/utils/styles/colors";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { Stack } from "@mui/material";
+import { IconButton, Stack, Tooltip } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 
-export const clientDocumentColumns: GridColDef[] = [
+export const clientContractColumns: GridColDef[] = [
   {
     field: "name",
     headerName: "Name",
-    flex: 2,
+    flex: 3,
     renderCell: (params) => (
       <strong style={{ textDecoration: "underline" }}>{params.value}</strong>
     ),
   },
-  { field: "deadline", headerName: "Deadline", flex: 2 },
-  { field: "expirationDate", headerName: "Expiration Date", flex: 2 },
-  { field: "projects", headerName: "Projects", flex: 1 },
-  { field: "used", headerName: "Used", flex: 1 },
+  { field: "date", headerName: "Date", flex: 3 },
   {
     field: "actions",
     headerName: "Actions",
@@ -27,44 +25,51 @@ export const clientDocumentColumns: GridColDef[] = [
     disableColumnMenu: true,
     renderCell: () => (
       <Stack direction="row" spacing={1}>
-        <EditIcon color="primary" fontSize="small" />
-        <DeleteIcon color="error" fontSize="small" />
+        <Tooltip title="Edit">
+          <IconButton
+            size="small"
+            onClick={() => console.log("Edit")}
+            sx={{
+              color: colors.BLUE,
+              "&:hover": { bgcolor: `${colors.BLUE}15` },
+            }}
+          >
+            <EditIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Delete">
+          <IconButton
+            size="small"
+            onClick={() => console.log("Delete")}
+            sx={{
+              color: colors.RED,
+              "&:hover": { bgcolor: `${colors.RED}15` },
+            }}
+          >
+            <DeleteIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
       </Stack>
     ),
   },
 ];
 
-export const clientDocumentRows = [
-  {
-    id: 1,
-    name: "NDA",
-    deadline: "15.09.2028",
-    expirationDate: "15.09.2028",
-    projects: 5,
-    used: 50,
-  },
-  {
-    id: 2,
-    name: "Service",
-    deadline: "15.09.2028",
-    expirationDate: "15.09.2028",
-    projects: 5,
-    used: 50,
-  },
-  {
-    id: 3,
-    name: "Property ownership",
-    deadline: "15.09.2028",
-    expirationDate: "15.09.2028",
-    projects: 5,
-    used: 50,
-  },
-  {
-    id: 4,
-    name: "Project contract",
-    deadline: "15.09.2028",
-    expirationDate: "15.09.2028",
-    projects: 5,
-    used: 50,
-  },
+export const clientContractRows = [
+  { id: 1, name: "NDA", date: "15.09.2028" },
+  { id: 2, name: "Service", date: "15.09.2028" },
+  { id: 3, name: "Property ownership", date: "15.09.2028" },
+  { id: 4, name: "Project contract", date: "15.09.2028" },
+];
+
+export const adminContractRows = [
+  { id: 11, name: "NDA", date: "15.09.2028" },
+  { id: 12, name: "Service", date: "15.09.2028" },
+  { id: 13, name: "Property ownership", date: "15.09.2028" },
+  { id: 14, name: "Project contract", date: "15.09.2028" },
+];
+
+export const signContractRows = [
+  { id: 21, name: "NDA", date: "15.09.2028" },
+  { id: 22, name: "Service", date: "15.09.2028" },
+  { id: 23, name: "Project contract", date: "15.09.2028" },
 ];

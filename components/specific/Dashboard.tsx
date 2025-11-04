@@ -15,14 +15,20 @@ interface TableData<T extends GridValidRowModel = GridValidRowModel> {
   title: string;
   columns: GridColDef<T>[];
   rows: T[];
+  pageSize?: number;
+  showAvatar?: boolean;
+  avatarField?: string;
+  enableSelection?: boolean;
+  showViewMore?: boolean;
+  selectionActions?: React.ReactNode;
 }
 
 interface DashboardProps<T extends GridValidRowModel = GridValidRowModel> {
-  announcements: string[];
+  announcements?: string[];
   stats: StatCardProps[];
   projectTable: TableData<T>;
-  financeTable: TableData<T>;
-  sidebarSections: SidebarSectionInfo[];
+  financeTable?: TableData<T>;
+  sidebarSections?: SidebarSectionInfo[];
 }
 
 const Dashboard = <T extends GridValidRowModel = GridValidRowModel>({
@@ -34,11 +40,14 @@ const Dashboard = <T extends GridValidRowModel = GridValidRowModel>({
 }: DashboardProps<T>) => {
   return (
     <Box>
-      <Announcement items={announcements} />
+      {announcements && announcements.length > 0 && (
+        <Announcement items={announcements} />
+      )}
+
       <DashboardStats stats={stats} containerProps={{ marginBottom: "30px" }} />
 
       <Grid container spacing={2}>
-        <Grid size={{ xs: 12, md: 9 }}>
+        <Grid size={{ xs: 12, md: sidebarSections ? 9 : 12 }}>
           <Box
             sx={{
               p: 2,
@@ -57,40 +66,51 @@ const Dashboard = <T extends GridValidRowModel = GridValidRowModel>({
               borderRadius: 2,
               boxShadow: 2,
               bgcolor: "background.paper",
-              mb: 2,
+              mb: financeTable ? 2 : 0,
             }}
           >
             <DataTable
               title={projectTable.title}
               columns={projectTable.columns}
               rows={projectTable.rows}
-              pageSize={5}
-              showViewMore
+              pageSize={projectTable.pageSize ?? 5}
+              showAvatar={projectTable.showAvatar ?? false}
+              avatarField={projectTable.avatarField}
+              enableSelection={projectTable.enableSelection ?? false}
+              showViewMore={projectTable.showViewMore ?? false}
+              selectionActions={projectTable.selectionActions}
             />
           </Box>
 
-          <Box
-            sx={{
-              p: 2,
-              borderRadius: 2,
-              boxShadow: 2,
-              bgcolor: "background.paper",
-              mb: 2,
-            }}
-          >
-            <DataTable
-              title={financeTable.title}
-              columns={financeTable.columns}
-              rows={financeTable.rows}
-              pageSize={5}
-              showViewMore
-            />
-          </Box>
+          {financeTable && (
+            <Box
+              sx={{
+                p: 2,
+                borderRadius: 2,
+                boxShadow: 2,
+                bgcolor: "background.paper",
+                mb: 2,
+              }}
+            >
+              <DataTable
+                title={financeTable.title}
+                columns={financeTable.columns}
+                rows={financeTable.rows}
+                pageSize={financeTable.pageSize ?? 5}
+                showAvatar={financeTable.showAvatar ?? false}
+                avatarField={financeTable.avatarField}
+                enableSelection={financeTable.enableSelection ?? false}
+                showViewMore={financeTable.showViewMore ?? false}
+              />
+            </Box>
+          )}
         </Grid>
 
-        <Grid size={{ xs: 12, md: 3 }}>
-          <SidebarInfo sections={sidebarSections} />
-        </Grid>
+        {sidebarSections && sidebarSections.length > 0 && (
+          <Grid size={{ xs: 12, md: 3 }}>
+            <SidebarInfo sections={sidebarSections} />
+          </Grid>
+        )}
       </Grid>
     </Box>
   );

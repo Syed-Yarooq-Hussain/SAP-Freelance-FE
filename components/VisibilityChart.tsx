@@ -1,20 +1,15 @@
 "use client";
 
-import dynamic from "next/dynamic";
-import {
-  Box,
-  MenuItem,
-  Select,
-  Typography,
-} from "@mui/material";
-import { useState } from "react";
+import { Box, MenuItem, Select, Typography } from "@mui/material";
 import type { ApexOptions } from "apexcharts";
+import dynamic from "next/dynamic";
+import { useState } from "react";
 
 const ApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 const chartOptions: ApexOptions = {
   chart: {
-    type: "line",
+    type: "area",
     height: 320,
     toolbar: { show: false },
     zoom: { enabled: false },
@@ -38,16 +33,31 @@ const chartOptions: ApexOptions = {
       "Nov",
       "Dec",
     ],
+    labels: { style: { colors: "#777", fontSize: "12px" } },
+    axisBorder: { show: false },
+    axisTicks: { show: false },
   },
-  markers: {
-    size: 4,
+  yaxis: {
+    labels: { style: { colors: "#777", fontSize: "12px" } },
   },
+  fill: {
+    type: "solid",
+    opacity: 0.5,
+  },
+  colors: ["#FF8F6DCC", "#DBA5FF"],
   legend: {
-    position: "top",
-    horizontalAlign: "left",
+    position: "bottom",
+    horizontalAlign: "center",
+    markers: {
+      size: 5,
+      shape: "circle",
+    },
+    labels: { colors: "#333" },
   },
-  dataLabels: {
-    enabled: false,
+  dataLabels: { enabled: false },
+  grid: {
+    borderColor: "#f1f1f1",
+    strokeDashArray: 3,
   },
   tooltip: {
     shared: true,
@@ -57,12 +67,12 @@ const chartOptions: ApexOptions = {
 
 const initialSeries = [
   {
-    name: "Visibility",
-    data: [40, 60, 50, 70, 60, 90, 50, 60, 70, 90, 80, 50],
+    name: "Consultant",
+    data: [30, 20, 40, 35, 60, 95, 30, 45, 65, 70, 80, 40],
   },
   {
-    name: "Profile views",
-    data: [30, 50, 40, 60, 70, 100, 60, 70, 60, 80, 60, 40],
+    name: "Clients",
+    data: [20, 35, 25, 45, 35, 65, 50, 55, 60, 50, 90, 30],
   },
 ];
 
@@ -81,12 +91,18 @@ const VisibilityChart = () => {
         }}
       >
         <Typography variant="h6" fontWeight="bold">
-          Visibility
+          Performance
         </Typography>
+
         <Select
           size="small"
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
+          sx={{
+            minWidth: 120,
+            fontSize: "0.9rem",
+            bgcolor: "background.paper",
+          }}
         >
           <MenuItem value="Monthly">Monthly</MenuItem>
           <MenuItem value="Quarterly">Quarterly</MenuItem>
@@ -97,7 +113,7 @@ const VisibilityChart = () => {
       <ApexChart
         options={chartOptions}
         series={series}
-        type="line"
+        type="area"
         height={320}
       />
     </Box>

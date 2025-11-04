@@ -22,11 +22,13 @@ export default function ConsultantDashboardPage() {
           title: "Project Pipeline",
           columns: interviewColumns,
           rows: interviewRows,
+          showViewMore: true,
         }}
         financeTable={{
           title: "Financial List",
           columns: taskColumns,
           rows: taskRows,
+          showViewMore: true,
         }}
         sidebarSections={consultantSidebar}
       />

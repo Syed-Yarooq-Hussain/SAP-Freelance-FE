@@ -13,7 +13,15 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import EventSeatIcon from "@mui/icons-material/EventSeat";
 import Groups2Icon from "@mui/icons-material/Groups2";
-import { Box, MenuItem, Select, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  IconButton,
+  MenuItem,
+  Select,
+  Stack,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import {
   GridColDef,
   GridRenderCellParams,
@@ -382,8 +390,30 @@ export const getMilestoneCols = (
     sortable: false,
     renderCell: () => (
       <Stack direction="row" spacing={1}>
-        <EditIcon color="primary" fontSize="small" />
-        <DeleteIcon color="error" fontSize="small" />
+        <Tooltip title="Edit">
+          <IconButton
+            size="small"
+            onClick={() => console.log("Edit")}
+            sx={{
+              color: colors.BLUE,
+              "&:hover": { bgcolor: `${colors.BLUE}15` },
+            }}
+          >
+            <EditIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Delete">
+          <IconButton
+            size="small"
+            onClick={() => console.log("Delete")}
+            sx={{
+              color: colors.RED,
+              "&:hover": { bgcolor: `${colors.RED}15` },
+            }}
+          >
+            <DeleteIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
       </Stack>
     ),
   },
@@ -508,8 +538,30 @@ export const taskColumns: GridColDef[] = [
     sortable: false,
     renderCell: () => (
       <Stack direction="row" spacing={1}>
-        <EditIcon color="primary" fontSize="small" />
-        <DeleteIcon color="error" fontSize="small" />
+        <Tooltip title="Edit">
+          <IconButton
+            size="small"
+            onClick={() => console.log("Edit")}
+            sx={{
+              color: colors.BLUE,
+              "&:hover": { bgcolor: `${colors.BLUE}15` },
+            }}
+          >
+            <EditIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Delete">
+          <IconButton
+            size="small"
+            onClick={() => console.log("Delete")}
+            sx={{
+              color: colors.RED,
+              "&:hover": { bgcolor: `${colors.RED}15` },
+            }}
+          >
+            <DeleteIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
       </Stack>
     ),
   },

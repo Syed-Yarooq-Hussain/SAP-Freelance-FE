@@ -41,8 +41,8 @@ const AppTitle: React.FC = () => {
       if (pathname.startsWith(APP_ROUTES.ADMIN.PAYMENTS)) return "Payments";
       if (pathname.startsWith(APP_ROUTES.ADMIN.PROFILE)) return "Profile";
       if (pathname.startsWith(APP_ROUTES.ADMIN.CONSULTANTS))
-        return "Consultants";
-      if (pathname.startsWith(APP_ROUTES.ADMIN.CLIENT)) return "Client";
+        return "Consultant";
+      if (pathname.startsWith(APP_ROUTES.ADMIN.CLIENT)) return "Clients";
       return "Dashboard";
     }
 

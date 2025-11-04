@@ -3,14 +3,14 @@
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
 import BallotIcon from "@mui/icons-material/Ballot";
 import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
+import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import GroupWorkIcon from "@mui/icons-material/GroupWork";
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
+import MarkEmailUnreadIcon from "@mui/icons-material/MarkEmailUnread";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import QueryStatsIcon from "@mui/icons-material/QueryStats";
-import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
-import MarkEmailUnreadIcon from "@mui/icons-material/MarkEmailUnread";
-import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import UpdateIcon from "@mui/icons-material/Update";
-import HighlightOffIcon from "@mui/icons-material/HighlightOff";
+import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
 import { Box, Card, CardContent, Typography } from "@mui/material";
 import { FC } from "react";
 
@@ -26,7 +26,6 @@ const icons = {
   EventAvailableIcon: <EventAvailableIcon fontSize="large" />,
   UpdateIcon: <UpdateIcon fontSize="large" />,
   HighlightOffIcon: <HighlightOffIcon fontSize="large" />,
-
 };
 
 export interface StatCardProps {
@@ -47,8 +46,8 @@ const StatCard: FC<StatCardProps> = ({
   return (
     <Card
       sx={{
-        flex: 1,
-        minWidth: 200,
+        width: "100%",
+        height: "100%",
         borderRadius: 2,
         background: color,
         color: "#fff",

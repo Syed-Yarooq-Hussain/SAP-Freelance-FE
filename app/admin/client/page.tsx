@@ -2,15 +2,15 @@
 
 import Sidebar from "@/components/Sidebar";
 import Consultant from "@/components/specific/Consultant";
-import { getAdminConsultantColumns, adminConsultantRows, AdminConsultantRow } from "@/data/adminConsultant";
+import { getAdminClientColumns, adminClientRows, AdminClientRow } from "@/data/adminClient";
 import { useMemo, useState } from "react";
 
-export default function AdminConsultantPage() {
-  const [rows, setRows] = useState<AdminConsultantRow[]>(adminConsultantRows);
+export default function AdminClientPage() {
+  const [rows, setRows] = useState<AdminClientRow[]>(adminClientRows);
 
   const columns = useMemo(
     () =>
-      getAdminConsultantColumns((id) =>
+      getAdminClientColumns((id) =>
         setRows((prev) =>
           prev.map((r) => (r.id === id ? { ...r, locked: !r.locked } : r))
         )
@@ -20,7 +20,7 @@ export default function AdminConsultantPage() {
 
   return (
     <Sidebar>
-      <Consultant title="Consultant" columns={columns} rows={rows} />
+      <Consultant title="Clients" columns={columns} rows={rows} />
     </Sidebar>
   );
 }
