@@ -1,14 +1,13 @@
-// AdminDashboardPage.tsx
 "use client";
 
+import AppButton from "@/components/Button";
 import Sidebar from "@/components/Sidebar";
 import Dashboard from "@/components/specific/Dashboard";
 import {
-  adminStats,
   adminConsultantColumns,
   adminConsultantRows,
+  adminStats,
 } from "@/data/adminDashboard";
-import AppButton from "@/components/Button";
 
 export default function AdminDashboardPage() {
   return (
@@ -23,7 +22,6 @@ export default function AdminDashboardPage() {
           showAvatar: true,
           avatarField: "avatar",
           enableSelection: true,
-          // NEW: inline accept/reject beside selected count
           selectionActions: (
             <>
               <AppButton label="Accept" colorKey="BLUE" width={180} />
