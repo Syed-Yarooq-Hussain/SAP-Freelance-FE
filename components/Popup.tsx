@@ -10,10 +10,11 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
+  MenuItem,
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 interface FieldConfig {
   id: string;
@@ -21,8 +22,9 @@ interface FieldConfig {
   type?: string;
   value?: string;
   placeholder?: string;
-  onChange?: (value: string | File) => void;
+  onChange?: (value: string) => void;
   helperText?: string;
+  options?: string[];
 }
 
 interface DynamicPopupProps {
@@ -57,6 +59,10 @@ const DynamicPopup: React.FC<DynamicPopupProps> = ({
   disableSubmit = false,
 }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(fileValue);
+
+  useEffect(() => {
+    if (!open) setSelectedFile(null);
+  }, [open]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
@@ -144,35 +150,64 @@ const DynamicPopup: React.FC<DynamicPopupProps> = ({
                   : 0,
             }}
           >
-            <TextField
-              fullWidth
-              label={field.label}
-              type={field.type || "text"}
-              placeholder={field.placeholder || ""}
-              value={field.value || ""}
-              onChange={(e) => field.onChange?.(e.target.value)}
-              size="small"
-              multiline={field.type !== "date" && field.type !== "time"}
-              minRows={3}
-              slotProps={{
-                inputLabel: {
-                  shrink: field.type === "date" || field.type === "time",
-                },
-              }}
-              sx={{
-                "& .MuiInputBase-root": {
-                  backgroundColor: "#f8f9fc",
-                  borderRadius: 1,
-                },
-              }}
-              helperText={field.helperText}
-            />
+            {field.options ? (
+              <TextField
+                select
+                fullWidth
+                label={field.label}
+                value={field.value || ""}
+                onChange={(e) => field.onChange?.(e.target.value)}
+                size="small"
+                sx={{
+                  "& .MuiInputBase-root": {
+                    backgroundColor: "#f8f9fc",
+                    borderRadius: 1,
+                  },
+                }}
+                helperText={field.helperText}
+              >
+                {field.options.map((opt) => (
+                  <MenuItem key={opt} value={opt}>
+                    {opt}
+                  </MenuItem>
+                ))}
+              </TextField>
+            ) : (
+              <TextField
+                fullWidth
+                label={field.label}
+                type={field.type || "text"}
+                placeholder={field.placeholder || ""}
+                value={field.value || ""}
+                onChange={(e) => field.onChange?.(e.target.value)}
+                size="small"
+                multiline={field.type !== "date" && field.type !== "time"}
+                minRows={3}
+                slotProps={{
+                  inputLabel: {
+                    shrink: field.type === "date" || field.type === "time",
+                  },
+                }}
+                sx={{
+                  "& .MuiInputBase-root": {
+                    backgroundColor: "#f8f9fc",
+                    borderRadius: 1,
+                  },
+                }}
+                helperText={field.helperText}
+              />
+            )}
           </Box>
         ))}
       </DialogContent>
 
       <DialogActions
-        sx={{ flexDirection: "column", alignItems: "center", pb: 2, gap: 1 }}
+        sx={{
+          flexDirection: "column",
+          alignItems: "center",
+          pb: 2,
+          gap: 1,
+        }}
       >
         {noteText && (
           <Typography
@@ -187,7 +222,6 @@ const DynamicPopup: React.FC<DynamicPopupProps> = ({
             {noteText}
           </Typography>
         )}
-
         <AppButton
           label={buttonText}
           colorKey={buttonColor}
