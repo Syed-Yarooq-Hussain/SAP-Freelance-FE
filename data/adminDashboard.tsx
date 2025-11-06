@@ -1,35 +1,35 @@
 "use client";
 
+import { StatCardProps } from "@/components/StatCard";
 import { colors } from "@/utils/styles/colors";
 import CancelIcon from "@mui/icons-material/Cancel";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { Box, IconButton, Tooltip, Typography } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 
-export const adminStats = [
-  // existing 4
+export const adminStats: StatCardProps[] = [
   {
     title: "Number of Projects",
     subtitle: 360,
-    color: "linear-gradient(135deg, #4680FF, #97B7FF)",
+    color: "linear-gradient(135deg,  #4680FF 50%, #97B7FF 100%)",
     icon: "QueryStatsIcon" as const,
   },
   {
     title: "Interviews Scheduled",
     subtitle: 10,
-    color: "linear-gradient(135deg, #00997B, #4BD7BB)",
+    color: "linear-gradient(135deg, #00997B 50%, #4BD7BB 100%)",
     icon: "PeopleAltIcon" as const,
   },
   {
     title: "Total Spend on Projects",
     subtitle: "$3000",
-    color: "linear-gradient(135deg, #FFB64E, #F6BD6C)",
+    color: "linear-gradient(135deg, #FFB64E 50%, #F6BD6C 100%)",
     icon: "CurrencyExchangeIcon" as const,
   },
   {
     title: "Pending Invoices",
     subtitle: "$12,000",
-    color: "linear-gradient(135deg, #FF5471, #FF99AB)",
+    color: "linear-gradient(135deg, #FF5471 50%, #FF99AB 100%)",
     icon: "BallotIcon" as const,
   },
   {
