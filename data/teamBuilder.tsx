@@ -1,10 +1,9 @@
-import AppButton from "@/components/Button";
 import { IFieldConfig } from "@/components/CreateForm";
 import { MilestoneRow } from "@/components/specific/teambuilder/TeamProjects";
 import StatusDropdown from "@/components/StatusDropdown";
 import { STATUS } from "@/constants/status_dropdown";
 import type { CandidateRow } from "@/types/teamBuilder";
-import { buttonColors, colors } from "@/utils/styles/colors";
+import { colors } from "@/utils/styles/colors";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import AssignmentIcon from "@mui/icons-material/Assignment";
@@ -739,7 +738,7 @@ export const teamBuilderPaymentStats = [
   },
 ];
 
-export const teamBuilderPaymentColumns = [
+export const teamBuilderPaymentMilestoneColumns = [
   {
     field: "milestone",
     headerName: "Milestone",
@@ -752,7 +751,7 @@ export const teamBuilderPaymentColumns = [
   { field: "amount", headerName: "Amount", flex: 1 },
 ];
 
-export const teamBuilderPaymentRows = [
+export const teamBuilderPaymentMilestoneRows = [
   {
     id: 1,
     milestone: "Milestone 1",
@@ -773,39 +772,53 @@ export const teamBuilderPaymentRows = [
   },
 ];
 
-export const teamBuilderPaymentWiseColumns = [
-  { field: "accountnumber", headerName: "Account Number", flex: 3 },
-  { field: "amount", headerName: "Amount", flex: 3 },
+export const teamBuilderPaymentCustomRangeColumns = [
   {
-    field: "invoice",
-    headerName: "Invoice",
-    flex: 1,
-    renderCell: (params: GridRenderCellParams) => {
-      const label = params.value;
-      if (!label) return null;
-
-      if (label === "-") {
-        return (
-          <Box
-            component="span"
-            sx={{ color: "text.secondary", fontSize: "0.875rem" }}
-          >
-            {label}
-          </Box>
-        );
-      }
-
-      const colorKey = buttonColors[label] || "GREY";
-      return <AppButton label={label} colorKey={colorKey} />;
-    },
+    field: "milestone",
+    headerName: "Milestone",
+    renderCell: (params: GridRenderCellParams) => (
+      <strong style={{ textDecoration: "underline" }}>{params.value}</strong>
+    ),
+    flex: 3,
   },
+  { field: "paymentdate", headerName: "Payment Date", flex: 2 },
+  { field: "duedate", headerName: "Due Date", flex: 2 },
+  { field: "amount", headerName: "Amount", flex: 1 },
 ];
 
-export const teamBuilderPaymentWiseRows = [
+export const teamBuilderPaymentCustomRangeRows = [
   {
     id: 1,
-    accountnumber: "123556332255663151155315",
+    milestone: "Milestone 1",
+    paymentdate: "10.09.2025",
+    duedate: "10.09.2025",
     amount: "$2,500",
-    invoice: "Upload receipt",
+  },
+  {
+    id: 2,
+    milestone: "Milestone 2",
+    paymentdate: "10.10.2025",
+    duedate: "10.10.2025",
+    amount: "$3,500",
+  },
+  {
+    id: 3,
+    milestone: "Milestone 3",
+    paymentdate: "10.11.2025",
+    duedate: "10.11.2025",
+    amount: "$3,500",
   },
 ];
+
+export const invoiceData = {
+  invoiceName: "Milestone 1",
+  accountTitle: "John Doe",
+  accountNumber: "1234563322566311556315",
+  iban: "BAC1235US5600033225566315",
+  invoiceNumber: "3,500",
+  amount: "3,500",
+  serviceCharges: "35",
+  vat: "10%",
+  vatAmount: "$35",
+  totalAmount: "3,570",
+};
