@@ -1,21 +1,56 @@
+"use client";
+
 import AppButton from "@/components/Button";
 import DataTable from "@/components/DataTable";
+import InvoiceDetails from "@/components/InvoiceDetails";
+import DynamicPopup from "@/components/Popup";
 import StatCard from "@/components/StatCard";
 import {
-  teamBuilderPaymentColumns,
-  teamBuilderPaymentRows,
+  invoiceData,
+  teamBuilderPaymentCustomRangeColumns,
+  teamBuilderPaymentCustomRangeRows,
+  teamBuilderPaymentMilestoneColumns,
+  teamBuilderPaymentMilestoneRows,
   teamBuilderPaymentStats,
-  teamBuilderPaymentWiseColumns,
-  teamBuilderPaymentWiseRows,
 } from "@/data/teamBuilder";
 import { APP_ROUTES } from "@/utils/app_routes";
-import { Box, Grid, MenuItem, Select, Typography } from "@mui/material";
+import { Box, Grid, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function TeamPayments() {
   const router = useRouter();
-  const [paymentType, setPaymentType] = useState("milestone");
+  const [isCustomRange, setIsCustomRange] = useState(false);
+  const [openPopup, setOpenPopup] = useState(false);
+  const [uploadedFileName, setUploadedFileName] = useState<string>("");
+
+  const handleToggleRange = () => {
+    setIsCustomRange(!isCustomRange);
+  };
+
+  const handleUploadClick = () => {
+    setOpenPopup(true);
+  };
+
+  const handleClosePopup = () => {
+    setOpenPopup(false);
+  };
+
+  const handleUploadSubmit = () => {
+    setUploadedFileName(selectedFileName);
+    setOpenPopup(false);
+  };
+
+  const [selectedFileName, setSelectedFileName] = useState<string>("");
+
+  const handleFileSelect = (file: File) => {
+    if (file) setSelectedFileName(file.name);
+  };
+
+  const handleDeleteFile = () => {
+    setUploadedFileName("");
+    setSelectedFileName("");
+  };
 
   return (
     <Box
@@ -28,77 +63,83 @@ export default function TeamPayments() {
       }}
     >
       <Grid container spacing={2}>
-        {" "}
         {teamBuilderPaymentStats.map((s, index) => (
           <Grid key={index} size={{ xs: 12, sm: 6, md: 3 }}>
-            {" "}
-            <StatCard {...s} />{" "}
+            <StatCard {...s} />
           </Grid>
-        ))}{" "}
+        ))}
       </Grid>
-      <Box
-        mt={3}
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        flexWrap="wrap"
-      >
-        <Typography
-          variant="h6"
-          sx={{ fontWeight: 600, textTransform: "capitalize" }}
-        >
-          Payment (first milestone)
-        </Typography>
 
-        <Select
-          size="small"
-          value={paymentType}
-          onChange={(e) => setPaymentType(e.target.value)}
-          sx={{
-            minWidth: 180,
-            bgcolor: "background.paper",
-            fontSize: "0.9rem",
-          }}
-        >
-          <MenuItem value="milestone">Pay by Milestone</MenuItem>
-          <MenuItem value="module">Pay by Module</MenuItem>
-          <MenuItem value="hourly">Pay by Hourly Rate</MenuItem>
-        </Select>
-      </Box>
+      <Grid container spacing={2} mt={3}>
+        <Grid size={{ xs: 12, md: 8 }}>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+            mb={1.5}
+          >
+            <Typography
+              variant="h6"
+              sx={{ fontWeight: 600, textTransform: "capitalize" }}
+            >
+              Payment ({isCustomRange ? "Custom Range" : "By Milestone"})
+            </Typography>
 
-      <Box mt={1.5}>
-        <DataTable
-          title=""
-          columns={teamBuilderPaymentColumns}
-          rows={teamBuilderPaymentRows}
-          pageSize={10}
-        />
-      </Box>
+            <AppButton
+              label={`Pay by ${isCustomRange ? "Milestones" : "Custom Range"}`}
+              colorKey="BLUE"
+              width={200}
+              onClick={handleToggleRange}
+            />
+          </Box>
 
-      <Box mt={3}>
-        <DataTable
-          title="1st Milestone Payment"
-          columns={teamBuilderPaymentWiseColumns}
-          rows={teamBuilderPaymentWiseRows}
-          pageSize={10}
-        />
-
-        <Box
-          display="flex"
-          justifyContent="flex-end"
-          alignItems="center"
-          gap={1.5}
-          mt={3}
-        >
-          <AppButton label="Discard" colorKey="RED" width={180} />
-          <AppButton
-            label="Start the project"
-            colorKey="BLUE"
-            width={200}
-            onClick={() => router.push(APP_ROUTES.CLIENT.DASHBOARD)}
+          <DataTable
+            title=""
+            columns={
+              isCustomRange
+                ? teamBuilderPaymentCustomRangeColumns
+                : teamBuilderPaymentMilestoneColumns
+            }
+            rows={
+              isCustomRange
+                ? teamBuilderPaymentCustomRangeRows
+                : teamBuilderPaymentMilestoneRows
+            }
+            pageSize={10}
           />
-        </Box>
+        </Grid>
+
+        <Grid size={{ xs: 12, md: 4 }}>
+          <InvoiceDetails
+            {...invoiceData}
+            showUpload={isCustomRange}
+            onUpload={handleUploadClick}
+            uploadedFileName={uploadedFileName}
+            onDeleteFile={handleDeleteFile}
+          />
+        </Grid>
+      </Grid>
+
+      <Box display="flex" justifyContent="flex-end" gap={2} mt={3}>
+        <AppButton label="Discard" colorKey="RED" width={180} />
+        <AppButton
+          label="Start the Project"
+          colorKey="BLUE"
+          width={180}
+          onClick={() => router.push(APP_ROUTES.CLIENT.DASHBOARD)}
+        />
       </Box>
+
+      <DynamicPopup
+        open={openPopup}
+        onClose={handleClosePopup}
+        title="Upload Receipt"
+        fileUpload
+        onFileChange={handleFileSelect}
+        buttonText="Upload"
+        onSubmit={handleUploadSubmit}
+        disableSubmit={!selectedFileName}
+      />
     </Box>
   );
 }
