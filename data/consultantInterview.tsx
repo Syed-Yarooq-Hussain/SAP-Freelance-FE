@@ -8,25 +8,25 @@ export const consultantInterviewStats: StatCardProps[] = [
   {
     title: "Interview Requests",
     subtitle: 5,
-    color: "linear-gradient(135deg, #4680FF, #97B7FF)",
+    color: "linear-gradient(135deg,  #4680FF 50%, #97B7FF 100%)",
     icon: "MarkEmailUnreadIcon",
   },
   {
     title: "Interview Scheduled",
     subtitle: 3,
-    color: "linear-gradient(135deg, #00997B, #4BD7BB)",
+    color: "linear-gradient(135deg, #00997B 50%, #4BD7BB 100%)",
     icon: "EventAvailableIcon",
   },
   {
     title: "Reschedule Requests",
     subtitle: 4,
-    color: "linear-gradient(135deg, #FFB64E, #F6BD6C)",
+    color: "linear-gradient(135deg, #FFB64E 50%, #F6BD6C 100%)",
     icon: "UpdateIcon",
   },
   {
     title: "Rejected Interviews",
     subtitle: 3,
-    color: "linear-gradient(135deg, #FF5471, #FF99AB)",
+    color: "linear-gradient(135deg, #FF5471 50%, #FF99AB 100%)",
     icon: "HighlightOffIcon",
   },
 ];
