@@ -1,21 +1,15 @@
 "use client";
 
-import DataTable from "@/components/DataTable";
 import { StatCardProps } from "@/components/StatCard";
-import DashboardStats from "@/components/StatsCardList";
-import { Box } from "@mui/material";
+import StatusDropdown from "@/components/StatusDropdown";
 import { GridColDef } from "@mui/x-data-grid";
-import { useRouter } from "next/navigation";
-import ProjectInfo from "../ProjectInfo";
-import ProjectTeam from "../ProjectTeam";
-import StatusDropdown from "../StatusDropdown";
 
-const projectStats: StatCardProps[] = [
+export const projectStats: StatCardProps[] = [
   {
     title: "Employer",
     subtitle: "Global Rollout",
     description: "18/6 month project – lead consultant",
-    color: "linear-gradient(135deg,  #4680FF 50%, #97B7FF 100%)",
+    color: "linear-gradient(135deg, #4680FF 50%, #97B7FF 100%)",
     icon: "WorkOutlineIcon",
   },
   {
@@ -34,7 +28,7 @@ const projectStats: StatCardProps[] = [
   },
 ];
 
-const projectInfoData = {
+export const projectInfoData = {
   projectName: "Global Rollout",
   clientName: "ManuCorp",
   industry: "Manufacturing",
@@ -47,27 +41,15 @@ const projectInfoData = {
   status: "Project Started",
 };
 
-const teamMembers = [
+export const teamMembers = [
   {
     name: "Marvin McKinney",
     role: "Lead Consultant",
     avatar: "/images/team1.jpg",
   },
-  {
-    name: "Savannah Nguyen",
-    role: "Consultant",
-    avatar: "/images/team2.jpg",
-  },
-  {
-    name: "Albert Flores",
-    role: "Consultant",
-    avatar: "/images/team3.jpg",
-  },
-  {
-    name: "Ralph Edwards",
-    role: "Consultant",
-    avatar: "/images/team4.jpg",
-  },
+  { name: "Savannah Nguyen", role: "Consultant", avatar: "/images/team2.jpg" },
+  { name: "Albert Flores", role: "Consultant", avatar: "/images/team3.jpg" },
+  { name: "Ralph Edwards", role: "Consultant", avatar: "/images/team4.jpg" },
   {
     name: "Cameron Williamson",
     role: "Consultant",
@@ -75,7 +57,7 @@ const teamMembers = [
   },
 ];
 
-const taskColumns: GridColDef[] = [
+export const taskColumns: GridColDef[] = [
   { field: "name", headerName: "Name", flex: 2 },
   { field: "details", headerName: "Details", flex: 3 },
   { field: "deadline", headerName: "Deadline", flex: 1 },
@@ -87,7 +69,7 @@ const taskColumns: GridColDef[] = [
   },
 ];
 
-const taskRows = [
+export const taskRows = [
   {
     id: 1,
     name: "Blueprint Documentation",
@@ -145,38 +127,3 @@ const taskRows = [
     status: "Delayed",
   },
 ];
-
-export default function ConsultantProjectDetails() {
-  const router = useRouter();
-
-  return (
-    <Box>
-      <DashboardStats
-        stats={projectStats}
-        containerProps={{ marginBottom: "30px" }}
-      />
-
-      <Box
-        sx={{
-          p: 2,
-          borderRadius: 2,
-          boxShadow: 2,
-          bgcolor: "background.paper",
-        }}
-      >
-        <ProjectInfo data={projectInfoData}>
-          <ProjectTeam team={teamMembers} />
-        </ProjectInfo>
-
-        <DataTable
-          title="Tasks"
-          columns={taskColumns}
-          rows={taskRows}
-          pageSize={10}
-          showBackButton
-          onBackClick={() => router.back()}
-        />
-      </Box>
-    </Box>
-  );
-}

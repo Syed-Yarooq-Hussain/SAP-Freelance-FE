@@ -273,3 +273,11 @@ export const milestoneOptions = [
   "Data Entry",
   "Kick-off Meeting",
 ];
+
+export const milestoneData = {
+  name: "Blueprint Documentation",
+  dependencies: "Scope and Objectives",
+  details: "One of the cool things about this font generator is that you...",
+  deadline: "15.09.2025",
+  status: "In progress",
+};
