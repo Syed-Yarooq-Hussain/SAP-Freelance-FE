@@ -1,11 +1,17 @@
+"use client";
+
 import AppButton from "@/components/Button";
 import { IOption } from "@/types/options";
+import { parseCV } from "@/utils/cvParser";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import {
   Alert,
-  BaseTextFieldProps,
   Box,
   ButtonProps,
   FormControl,
+  IconButton,
+  InputAdornment,
   MenuItem,
   Stack,
   StackProps,
@@ -13,7 +19,7 @@ import {
   Typography,
 } from "@mui/material";
 import { ResponsiveStyleValue } from "@mui/system";
-import { FC } from "react";
+import React, { FC, useRef, useState } from "react";
 import {
   Controller,
   FieldValues,
@@ -29,13 +35,18 @@ export interface IGridSpan {
   xl?: number;
 }
 
-export interface IFieldConfig extends BaseTextFieldProps {
+export interface IFieldConfig {
   name: string;
+  label: string;
+  placeholder?: string;
+  type?: string;
   rules?: RegisterOptions;
+  options?: IOption[];
   column?: IGridSpan;
   row?: IGridSpan;
-  type?: string;
-  options?: IOption[];
+  inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
+  select?: boolean;
+  defaultValue?: string | number | boolean | null;
 }
 
 interface ICreateFormProps {
@@ -44,6 +55,7 @@ interface ICreateFormProps {
   onCancel?: () => void;
   loading?: boolean;
   error?: string;
+  onCVParsed?: (cvData: Partial<FieldValues>) => void;
   actionsContainerProps?: StackProps;
   submitButton?: ButtonProps;
   cancelButton?: ButtonProps;
@@ -51,16 +63,13 @@ interface ICreateFormProps {
 
 const generateSpans = (type: "row" | "column", spans?: IGridSpan) => {
   const defaultSpan = type === "row" ? 1 : 12;
-
-  if (!spans || Object.keys(spans).length === 0) {
+  if (!spans || Object.keys(spans).length === 0)
     return { xs: `span ${defaultSpan}` };
-  }
 
   const result: ResponsiveStyleValue<string> = {};
   (["xs", "sm", "md", "lg", "xl"] as const).forEach((bp) => {
     if (spans[bp] !== undefined) result[bp] = `span ${spans[bp]}`;
   });
-
   return result;
 };
 
@@ -73,16 +82,73 @@ export const CreateForm: FC<ICreateFormProps> = ({
   submitButton,
   cancelButton,
   actionsContainerProps,
+  onCVParsed,
 }) => {
   const {
     control,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm();
 
-  const submitHandler = (data: FieldValues) => {
-    onSuccess(data);
+  const [showPassword, setShowPassword] = useState<Record<string, boolean>>({});
+  const [fileNames, setFileNames] = useState<Record<string, string>>({});
+  const autoFilledRef = useRef<Set<string>>(new Set());
+
+  const handleTogglePassword = (name: string) => {
+    setShowPassword((prev) => ({ ...prev, [name]: !prev[name] }));
   };
+
+  const handleFileDrop = async (
+    e: React.DragEvent<HTMLLabelElement>,
+    fieldName: string,
+    onChange: (value: File | null) => void
+  ) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files?.[0];
+    if (file) await handleFileSelection(file, fieldName, onChange);
+  };
+
+  const handleFileSelection = async (
+    file: File,
+    fieldName: string,
+    onChange: (value: File | null) => void
+  ) => {
+    onChange(file);
+    setFileNames((prev) => ({ ...prev, [fieldName]: file.name }));
+
+    if (fieldName === "cv") {
+      try {
+        const parsed = await parseCV(file);
+        if (onCVParsed) onCVParsed(parsed);
+
+        const fillable = new Set(elements.map((e) => e.name));
+
+        const nextFilled = new Set<string>();
+
+        for (const [key, value] of Object.entries(parsed)) {
+          if (!fillable.has(key)) continue;
+
+          const str = value == null ? "" : String(value);
+          setValue(key, str, { shouldDirty: true, shouldValidate: true });
+
+          if (str.trim() !== "") nextFilled.add(key);
+        }
+
+        for (const key of autoFilledRef.current) {
+          if (!nextFilled.has(key)) {
+            setValue(key, "", { shouldDirty: true, shouldValidate: true });
+          }
+        }
+
+        autoFilledRef.current = nextFilled;
+      } catch (err) {
+        console.error("CV parsing failed:", err);
+      }
+    }
+  };
+
+  const submitHandler = (data: FieldValues) => onSuccess(data);
 
   return (
     <Box component="form" onSubmit={handleSubmit(submitHandler)}>
@@ -99,6 +165,9 @@ export const CreateForm: FC<ICreateFormProps> = ({
         {elements.map((element) => {
           const gridColumn = generateSpans("column", element.column);
           const gridRow = generateSpans("row", element.row);
+          const isPassword = element.type === "password";
+          const isFile = element.type === "file";
+          const isSelect = !!element.options?.length;
 
           return (
             <FormControl
@@ -107,47 +176,129 @@ export const CreateForm: FC<ICreateFormProps> = ({
             >
               <Controller
                 name={element.name}
-                defaultValue={element.defaultValue ?? ""}
+                defaultValue={""}
                 control={control}
                 rules={element.rules}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    fullWidth
-                    size="small"
-                    variant="outlined"
-                    type={element.type || "text"}
-                    error={!!errors[element.name]}
-                    helperText={errors[element.name]?.message?.toString()}
-                    disabled={loading}
-                    placeholder={element.placeholder}
-                    slotProps={{
-                      inputLabel: { shrink: true },
-                      select: {
-                        displayEmpty: true,
-                        renderValue: (value) => {
-                          if (!value) {
-                            return (
-                              <Typography color="gray">
-                                Select {element.label}
-                              </Typography>
-                            );
+                render={({ field }) => {
+                  if (isFile) {
+                    return (
+                      <Box
+                        sx={{
+                          border: "1px dashed #4680FF",
+                          borderRadius: 2,
+                          py: 4,
+                          textAlign: "center",
+                          cursor: "pointer",
+                          bgcolor: "#f5faff",
+                          "&:hover": { bgcolor: "#e6f0ff" },
+                          transition: "0.2s",
+                        }}
+                        onDragOver={(e) => e.preventDefault()}
+                      >
+                        <input
+                          id={element.name}
+                          type="file"
+                          style={{ display: "none" }}
+                          accept={element.inputProps?.accept}
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file)
+                              handleFileSelection(
+                                file,
+                                element.name,
+                                field.onChange
+                              );
+                          }}
+                        />
+                        <label
+                          htmlFor={element.name}
+                          onDrop={(e) =>
+                            handleFileDrop(e, element.name, field.onChange)
                           }
-                          return <>{value}</>;
+                          style={{ display: "block", cursor: "pointer" }}
+                        >
+                          <Typography
+                            variant="subtitle1"
+                            fontWeight="bold"
+                            color="#4680FF"
+                          >
+                            {fileNames[element.name] || "Upload CV"}
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ mt: 0.5 }}
+                          >
+                            Click or drag to choose a file (.pdf, .doc, .docx)
+                          </Typography>
+                        </label>
+                      </Box>
+                    );
+                  }
+
+                  return (
+                    <TextField
+                      {...field}
+                      fullWidth
+                      size="small"
+                      variant="outlined"
+                      type={
+                        isPassword
+                          ? showPassword[element.name]
+                            ? "text"
+                            : "password"
+                          : element.type || "text"
+                      }
+                      error={!!errors[element.name]}
+                      helperText={errors[element.name]?.message?.toString()}
+                      disabled={loading}
+                      placeholder={element.placeholder}
+                      label={element.label}
+                      select={isSelect}
+                      slotProps={{
+                        inputLabel: { shrink: true },
+                        input: {
+                          endAdornment: isPassword ? (
+                            <InputAdornment position="end">
+                              <IconButton
+                                onClick={() =>
+                                  handleTogglePassword(element.name)
+                                }
+                                edge="end"
+                                size="small"
+                              >
+                                {showPassword[element.name] ? (
+                                  <VisibilityOff fontSize="small" />
+                                ) : (
+                                  <Visibility fontSize="small" />
+                                )}
+                              </IconButton>
+                            </InputAdornment>
+                          ) : undefined,
                         },
-                      },
-                    }}
-                    label={element.label}
-                    {...element}
-                  >
-                    {element.options?.length !== 0 &&
-                      element.options?.map((opt) => (
-                        <MenuItem key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </MenuItem>
-                      ))}
-                  </TextField>
-                )}
+                        select: {
+                          displayEmpty: true,
+                          renderValue: (value) => {
+                            if (!value)
+                              return (
+                                <Typography color="gray">
+                                  Select {element.label}
+                                </Typography>
+                              );
+                            return <>{value}</>;
+                          },
+                        },
+                      }}
+                    >
+                      {isSelect &&
+                        element.options?.map((opt) => (
+                          <MenuItem key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </MenuItem>
+                        ))}
+                    </TextField>
+                  );
+                }}
               />
             </FormControl>
           );

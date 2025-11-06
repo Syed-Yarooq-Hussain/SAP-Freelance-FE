@@ -39,15 +39,22 @@ const SignUpConsultant: React.FC = () => {
   const role = Number(searchParams.get("type")) || "Invalid role";
 
   const elements = getConsultantFormFields();
+  const [prefillData, setPrefillData] = React.useState<Partial<FieldValues>>(
+    {}
+  );
+
+  const handleCVParsed = (parsed: Partial<FieldValues>) => {
+    setPrefillData((prev) => ({ ...prev, ...parsed }));
+  };
 
   const handleSuccess = (data: FieldValues) => {
-    const formData = data as IConsultantForm;
+    const formData = { ...prefillData, ...data } as IConsultantForm;
 
     const payload: IConsultantSignupPayload = {
       consultant: {
         module: formData.module,
         level: formData.level,
-        experience: formData.experience,
+        experience: Number(formData.experience) || 0,
         rate: formData.rate,
         weekly_available_hours: 20,
         schedule: {
@@ -99,6 +106,7 @@ const SignUpConsultant: React.FC = () => {
           onSuccess={handleSuccess}
           loading={isPending}
           error={error?.message}
+          onCVParsed={handleCVParsed}
           submitButton={{
             children: "Create an Account",
             variant: "contained",
