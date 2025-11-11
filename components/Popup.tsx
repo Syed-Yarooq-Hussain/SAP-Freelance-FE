@@ -9,6 +9,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   IconButton,
   MenuItem,
   TextField,
@@ -41,6 +42,7 @@ interface DynamicPopupProps {
   description?: string;
   noteText?: string;
   disableSubmit?: boolean;
+  children?: React.ReactNode;
 }
 
 const DynamicPopup: React.FC<DynamicPopupProps> = ({
@@ -57,6 +59,7 @@ const DynamicPopup: React.FC<DynamicPopupProps> = ({
   description,
   noteText,
   disableSubmit = false,
+  children,
 }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(fileValue);
 
@@ -75,9 +78,16 @@ const DynamicPopup: React.FC<DynamicPopupProps> = ({
       open={open}
       onClose={onClose}
       fullWidth
-      maxWidth="xs"
+      maxWidth="sm"
       slotProps={{
-        paper: { sx: { borderRadius: 2, p: 1 } },
+        paper: {
+          sx: {
+            borderRadius: 2,
+            p: 2,
+            width: 500,
+            maxWidth: "640px",
+          },
+        },
       }}
     >
       <DialogTitle
@@ -107,7 +117,9 @@ const DynamicPopup: React.FC<DynamicPopupProps> = ({
         </Typography>
       )}
 
-      <DialogContent sx={{ pt: 1, pb: 0 }}>
+      <DialogContent sx={{ pt: 1, pb: 0, overflowX: "hidden" }}>
+        {children}
+
         {fileUpload && (
           <Box
             sx={{
@@ -207,8 +219,11 @@ const DynamicPopup: React.FC<DynamicPopupProps> = ({
           alignItems: "center",
           pb: 2,
           gap: 1,
+          width: "100%",
         }}
       >
+        <Divider sx={{ width: "100%", mt: 1 }} />
+
         {noteText && (
           <Typography
             variant="caption"
@@ -222,12 +237,13 @@ const DynamicPopup: React.FC<DynamicPopupProps> = ({
             {noteText}
           </Typography>
         )}
+
         <AppButton
           label={buttonText}
           colorKey={buttonColor}
           onClick={onSubmit}
           disabled={disableSubmit}
-          sx={{ width: "auto", px: 3, py: 0.8, fontWeight: 500 }}
+          sx={{ width: 150, px: 0, py: 0.8, fontWeight: 500 }}
         />
       </DialogActions>
     </Dialog>

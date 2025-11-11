@@ -7,9 +7,9 @@ import SidebarInfo, {
 import DataTable from "@/components/DataTable";
 import { StatCardProps } from "@/components/StatCard";
 import DashboardStats from "@/components/StatsCardList";
-import VisibilityChart from "@/components/VisibilityChart";
 import { Box, Grid } from "@mui/material";
 import { GridColDef, GridValidRowModel } from "@mui/x-data-grid";
+import React from "react";
 
 interface TableData<T extends GridValidRowModel = GridValidRowModel> {
   title: string;
@@ -29,6 +29,7 @@ interface DashboardProps<T extends GridValidRowModel = GridValidRowModel> {
   projectTable: TableData<T>;
   financeTable?: TableData<T>;
   sidebarSections?: SidebarSectionInfo[];
+  chart?: React.ReactNode;
 }
 
 const Dashboard = <T extends GridValidRowModel = GridValidRowModel>({
@@ -37,6 +38,7 @@ const Dashboard = <T extends GridValidRowModel = GridValidRowModel>({
   projectTable,
   financeTable,
   sidebarSections,
+  chart,
 }: DashboardProps<T>) => {
   return (
     <Box>
@@ -48,17 +50,19 @@ const Dashboard = <T extends GridValidRowModel = GridValidRowModel>({
 
       <Grid container spacing={2}>
         <Grid size={{ xs: 12, md: sidebarSections ? 9 : 12 }}>
-          <Box
-            sx={{
-              p: 2,
-              borderRadius: 2,
-              boxShadow: 2,
-              mb: 2,
-              bgcolor: "background.paper",
-            }}
-          >
-            <VisibilityChart />
-          </Box>
+          {chart && (
+            <Box
+              sx={{
+                p: 2,
+                borderRadius: 2,
+                boxShadow: 2,
+                mb: 2,
+                bgcolor: "background.paper",
+              }}
+            >
+              {chart}
+            </Box>
+          )}
 
           <Box
             sx={{

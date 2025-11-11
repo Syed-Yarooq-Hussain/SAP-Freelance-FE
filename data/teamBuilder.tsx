@@ -1,5 +1,6 @@
 import { IFieldConfig } from "@/components/CreateForm";
 import { MilestoneRow } from "@/components/specific/teambuilder/TeamProjects";
+import { StatCardProps } from "@/components/StatCard";
 import StatusDropdown from "@/components/StatusDropdown";
 import { STATUS } from "@/constants/status_dropdown";
 import type { CandidateRow } from "@/types/teamBuilder";
@@ -53,29 +54,29 @@ export const teamBuilderSteps = [
     icon: <CreditCardIcon fontSize="small" />,
   },
 ];
-export const teamBuilderStats = [
+export const teamBuilderStats: StatCardProps[] = [
   {
     title: "Hours Per Week",
     subtitle: 6,
-    color: "linear-gradient(135deg, #5AA9FF, #80C4FF)",
+    color: "linear-gradient(135deg, #5AA9FF 50%, #80C4FF 100%)",
     icon: "QueryStatsIcon" as const,
   },
   {
     title: "Avg. Rate Per Hour",
     subtitle: "$20",
-    color: "linear-gradient(135deg, #00997B, #4BD7BB)",
+    color: "linear-gradient(135deg, #00997B 50%, #4BD7BB 100%)",
     icon: "CurrencyExchangeIcon" as const,
   },
   {
     title: "Hours Per Month",
     subtitle: 30,
-    color: "linear-gradient(135deg, #FFB64E, #FFD27F)",
+    color: "linear-gradient(135deg, #FFB64E 50%, #FFD27F 100%)",
     icon: "EventAvailableIcon" as const,
   },
   {
     title: "Per Month Cost",
     subtitle: "$12,000",
-    color: "linear-gradient(135deg, #FF5471, #FF99AB)",
+    color: "linear-gradient(135deg, #FF5471 50%, #FF99AB 100%)",
     icon: "BallotIcon" as const,
   },
 ];
