@@ -206,4 +206,13 @@ export const adminClientRows: AdminClientRow[] = [
     draftprojects: 0,
     locked: false,
   },
+  {
+    id: 14,
+    avatar: "/images/team1.jpg",
+    name: "Marvin McKinney",
+    activeprojects: 3,
+    completedprojects: 3,
+    draftprojects: 0,
+    locked: true,
+  },
 ];
