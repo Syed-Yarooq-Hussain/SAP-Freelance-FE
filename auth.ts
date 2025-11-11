@@ -6,7 +6,7 @@ import NextAuth, { User } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { API_STATUS } from "./constants/api_status";
 
-const TEST_MODE = process.env.NEXT_PUBLIC_TEST_MODE === "true";
+const TEST_MODE = true//process.env.NEXT_PUBLIC_TEST_MODE === "true";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [

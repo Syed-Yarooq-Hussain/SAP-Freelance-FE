@@ -17,7 +17,7 @@ import {
 import * as React from "react";
 import { FieldValues } from "react-hook-form";
 
-const TEST_MODE = process.env.NEXT_PUBLIC_TEST_MODE === "true";
+const TEST_MODE = true //process.env.NEXT_PUBLIC_TEST_MODE === "true";
 
 const LoginPage: React.FC = () => {
   const { mutate, error, isPending } = useLogin();
