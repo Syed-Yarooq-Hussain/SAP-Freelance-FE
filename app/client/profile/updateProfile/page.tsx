@@ -35,8 +35,18 @@ export interface ProfileData {
     comment: string;
   }>;
   certifications: string;
-  experienceList: Array<any>;
-  reviewsList: Array<any>;
+  experienceList: Array<{
+    title: string;
+    client: string;
+    role: string;
+    duration: string;
+    technologies: string;
+  }>;
+  reviewsList: Array<{
+    client: string;
+    rating: number;
+    comment: string;
+  }>;
 }
 
 const EditProfilePage: React.FC = () => {

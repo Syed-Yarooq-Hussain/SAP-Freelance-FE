@@ -1,12 +1,15 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import {Avatar,Box,Button,Grid,MenuItem,TextField,Typography,Divider,IconButton,} from "@mui/material";
+import {Avatar,Box ,Grid,MenuItem,TextField,Typography,Divider,IconButton, FormControl, Select, SelectChangeEvent, Stack,} from "@mui/material";
 import { FiUpload } from "react-icons/fi";
 import { useRouter } from "next/navigation";
 import { colors } from "@/utils/styles/colors";
 import { MdClose } from "react-icons/md";
 import AppButton from "../Button";
+import { clientProfileData } from "@/data/clientProfile";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 interface Experience {
   title: string;
@@ -104,21 +107,21 @@ const ProfileUpdate: React.FC<ProfileUpdateProps> = ({ profile, onUpdate }) => {
     const handleRemoveSkill = (skillToRemove: string) => {
     setAddedSkills((prev) => prev.filter((s) => s !== skillToRemove));
   };
+    const [duration, setDuration] = useState<string>("");
+
+  const handleMonthChange = (event: SelectChangeEvent<string>) => {
+    setDuration(event.target.value);
+  
+  };
+  const roles = ["Lead Consultant", "SD Stream Lead", "Team Lead"];
   return (
     <Box
-      sx={{
-        border: "1px solid #ddd",
-        borderRadius: 2,
-        p: 4,
-        backgroundColor: "#fff",
-        width: "100%",
-      }}
-    >
+      sx={{border: "1px solid #ddd",borderRadius: 2,p: 4,backgroundColor: "#fff",width: "100%",}}>
       <Typography variant="h6" sx={{ mb: 3, fontWeight: 700 }}>
         Edit Profile
       </Typography>
 
-      {/* PROFILE IMAGE & BASIC DETAILS */}
+                                {/* PROFILE IMAGE & BASIC DETAILS */}
       <Grid container spacing={3}>
         <Grid size={{xs:12, md:3}} sx={{ textAlign: "center" }}>
           <label htmlFor="upload-photo">
@@ -126,28 +129,11 @@ const ProfileUpdate: React.FC<ProfileUpdateProps> = ({ profile, onUpdate }) => {
               <Avatar
                 alt="Profile"
                 src={formData.image || "/default.png"}
-                sx={{
-                  width: 140,
-                  height: 140,
-                  margin: "auto",
-                  cursor: "pointer",
-                  border: "3px solid #f3f3f3",
-                  boxShadow: "0px 2px 10px rgba(0,0,0,0.1)",
-                }}
-              />
+                sx={{width: 140,height: 140,margin: "auto",cursor: "pointer",border: "3px solid #f3f3f3",
+                  boxShadow: "0px 2px 10px rgba(0,0,0,0.1)",}}/>
               <Box
-                sx={{
-                  position: "absolute",
-                  top: "50%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)",
-                  width: 48,
-                  height: 48,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
+                sx={{position: "absolute",top: "50%",left: "50%",transform: "translate(-50%, -50%)",width: 48,
+                  height: 48,display: "flex",alignItems: "center",justifyContent: "center",}}>
                 <FiUpload size={50} color="#000" />
               </Box>
             </Box>
@@ -270,7 +256,7 @@ const ProfileUpdate: React.FC<ProfileUpdateProps> = ({ profile, onUpdate }) => {
         </Grid>
       </Grid>
 
-      {/* SECTION: Skills */}
+                                        {/* SECTION: Skills */}
       <Divider sx={{ my: 4, borderBottomWidth: 2 }} />
         <Box mt={3}>
       <Typography variant="h6" sx={{ fontWeight: 700 }}>
@@ -339,58 +325,7 @@ const ProfileUpdate: React.FC<ProfileUpdateProps> = ({ profile, onUpdate }) => {
         ))}
       </Box>
     </Box>
-
-      {/* SECTION: Experience */}
-      <Divider sx={{ my: 4, borderBottomWidth: 2 }} />
-      <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
-        Experience
-      </Typography>
-      <Grid container spacing={3}>
-        {formData.experienceList.map((exp, i) => (
-          <Grid size={{xs:12, md:4}}
-            key={i}
-            sx={{
-              border: "1px solid #ddd",
-              borderRadius: 2,
-              p: 2,
-              background: "#fafafa",
-            }}
-          >
-            <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-              {exp.title}
-            </Typography>
-            <Typography variant="body2">
-              Client: <strong>{exp.client}</strong>
-            </Typography>
-            <Typography variant="body2">
-              Role: <strong>{exp.role}</strong>
-            </Typography>
-            <Typography variant="body2">
-              Duration: <strong>{exp.duration}</strong>
-            </Typography>
-            <Typography variant="body2">
-              Technologies: <strong>{exp.technologies}</strong>
-            </Typography>
-          </Grid>
-        ))}
-      </Grid>
-
-      {/* SECTION: Education */}
-      <Divider sx={{ my: 4, borderBottomWidth: 2 }} />
-      <Typography variant="h6" sx={{ fontWeight: 700 }}>
-        Education & Certifications
-      </Typography>
-      <ul style={{ marginTop: "1rem" }}>
-        <li>{formData.education || "No education data"}</li>
-        <li>{formData.certifications || "No certifications data"}</li>
-      </ul>
-
-      {/* SECTION: Reviews */}
-      <Divider sx={{ my: 4, borderBottomWidth: 2 }} />
-      <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
-        Reviews & Ratings
-      </Typography>
-      <Grid container spacing={3}>
+     <Grid container spacing={3}>
         {formData.reviewsList.map((rev, i) => (
           <Grid size={{xs:12, md:4}}
             key={i}
@@ -414,19 +349,240 @@ const ProfileUpdate: React.FC<ProfileUpdateProps> = ({ profile, onUpdate }) => {
           </Grid>
         ))}
       </Grid>
+                                         {/* SECTION: Experience */}
+      <Divider sx={{ my: 4, borderBottomWidth: 2 }} />
+      <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
+        Experience
+      </Typography>
+        <Grid sx={{ mb: 3,}}>         
+          <Grid container spacing={2}>
+            {clientProfileData.experience.map((exp , i: number) => (
+              <Grid size={{ xs:12, md:4}} key={i}>
+                <Box
+                  sx={{
+                    borderLeft: "3px solid #f50057",
+                    p: 2,
+                  }}
+                >
+                  <Typography sx={{fontWeight:600, fontSize:16}}>{exp.title}</Typography>
+                  <Typography sx={{fontWeight:500,mt:1, fontSize:13}}>
+                    Client:<b> {exp.client}</b>
+                  </Typography>
+                  <Typography sx={{fontWeight:500,mt:1, fontSize:13}}>
+                    Role:<b> {exp.role} </b>
+                  </Typography>
+                  <Typography sx={{fontWeight:500,mt:1, fontSize:13}}>
+                    Duration:<b> {exp.duration}</b>
+                  </Typography>
+                  <Typography sx={{fontWeight:500,mt:1, fontSize:13}}>
+                    Technologies: <b> {exp.technologies}</b>
+                  </Typography>
+                   <Stack direction="row" marginTop={1}>
+                <IconButton size="small"><EditIcon sx={{ color: "#4b75f2", fontSize: 20 }} /></IconButton>
+                <IconButton size="small"><DeleteIcon sx={{ color: "#f44336", fontSize: 20 }}/></IconButton>
+              </Stack>
+                </Box>
+              </Grid>
+            ))}
+          </Grid> 
+      </Grid> 
 
-      {/* ACTION BUTTONS */}
-      <Box sx={{ mt: 5, display: "flex", gap: 2 }}>
-        <Button variant="contained" color="primary" onClick={handleSave}>
-          Save
-        </Button>
-        <Button
-          variant="outlined"
-          color="secondary"
-          onClick={() => router.push("/client/profile")}
+                                            {/* SECTION: Reviews */}
+         <Grid container spacing={2}>
+      {/* Project name */}
+      <Grid size={{xs:12, md:4}}>
+        <Typography sx={{ fontSize: 13, mb: 0.5 }}>Project name</Typography>
+        <TextField
+          fullWidth
+          placeholder="name"
+          name="projectName"
+          onChange={handleChange}
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              borderRadius: 2,
+              backgroundColor: "#f3f9ff",
+              height: "36px",
+              fontSize: 14,
+              fontWeight: 600,
+            },
+          }}
+        />
+      </Grid>
+
+      {/* Role */}
+   <Grid size={{ xs: 12, md: 4 }}>
+  <Typography sx={{ fontSize: 13, mb: 0.5 }}>Role</Typography>
+  <TextField
+    select
+    fullWidth
+    name="role"
+    onChange={handleChange}
+    SelectProps={{
+      displayEmpty: true,
+      renderValue: (selected: unknown) => {
+        const value = selected as string;
+        if (!value) {
+          return <span style={{ color: "#9e9e9e" }}>Role</span>;
+        }
+        return value;
+      },
+    }}
+    sx={{
+      "& .MuiOutlinedInput-root": {
+        borderRadius: 2,
+        backgroundColor: "#f3f9ff",
+        height: "36px",
+        fontSize: 14,
+        fontWeight: 600,
+      },
+    }}
+  >
+    {roles.map((role) => (
+      <MenuItem key={role} value={role}>
+        {role}
+      </MenuItem>
+    ))}
+  </TextField>
+</Grid>
+
+
+      {/* Modules */}
+      <Grid size={{xs:12, md:4}}>
+        <Typography sx={{ fontSize: 13, mb: 0.5 }}>Modules</Typography>
+        <TextField
+          fullWidth
+          placeholder="module"
+          name="modules"
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              borderRadius: 2,
+              backgroundColor: "#f3f9ff",
+              height: "36px",
+              fontSize: 14,
+              fontWeight: 600,
+            },
+          }}
         >
-          Cancel
-        </Button>
+        </TextField>
+      </Grid>
+
+      {/* Client */}
+      <Grid size={{xs:12, md:4}}>
+        <Typography sx={{ fontSize: 13, mb: 0.5 }}>Client</Typography>
+        <TextField
+          fullWidth
+          placeholder="Client name"
+          name="client"
+          onChange={handleChange}
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              borderRadius: 2,
+              backgroundColor: "#f3f9ff",
+              height: "36px",
+              fontSize: 14,
+              fontWeight: 600,
+            },
+          }}
+        />
+      </Grid>
+
+      {/* Duration */}
+      <Grid size={{ xs: 12, md: 4 }}>
+  <Typography sx={{ fontSize: 13, mb: 0.5 }}>Duration</Typography>
+  <FormControl
+    size="small"
+    sx={{
+      backgroundColor: "#f3f9ff",
+      borderRadius: 3,
+      width: "100%",
+      "& .MuiOutlinedInput-root": {
+        borderRadius: 3,
+        fontSize: "0.9rem",
+        fontWeight: 500,
+        "& fieldset": { borderColor: "#c6d9f7" },
+        "&:hover fieldset": { borderColor: "#4b75f2" },
+        "&.Mui-focused fieldset": { borderColor: "#4b75f2" },
+      },
+    }}
+  >
+    <Select
+      onChange={handleMonthChange}
+      labelId="duration-label"
+      id="duration-select"
+      value={duration}
+      displayEmpty
+    >
+      <MenuItem value="" disabled>
+        Select Duration
+      </MenuItem>
+      {[...Array(12)].map((_, i) => (
+        <MenuItem key={i + 1} value={`${i + 1}`}>
+          {i + 1} Month{i + 1 > 1 ? "s" : ""}
+        </MenuItem>
+      ))}
+    </Select>
+  </FormControl>
+</Grid>
+
+
+      {/* Start date */}
+      <Grid size={{xs:12, md:4}}>
+        <Typography sx={{ fontSize: 13, mb: 0.5 }}>Start date</Typography>
+        <TextField
+          type="date"
+          fullWidth
+          name="startDate"
+          onChange={handleChange}
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              borderRadius: 2,
+              backgroundColor: "#f3f9ff",
+              height: "36px",
+              fontSize: 14,
+              fontWeight: 600,
+            },
+            "& input": { color: "#555" },
+          }}
+          InputLabelProps={{ shrink: true }}
+        />
+      </Grid>
+    </Grid>         
+                                         {/* SECTION: Education */}
+      <Divider sx={{ my: 4, borderBottomWidth: 2 }} />
+      <Typography variant="h6" sx={{ fontWeight: 700 }}>
+        Education & Certifications
+      </Typography>
+     <Grid sx={{ fontWeight: 600, ml: -2 }}>
+
+      <ul style={{ listStyleType: "disc", paddingLeft: 40, margin: 0 }}>
+        {clientProfileData.education.map((edu, index) => (
+          <li key={index} style={{ marginBottom: "6px" }}>
+            <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ width: "100%" }}>
+              <Typography component="span" sx={{ fontWeight: 600 }}>{edu}</Typography>
+              <Stack direction="row">
+                <IconButton size="small"><EditIcon sx={{ color: "#4b75f2", fontSize: 20 }} /></IconButton>
+                <IconButton size="small"><DeleteIcon sx={{ color: "#f44336", fontSize: 20 }}/></IconButton>
+              </Stack>
+            </Stack>
+          </li>
+        ))}
+      </ul>
+    </Grid>
+                                             {/* ACTION BUTTONS */}
+     <Divider sx={{ my: 4, borderBottomWidth: 2 }} />
+      <Box sx={{ mt: 5, display: "flex", gap: 2 }}>
+        <AppButton
+          label="Save"
+          colorKey="BLUE"
+          width={180}
+          onClick={handleSave}
+        />
+        <AppButton
+          label="Discard"
+          colorKey="RED"
+          width={180}
+          onClick={() => router.push("/client/profile")}
+        />
       </Box>
     </Box>
   );

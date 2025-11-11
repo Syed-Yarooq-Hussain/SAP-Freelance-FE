@@ -3,13 +3,29 @@
 import React, { useEffect, useState } from "react";
 import { ClientProfile } from "@/components/specific/Profile";
 import Sidebar from "@/components/Sidebar";
+import { ProfileData } from "./updateProfile/page";
 
 const ProfilePage: React.FC = () => {
-  const [profile, setProfile] = useState<any>({
-    skills: [],
-    education: [],
-    experience: [],
-    reviews: [],
+  const [profile, setProfile] = useState<ProfileData>({
+   name: "",
+  title: "",
+  email: "",
+  location: "",
+  module: "",
+  projects: "",
+  weeklyHours: "",
+  hourlyRate: "",
+  rating: "",
+  visibility: "",
+  description: "",
+  image: "/default.png",
+  skills: [],
+  experience: [],
+  education: [],
+  reviews: [],
+  certifications: "",
+  experienceList: [],
+  reviewsList: [],
   });
 
   useEffect(() => {
