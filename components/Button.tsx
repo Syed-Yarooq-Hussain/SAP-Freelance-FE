@@ -9,7 +9,7 @@ interface IAppButtonProps extends ButtonProps {
   label: string;
   colorKey?: keyof typeof colors;
   variant?: "contained" | "outlined" | "text";
-  onClick?: () => void;
+  onClick?: ButtonProps["onClick"];
   width?: number | string;
   fontColor?: string;
 }
@@ -26,7 +26,7 @@ const AppButton: React.FC<IAppButtonProps> = ({
   const mainColor = colors[colorKey];
   const textColor = variant === "outlined" ? mainColor : fontColor || "#ffffff";
   const bgColor = variant === "outlined" ? "transparent" : mainColor;
-  
+
   return (
     <MuiButton
       {...props}

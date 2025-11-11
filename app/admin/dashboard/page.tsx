@@ -3,6 +3,7 @@
 import AppButton from "@/components/Button";
 import Sidebar from "@/components/Sidebar";
 import Dashboard from "@/components/specific/Dashboard";
+import VisibilityChart from "@/components/VisibilityChart";
 import {
   adminConsultantColumns,
   adminConsultantRows,
@@ -14,6 +15,7 @@ export default function AdminDashboardPage() {
     <Sidebar>
       <Dashboard
         stats={adminStats}
+        chart={<VisibilityChart />}
         projectTable={{
           title: "Consultant Account Request",
           columns: adminConsultantColumns,

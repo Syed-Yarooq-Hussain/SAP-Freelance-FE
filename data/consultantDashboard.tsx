@@ -5,7 +5,7 @@ import { SidebarSectionInfo } from "@/components/DashboardSidebarInfo";
 import { StatCardProps } from "@/components/StatCard";
 import StatusChip from "@/components/StatusChip";
 import StatusDropdown from "@/components/StatusDropdown";
-import { getCurrentMonth } from "@/utils/dateUtils";
+import { getCurrentMonth } from "@/utils/dateCalendar";
 import { buttonColors, statusColors } from "@/utils/styles/colors";
 import { Box } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
