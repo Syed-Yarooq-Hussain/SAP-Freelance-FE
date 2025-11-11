@@ -20,7 +20,7 @@ export const request = async <P, R>(
     return result;
   } catch (err: unknown) {
     const errorResponse: ApiResponse<R> = {
-      message: "Something went wrong",
+      message: "Something went wrongsss",
       code: 500,
       status: API_STATUS.ERROR,
       data: null,
