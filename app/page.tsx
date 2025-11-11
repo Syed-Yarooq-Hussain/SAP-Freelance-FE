@@ -1,6 +1,5 @@
 "use client";
 
-import { useLogin } from "@/actions/auth/login";
 import AuthHeader from "@/components/AuthHeader";
 import { CreateForm } from "@/components/CreateForm";
 import SignUpLink from "@/components/SignUpLink";
@@ -14,23 +13,26 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import * as React from "react";
+import { signIn } from "next-auth/react";
 import { FieldValues } from "react-hook-form";
 
-const TEST_MODE = true //process.env.NEXT_PUBLIC_TEST_MODE === "true";
+const TEST_MODE = true;
 
-const LoginPage: React.FC = () => {
-  const { mutate, error, isPending } = useLogin();
+export default function LoginPage() {
   const elements = getLoginFormFields();
 
   const handleSuccess = (data: FieldValues) => {
-    const formData = data as ILoginForm;
-    mutate(formData);
+    if (!TEST_MODE) return;
+    const { email, password } = data as ILoginForm;
+    signIn("credentials", {
+      email,
+      password,
+      callbackUrl: "/",
+    });
   };
 
-  const quickLogin = (email: string) => {
-    mutate({ email, password: "test" } as ILoginForm);
-  };
+  const quickLogin = (email: string) =>
+    signIn("credentials", { email, password: "test", callbackUrl: "/" });
 
   return (
     <Container maxWidth="sm">
@@ -52,8 +54,8 @@ const LoginPage: React.FC = () => {
         <CreateForm
           elements={elements}
           onSuccess={handleSuccess}
-          loading={isPending}
-          error={error?.message}
+          loading={false}
+          error={undefined}
           submitButton={{
             children: "Login",
             variant: "contained",
@@ -106,6 +108,4 @@ const LoginPage: React.FC = () => {
       </Box>
     </Container>
   );
-};
-
-export default LoginPage;
+}
