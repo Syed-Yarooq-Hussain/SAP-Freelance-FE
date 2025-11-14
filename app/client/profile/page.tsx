@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { ClientProfile } from "@/components/specific/Profile";
+import { ClientProfile } from "@/components/DetailProfile";
 import Sidebar from "@/components/Sidebar";
 import { ProfileData } from "./updateProfile/page";
 
@@ -20,7 +20,7 @@ const ProfilePage: React.FC = () => {
   description: "",
   image: "/default.png",
   skills: [],
-  experience: [],
+  experience: "",
   education: [],
   reviews: [],
   certifications: "",
@@ -62,7 +62,7 @@ const ProfilePage: React.FC = () => {
         }}
         skills={profile.skills || []}
         education={profile.education || []}
-        experience={profile.experience || []}
+        experienceList={ profile.experienceList}
         reviews={profile.reviews || []}
       />
     </Sidebar>

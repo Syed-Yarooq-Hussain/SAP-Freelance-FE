@@ -3,7 +3,7 @@
 
 import React, { useEffect, useState } from "react";
 import Sidebar from "@/components/Sidebar";
-import UpdateProfile from "@/components/specific/ProfileUpdate";
+import UpdateProfile from "@/components/EditProfile";
 import { clientProfileData } from "@/data/clientProfile";
 
 // ✅ TypeScript type for profile data
@@ -21,13 +21,7 @@ export interface ProfileData {
   description: string;
   image: string;
   skills: string[];
-  experience: Array<{
-    title: string;
-    client: string;
-    role: string;
-    duration: string;
-    technologies: string;
-  }>;
+  experience: string | number;
   education: string[];
   reviews: Array<{
     client: string;
@@ -64,7 +58,7 @@ const EditProfilePage: React.FC = () => {
     description: "",
     image: "",
     skills: [],
-    experience: [],
+    experience: "",
     education: [],
     reviews: [],
     certifications: "",
@@ -105,15 +99,14 @@ const EditProfilePage: React.FC = () => {
             : [],
         });
       } else {
-        // ✅ Default profile from clientProfileData
         const flat: ProfileData = {
           ...clientProfileData.profile,
           skills: clientProfileData.skills,
-          experience: clientProfileData.experience,
+          experience: clientProfileData.profile.experience,
           education: clientProfileData.education,
           reviews: clientProfileData.reviews,
           certifications: "SAP Certified Professional",
-          experienceList: clientProfileData.experience,
+          experienceList: clientProfileData.experienceList,
           reviewsList: clientProfileData.reviews,
           description: clientProfileData.profile.title,
           email: "",

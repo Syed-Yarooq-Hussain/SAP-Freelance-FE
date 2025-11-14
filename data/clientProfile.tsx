@@ -23,7 +23,7 @@ export const clientProfileData = {
     "ABAP (basic)",
   ],
 
-  experience: [
+  experienceList: [
     {
       title: "Global Rollout - Manufacturing",
       client: "ManuCorp",
