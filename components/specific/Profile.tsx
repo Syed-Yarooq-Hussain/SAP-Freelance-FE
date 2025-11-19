@@ -1,9 +1,19 @@
 "use client";
 import { clientProfileData } from "@/data/clientProfile";
-import { Box, Grid, IconButton, Stack, Typography } from "@mui/material";
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import BorderColorIcon from '@mui/icons-material/BorderColor';
+import {
+  Box,
+  Grid,
+  IconButton,
+  Stack,
+  Tooltip,
+  Typography,
+} from "@mui/material";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import BorderColorIcon from "@mui/icons-material/BorderColor";
 import { usePathname } from "next/navigation";
+import colors from "@/utils/styles/colors";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 
 type SectionType = "experience" | "education" | "reviews";
 
@@ -18,20 +28,53 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ section }) => {
   if (section === "experience") {
     return (
       <Box>
-        <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>Experience</Typography>
+        <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
+          Experience
+        </Typography>
         <Grid container spacing={2} sx={{ mb: 3 }}>
           {clientProfileData.experienceList.map((exp, i) => (
             <Grid key={`exp-${i}`} size={{ xs: 12, md: 4 }}>
               <Box sx={{ borderLeft: "3px solid #f50057", p: 2 }}>
-                <Typography sx={{ fontWeight: 600, fontSize: 16 }}>{exp.title}</Typography>
-                <Typography sx={{ fontWeight: 500, mt: 1, fontSize: 13 }}>Client: <b>{exp.client}</b></Typography>
-                <Typography sx={{ fontWeight: 500, mt: 1, fontSize: 13 }}>Role: <b>{exp.role}</b></Typography>
-                <Typography sx={{ fontWeight: 500, mt: 1, fontSize: 13 }}>Duration: <b>{exp.duration}</b></Typography>
-                <Typography sx={{ fontWeight: 500, mt: 1, fontSize: 13 }}>Technologies: <b>{exp.technologies}</b></Typography>
+                <Typography sx={{ fontWeight: 600, fontSize: 16 }}>
+                  {exp.title}
+                </Typography>
+                <Typography sx={{ fontWeight: 500, mt: 1, fontSize: 13 }}>
+                  Client: <b>{exp.client}</b>
+                </Typography>
+                <Typography sx={{ fontWeight: 500, mt: 1, fontSize: 13 }}>
+                  Role: <b>{exp.role}</b>
+                </Typography>
+                <Typography sx={{ fontWeight: 500, mt: 1, fontSize: 13 }}>
+                  Duration: <b>{exp.duration}</b>
+                </Typography>
+                <Typography sx={{ fontWeight: 500, mt: 1, fontSize: 13 }}>
+                  Technologies: <b>{exp.technologies}</b>
+                </Typography>
                 {isEditMode && (
                   <Stack direction="row" mt={1}>
-                    <IconButton size="small"><BorderColorIcon sx={{ color: "#4b75f2", fontSize: 20 }} /></IconButton>
-                    <IconButton size="small"><DeleteForeverIcon sx={{ color: "#f44336", fontSize: 20 }} /></IconButton>
+                    <Tooltip title="Edit">
+                      <IconButton
+                        size="small"
+                        sx={{
+                          color: colors.BLUE,
+                          "&:hover": { bgcolor: `${colors.BLUE}15` },
+                        }}
+                      >
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+
+                    <Tooltip title="Delete">
+                      <IconButton
+                        size="small"
+                        sx={{
+                          color: colors.RED,
+                          "&:hover": { bgcolor: `${colors.RED}15` },
+                        }}
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
                   </Stack>
                 )}
               </Box>
@@ -45,16 +88,45 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ section }) => {
   if (section === "education") {
     return (
       <Box>
-        <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>Education & Certifications</Typography>
+        <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
+          Education & Certifications
+        </Typography>
         <ul style={{ listStyleType: "disc", paddingLeft: 40, margin: 0 }}>
           {clientProfileData.education.map((edu, index) => (
             <li key={`edu-${index}`} style={{ marginBottom: "6px" }}>
-              <Stack direction="row" justifyContent="space-between" alignItems="center">
-                <Typography component="span" sx={{ fontWeight: 600 }}>{edu}</Typography>
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Typography component="span" sx={{ fontWeight: 600 }}>
+                  {edu}
+                </Typography>
                 {isEditMode && (
                   <Stack direction="row">
-                    <IconButton size="small"><DeleteForeverIcon sx={{ color: "#4b75f2", fontSize: 20 }} /></IconButton>
-                    <IconButton size="small"><BorderColorIcon sx={{ color: "#f44336", fontSize: 20 }} /></IconButton>
+                    <Tooltip title="Edit">
+                      <IconButton
+                        size="small"
+                        sx={{
+                          color: colors.BLUE,
+                          "&:hover": { bgcolor: `${colors.BLUE}15` },
+                        }}
+                      >
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+
+                    <Tooltip title="Delete">
+                      <IconButton
+                        size="small"
+                        sx={{
+                          color: colors.RED,
+                          "&:hover": { bgcolor: `${colors.RED}15` },
+                        }}
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
                   </Stack>
                 )}
               </Stack>
@@ -68,18 +140,39 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ section }) => {
   if (section === "reviews") {
     return (
       <Box>
-        <Typography variant="h6" sx={{ fontWeight: 700, mt: 4, mb: 3 }}>Reviews & Ratings</Typography>
+        <Typography variant="h6" sx={{ fontWeight: 700, mt: 4, mb: 3 }}>
+          Reviews & Ratings
+        </Typography>
         <Grid container spacing={4}>
           {clientProfileData.reviews.map((rev, index) => (
-            <Grid key={`rev-${index}`} size={{ xs: 12, md: 4 }} sx={{ borderLeft: "3px solid #4985eeff", height: "6.5rem", pl: 2 }}>
-              <Typography variant="body2" sx={{ color: "gray", mt: 2, mb: 0.5 }}>
-                Client: <span style={{ fontWeight: 600, color: "black" }}>{rev.client}</span>
+            <Grid
+              key={`rev-${index}`}
+              size={{ xs: 12, md: 4 }}
+              sx={{
+                borderLeft: "3px solid #4985eeff",
+                height: "6.5rem",
+                pl: 2,
+              }}
+            >
+              <Typography
+                variant="body2"
+                sx={{ color: "gray", mt: 2, mb: 0.5 }}
+              >
+                Client:{" "}
+                <span style={{ fontWeight: 600, color: "black" }}>
+                  {rev.client}
+                </span>
               </Typography>
               <Typography variant="body2" sx={{ color: "gray", mb: 0.5 }}>
-                Rating: <span style={{ fontWeight: 600, color: "black" }}>{rev.rating}</span>
+                Rating:{" "}
+                <span style={{ fontWeight: 600, color: "black" }}>
+                  {rev.rating}
+                </span>
               </Typography>
               <Typography variant="body2" sx={{ color: "gray" }}>
-                <span style={{ fontWeight: 600, color: "black" }}>{rev.comment}</span>
+                <span style={{ fontWeight: 600, color: "black" }}>
+                  {rev.comment}
+                </span>
               </Typography>
             </Grid>
           ))}

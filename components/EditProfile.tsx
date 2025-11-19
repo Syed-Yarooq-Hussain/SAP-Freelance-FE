@@ -80,22 +80,21 @@ const ProfileUpdate: React.FC<ProfileUpdateProps> = ({ profile, onUpdate }) => {
   };
 
   return (
-    <Box
-      sx={{
-        border: "1px solid #ddd",
-        borderRadius: 2,
-        p: 4,
-        backgroundColor: "#fff",
-        width: "100%",
-      }}
-    >
+   <Box
+        sx={{
+          p: 2,
+          borderRadius: 2,
+          boxShadow: 2,
+          bgcolor: "background.paper",
+        }}
+      >
       <Typography variant="h6" sx={{ mb: 3, fontWeight: 700 }}>
         Edit Profile
       </Typography>
 
       {/*//////////////////////////// PROFILE IMAGE & BASIC DETAILS ////////////////////////////*/}
       <Grid container spacing={3}>
-        <Grid size={{ xs:12, md:3}} sx={{ textAlign: "center" }}>
+        <Grid size={{ xs:12, md:2}} sx={{ textAlign: "center" }}>
           <label htmlFor="upload-photo">
             <Box sx={{ position: "relative", display: "inline-block" }}>
               <Avatar
@@ -119,9 +118,6 @@ const ProfileUpdate: React.FC<ProfileUpdateProps> = ({ profile, onUpdate }) => {
               onChange={handleImageUpload}
             />
           </label>
-          <Typography sx={{ mt: 2, fontWeight: 600 }}>
-            Upload Profile Photo
-          </Typography>
         </Grid>
 
         <Grid size={{ xs:12, md:9}}>
@@ -217,14 +213,6 @@ const ProfileUpdate: React.FC<ProfileUpdateProps> = ({ profile, onUpdate }) => {
                   fontWeight: 500,
                 }}
               >
-                {skill}
-                <IconButton
-                  size="small"
-                  onClick={() => handleRemoveSkill(skill)}
-                  sx={{ color: colors.BLUE, p: 0 }}
-                >
-                  <CloseIcon fontSize="small" />
-                </IconButton>
               </Box>
             ))
           )}
@@ -265,7 +253,6 @@ const ProfileUpdate: React.FC<ProfileUpdateProps> = ({ profile, onUpdate }) => {
       {/*////////////////////////////////// SECTION: EXTRA BOXS /////////////////////////////*/}
       <Grid container spacing={2}>
         <Grid size={{ xs:12, md:12}}>
-          <Typography sx={{ fontSize: 13, mb: 0.5 }}>Project name</Typography>
           <CreateForm
             elements={profileExtraElements}
             onSuccess={handleCreateFormSuccess}

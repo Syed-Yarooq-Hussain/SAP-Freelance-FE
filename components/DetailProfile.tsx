@@ -52,7 +52,13 @@ export const ClientProfile: React.FC<ProfileProps> = ({
 
   return (
     <Box
-      sx={{border: "1px solid #ddd",borderRadius: 2,p: 3,backgroundColor: "#fff",width: "100%",}}>
+        sx={{
+          p: 2,
+          borderRadius: 2,
+          boxShadow: 2,
+          bgcolor: "background.paper",
+        }}
+      >
       <Grid container columns={12} spacing={8} alignItems="center">
         <Grid
           size={{ xs: 12, md: 6 }}
