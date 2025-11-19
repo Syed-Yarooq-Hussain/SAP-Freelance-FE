@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "./auth";
+import { auth } from "./services/auth";
 import { APP_ROUTES } from "./utils/app_routes";
 
 const PUBLIC_ROUTES = [
