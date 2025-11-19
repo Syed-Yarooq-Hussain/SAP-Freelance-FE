@@ -1,6 +1,8 @@
 "use client";
 
+import GlobalLoader from "@/components/GlobalLoader";
 import QueryProvider from "@/providers/QueryProvider";
+import ToastProvider from "@/providers/ToastProvider";
 import getTheme from "@/theme";
 import { Box, Container, CssBaseline, ThemeProvider } from "@mui/material";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
@@ -43,7 +45,10 @@ export default function RootLayout({
                   }}
                 >
                   <Box component="main" sx={{ p: 1 }}>
-                    {children}
+                    <ToastProvider>
+                      <GlobalLoader />
+                      {children}
+                    </ToastProvider>
                   </Box>
                 </Container>
               </SessionProvider>
