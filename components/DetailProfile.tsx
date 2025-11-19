@@ -43,7 +43,6 @@ interface ProfileProps {
 
 export const ClientProfile: React.FC<ProfileProps> = ({
   profileInfo,
-  skills, 
 }: ProfileProps) => {
   const router = useRouter();
 
@@ -64,19 +63,19 @@ export const ClientProfile: React.FC<ProfileProps> = ({
             sx={{ width: 150, height: 150, mr: 2 }}/>
           <Box>
             <Typography variant="h6" sx={{ fontWeight: 700 }}>
-              {profileInfo.name}
+              {clientProfileData.profile.name}
             </Typography>
 
             <Typography
               variant="body2"
               sx={{ fontWeight: 600, fontSize: 11, mt: 1, maxWidth: 640 }}>
-              {profileInfo.title}
+              {clientProfileData.profile.title}
             </Typography>
 
             <Typography variant="body2" sx={{ mt: 1 }}>
               Visibility:{" "}
               <span style={{ fontWeight: 600 }}>
-                {profileInfo.visibility}
+                {clientProfileData.profile.visibility}
               </span>
             </Typography>
           </Box>
@@ -86,7 +85,7 @@ export const ClientProfile: React.FC<ProfileProps> = ({
           <Grid container columns={12}>
             <Grid size={{ xs: 8, md: 6 }}>
               <Typography variant="body2" sx={{ fontSize: 13 }}>
-                Module: <strong>{profileInfo.module}</strong>
+                Module: <strong>{clientProfileData.profile.module}</strong>
               </Typography>
             </Grid>
             <Grid size={{ xs: 8, md: 6 }}>
@@ -102,13 +101,13 @@ export const ClientProfile: React.FC<ProfileProps> = ({
             </Grid>
             <Grid size={{ xs: 8, md: 6 }}>
               <Typography variant="body2" sx={{ fontSize: 13, mt: 1.5 }}>
-                Availability: <strong>{profileInfo.availability}</strong>
+                Availability: <strong>{clientProfileData.profile.availability}</strong>
               </Typography>
             </Grid>
 
             <Grid size={{ xs: 8, md: 6 }}>
               <Typography variant="body2" sx={{ fontSize: 13, mt: 1.5 }}>
-                Rate: <strong>{profileInfo.rate}</strong>
+                Rate: <strong>{clientProfileData.profile.rate}</strong>
               </Typography>
             </Grid>
             <Grid size={{ xs: 8, md: 6 }}>
@@ -119,12 +118,12 @@ export const ClientProfile: React.FC<ProfileProps> = ({
 
             <Grid size={{ xs: 8, md: 6 }}>
               <Typography variant="body2" sx={{ fontSize: 13, mt: 1.5 }}>
-                Location: <strong>{profileInfo.location}</strong>
+                Location: <strong>{clientProfileData.profile.location}</strong>
               </Typography>
             </Grid>
             <Grid sx={{ ml: 28.2, mt: -2.5 }}>
               <Typography variant="body2" sx={{ fontSize: 13 }}>
-                Contact: <strong>{profileInfo.email}</strong>
+                Contact: <strong>{clientProfileData.profile.contact}</strong>
               </Typography>
             </Grid>
           </Grid>
@@ -141,7 +140,7 @@ export const ClientProfile: React.FC<ProfileProps> = ({
         Skills & Expertise
       </Typography>
       <Box display="flex" flexWrap="wrap" gap={2} mt={2}>
-        {skills.map((skill, index) => (
+        {clientProfileData.skills.map((skill, index) => (
           <Box
             key={index}
             sx={{border: "1.5px solid #1069f9ff", color: colors.BLUE, px: 2, py: 0.5, fontWeight: 500,

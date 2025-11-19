@@ -5,43 +5,8 @@ import React, { useEffect, useState } from "react";
 import Sidebar from "@/components/Sidebar";
 import UpdateProfile from "@/components/EditProfile";
 import { clientProfileData } from "@/data/clientProfile";
+import { ProfileData } from "@/types/ProfileData";
 
-// ✅ TypeScript type for profile data
-export interface ProfileData {
-  name: string;
-  title: string;
-  email: string;
-  location: string;
-  module: string;
-  projects: string | number;
-  weeklyHours: string;
-  hourlyRate: string;
-  rating: string;
-  visibility: string;
-  description: string;
-  image: string;
-  skills: string[];
-  experience: string | number;
-  education: string[];
-  reviews: Array<{
-    client: string;
-    rating: number;
-    comment: string;
-  }>;
-  certifications: string;
-  experienceList: Array<{
-    title: string;
-    client: string;
-    role: string;
-    duration: string;
-    technologies: string;
-  }>;
-  reviewsList: Array<{
-    client: string;
-    rating: number;
-    comment: string;
-  }>;
-}
 
 const EditProfilePage: React.FC = () => {
   const [profile, setProfile] = useState<ProfileData>({
