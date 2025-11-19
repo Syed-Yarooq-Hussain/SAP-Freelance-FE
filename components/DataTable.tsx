@@ -10,6 +10,10 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import type {
+  GridSlotsComponent,
+  GridSlotsComponentsProps,
+} from "@mui/x-data-grid";
 import {
   DataGrid,
   GridColDef,
@@ -38,6 +42,8 @@ export type DataTableProps<T extends GridValidRowModel> = {
   enableSelection?: boolean;
   selectionActions?: React.ReactNode;
   actionButton?: React.ReactNode;
+  slotProps?: GridSlotsComponentsProps;
+  slots?: Partial<GridSlotsComponent>;
 };
 
 export default function DataTable<T extends GridValidRowModel>({
@@ -55,6 +61,8 @@ export default function DataTable<T extends GridValidRowModel>({
   enableSelection = false,
   selectionActions,
   actionButton,
+  slotProps,
+  slots,
 }: DataTableProps<T>) {
   const [selectedRows, setSelectedRows] = React.useState<Set<string>>(
     new Set()
@@ -180,6 +188,8 @@ export default function DataTable<T extends GridValidRowModel>({
           pagination
           disableRowSelectionOnClick
           onRowClick={onRowClick}
+          slots={slots}
+          slotProps={slotProps}
           sx={{
             "& .MuiDataGrid-columnHeaders": {
               backgroundColor: "#f8fbff",

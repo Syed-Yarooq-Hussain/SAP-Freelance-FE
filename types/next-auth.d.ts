@@ -4,7 +4,7 @@ import "next-auth";
 declare module "next-auth" {
   interface Session {
     user: IUser;
-    token: string;
+    accessToken: string;
   }
 
   interface User extends IUser {

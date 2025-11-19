@@ -109,54 +109,6 @@ export const teamBuilderColumns = [
   },
 ];
 
-export const teamBuilderRows = [
-  {
-    id: "z-203",
-    modules: "SAP MM, S/4HANA",
-    experience: "9 Years",
-    rate: "$15/hour",
-    avail: 10,
-    request: 6,
-    avatar: "/img/u1.png",
-  },
-  {
-    id: "z-457",
-    modules: "SAP SD, S/4HANA",
-    experience: "9 Years",
-    rate: "$20/hour",
-    avail: 10,
-    request: 10,
-    avatar: "/img/u2.png",
-  },
-  {
-    id: "z-891",
-    modules: "SAP SD, Fiori",
-    experience: "9 Years",
-    rate: "$18/hour",
-    avail: 10,
-    request: 0,
-    avatar: "/img/u3.png",
-  },
-  {
-    id: "z-324",
-    modules: "SAP SD, S/4HANA",
-    experience: "9 Years",
-    rate: "$22/hour",
-    avail: 10,
-    request: 6,
-    avatar: "/img/u4.png",
-  },
-  {
-    id: "z-678",
-    modules: "SAP SD, Fiori",
-    experience: "9 Years",
-    rate: "$25/hour",
-    avail: 10,
-    request: 10,
-    avatar: "/img/u5.png",
-  },
-];
-
 export const teamBuilderFormElements = [
   {
     name: "projectName",
