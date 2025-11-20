@@ -1,7 +1,7 @@
 import { IFieldConfig } from "@/components/CreateForm";
 import { SKILLS_OPTIONS } from "./options";
 
-export const clientProfileData = {
+export const consultantProfileData = {
   profile: {
     name: "Aria Winters",
     title:

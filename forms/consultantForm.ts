@@ -1,6 +1,5 @@
 import { IFieldConfig } from "@/components/CreateForm";
-import { LEVEL_OPTIONS } from "@/data/levelOptions";
-import { MODULE_OPTIONS } from "@/data/moduleOptions";
+import { LEVEL_OPTIONS, MODULE_OPTIONS } from "@/data/options";
 
 export function getConsultantFormFields(): IFieldConfig[] {
   return [

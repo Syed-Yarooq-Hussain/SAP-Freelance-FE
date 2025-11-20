@@ -23,7 +23,7 @@ function ProfilePageContent() {
     }
 
     const qs = params.toString();
-    const base = APP_ROUTES.CLIENT.PROFILE;
+    const base = APP_ROUTES.ADMIN.PROFILE;
     const url = qs ? `${base}?${qs}` : base;
 
     router.push(url);
@@ -38,7 +38,7 @@ function ProfilePageContent() {
   );
 }
 
-export default function ClientProfilePage() {
+export default function AdminProfilePage() {
   return (
     <Sidebar>
       <Suspense fallback={<div>Loading profile...</div>}>

@@ -5,8 +5,8 @@ export interface ProfileData {
   location: string;
   module: string;
   projects: string | number;
-  weeklyHours: string;
-  hourlyRate: string;
+  availability: string;
+  rate: string;
   experience: string | number;
   rating: string;
   visibility: string;

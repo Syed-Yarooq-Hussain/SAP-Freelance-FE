@@ -2,43 +2,60 @@
 
 import { Avatar } from "@mui/material";
 import Image from "next/image";
-import { FC } from "react";
+import { FC, useState } from "react";
 
 interface ProfileAvatarProps {
-  name: string;
+  name?: string;
   imageUrl?: string;
   size?: number;
 }
 
-const ProfileAvatar: FC<ProfileAvatarProps> = ({ name, imageUrl, size = 80 }) => {
-  const getInitial = (text: string) => (text ? text.charAt(0).toUpperCase() : "?");
+const PLACEHOLDERS = ["/default.png", "/image.png", "", undefined];
 
-  if (imageUrl) {
-    return (
-      <Avatar
-        sx={{ width: size, height: size }}
-      >
-        <Image
-          src={imageUrl}
-          alt={name}
-          width={size}
-          height={size}
-          style={{ objectFit: "cover", borderRadius: "50%" }}
-        />
-      </Avatar>
-    );
-  }
+const getInitials = (name: string) => {
+  const words = name.trim().split(" ");
+  if (words.length === 1) return words[0][0].toUpperCase();
+  return `${words[0][0]}${words[1][0]}`.toUpperCase();
+};
+
+const ProfileAvatar: FC<ProfileAvatarProps> = ({
+  name = "",
+  imageUrl,
+  size = 80,
+}) => {
+  const [imageError, setImageError] = useState(false);
+
+  const initials = getInitials(name);
+  const isPlaceholder = !imageUrl || PLACEHOLDERS.includes(imageUrl);
+  const shouldShowInitial = isPlaceholder || imageError;
 
   return (
     <Avatar
       sx={{
         width: size,
         height: size,
-        bgcolor: "primary.main",
-        fontSize: size / 2.5,
+        bgcolor: shouldShowInitial ? "rgba(0,0,0,0.12)" : "transparent",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: size * 0.35,
+        fontWeight: 600,
+        overflow: "hidden",
       }}
+      aria-label={initials}
     >
-      {getInitial(name)}
+      {shouldShowInitial ? (
+        initials
+      ) : (
+        <Image
+          src={imageUrl!}
+          alt={name || "Profile image"}
+          width={size}
+          height={size}
+          style={{ objectFit: "cover", borderRadius: "50%" }}
+          onError={() => setImageError(true)}
+        />
+      )}
     </Avatar>
   );
 };
