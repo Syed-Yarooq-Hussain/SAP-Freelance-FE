@@ -19,3 +19,18 @@ export interface CandidateRow {
   signed: string;
   role: string;
 }
+
+export type TeamCreationProps = {
+  onNext: () => void;
+  onDiscard?: () => void;
+};
+
+export type TeamBuilderRow = {
+  id: string | number;
+  modules: string;
+  experience: string;
+  rate: string;
+  avail: number;
+  request: number;
+  avatar?: string;
+};

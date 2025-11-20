@@ -1,11 +1,17 @@
+"use client";
+
 import AppButton from "@/components/Button";
 import { IOption } from "@/types/options";
+import { parseCV } from "@/utils/cvParser";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import {
   Alert,
-  BaseTextFieldProps,
   Box,
   ButtonProps,
   FormControl,
+  IconButton,
+  InputAdornment,
   MenuItem,
   Stack,
   StackProps,
@@ -14,6 +20,7 @@ import {
 } from "@mui/material";
 import { ResponsiveStyleValue } from "@mui/system";
 import { FC, ReactNode } from "react";
+import React, { FC, useRef, useState } from "react";
 import {
   Controller,
   FieldValues,
@@ -29,13 +36,18 @@ export interface IGridSpan {
   xl?: number;
 }
 
-export interface IFieldConfig extends BaseTextFieldProps {
+export interface IFieldConfig {
   name: string;
+  label: string;
+  placeholder?: string;
+  type?: string;
   rules?: RegisterOptions;
+  options?: IOption[];
   column?: IGridSpan;
   row?: IGridSpan;
-  type?: string;
-  options?: IOption[];
+  inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
+  select?: boolean;
+  defaultValue?: string | number | boolean | null;
 }
 
 interface ICreateFormProps {
@@ -44,6 +56,7 @@ interface ICreateFormProps {
   onCancel?: () => void;
   loading?: boolean;
   error?: string;
+  onCVParsed?: (cvData: Partial<FieldValues>) => void;
   actionsContainerProps?: StackProps;
   submitButton?: ButtonProps;
   cancelButton?: ButtonProps;
@@ -53,16 +66,13 @@ interface ICreateFormProps {
 
 const generateSpans = (type: "row" | "column", spans?: IGridSpan) => {
   const defaultSpan = type === "row" ? 1 : 12;
-
-  if (!spans || Object.keys(spans).length === 0) {
+  if (!spans || Object.keys(spans).length === 0)
     return { xs: `span ${defaultSpan}` };
-  }
 
   const result: ResponsiveStyleValue<string> = {};
   (["xs", "sm", "md", "lg", "xl"] as const).forEach((bp) => {
     if (spans[bp] !== undefined) result[bp] = `span ${spans[bp]}`;
   });
-
   return result;
 };
 
@@ -75,17 +85,31 @@ export const CreateForm: FC<ICreateFormProps> = ({
   submitButton,
   cancelButton,
   actionsContainerProps,
-  leadingContent,
-  inlineActions = false,
+  onCVParsed,
 }) => {
   const {
     control,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm();
 
-  const submitHandler = (data: FieldValues) => {
-    onSuccess(data);
+  const [showPassword, setShowPassword] = useState<Record<string, boolean>>({});
+  const [fileNames, setFileNames] = useState<Record<string, string>>({});
+  const autoFilledRef = useRef<Set<string>>(new Set());
+
+  const handleTogglePassword = (name: string) => {
+    setShowPassword((prev) => ({ ...prev, [name]: !prev[name] }));
+  };
+
+  const handleFileDrop = async (
+    e: React.DragEvent<HTMLLabelElement>,
+    fieldName: string,
+    onChange: (value: File | null) => void
+  ) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files?.[0];
+    if (file) await handleFileSelection(file, fieldName, onChange);
   };
 
   const fieldsGrid = (

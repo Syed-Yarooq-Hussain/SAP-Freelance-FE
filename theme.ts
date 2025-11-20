@@ -22,7 +22,7 @@ const getTheme = (mode: "light" | "dark") =>
       },
     },
     typography: {
-      fontFamily: "var(--font-poppins)",
+      fontFamily: "var(--font-open-sans), 'Open Sans','Helvetica Neue',Helvetica,Arial,sans-serif",
     },
     components: {
       MuiAppBar: {

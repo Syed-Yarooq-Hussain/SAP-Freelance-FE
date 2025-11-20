@@ -1,15 +1,17 @@
 "use client";
 
+import GlobalLoader from "@/components/GlobalLoader";
 import QueryProvider from "@/providers/QueryProvider";
+import ToastProvider from "@/providers/ToastProvider";
 import getTheme from "@/theme";
 import { Box, Container, CssBaseline, ThemeProvider } from "@mui/material";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import { SessionProvider } from "next-auth/react";
-import { Poppins } from "next/font/google";
+import { Open_Sans } from "next/font/google";
 import { useMemo, useState } from "react";
 
-const poppins = Poppins({
-  variable: "--font-poppins",
+const openSans = Open_Sans({
+  variable: "--font-open-sans",
   weight: ["400", "600"],
   subsets: ["latin"],
   display: "swap",
@@ -25,7 +27,7 @@ export default function RootLayout({
   const theme = useMemo(() => getTheme(mode), [mode]);
 
   return (
-    <html lang="en" className={`${poppins.variable} ${poppins.variable}`}>
+    <html lang="en" className={openSans.variable}>
       <body>
         <AppRouterCacheProvider options={{ key: "css", enableCssLayer: true }}>
           <ThemeProvider theme={theme}>
@@ -43,7 +45,10 @@ export default function RootLayout({
                   }}
                 >
                   <Box component="main" sx={{ p: 1 }}>
-                    {children}
+                    <ToastProvider>
+                      <GlobalLoader />
+                      {children}
+                    </ToastProvider>
                   </Box>
                 </Container>
               </SessionProvider>

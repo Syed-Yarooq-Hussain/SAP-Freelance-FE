@@ -1,10 +1,10 @@
-import AppButton from "@/components/Button";
 import { IFieldConfig } from "@/components/CreateForm";
 import { MilestoneRow } from "@/components/specific/teambuilder/TeamProjects";
+import { StatCardProps } from "@/components/StatCard";
 import StatusDropdown from "@/components/StatusDropdown";
 import { STATUS } from "@/constants/status_dropdown";
 import type { CandidateRow } from "@/types/teamBuilder";
-import { buttonColors, colors } from "@/utils/styles/colors";
+import { colors } from "@/utils/styles/colors";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import AssignmentIcon from "@mui/icons-material/Assignment";
@@ -54,29 +54,29 @@ export const teamBuilderSteps = [
     icon: <CreditCardIcon fontSize="small" />,
   },
 ];
-export const teamBuilderStats = [
+export const teamBuilderStats: StatCardProps[] = [
   {
     title: "Hours Per Week",
     subtitle: 6,
-    color: "linear-gradient(135deg, #5AA9FF, #80C4FF)",
+    color: "linear-gradient(135deg, #5AA9FF 50%, #80C4FF 100%)",
     icon: "QueryStatsIcon" as const,
   },
   {
     title: "Avg. Rate Per Hour",
     subtitle: "$20",
-    color: "linear-gradient(135deg, #00997B, #4BD7BB)",
+    color: "linear-gradient(135deg, #00997B 50%, #4BD7BB 100%)",
     icon: "CurrencyExchangeIcon" as const,
   },
   {
     title: "Hours Per Month",
     subtitle: 30,
-    color: "linear-gradient(135deg, #FFB64E, #FFD27F)",
+    color: "linear-gradient(135deg, #FFB64E 50%, #FFD27F 100%)",
     icon: "EventAvailableIcon" as const,
   },
   {
     title: "Per Month Cost",
     subtitle: "$12,000",
-    color: "linear-gradient(135deg, #FF5471, #FF99AB)",
+    color: "linear-gradient(135deg, #FF5471 50%, #FF99AB 100%)",
     icon: "BallotIcon" as const,
   },
 ];
@@ -106,54 +106,6 @@ export const teamBuilderColumns = [
         }}
       />
     ),
-  },
-];
-
-export const teamBuilderRows = [
-  {
-    id: "z-203",
-    modules: "SAP MM, S/4HANA",
-    experience: "9 Years",
-    rate: "$15/hour",
-    avail: 10,
-    request: 6,
-    avatar: "/img/u1.png",
-  },
-  {
-    id: "z-457",
-    modules: "SAP SD, S/4HANA",
-    experience: "9 Years",
-    rate: "$20/hour",
-    avail: 10,
-    request: 10,
-    avatar: "/img/u2.png",
-  },
-  {
-    id: "z-891",
-    modules: "SAP SD, Fiori",
-    experience: "9 Years",
-    rate: "$18/hour",
-    avail: 10,
-    request: 0,
-    avatar: "/img/u3.png",
-  },
-  {
-    id: "z-324",
-    modules: "SAP SD, S/4HANA",
-    experience: "9 Years",
-    rate: "$22/hour",
-    avail: 10,
-    request: 6,
-    avatar: "/img/u4.png",
-  },
-  {
-    id: "z-678",
-    modules: "SAP SD, Fiori",
-    experience: "9 Years",
-    rate: "$25/hour",
-    avail: 10,
-    request: 10,
-    avatar: "/img/u5.png",
   },
 ];
 
@@ -739,7 +691,7 @@ export const teamBuilderPaymentStats = [
   },
 ];
 
-export const teamBuilderPaymentColumns = [
+export const teamBuilderPaymentMilestoneColumns = [
   {
     field: "milestone",
     headerName: "Milestone",
@@ -752,7 +704,7 @@ export const teamBuilderPaymentColumns = [
   { field: "amount", headerName: "Amount", flex: 1 },
 ];
 
-export const teamBuilderPaymentRows = [
+export const teamBuilderPaymentMilestoneRows = [
   {
     id: 1,
     milestone: "Milestone 1",
@@ -773,39 +725,53 @@ export const teamBuilderPaymentRows = [
   },
 ];
 
-export const teamBuilderPaymentWiseColumns = [
-  { field: "accountnumber", headerName: "Account Number", flex: 3 },
-  { field: "amount", headerName: "Amount", flex: 3 },
+export const teamBuilderPaymentCustomRangeColumns = [
   {
-    field: "invoice",
-    headerName: "Invoice",
-    flex: 1,
-    renderCell: (params: GridRenderCellParams) => {
-      const label = params.value;
-      if (!label) return null;
-
-      if (label === "-") {
-        return (
-          <Box
-            component="span"
-            sx={{ color: "text.secondary", fontSize: "0.875rem" }}
-          >
-            {label}
-          </Box>
-        );
-      }
-
-      const colorKey = buttonColors[label] || "GREY";
-      return <AppButton label={label} colorKey={colorKey} />;
-    },
+    field: "milestone",
+    headerName: "Milestone",
+    renderCell: (params: GridRenderCellParams) => (
+      <strong style={{ textDecoration: "underline" }}>{params.value}</strong>
+    ),
+    flex: 3,
   },
+  { field: "paymentdate", headerName: "Payment Date", flex: 2 },
+  { field: "duedate", headerName: "Due Date", flex: 2 },
+  { field: "amount", headerName: "Amount", flex: 1 },
 ];
 
-export const teamBuilderPaymentWiseRows = [
+export const teamBuilderPaymentCustomRangeRows = [
   {
     id: 1,
-    accountnumber: "123556332255663151155315",
+    milestone: "Milestone 1",
+    paymentdate: "10.09.2025",
+    duedate: "10.09.2025",
     amount: "$2,500",
-    invoice: "Upload receipt",
+  },
+  {
+    id: 2,
+    milestone: "Milestone 2",
+    paymentdate: "10.10.2025",
+    duedate: "10.10.2025",
+    amount: "$3,500",
+  },
+  {
+    id: 3,
+    milestone: "Milestone 3",
+    paymentdate: "10.11.2025",
+    duedate: "10.11.2025",
+    amount: "$3,500",
   },
 ];
+
+export const invoiceData = {
+  invoiceName: "Milestone 1",
+  accountTitle: "John Doe",
+  accountNumber: "1234563322566311556315",
+  iban: "BAC1235US5600033225566315",
+  invoiceNumber: "3,500",
+  amount: "3,500",
+  serviceCharges: "35",
+  vat: "10%",
+  vatAmount: "$35",
+  totalAmount: "3,570",
+};

@@ -10,6 +10,10 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import type {
+  GridSlotsComponent,
+  GridSlotsComponentsProps,
+} from "@mui/x-data-grid";
 import {
   DataGrid,
   GridColDef,
@@ -37,6 +41,9 @@ export type DataTableProps<T extends GridValidRowModel> = {
   avatarField?: keyof T;
   enableSelection?: boolean;
   selectionActions?: React.ReactNode;
+  actionButton?: React.ReactNode;
+  slotProps?: GridSlotsComponentsProps;
+  slots?: Partial<GridSlotsComponent>;
 };
 
 export default function DataTable<T extends GridValidRowModel>({
@@ -53,6 +60,9 @@ export default function DataTable<T extends GridValidRowModel>({
   avatarField,
   enableSelection = false,
   selectionActions,
+  actionButton,
+  slotProps,
+  slots,
 }: DataTableProps<T>) {
   const [selectedRows, setSelectedRows] = React.useState<Set<string>>(
     new Set()
@@ -143,19 +153,28 @@ export default function DataTable<T extends GridValidRowModel>({
 
   return (
     <>
-      <Stack direction="row" alignItems="center" spacing={1} mb={1}>
-        {showBackButton && (
-          <IconButton
-            onClick={onBackClick}
-            size="small"
-            sx={{ color: "text.primary" }}
-          >
-            <ArrowBackIcon fontSize="small" />
-          </IconButton>
-        )}
-        <Typography variant="h6" fontWeight="bold">
-          {title}
-        </Typography>
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="space-between"
+        mb={1.5}
+        sx={{ width: "100%" }}
+      >
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          {showBackButton && (
+            <IconButton
+              onClick={onBackClick}
+              size="small"
+              sx={{ color: "text.primary" }}
+            >
+              <ArrowBackIcon fontSize="small" />
+            </IconButton>
+          )}
+          <Typography variant="h6" fontWeight="bold">
+            {title}
+          </Typography>
+        </Box>
+        {actionButton && <Box>{actionButton}</Box>}
       </Stack>
 
       <Box sx={{ width: "100%" }}>
@@ -169,6 +188,8 @@ export default function DataTable<T extends GridValidRowModel>({
           pagination
           disableRowSelectionOnClick
           onRowClick={onRowClick}
+          slots={slots}
+          slotProps={slotProps}
           sx={{
             "& .MuiDataGrid-columnHeaders": {
               backgroundColor: "#f8fbff",

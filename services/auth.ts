@@ -3,7 +3,7 @@ import { API_ROUTES } from "@/utils/api_routes";
 import { request } from "@/utils/request";
 import NextAuth, { User } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { API_STATUS } from "./constants/api_status";
+import { API_STATUS } from "../constants/api_status";
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Credentials({

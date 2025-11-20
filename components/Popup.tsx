@@ -9,11 +9,13 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   IconButton,
+  MenuItem,
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 interface FieldConfig {
   id: string;
@@ -21,8 +23,9 @@ interface FieldConfig {
   type?: string;
   value?: string;
   placeholder?: string;
-  onChange?: (value: string | File) => void;
+  onChange?: (value: string) => void;
   helperText?: string;
+  options?: string[];
 }
 
 interface DynamicPopupProps {
@@ -39,6 +42,7 @@ interface DynamicPopupProps {
   description?: string;
   noteText?: string;
   disableSubmit?: boolean;
+  children?: React.ReactNode;
 }
 
 const DynamicPopup: React.FC<DynamicPopupProps> = ({
@@ -55,8 +59,13 @@ const DynamicPopup: React.FC<DynamicPopupProps> = ({
   description,
   noteText,
   disableSubmit = false,
+  children,
 }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(fileValue);
+
+  useEffect(() => {
+    if (!open) setSelectedFile(null);
+  }, [open]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
@@ -69,9 +78,16 @@ const DynamicPopup: React.FC<DynamicPopupProps> = ({
       open={open}
       onClose={onClose}
       fullWidth
-      maxWidth="xs"
+      maxWidth="sm"
       slotProps={{
-        paper: { sx: { borderRadius: 2, p: 1 } },
+        paper: {
+          sx: {
+            borderRadius: 2,
+            p: 2,
+            width: 500,
+            maxWidth: "640px",
+          },
+        },
       }}
     >
       <DialogTitle
@@ -101,7 +117,9 @@ const DynamicPopup: React.FC<DynamicPopupProps> = ({
         </Typography>
       )}
 
-      <DialogContent sx={{ pt: 1, pb: 0 }}>
+      <DialogContent sx={{ pt: 1, pb: 0, overflowX: "hidden" }}>
+        {children}
+
         {fileUpload && (
           <Box
             sx={{
@@ -144,36 +162,68 @@ const DynamicPopup: React.FC<DynamicPopupProps> = ({
                   : 0,
             }}
           >
-            <TextField
-              fullWidth
-              label={field.label}
-              type={field.type || "text"}
-              placeholder={field.placeholder || ""}
-              value={field.value || ""}
-              onChange={(e) => field.onChange?.(e.target.value)}
-              size="small"
-              multiline={field.type !== "date" && field.type !== "time"}
-              minRows={3}
-              slotProps={{
-                inputLabel: {
-                  shrink: field.type === "date" || field.type === "time",
-                },
-              }}
-              sx={{
-                "& .MuiInputBase-root": {
-                  backgroundColor: "#f8f9fc",
-                  borderRadius: 1,
-                },
-              }}
-              helperText={field.helperText}
-            />
+            {field.options ? (
+              <TextField
+                select
+                fullWidth
+                label={field.label}
+                value={field.value || ""}
+                onChange={(e) => field.onChange?.(e.target.value)}
+                size="small"
+                sx={{
+                  "& .MuiInputBase-root": {
+                    backgroundColor: "#f8f9fc",
+                    borderRadius: 1,
+                  },
+                }}
+                helperText={field.helperText}
+              >
+                {field.options.map((opt) => (
+                  <MenuItem key={opt} value={opt}>
+                    {opt}
+                  </MenuItem>
+                ))}
+              </TextField>
+            ) : (
+              <TextField
+                fullWidth
+                label={field.label}
+                type={field.type || "text"}
+                placeholder={field.placeholder || ""}
+                value={field.value || ""}
+                onChange={(e) => field.onChange?.(e.target.value)}
+                size="small"
+                multiline={field.type !== "date" && field.type !== "time"}
+                minRows={3}
+                slotProps={{
+                  inputLabel: {
+                    shrink: field.type === "date" || field.type === "time",
+                  },
+                }}
+                sx={{
+                  "& .MuiInputBase-root": {
+                    backgroundColor: "#f8f9fc",
+                    borderRadius: 1,
+                  },
+                }}
+                helperText={field.helperText}
+              />
+            )}
           </Box>
         ))}
       </DialogContent>
 
       <DialogActions
-        sx={{ flexDirection: "column", alignItems: "center", pb: 2, gap: 1 }}
+        sx={{
+          flexDirection: "column",
+          alignItems: "center",
+          pb: 2,
+          gap: 1,
+          width: "100%",
+        }}
       >
+        <Divider sx={{ width: "100%", mt: 1 }} />
+
         {noteText && (
           <Typography
             variant="caption"
@@ -193,7 +243,7 @@ const DynamicPopup: React.FC<DynamicPopupProps> = ({
           colorKey={buttonColor}
           onClick={onSubmit}
           disabled={disableSubmit}
-          sx={{ width: "auto", px: 3, py: 0.8, fontWeight: 500 }}
+          sx={{ width: 150, px: 0, py: 0.8, fontWeight: 500 }}
         />
       </DialogActions>
     </Dialog>
