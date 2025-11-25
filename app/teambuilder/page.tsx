@@ -29,30 +29,40 @@ function TeamBuilderContent() {
     q.set("step", String(activeStep));
     router.replace(`?${q.toString()}`, { scroll: false });
   }, [activeStep, searchParams, router]);
-
-  const goStep2 = () => setActiveStep(2);
-  const goStep3 = () => setActiveStep(3);
-  const goStep4 = () => setActiveStep(4);
+  const [projectId, setProjectId] = useState<string | null>(null);
+  const goStep2 = (id: string) => {
+    setProjectId(id);
+    setActiveStep(2);
+  };
 
   const current = useMemo(() => {
     switch (activeStep) {
       case 1:
+        return <Step01 onNext={goStep2} />;
+      case 2:
         return (
-          <Step01
-            onNext={goStep2}
-            onDiscard={() => console.log("Discard clicked")}
+          <TeamConfirmation
+            projectId={projectId}
+            onNext={(id) => {
+              setProjectId(id);
+              setActiveStep(3);
+            }}
           />
         );
-      case 2:
-        return <TeamConfirmation onNext={goStep3} />;
       case 3:
-        return <TeamProjects onBack={goStep2} onNext={goStep4} />;
+        return (
+          <TeamProjects
+            projectId={projectId}
+            onBack={() => setActiveStep(2)}
+            onNext={() => setActiveStep(4)}
+          />
+        );
       case 4:
         return <TeamPayments />;
       default:
         return <TeamCreation onNext={goStep2} />;
     }
-  }, [activeStep]);
+  }, [activeStep, projectId]);
 
   return (
     <Box sx={{ mt: 10, px: 4 }}>

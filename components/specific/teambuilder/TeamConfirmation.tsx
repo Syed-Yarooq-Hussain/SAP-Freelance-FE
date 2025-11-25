@@ -16,9 +16,14 @@ import { Box, Typography } from "@mui/material";
 import { useCallback, useMemo, useState } from "react";
 
 type TeamConfirmationProps = {
-  onNext?: () => void;
+  onNext?: (projectId: string) => void;
+  projectId?: string | null;
 };
-export default function TeamConfirmation({ onNext }: TeamConfirmationProps) {
+
+export default function TeamConfirmation({
+  onNext,
+  projectId,
+}: TeamConfirmationProps) {
   const [shortlisted, setShortlisted] =
     useState<ShortlistedRow[]>(initialShortlisted);
   const [candidates, setCandidates] =
@@ -89,7 +94,6 @@ export default function TeamConfirmation({ onNext }: TeamConfirmationProps) {
           pageSize={6}
         />
       </Box>
-
       <Box
         sx={{
           p: 2,
@@ -108,38 +112,39 @@ export default function TeamConfirmation({ onNext }: TeamConfirmationProps) {
           avatarField="avatar"
         />
       </Box>
-
       <RoleHierarchy />
-
       <Box
-    sx={{
-      mt: 3,
-      p: 2,
-      borderRadius: 2,
-      boxShadow: 2,
-      bgcolor: "background.paper",
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      flexWrap: "wrap",
-      gap: 2,
-    }}
-  >
-    <Typography variant="body1" sx={{ fontWeight: 600, color: "text.primary", fontSize: "0.95rem" }}>
-      2 hired
-    </Typography>
+        sx={{
+          mt: 3,
+          p: 2,
+          borderRadius: 2,
+          boxShadow: 2,
+          bgcolor: "background.paper",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: 2,
+        }}
+      >
+        <Typography
+          variant="body1"
+          sx={{ fontWeight: 600, color: "text.primary", fontSize: "0.95rem" }}
+        >
+          2 hired
+        </Typography>
 
-    <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-      <AppButton label="Discard" colorKey="RED" width={180} />
-      <AppButton
-        label="Proceed to next step"
-        colorKey="BLUE"
-        width={180}
-        onClick={onNext}
-      />
-    </Box>
-  </Box>;
-
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+          <AppButton label="Discard" colorKey="RED" width={180} />
+          <AppButton
+            label="Proceed to next step"
+            colorKey="BLUE"
+            width={180}
+            onClick={() => onNext?.(projectId!)}
+          />
+        </Box>
+      </Box>
+      ;
       <DynamicPopup
         open={interviewOpen}
         onClose={() => setInterviewOpen(false)}
