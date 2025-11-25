@@ -1,54 +1,65 @@
 "use client";
 
+import { useCreateMilestone } from "@/actions/projects/useCreateMilestone";
+import { useCreateTask } from "@/actions/projects/useCreateTask";
+import { useGetMilestoneTasks } from "@/actions/projects/useGetMilestoneTasks";
+import { useGetProject } from "@/actions/projects/useGetProject";
+import { useUpdateMilestone } from "@/actions/projects/useUpdateMilestone";
+import { useUpdateProject } from "@/actions/projects/useUpdateProject";
+import { useUpdateTask } from "@/actions/projects/useUpdateTask";
 import AppButton from "@/components/Button";
 import { CreateForm } from "@/components/CreateForm";
 import DataTable from "@/components/DataTable";
 import DynamicPopup from "@/components/Popup";
+import { getMilestoneCols, taskColumns } from "@/data/teamBuilder";
+import { getMilestoneFormFields } from "@/forms/milestoneForm";
+import { getProjectFormFields } from "@/forms/projectForm";
+import { getTaskFormFields } from "@/forms/taskForm";
+import { useToast } from "@/providers/ToastProvider";
+import type { TeamProjectFormData } from "@/types/teamBuilder";
 import {
-    getMilestoneCols,
-    initialMilestones,
-    initialTasksByMilestone,
-    milestoneFormElements,
-    projectFormElements,
-    taskColumns,
-    taskFormElements,
-} from "@/data/teamBuilder";
+  ICreateMilestonePayload,
+  ICreateTaskPayload,
+  IMilestone,
+  ITask,
+  MilestoneRow,
+  TaskRow,
+  TasksByMilestone,
+  TeamProjectsProps,
+} from "@/types/teamBuilder";
 import { Box, Typography } from "@mui/material";
+import { useSession } from "next-auth/react";
 import { useCallback, useMemo, useState } from "react";
 
-type TeamProjectsProps = {
-  onBack?: () => void;
-  onNext?: () => void;
-};
+const STATIC_TASK_DATE = "2025-10-16";
 
-type FormData = Record<string, unknown>;
+export default function TeamProjects({
+  onBack,
+  onNext,
+  projectId,
+}: TeamProjectsProps) {
+  const { data: session } = useSession();
+  const { toast } = useToast();
+  const [milestoneFormKey, setMilestoneFormKey] = useState(0);
+  const [taskFormKey, setTaskFormKey] = useState(0);
+  const createMilestone = useCreateMilestone();
+  const createTask = useCreateTask();
+  const updateProject = useUpdateProject();
+  const getProject = useGetProject();
+  const getMilestoneTasks = useGetMilestoneTasks();
+  const [editingTask, setEditingTask] = useState<TaskRow | null>(null);
+  const updateTask = useUpdateTask();
 
-export type MilestoneRow = {
-  id: number;
-  name: string;
-  date: string;
-  description: string;
-  approval: "Required" | "Not required";
-  tasks: number;
-};
-
-export type TaskRow = {
-  id: string;
-  name: string;
-  date: string;
-  description: string;
-  assignees: string;
-};
-
-type TasksByMilestone = Record<number, TaskRow[]>;
-
-export default function TeamProjects({ onBack, onNext }: TeamProjectsProps) {
-  const [rows] = useState<MilestoneRow[]>(initialMilestones);
-  const [tasksByMilestone] = useState<TasksByMilestone>(
-    initialTasksByMilestone
-  );
+  const [rows, setRows] = useState<MilestoneRow[]>([]);
+  const [dynamicTasks, setDynamicTasks] = useState<TasksByMilestone>({});
 
   const [expandedMilestoneId, setExpandedMilestoneId] = useState<number | null>(
+    null
+  );
+
+  const updateMilestone = useUpdateMilestone();
+
+  const [editingMilestone, setEditingMilestone] = useState<MilestoneRow | null>(
     null
   );
   const [popupKind, setPopupKind] = useState<
@@ -56,13 +67,321 @@ export default function TeamProjects({ onBack, onNext }: TeamProjectsProps) {
   >(null);
   const [scopeText, setScopeText] = useState("");
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+
+  const handleUpdateMilestone = (data: TeamProjectFormData) => {
+    if (!projectId) {
+      toast("Project ID missing!", "error");
+      return;
+    }
+    if (!editingMilestone) {
+      toast("No milestone selected for editing.", "error");
+      return;
+    }
+
+    const payload: ICreateMilestonePayload = {
+      name: data.milestoneName as string,
+      description: (data.milestoneDescDoc as string) || "",
+      due_date: (data.milestoneEnd as string) || "",
+      status: "active",
+      required_hours: 0,
+      project_id: projectId!,
+    };
+
+    updateMilestone.mutate(
+      { milestoneId: editingMilestone.id, body: payload },
+      {
+        onSuccess: () => {
+          toast("Milestone updated!", "success");
+          getMilestoneTasks.mutate(editingMilestone.id, {
+            onSuccess: (res) => {
+              const m: IMilestone = res.data!;
+
+              setRows((prev) =>
+                prev.map((row) =>
+                  row.id === editingMilestone.id
+                    ? {
+                        ...row,
+                        name: m.name,
+                        description: m.description ?? "",
+                        date: m.due_date?.split("T")[0] ?? "",
+                        tasks: m.tasks?.length ?? 0,
+                      }
+                    : row
+                )
+              );
+            },
+          });
+
+          setEditingMilestone(null);
+          setMilestoneFormKey((k) => k + 1);
+        },
+        onError: (err) => toast(err.message, "error"),
+      }
+    );
+  };
+
+  const handleUpdateTask = (data: TeamProjectFormData) => {
+    if (!editingTask) {
+      toast("No task selected for editing.", "error");
+      return;
+    }
+
+    const milestoneId = Number(data.taskMilestone ?? expandedMilestoneId);
+    if (!milestoneId || Number.isNaN(milestoneId)) {
+      toast("Invalid milestone ID", "error");
+      return;
+    }
+
+    const payload = {
+      name: data.taskName as string,
+      description: (data.taskDoc as string) || "",
+      assignee_id: Number(data.taskAssignee),
+      required_hours: 40,
+      project_milestone_id: milestoneId,
+      project_id: Number(projectId),
+    };
+
+    updateTask.mutate(
+      { taskId: editingTask.id, body: payload },
+      {
+        onSuccess: (res) => {
+          const updated: ITask = res.data!;
+
+          setDynamicTasks((prev) => ({
+            ...prev,
+            [milestoneId]: prev[milestoneId].map((t) =>
+              t.id === editingTask.id
+                ? {
+                    id: updated.id,
+                    name: updated.name,
+                    description: updated.description,
+                    assignees: String(updated.assignee_id ?? ""),
+                    date: STATIC_TASK_DATE,
+                  }
+                : t
+            ),
+          }));
+
+          toast("Task updated!", "success");
+
+          setEditingTask(null);
+          setTaskFormKey((k) => k + 1);
+        },
+        onError: (err) => toast(err.message, "error"),
+      }
+    );
+  };
+
+  const handleEditMilestoneClick = useCallback((row: MilestoneRow) => {
+    setEditingTask(null);
+    setEditingMilestone(row);
+    setMilestoneFormKey((k) => k + 1);
+  }, []);
+
+  const handleEditTaskClick = (row: TaskRow) => {
+    setEditingMilestone(null);
+    setEditingTask(row);
+    setTaskFormKey((k) => k + 1);
+  };
+
   const handleSubmit = useCallback(
-    (data: FormData) => {
-      console.log("Step 03 (Project) form data:", data);
-      onNext?.();
+    (data: TeamProjectFormData) => {
+      if (!projectId) {
+        toast("Project ID missing! Please complete Step 01 again.", "error");
+        return;
+      }
+
+      const body = {
+        name: data.projectName,
+        client_id: session?.user?.id,
+        company_name: data.client,
+        status: "active",
+        start_date: data.startDate,
+        end_date: data.endDate,
+        industry: data.industry,
+        duration: Number(data.duration || 0),
+        cost: 25000,
+        paid_amount: 125000,
+      };
+
+      updateProject.mutate(
+        { projectId, body },
+        {
+          onSuccess: () => {
+            toast("Project updated!", "success");
+
+            getProject.mutate(projectId, {
+              onSuccess: (fresh) => {
+                console.log("Updated project fetched:", fresh.data);
+                toast("Latest project loaded!", "success");
+              },
+              onError: (err: Error) => {
+                toast(err.message, "error");
+              },
+            });
+          },
+          onError: (err: Error) => {
+            toast(err.message, "error");
+          },
+        }
+      );
     },
-    [onNext]
+    [updateProject, toast, session, getProject, projectId]
   );
+
+  const fetchTasksForMilestone = useCallback(
+    (milestoneId: number) => {
+      getMilestoneTasks.mutate(milestoneId, {
+        onSuccess: (res) => {
+          const milestone = res.data as IMilestone | undefined;
+          const tasks: ITask[] = milestone?.tasks ?? [];
+
+          const mapped: TaskRow[] = tasks.map((t) => ({
+            id: t.id,
+            name: t.name,
+            description: t.description,
+            assignees: String(t.assignee_id ?? ""),
+            date: STATIC_TASK_DATE,
+          }));
+
+          setDynamicTasks((prev) => ({
+            ...prev,
+            [milestoneId]: mapped,
+          }));
+        },
+        onError: (err: Error) => {
+          toast(err.message, "error");
+        },
+      });
+    },
+    [getMilestoneTasks, toast, setDynamicTasks]
+  );
+
+  const handleExpandMilestone = useCallback(
+    (id: number) => {
+      setExpandedMilestoneId((prev) => (prev === id ? null : id));
+
+      if (!dynamicTasks[id]) {
+        fetchTasksForMilestone(id);
+      }
+    },
+    [dynamicTasks, fetchTasksForMilestone]
+  );
+
+  const handleAddMilestone = (data: TeamProjectFormData) => {
+    setEditingMilestone(null);
+    if (!projectId) {
+      toast("Project ID missing! Please complete Step 01 again.", "error");
+      return;
+    }
+
+    const payload: ICreateMilestonePayload = {
+      name: data.milestoneName as string,
+      description: (data.milestoneDescDoc as string) || "",
+      due_date: (data.milestoneEnd as string) || "",
+      status: "active",
+      required_hours: 0,
+      project_id: projectId!,
+    };
+
+    createMilestone.mutate(
+      { projectId, body: payload },
+      {
+        onSuccess: (res) => {
+          toast(res.message, "success");
+          const m = res.data as IMilestone;
+
+          setRows((prev) => [
+            ...prev,
+            {
+              id: Number(m.id),
+              name: m.name,
+              date: m.due_date?.split("T")[0] ?? "",
+              description: m.description ?? "",
+              approval: "Required",
+              tasks: m.tasks?.length ?? 0,
+            },
+          ]);
+
+          setMilestoneFormKey((k) => k + 1);
+        },
+        onError: (err: Error) => {
+          toast(err.message, "error");
+        },
+      }
+    );
+  };
+
+  const handleAddTask = (data: TeamProjectFormData) => {
+    setEditingTask(null);
+    if (!projectId) {
+      toast("Project ID missing! Please complete Step 01 again.", "error");
+      return;
+    }
+
+    const milestoneId = Number(data.taskMilestone);
+    if (!milestoneId || Number.isNaN(milestoneId)) {
+      toast("Please select a milestone", "error");
+      return;
+    }
+
+    const assigneeId = Number(data.taskAssignee);
+    const taskName = data.taskName as string | undefined;
+    const taskDesc = (data.taskDoc as string) || "";
+
+    if (!taskName) {
+      toast("Task name is required", "error");
+      return;
+    }
+
+    const payload: ICreateTaskPayload = {
+      name: taskName,
+      description: taskDesc,
+      assignee_id: assigneeId,
+      required_hours: 40,
+      project_milestone_id: milestoneId,
+      project_id: Number(projectId),
+    };
+
+    createTask.mutate(
+      { milestoneId, body: payload },
+      {
+        onSuccess: () => {
+          toast("Task created!", "success");
+
+          setExpandedMilestoneId(milestoneId);
+
+          getMilestoneTasks.mutate(milestoneId, {
+            onSuccess: (res) => {
+              const tasks = res.data?.tasks ?? [];
+
+              const mapped = tasks.map((t) => ({
+                id: t.id,
+                name: t.name,
+                description: t.description,
+                assignees: String(t.assignee_id ?? ""),
+                date: STATIC_TASK_DATE,
+              }));
+
+              setDynamicTasks((prev) => ({
+                ...prev,
+                [milestoneId]: mapped,
+              }));
+
+              setRows((prev) =>
+                prev.map((m) =>
+                  m.id === milestoneId ? { ...m, tasks: mapped.length } : m
+                )
+              );
+
+              setTaskFormKey((k) => k + 1);
+            },
+          });
+        },
+        onError: (err) => toast(err.message, "error"),
+      }
+    );
+  };
 
   const openPopup = (kind: "functional" | "technical" | "out") => {
     setPopupKind(kind);
@@ -102,17 +421,64 @@ export default function TeamProjects({ onBack, onNext }: TeamProjectsProps) {
       ? "Upload Out-of-Scope Documents OR write by yourself."
       : undefined;
 
-  const handleAddMilestone = (data: FormData) => {
-    console.log("Milestone form:", data);
-  };
-
-  const handleAddTask = (data: FormData) => {
-    console.log("Task form:", data);
-  };
-
   const milestoneCols = useMemo(
-    () => getMilestoneCols(expandedMilestoneId, setExpandedMilestoneId),
-    [expandedMilestoneId]
+    () =>
+      getMilestoneCols(
+        expandedMilestoneId,
+        handleExpandMilestone,
+        handleEditMilestoneClick
+      ),
+    [expandedMilestoneId, handleExpandMilestone, handleEditMilestoneClick]
+  );
+
+  const milestoneFormElements = useMemo(
+    () =>
+      getMilestoneFormFields().map((f) => {
+        if (!editingMilestone) return f;
+
+        if (f.name === "milestoneName") {
+          return { ...f, defaultValue: editingMilestone.name };
+        }
+        if (f.name === "milestoneEnd") {
+          return { ...f, defaultValue: editingMilestone.date };
+        }
+        if (f.name === "milestoneDescDoc") {
+          return { ...f, defaultValue: editingMilestone.description };
+        }
+        return f;
+      }),
+    [editingMilestone]
+  );
+
+  const taskFormElements = useMemo(
+    () =>
+      getTaskFormFields().map((el) => {
+        if (el.name === "taskMilestone") {
+          return {
+            ...el,
+            options: rows.map((m) => ({
+              label: m.name,
+              value: String(m.id),
+            })),
+            defaultValue: editingTask ? String(expandedMilestoneId) : undefined,
+            disabled: editingTask ? true : false,
+          };
+        }
+
+        if (!editingTask) return el;
+
+        if (el.name === "taskName")
+          return { ...el, defaultValue: editingTask.name };
+        if (el.name === "taskEnd")
+          return { ...el, defaultValue: editingTask.date };
+        if (el.name === "taskDoc")
+          return { ...el, defaultValue: editingTask.description };
+        if (el.name === "taskAssignee")
+          return { ...el, defaultValue: editingTask.assignees };
+
+        return el;
+      }),
+    [editingTask, expandedMilestoneId, rows]
   );
 
   return (
@@ -130,9 +496,20 @@ export default function TeamProjects({ onBack, onNext }: TeamProjectsProps) {
       </Typography>
 
       <CreateForm
-        elements={projectFormElements}
+        elements={getProjectFormFields().map((f) =>
+          f.name === "client"
+            ? {
+                ...f,
+                defaultValue: session?.user?.username ?? "",
+                disabled: true,
+              }
+            : f
+        )}
         onSuccess={handleSubmit}
-        actionsContainerProps={{ sx: { display: "none" } }}
+        actionsContainerProps={{
+          sx: { mt: 2, justifyContent: "flex-start" },
+        }}
+        submitButton={{ children: "Add" }}
       />
 
       <Box sx={{ borderTop: "1px solid #eee", my: 2 }} />
@@ -194,48 +571,38 @@ export default function TeamProjects({ onBack, onNext }: TeamProjectsProps) {
               Task
             </Typography>
 
-            {(tasksByMilestone[expandedMilestoneId]?.length ?? 0) > 0 && (
-              <DataTable<TaskRow>
-                title=""
-                columns={taskColumns}
-                rows={tasksByMilestone[expandedMilestoneId] || []}
-                pageSize={Math.min(
-                  4,
-                  tasksByMilestone[expandedMilestoneId]?.length ?? 0
-                )}
-              />
-            )}
+            <DataTable<TaskRow>
+              title=""
+              columns={taskColumns(handleEditTaskClick)}
+              rows={dynamicTasks[expandedMilestoneId] || []}
+              pageSize={4}
+            />
 
             <CreateForm
-              elements={taskFormElements.map((el) =>
-                el.name === "taskMilestone"
-                  ? {
-                      ...el,
-                      options: rows.map((m) => ({
-                        label: m.name,
-                        value: String(m.id),
-                      })),
-                    }
-                  : el
-              )}
-              onSuccess={handleAddTask}
+              key={taskFormKey}
+              elements={taskFormElements}
+              onSuccess={editingTask ? handleUpdateTask : handleAddTask}
               actionsContainerProps={{
                 sx: { mt: 2, justifyContent: "flex-start" },
               }}
-              submitButton={{ children: "Add" }}
+              submitButton={{ children: editingTask ? "Update" : "Add" }}
             />
           </Box>
         )}
 
         <CreateForm
+          key={milestoneFormKey}
           elements={milestoneFormElements}
-          onSuccess={handleAddMilestone}
+          onSuccess={
+            editingMilestone ? handleUpdateMilestone : handleAddMilestone
+          }
           actionsContainerProps={{
             sx: { mt: 2, justifyContent: "flex-start" },
           }}
-          submitButton={{ children: "Add" }}
+          submitButton={{ children: editingMilestone ? "Update" : "Add" }}
         />
       </Box>
+
       <Box
         sx={{
           mt: 3,

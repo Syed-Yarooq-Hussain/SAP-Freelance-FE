@@ -56,3 +56,36 @@ export const SKILLS_OPTIONS: IOption[] = [
   { value: "Client Onboarding", label: "Client Onboarding" },
   { value: "ABAP (basic)", label: "ABAP (basic)" },
 ];
+
+export const INDUSTRY_OPTIONS: IOption[] = [
+  { value: "SAP Consulting", label: "SAP Consulting" },
+  { value: "IT Services", label: "IT Services" },
+  { value: "Manufacturing", label: "Manufacturing" },
+  { value: "Telecommunications", label: "Telecommunications" },
+  { value: "Banking", label: "Banking" },
+  { value: "Healthcare", label: "Healthcare" },
+  { value: "Retail", label: "Retail" },
+  { value: "Energy & Utilities", label: "Energy & Utilities" },
+  { value: "Oil & Gas", label: "Oil & Gas" },
+  { value: "Other", label: "Other" },
+];
+
+export const DEPENDENCIES_OPTIONS: IOption[] = [
+  { value: "Business Blueprint", label: "Business Blueprint" },
+  { value: "Functional Spec", label: "Functional Spec" },
+  { value: "Technical Spec", label: "Technical Spec" },
+  { value: "Integration Document", label: "Integration Document" },
+  { value: "Security Document", label: "Security Document" },
+  { value: "Master Data Template", label: "Master Data Template" },
+  { value: "Test Cases", label: "Test Cases" },
+  { value: "UAT Sign-off", label: "UAT Sign-off" },
+  { value: "Deployment Checklist", label: "Deployment Checklist" },
+  { value: "Other", label: "Other" },
+];
+
+export const ASSIGNEE_OPTIONS: IOption[] = [
+  { value: "1", label: "Savannah Nguyen" },
+  { value: "2", label: "Courtney Henry" },
+  { value: "3", label: "Dianne Russell" },
+  { value: "4", label: "Guy Hawkins" },
+];

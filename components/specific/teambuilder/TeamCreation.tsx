@@ -7,11 +7,8 @@ import { CreateForm } from "@/components/CreateForm";
 import DataTable from "@/components/DataTable";
 import FilterDrawer from "@/components/FilterDrawer";
 import StatCard from "@/components/StatCard";
-import {
-  teamBuilderColumns,
-  teamBuilderFormElements,
-  teamBuilderStats,
-} from "@/data/teamBuilder";
+import { teamBuilderColumns, teamBuilderStats } from "@/data/teamBuilder";
+import { getTeamBuilderFormFields } from "@/forms/teamBuilderForm";
 import { useToast } from "@/providers/ToastProvider";
 import type { IConsultantUser } from "@/types/consultant";
 import type { TeamBuilderRow, TeamCreationProps } from "@/types/teamBuilder";
@@ -29,7 +26,7 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 
-export default function TeamCreation({ onNext, onDiscard }: TeamCreationProps) {
+export default function TeamCreation({ onNext }: TeamCreationProps) {
   const [filterOpen, setFilterOpen] = useState(false);
   const [selectedCount] = useState(0);
   const [consultantRows, setConsultantRows] = useState<TeamBuilderRow[]>([]);
@@ -75,9 +72,15 @@ export default function TeamCreation({ onNext, onDiscard }: TeamCreationProps) {
   const handleAddToShortlist = () => {
     createProject(undefined, {
       onSuccess: (res) => {
+        if (!res.data?.id) {
+          toast("Invalid project response from server", "error");
+          return;
+        }
+
         toast(res.message, "success");
         console.log("Project created:", res.data);
-        onNext();
+
+        onNext?.(res.data.id);
       },
       onError: (err) => {
         toast(err.message, "error");
@@ -132,7 +135,7 @@ export default function TeamCreation({ onNext, onDiscard }: TeamCreationProps) {
         </Box>
 
         <CreateForm
-          elements={teamBuilderFormElements}
+          elements={getTeamBuilderFormFields()}
           onSuccess={() => {}}
           actionsContainerProps={{ sx: { display: "none" } }}
         />
@@ -208,12 +211,7 @@ export default function TeamCreation({ onNext, onDiscard }: TeamCreationProps) {
             )}
 
             <Box display="flex" alignItems="center" gap={1.5}>
-              <AppButton
-                label="Discard"
-                colorKey="RED"
-                width={180}
-                onClick={onDiscard}
-              />
+              <AppButton label="Discard" colorKey="RED" width={180} />
               <AppButton
                 label="Add to Shortlist"
                 colorKey="BLUE"
