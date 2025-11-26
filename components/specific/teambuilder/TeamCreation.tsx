@@ -1,14 +1,13 @@
 "use client";
 
 import { useClientConsultants } from "@/actions/consultants/useClientConsultants";
+import { useAddConsultants } from "@/actions/projects/useAddConsultants";
 import { useCreateProject } from "@/actions/projects/useCreateProject";
 import AppButton from "@/components/Button";
-import { CreateForm } from "@/components/CreateForm";
 import DataTable from "@/components/DataTable";
 import FilterDrawer from "@/components/FilterDrawer";
 import StatCard from "@/components/StatCard";
 import { teamBuilderColumns, teamBuilderStats } from "@/data/teamBuilder";
-import { getTeamBuilderFormFields } from "@/forms/teamBuilderForm";
 import { useToast } from "@/providers/ToastProvider";
 import type { IConsultantUser } from "@/types/consultant";
 import type { TeamBuilderRow, TeamCreationProps } from "@/types/teamBuilder";
@@ -33,31 +32,41 @@ export default function TeamCreation({ onNext }: TeamCreationProps) {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage] = useState("");
   const [snackbarSeverity] = useState<AlertColor>("success");
-
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const { mutate: loadConsultants, isPending } = useClientConsultants();
   const { mutate: createProject, isPending: isCreating } = useCreateProject();
   const { toast } = useToast();
+  const addConsultants = useAddConsultants();
 
   useEffect(() => {
     loadConsultants(undefined, {
       onSuccess: (res) => {
         const mapped: TeamBuilderRow[] =
-          res.data?.map((item: IConsultantUser, index: number) => {
-            const c = item.consultants;
-            const safeId: string | number = c?.id ?? `consultant-${index + 1}`;
+          res.data
+            ?.filter((item: IConsultantUser) => {
+              const c = item.consultants;
+              return !(
+                c?.id === null &&
+                c?.module_id === null &&
+                c?.level_id === null &&
+                c?.experience === null &&
+                c?.rate === null &&
+                c?.weekly_available_hours === null
+              );
+            })
+            .map((item: IConsultantUser, index: number) => {
+              const c = item.consultants;
 
-            return {
-              id: safeId,
-              modules: c?.module_id != null ? String(c.module_id) : "N/A",
-              experience:
-                c?.experience != null ? `${c.experience} Years` : "N/A",
-              rate:
-                c?.rate != null ? `$${c.rate.toLocaleString()}/hour` : "N/A",
-              avail: c?.weekly_available_hours ?? 0,
-              request: 0,
-              avatar: `/img/u${((index % 5) + 1).toString()}.png`,
-            };
-          }) ?? [];
+              return {
+                id: c.id ?? `consultant-${index + 1}`,
+                modules: c.module_id ? String(c.module_id) : "N/A",
+                experience: c.experience ? `${c.experience} Years` : "N/A",
+                rate: c.rate ? `$${c.rate}/hour` : "N/A",
+                avail: c.weekly_available_hours ?? 0,
+                request: 0,
+                avatar: `/img/u${((index % 5) + 1).toString()}.png`,
+              };
+            }) ?? [];
 
         setConsultantRows(mapped);
       },
@@ -72,20 +81,64 @@ export default function TeamCreation({ onNext }: TeamCreationProps) {
   const handleAddToShortlist = () => {
     createProject(undefined, {
       onSuccess: (res) => {
-        if (!res.data?.id) {
+        const projectId = res.data?.id;
+
+        if (!projectId) {
           toast("Invalid project response from server", "error");
           return;
         }
 
-        toast(res.message, "success");
-        console.log("Project created:", res.data);
+        toast("Project created!", "success");
 
-        onNext?.(res.data.id);
+        const payload = selectedRows.map((id) => {
+          const row = consultantRows.find((c) => c.id.toString() === id);
+
+          return {
+            consultant_id: Number(id),
+            requested_hours: Number(row?.request ?? 0),
+          };
+        });
+
+        addConsultants.mutate(
+          { projectId, body: payload },
+          {
+            onSuccess: () => {
+              toast("Consultants added to shortlist!", "success");
+              onNext?.(projectId);
+            },
+            onError: (err: Error) => toast(err.message, "error"),
+          }
+        );
       },
-      onError: (err) => {
+      onError: (err: Error) => {
         toast(err.message, "error");
       },
     });
+  };
+
+  const isAddDisabled =
+    selectedRows.length === 0 ||
+    selectedRows.some((id) => {
+      const row = consultantRows.find((r) => r.id.toString() === id);
+      return !row || row.request <= 0 || row.request > row.avail;
+    });
+
+  const handleRequestChange = (
+    id: string | number,
+    value: number,
+    avail: number
+  ): void => {
+    setConsultantRows((prev: TeamBuilderRow[]) =>
+      prev.map((row: TeamBuilderRow) =>
+        row.id === id
+          ? {
+              ...row,
+              request: value,
+              error: value > avail ? `Max: ${avail} hours` : "",
+            }
+          : row
+      )
+    );
   };
 
   return (
@@ -105,14 +158,15 @@ export default function TeamCreation({ onNext }: TeamCreationProps) {
           alignItems="center"
           mb={1.5}
         >
-          <Typography variant="h6" sx={{ fontWeight: 600 }}>
+          {/* <Typography variant="h6" sx={{ fontWeight: 600 }}>
             Project Details
-          </Typography>
+          </Typography> */}
 
           <Button
             onClick={() => setFilterOpen(true)}
             startIcon={<FilterListIcon />}
             sx={{
+              ml: "auto",
               border: `1px solid ${colors.BLUE}`,
               color: colors.BLUE,
               textTransform: "none",
@@ -134,11 +188,11 @@ export default function TeamCreation({ onNext }: TeamCreationProps) {
           </Button>
         </Box>
 
-        <CreateForm
+        {/* <CreateForm
           elements={getTeamBuilderFormFields()}
           onSuccess={() => {}}
           actionsContainerProps={{ sx: { display: "none" } }}
-        />
+        /> */}
 
         <FilterDrawer open={filterOpen} onClose={() => setFilterOpen(false)} />
 
@@ -165,26 +219,13 @@ export default function TeamCreation({ onNext }: TeamCreationProps) {
           ) : (
             <DataTable
               title="Consultant Selection"
-              columns={teamBuilderColumns}
+              columns={teamBuilderColumns(handleRequestChange)}
               rows={consultantRows}
               pageSize={10}
               showAvatar
               avatarField="avatar"
               enableSelection
-              slotProps={{
-                noRowsOverlay: {
-                  sx: {
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    height: 200,
-                    fontSize: "1.1rem",
-                    color: "text.secondary",
-                    fontWeight: 500,
-                  },
-                  children: "No data available",
-                },
-              }}
+              onSelectionChange={(ids) => setSelectedRows(ids)}
             />
           )}
 
@@ -217,7 +258,7 @@ export default function TeamCreation({ onNext }: TeamCreationProps) {
                 colorKey="BLUE"
                 width={180}
                 onClick={handleAddToShortlist}
-                disabled={isCreating}
+                disabled={isCreating || isAddDisabled}
               />
             </Box>
           </Box>

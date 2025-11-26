@@ -7,7 +7,7 @@ const getTheme = (mode: "light" | "dark") =>
     palette: {
       mode,
       primary: {
-        main: "#4099ff",
+        main: "#3088B7",
       },
       secondary: {
         main: "#73b4ff",
@@ -28,7 +28,7 @@ const getTheme = (mode: "light" | "dark") =>
       MuiAppBar: {
         styleOverrides: {
           root: {
-            background: "#4680FF",
+            background: "#3088B7",
             color: "#fff",
           },
         },

@@ -10,7 +10,6 @@ import {
 import TeamPayments from "@/components/specific/teambuilder/TeamPayments";
 import TeamProjects from "@/components/specific/teambuilder/TeamProjects";
 import { teamBuilderSteps } from "@/data/teamBuilder";
-import colors from "@/utils/styles/colors";
 import { Box } from "@mui/material";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useState } from "react";
@@ -69,7 +68,6 @@ function TeamBuilderContent() {
       <StepProgress
         steps={teamBuilderSteps}
         activeStep={activeStep}
-        activeColor={colors.RED}
       />
       {current}
     </Box>

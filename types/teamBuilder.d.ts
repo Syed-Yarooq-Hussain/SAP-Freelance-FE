@@ -137,3 +137,13 @@ export interface IUpdateProjectPayload {
   cost?: number;
   paid_amount?: number;
 }
+
+export interface IAddConsultantsPayload {
+  consultant_id: number;
+  requested_hours: number;
+}
+
+export interface IAddConsultantsResponse {
+  consultant_id: number;
+  requested_hours: number;
+}

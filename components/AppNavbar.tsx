@@ -62,7 +62,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
             ? { md: `calc(100% - ${DESKTOP_DRAWER_WIDTH}px)` }
             : "100%",
           ml: showSidebar ? { md: `${DESKTOP_DRAWER_WIDTH}px` } : 0,
-          backgroundColor: "#4285f4",
+          backgroundColor: "#3088B7",
           transition: "all 0.3s ease",
         }}
       >

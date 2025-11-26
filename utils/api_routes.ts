@@ -11,4 +11,5 @@ export const API_ROUTES = {
   MILESTONE_TASKS_CREATE: "/projects/milestones",
   UPDATE_MILESTONE: "/projects/milestones",
   UPDATE_TASKS: "/projects/tasks",
+  SHORTLIST_CANDIDATES: "/projects",
 };

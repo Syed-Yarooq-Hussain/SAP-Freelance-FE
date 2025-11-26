@@ -81,8 +81,8 @@ export default function TeamConfirmation({
       <Box
         sx={{
           p: 2,
-          borderRadius: 2,
-          boxShadow: 2,
+          borderRadius: 1,
+          boxShadow: 1,
           bgcolor: "background.paper",
           mt: 3,
         }}
@@ -97,8 +97,8 @@ export default function TeamConfirmation({
       <Box
         sx={{
           p: 2,
-          borderRadius: 2,
-          boxShadow: 2,
+          borderRadius: 1,
+          boxShadow: 1,
           bgcolor: "background.paper",
           mt: 3,
         }}
@@ -117,8 +117,8 @@ export default function TeamConfirmation({
         sx={{
           mt: 3,
           p: 2,
-          borderRadius: 2,
-          boxShadow: 2,
+          borderRadius: 1,
+          boxShadow: 1,
           bgcolor: "background.paper",
           display: "flex",
           justifyContent: "space-between",

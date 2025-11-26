@@ -52,6 +52,7 @@ export const teamBuilderSteps = [
     icon: <CreditCardIcon fontSize="small" />,
   },
 ];
+
 export const teamBuilderStats: StatCardProps[] = [
   {
     title: "Hours Per Week",
@@ -79,31 +80,75 @@ export const teamBuilderStats: StatCardProps[] = [
   },
 ];
 
-export const teamBuilderColumns = [
+export const teamBuilderColumns = (
+  onRequestChange: (id: string | number, value: number, avail: number) => void
+): GridColDef[] => [
   { field: "id", headerName: "IDs", flex: 1 },
   { field: "modules", headerName: "Modules", flex: 2 },
   { field: "experience", headerName: "Experience", flex: 1 },
   { field: "rate", headerName: "Rate (Hrs)", flex: 1 },
   { field: "avail", headerName: "Avail. (Hrs)", flex: 1 },
+
   {
     field: "request",
     headerName: "Request Hrs",
     flex: 1,
-    renderCell: (params: GridRenderCellParams) => (
-      <input
-        type="number"
-        min={0}
-        max={10}
-        defaultValue={params.value as number}
-        style={{
-          width: "60px",
-          textAlign: "center",
-          border: "1px solid #dcdcdc",
-          borderRadius: "6px",
-          padding: "4px",
-        }}
-      />
-    ),
+    sortable: false,
+    renderCell: (params) => {
+      const avail = params.row.avail;
+      const error = params.row.error;
+      const isInvalid = params.row.request > avail;
+
+      return (
+        <Box
+          sx={{
+            width: "60%",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            paddingY: "4px",
+            overflow: "visible !important",
+          }}
+        >
+          <input
+            type="number"
+            min={0}
+            value={params.row.request}
+            onChange={(e) => {
+              const val = Number(e.target.value);
+              onRequestChange(params.row.id, val, avail);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") e.preventDefault();
+            }}
+            style={{
+              width: "60px",
+              textAlign: "center",
+              border: `1px solid ${isInvalid ? "red" : "#dcdcdc"}`,
+              borderRadius: "6px",
+              padding: "4px",
+            }}
+          />
+
+          {error && (
+            <Typography
+              sx={{
+                color: "red",
+                fontSize: "10px",
+                marginTop: "2px",
+                lineHeight: 1,
+                overflow: "visible !important",
+                textAlign: "center",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {error}
+            </Typography>
+          )}
+        </Box>
+      );
+    },
   },
 ];
 
