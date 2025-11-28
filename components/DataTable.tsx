@@ -44,6 +44,7 @@ export type DataTableProps<T extends GridValidRowModel> = {
   actionButton?: React.ReactNode;
   slotProps?: GridSlotsComponentsProps;
   slots?: Partial<GridSlotsComponent>;
+  onSelectionChange?: (selectedIds: string[]) => void;
 };
 
 export default function DataTable<T extends GridValidRowModel>({
@@ -53,7 +54,6 @@ export default function DataTable<T extends GridValidRowModel>({
   pageSize = 10,
   showViewMore = false,
   onViewMoreClick,
-  onRowClick,
   showBackButton = false,
   onBackClick,
   showAvatar = false,
@@ -63,29 +63,46 @@ export default function DataTable<T extends GridValidRowModel>({
   actionButton,
   slotProps,
   slots,
+  onSelectionChange,
 }: DataTableProps<T>) {
   const [selectedRows, setSelectedRows] = React.useState<Set<string>>(
     new Set()
   );
 
-  const handleSelect = (id: string) => {
-    setSelectedRows((prev) => {
-      const updated = new Set(prev);
-      if (updated.has(id)) {
-        updated.delete(id);
-      } else {
-        updated.add(id);
-      }
-      return updated;
-    });
-  };
+  const handleSelect = React.useCallback(
+    (id: string) => {
+      setSelectedRows((prev) => {
+        const updated = new Set(prev);
+        if (updated.has(id)) updated.delete(id);
+        else updated.add(id);
+
+        queueMicrotask(() => {
+          onSelectionChange?.(Array.from(updated));
+        });
+
+        return updated;
+      });
+    },
+    [onSelectionChange]
+  );
 
   const handleSelectAll = React.useCallback(() => {
     setSelectedRows((prev) => {
-      if (prev.size === rows.length) return new Set();
-      return new Set(rows.map((r) => r.id.toString()));
+      let updated: Set<string>;
+
+      if (prev.size === rows.length) {
+        updated = new Set();
+      } else {
+        updated = new Set(rows.map((r) => r.id.toString()));
+      }
+
+      queueMicrotask(() => {
+        onSelectionChange?.(Array.from(updated));
+      });
+
+      return updated;
     });
-  }, [rows]);
+  }, [rows, onSelectionChange]);
 
   const updatedColumns = React.useMemo(() => {
     if (!showAvatar || !avatarField) return columns;
@@ -148,6 +165,7 @@ export default function DataTable<T extends GridValidRowModel>({
     enableSelection,
     selectedRows,
     rows.length,
+    handleSelect,
     handleSelectAll,
   ]);
 
@@ -187,12 +205,39 @@ export default function DataTable<T extends GridValidRowModel>({
           pageSizeOptions={[pageSize]}
           pagination
           disableRowSelectionOnClick
-          onRowClick={onRowClick}
-          slots={slots}
+          checkboxSelection={false}
+          onRowSelectionModelChange={(selection) => {
+            const ids = Array.isArray(selection)
+              ? selection.map(String)
+              : [String(selection)];
+
+            queueMicrotask(() => {
+              onSelectionChange?.(ids);
+            });
+          }}
+          slots={{
+            noRowsOverlay: () => (
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: 100,
+                  color: "text.secondary",
+                  fontWeight: 500,
+                }}
+              >
+                No data available
+              </Box>
+            ),
+            ...slots,
+          }}
           slotProps={slotProps}
           sx={{
             "& .MuiDataGrid-columnHeaders": {
               backgroundColor: "#f8fbff",
+            },
+            "& .MuiDataGrid-columnHeader": {
               fontWeight: "bold",
             },
             "& .MuiDataGrid-columnHeaderTitle": {

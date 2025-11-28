@@ -1,5 +1,5 @@
 export const colors = {
-  BLUE: "#4680FF",
+  BLUE: "#3088B7",
   GREEN: "#00997B",
   YELLOW: "#f9a825",
   ORANGE: "#FFB64E",
@@ -33,6 +33,7 @@ export const statusColors: Record<string, keyof typeof colors> = {
   Accepted: "GREEN",
   Planning: "BLUE",
   "Not selected": "RED",
+  Shortlisted: "YELLOW",
 };
 
 export const buttonColors: Record<string, keyof typeof colors> = {

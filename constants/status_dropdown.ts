@@ -13,4 +13,6 @@ export enum STATUS {
   DELAYED = "Delayed",
   WAITING = "Waiting",
   ACCEPTED = "Accepted",
+  INTERVIEWING = "Interviewing",
+  SHORTLISTED = "Shortlisted",
 }

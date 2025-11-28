@@ -1,88 +1,131 @@
 "use client";
 
+import { useMeetingInvite } from "@/actions/common/useMeetingInvite";
+import { useGetProjectConsultants } from "@/actions/projects/useGetProjectConsultants";
+import { useUpdateConsultantStatus } from "@/actions/projects/useUpdateConsultantStatus";
+import { AssignedRolePopup } from "@/components/AssignedRolePopup";
 import AppButton from "@/components/Button";
 import DataTable from "@/components/DataTable";
 import DynamicPopup from "@/components/Popup";
 import RoleHierarchy from "@/components/RoleHierarchy";
 import { STATUS } from "@/constants/status_dropdown";
-import {
-  getCandidateColumns,
-  getShortlistedColumns,
-  candidateRows as initialCandidates,
-  shortlistedRows as initialShortlisted,
-} from "@/data/teamBuilder";
-import type { CandidateRow, ShortlistedRow } from "@/types/teamBuilder";
+import { INTERVIEW_DURATION_OPTIONS } from "@/data/options";
+import { getCandidateColumns, getShortlistedColumns } from "@/data/teamBuilder";
+import type {
+  CandidateRow,
+  IProjectConsultant,
+  ShortlistedRow,
+  TeamConfirmationProps,
+} from "@/types/teamBuilder";
 import { Box, Typography } from "@mui/material";
-import { useCallback, useMemo, useState } from "react";
-
-type TeamConfirmationProps = {
-  onNext?: (projectId: string) => void;
-  projectId?: string | null;
-};
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 export default function TeamConfirmation({
   onNext,
   projectId,
 }: TeamConfirmationProps) {
-  const [shortlisted, setShortlisted] =
-    useState<ShortlistedRow[]>(initialShortlisted);
-  const [candidates, setCandidates] =
-    useState<CandidateRow[]>(initialCandidates);
-
+  const [shortlisted, setShortlisted] = useState<ShortlistedRow[]>([]);
+  const [candidates, setCandidates] = useState<CandidateRow[]>([]);
+  const getProjectConsultants = useGetProjectConsultants();
   const [interviewOpen, setInterviewOpen] = useState(false);
+  const [assignRoleOpen, setAssignRoleOpen] = useState(false);
+  const [rejectConfirmOpen, setRejectConfirmOpen] = useState(false);
+  const [selectedRow, setSelectedRow] = useState<CandidateRow | null>(null);
+  const meetingInvite = useMeetingInvite();
+  const updateConsultantStatus = useUpdateConsultantStatus();
+  const [selectedConsultantId, setSelectedConsultantId] = useState<
+    string | number | null
+  >(null);
+
   const [interviewData, setInterviewData] = useState({
     date: "",
     time: "",
     link: "",
+    duration: "",
   });
 
-  const genShortlistId = (row: CandidateRow): string =>
-    `C - ${String(row.id).padStart(4, "0")}`;
-
-  const addToShortlist = useCallback(
-    (row: CandidateRow): void => {
-      const newRow: ShortlistedRow = {
-        id: genShortlistId(row),
-        modules: row.modules,
-        experience: row.experience,
-        hourlyRate: row.hourlyRate,
-        status: STATUS.PENDING,
-        interview: "Request",
-      };
-      setShortlisted((prev) => [newRow, ...prev]);
-      setCandidates((prev) => prev.filter((r) => r.id !== row.id));
-    },
-    [setShortlisted, setCandidates]
-  );
-
-  const rejectCandidate = useCallback(
-    (row: CandidateRow): void => {
-      setCandidates((prev) => prev.filter((r) => r.id !== row.id));
-    },
-    [setCandidates]
-  );
+  const rejectCandidate = useCallback((row: CandidateRow): void => {
+    setCandidates((prev) => prev.filter((r) => r.id !== row.id));
+  }, []);
 
   const shortlistedColumns = useMemo(
     () =>
       getShortlistedColumns(
-        (id: string) => console.log("Selected candidate:", id),
+        (id: string | number) => setSelectedConsultantId(id),
         setInterviewOpen
       ),
     [setInterviewOpen]
   );
 
   const candidateColumns = useMemo(
-    () => getCandidateColumns(addToShortlist, rejectCandidate, setCandidates),
-    [addToShortlist, rejectCandidate, setCandidates]
+    () =>
+      getCandidateColumns(
+        (row: CandidateRow) => {
+          setSelectedRow(row);
+          setAssignRoleOpen(true);
+        },
+        (row: CandidateRow) => {
+          setSelectedRow(row);
+          setRejectConfirmOpen(true);
+        }
+      ),
+    []
   );
+
+  const mapConsultants = (list: IProjectConsultant[]) => {
+    const shortlisted: ShortlistedRow[] = list.map((item) => ({
+      id: item.consultant_id,
+      modules: "N/A",
+      experience: item.user.consultants?.experience
+        ? `${item.user.consultants.experience} Years`
+        : "N/A",
+      hourlyRate: item.user.consultants?.rate
+        ? `$${item.user.consultants.rate}/hour`
+        : "N/A",
+      status: item.status as STATUS,
+      interview: "Request",
+    }));
+
+    const candidates: CandidateRow[] = list.map((item) => ({
+      id: Number(item.consultant_id),
+      avatar: "/img/u1.png",
+      name: item.user.username,
+      modules: "N/A",
+      experience: item.user.consultants?.experience
+        ? `${item.user.consultants.experience} Years`
+        : "N/A",
+      hourlyRate: item.user.consultants?.rate
+        ? `$${item.user.consultants.rate}/hour`
+        : "N/A",
+      signed: item.is_joic_signed ? "Yes" : "No",
+      role: item.role ?? undefined,
+    }));
+
+    return { shortlisted, candidates };
+  };
+
+  useEffect(() => {
+    if (!projectId) return;
+
+    getProjectConsultants.mutate(projectId, {
+      onSuccess: (res) => {
+        const list = (res.data ?? []) as IProjectConsultant[];
+        const { shortlisted, candidates } = mapConsultants(list);
+        setShortlisted(shortlisted);
+        setCandidates(candidates);
+      },
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectId]);
 
   return (
     <>
       <Box
         sx={{
           p: 2,
-          borderRadius: 2,
-          boxShadow: 2,
+          borderRadius: 1,
+          boxShadow: 1,
           bgcolor: "background.paper",
           mt: 3,
         }}
@@ -94,11 +137,12 @@ export default function TeamConfirmation({
           pageSize={6}
         />
       </Box>
+
       <Box
         sx={{
           p: 2,
-          borderRadius: 2,
-          boxShadow: 2,
+          borderRadius: 1,
+          boxShadow: 1,
           bgcolor: "background.paper",
           mt: 3,
         }}
@@ -112,13 +156,15 @@ export default function TeamConfirmation({
           avatarField="avatar"
         />
       </Box>
+
       <RoleHierarchy />
+
       <Box
         sx={{
           mt: 3,
           p: 2,
-          borderRadius: 2,
-          boxShadow: 2,
+          borderRadius: 1,
+          boxShadow: 1,
           bgcolor: "background.paper",
           display: "flex",
           justifyContent: "space-between",
@@ -144,7 +190,65 @@ export default function TeamConfirmation({
           />
         </Box>
       </Box>
-      ;
+
+      <AssignedRolePopup
+        open={assignRoleOpen}
+        onClose={() => setAssignRoleOpen(false)}
+        row={selectedRow}
+        projectId={projectId!}
+        onUpdated={() => {
+          getProjectConsultants.mutate(projectId!, {
+            onSuccess: (res) => {
+              const list = res.data ?? [];
+              const { shortlisted, candidates } = mapConsultants(list);
+
+              setShortlisted(shortlisted);
+              setCandidates(candidates);
+            },
+          });
+        }}
+        onAssign={(role) => {
+          if (!selectedRow) return;
+
+          updateConsultantStatus.mutate(
+            {
+              consultant_id: selectedRow.id,
+              project_id: String(projectId),
+              status: "active",
+              role,
+            },
+            {
+              onSuccess: () => {
+                setAssignRoleOpen(false);
+
+                getProjectConsultants.mutate(projectId!, {
+                  onSuccess: (res) => {
+                    const list = res.data ?? [];
+                    const { shortlisted, candidates } = mapConsultants(list);
+
+                    setShortlisted(shortlisted);
+                    setCandidates(candidates);
+                  },
+                });
+              },
+            }
+          );
+        }}
+      />
+
+      <DynamicPopup
+        open={rejectConfirmOpen}
+        onClose={() => setRejectConfirmOpen(false)}
+        title="Confirm Rejection"
+        description="Are you sure you want to reject this candidate?"
+        buttonText="Yes, Reject"
+        buttonColor="RED"
+        onSubmit={() => {
+          if (selectedRow) rejectCandidate(selectedRow);
+          setRejectConfirmOpen(false);
+        }}
+      />
+
       <DynamicPopup
         open={interviewOpen}
         onClose={() => setInterviewOpen(false)}
@@ -161,6 +265,17 @@ export default function TeamConfirmation({
             },
           },
           {
+            id: "duration",
+            label: "Select Duration",
+            placeholder: "Select duration",
+            options: INTERVIEW_DURATION_OPTIONS.map((d) => d.label),
+            value: interviewData.duration,
+            onChange: (val: string | File) => {
+              if (typeof val === "string")
+                setInterviewData((p) => ({ ...p, duration: val }));
+            },
+          },
+          {
             id: "time",
             label: "Time",
             type: "time",
@@ -170,22 +285,35 @@ export default function TeamConfirmation({
                 setInterviewData((p) => ({ ...p, time: val }));
             },
           },
-          // {
-          //   id: "link",
-          //   label: "",
-          //   type: "text",
-          //   value: interviewData.link,
-          //   onChange: (val: string | File) => {
-          //     if (typeof val === "string")
-          //       setInterviewData((p) => ({ ...p, link: val }));
-          //   },
-          //   placeholder: "Meeting link",
-          // },
         ]}
         buttonText="Assign Interview"
         buttonColor="BLUE"
-        onSubmit={() => setInterviewOpen(false)}
-        disableSubmit={!interviewData.date || !interviewData.time}
+        onSubmit={() => {
+          if (!selectedConsultantId) return;
+
+          const formattedDate = interviewData.date
+            .split("-")
+            .reverse()
+            .join("-");
+          const dateTime = `${formattedDate}`;
+
+          meetingInvite.mutate(
+            {
+              date_time: dateTime,
+              invitees_id: [String(selectedConsultantId)],
+              duration: Number(interviewData.duration),
+              event_type: "interview",
+            },
+            {
+              onSuccess: () => {
+                setInterviewOpen(false);
+              },
+            }
+          );
+        }}
+        disableSubmit={
+          !interviewData.date || !interviewData.time || !interviewData.duration
+        }
       />
     </>
   );

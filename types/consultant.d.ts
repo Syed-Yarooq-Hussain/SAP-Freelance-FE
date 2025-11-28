@@ -1,4 +1,4 @@
-import { IBaseUser } from "./common-auth";
+import { IBaseUser, IUser } from "./common-auth";
 
 export interface IConsultantExtra {
   module: string;
