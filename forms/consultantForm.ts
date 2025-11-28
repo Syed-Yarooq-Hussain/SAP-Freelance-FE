@@ -7,7 +7,7 @@ export function getConsultantFormFields(): IFieldConfig[] {
       name: "cv",
       label: "Upload CV",
       type: "file",
-      rules: { required: "CV is required" },
+      rules: {},
       inputProps: { accept: ".pdf,.doc,.docx" },
     },
     {

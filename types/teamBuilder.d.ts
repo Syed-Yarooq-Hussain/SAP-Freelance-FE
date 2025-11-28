@@ -194,7 +194,7 @@ export interface IMeetingInviteResponse {
 
 export interface IMeetingInviteBody {
   date_time: string;
-  invitees_id: string[];
+  invitees_id: number[];
   duration: number;
   event_type: "interview";
 }

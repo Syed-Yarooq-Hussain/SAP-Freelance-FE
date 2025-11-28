@@ -82,7 +82,7 @@ export default function TeamConfirmation({
       hourlyRate: item.user.consultants?.rate
         ? `$${item.user.consultants.rate}/hour`
         : "N/A",
-      status: item.status as STATUS,
+      status: STATUS.SHORTLISTED,
       interview: "Request",
     }));
 
@@ -291,16 +291,12 @@ export default function TeamConfirmation({
         onSubmit={() => {
           if (!selectedConsultantId) return;
 
-          const formattedDate = interviewData.date
-            .split("-")
-            .reverse()
-            .join("-");
-          const dateTime = `${formattedDate}`;
+          const dateTime = `${interviewData.date} ${interviewData.time}`;
 
           meetingInvite.mutate(
             {
               date_time: dateTime,
-              invitees_id: [String(selectedConsultantId)],
+              invitees_id: [Number(selectedConsultantId)],
               duration: Number(interviewData.duration),
               event_type: "interview",
             },
