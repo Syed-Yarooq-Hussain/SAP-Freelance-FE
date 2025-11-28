@@ -17,18 +17,27 @@ import { Suspense, useEffect, useMemo, useState } from "react";
 function TeamBuilderContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+
   const stepParam = searchParams.get("step");
-  const initialStep = stepParam ? Number(stepParam) : 1;
+  const projectParam = searchParams.get("projectId");
+
   const [activeStep, setActiveStep] = useState(
-    Math.max(1, Math.min(4, initialStep))
+    stepParam ? Math.max(1, Math.min(4, Number(stepParam))) : 1
   );
+  const [projectId, setProjectId] = useState<string | null>(projectParam);
 
   useEffect(() => {
     const q = new URLSearchParams(Array.from(searchParams.entries()));
+
     q.set("step", String(activeStep));
+
+    if (projectId) {
+      q.set("projectId", projectId);
+    }
+
     router.replace(`?${q.toString()}`, { scroll: false });
-  }, [activeStep, searchParams, router]);
-  const [projectId, setProjectId] = useState<string | null>(null);
+  }, [activeStep, projectId, searchParams, router]);
+
   const goStep2 = (id: string) => {
     setProjectId(id);
     setActiveStep(2);
@@ -38,6 +47,7 @@ function TeamBuilderContent() {
     switch (activeStep) {
       case 1:
         return <Step01 onNext={goStep2} />;
+
       case 2:
         return (
           <TeamConfirmation
@@ -48,6 +58,7 @@ function TeamBuilderContent() {
             }}
           />
         );
+
       case 3:
         return (
           <TeamProjects
@@ -56,8 +67,10 @@ function TeamBuilderContent() {
             onNext={() => setActiveStep(4)}
           />
         );
+
       case 4:
         return <TeamPayments />;
+
       default:
         return <TeamCreation onNext={goStep2} />;
     }
@@ -65,10 +78,7 @@ function TeamBuilderContent() {
 
   return (
     <Box sx={{ mt: 10, px: 4 }}>
-      <StepProgress
-        steps={teamBuilderSteps}
-        activeStep={activeStep}
-      />
+      <StepProgress steps={teamBuilderSteps} activeStep={activeStep} />
       {current}
     </Box>
   );

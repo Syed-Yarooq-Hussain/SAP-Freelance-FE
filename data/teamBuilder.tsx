@@ -1,8 +1,7 @@
 import { StatCardProps } from "@/components/StatCard";
-import StatusDropdown from "@/components/StatusDropdown";
-import { STATUS } from "@/constants/status_dropdown";
+import StatusChip from "@/components/StatusChip";
 import type { CandidateRow, MilestoneRow, TaskRow } from "@/types/teamBuilder";
-import { colors } from "@/utils/styles/colors";
+import { colors, statusColors } from "@/utils/styles/colors";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import AssignmentIcon from "@mui/icons-material/Assignment";
@@ -11,15 +10,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import EventSeatIcon from "@mui/icons-material/EventSeat";
 import Groups2Icon from "@mui/icons-material/Groups2";
-import {
-  Box,
-  IconButton,
-  MenuItem,
-  Select,
-  Stack,
-  Tooltip,
-  Typography,
-} from "@mui/material";
+import { Box, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import {
   GridColDef,
   GridRenderCellParams,
@@ -152,115 +143,10 @@ export const teamBuilderColumns = (
   },
 ];
 
-export const shortlistedRows = [
-  {
-    id: "Z - 1234",
-    modules: "SAP MM, S/4HANA",
-    experience: "9 Years",
-    hourlyRate: "$15/hour",
-    status: STATUS.PENDING,
-    interview: "Request",
-  },
-  {
-    id: "V - 6789",
-    modules: "SAP MM, S/4HANA",
-    experience: "9 Years",
-    hourlyRate: "$15/hour",
-    status: STATUS.PENDING,
-    interview: "Request",
-  },
-  {
-    id: "U - 3456",
-    modules: "SAP MM, S/4HANA",
-    experience: "9 Years",
-    hourlyRate: "$15/hour",
-    status: STATUS.PENDING,
-    interview: "Request",
-  },
-  {
-    id: "Y - 5678",
-    modules: "SAP ABAP, S/4HANA",
-    experience: "9 Years",
-    hourlyRate: "$14/hour",
-    status: STATUS.WAITING,
-    interview: "20/03/2025",
-  },
-  {
-    id: "X - 9101",
-    modules: "SAP PI, Fiori",
-    experience: "9 Years",
-    hourlyRate: "$26/hour",
-    status: STATUS.ACCEPTED,
-    interview: "20/03/2025",
-  },
-  {
-    id: "W - 2345",
-    modules: "SAP MM, S/4HANA",
-    experience: "9 Years",
-    hourlyRate: "$28/hour",
-    status: STATUS.REJECTED,
-    interview: "Request",
-  },
-];
-
-export const candidateRows = [
-  {
-    id: 1,
-    avatar: "/images/a1.png",
-    name: "Savannah Nguyen",
-    modules: "SAP SD, S/4HANA",
-    experience: "9 Years",
-    hourlyRate: "$20/hour",
-    signed: "4 / 5 remaining",
-    role: "SD Lead",
-  },
-  {
-    id: 2,
-    avatar: "/images/a2.png",
-    name: "Noah Brown",
-    modules: "SAP CRM, HANA",
-    experience: "9 Years",
-    hourlyRate: "$23/hour",
-    signed: "4 / 5 remaining",
-    role: "Consultant",
-  },
-  {
-    id: 3,
-    avatar: "/images/a3.png",
-    name: "Albert Flores",
-    modules: "SAP SD, Fiori",
-    experience: "9 Years",
-    hourlyRate: "$18/hour",
-    signed: "4 / 5 remaining",
-    role: "SD Lead",
-  },
-  {
-    id: 4,
-    avatar: "/images/a4.png",
-    name: "Lily Wilson",
-    modules: "SAP CO, S/4HANA",
-    experience: "9 Years",
-    hourlyRate: "$24/hour",
-    signed: "4 / 5 remaining",
-    role: "Consultant",
-  },
-];
-
-export const ROLES = [
-  "Consultant",
-  "SD Lead",
-  "MM Lead",
-  "ABAP Dev",
-  "Integration",
-  "QA",
-];
-
-export const isActionRow = (id: number) => id === 1 || id === 2;
-
 export const getShortlistedColumns = (
   setSelectedCandidateId: (id: string) => void,
   setInterviewOpen: (v: boolean) => void
-) => [
+): GridColDef[] => [
   { field: "id", headerName: "ID", flex: 1 },
   { field: "modules", headerName: "Modules", flex: 1 },
   { field: "experience", headerName: "Experience", flex: 1 },
@@ -270,9 +156,11 @@ export const getShortlistedColumns = (
     headerName: "Status",
     flex: 1,
     sortable: false,
-    renderCell: (params: GridRenderCellParams<GridValidRowModel, STATUS>) => (
-      <StatusDropdown value={params.value as STATUS} />
-    ),
+    renderCell: (params) => {
+      const colorName =
+        statusColors[params.value as keyof typeof statusColors] || "GREY";
+      return <StatusChip label={params.value} color={colorName} />;
+    },
   },
   {
     field: "interview",
@@ -385,14 +273,14 @@ export const getMilestoneCols = (
 
 export const getCandidateColumns = (
   addToShortlist: (row: CandidateRow) => void,
-  rejectCandidate: (row: CandidateRow) => void,
-  setCandidates: React.Dispatch<React.SetStateAction<CandidateRow[]>>
-) => [
+  rejectCandidate: (row: CandidateRow) => void
+): GridColDef[] => [
   { field: "name", headerName: "Name", flex: 1 },
   { field: "modules", headerName: "Modules", flex: 1 },
   { field: "experience", headerName: "Experience", flex: 1 },
   { field: "hourlyRate", headerName: "Hourly Rate", flex: 1 },
   { field: "signed", headerName: "Signed Contact", flex: 1 },
+
   {
     field: "action",
     headerName: "Action",
@@ -402,7 +290,20 @@ export const getCandidateColumns = (
       params: GridRenderCellParams<GridValidRowModel, unknown, CandidateRow>
     ) => {
       const row = params.row as CandidateRow;
-      const showActions = isActionRow(row.id);
+
+      if (row.role) {
+        return (
+          <Typography
+            sx={{
+              fontWeight: 700,
+              color: colors.BLUE,
+              textTransform: "capitalize",
+            }}
+          >
+            {row.role}
+          </Typography>
+        );
+      }
 
       return (
         <Box
@@ -413,60 +314,33 @@ export const getCandidateColumns = (
             width: "100%",
           }}
         >
-          {showActions ? (
-            <>
-              <Typography
-                variant="body2"
-                sx={{
-                  color: colors.BLUE,
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  "&:hover": { textDecoration: "underline" },
-                  whiteSpace: "nowrap",
-                }}
-                onClick={() => addToShortlist(row)}
-              >
-                Hired
-              </Typography>
+          <Typography
+            variant="body2"
+            sx={{
+              color: colors.BLUE,
+              fontWeight: 600,
+              cursor: "pointer",
+              "&:hover": { textDecoration: "underline" },
+              whiteSpace: "nowrap",
+            }}
+            onClick={() => addToShortlist(row)}
+          >
+            Hired
+          </Typography>
 
-              <Typography
-                variant="body2"
-                sx={{
-                  color: colors.RED,
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  "&:hover": { textDecoration: "underline" },
-                  whiteSpace: "nowrap",
-                }}
-                onClick={() => rejectCandidate(row)}
-              >
-                Reject
-              </Typography>
-            </>
-          ) : (
-            <Select
-              size="small"
-              value={row.role}
-              onChange={(e) =>
-                setCandidates((rows) =>
-                  rows.map((r) =>
-                    r.id === row.id ? { ...r, role: String(e.target.value) } : r
-                  )
-                )
-              }
-              sx={{
-                flex: 1,
-                bgcolor: "#fff",
-                "& .MuiSelect-select": { py: 0.5 },
-              }}
-            >
-              {ROLES.map((r) => (
-                <MenuItem key={r} value={r}>
-                  {r}
-                </MenuItem>
-              ))}
-            </Select>
-          )}
+          <Typography
+            variant="body2"
+            sx={{
+              color: colors.RED,
+              fontWeight: 600,
+              cursor: "pointer",
+              "&:hover": { textDecoration: "underline" },
+              whiteSpace: "nowrap",
+            }}
+            onClick={() => rejectCandidate(row)}
+          >
+            Reject
+          </Typography>
         </Box>
       );
     },

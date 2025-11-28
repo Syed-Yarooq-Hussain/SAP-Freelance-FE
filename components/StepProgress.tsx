@@ -145,13 +145,13 @@ export default function StepProgress({ steps, activeStep }: StepProgressProps) {
                   <Box
                     sx={{
                       width: 50,
-                      borderBottom: "2px dashed #666666",
+                      borderBottom: "2px dashed #dcdcdc",
                     }}
                   />
                   <Typography
                     sx={{
                       fontSize: 18,
-                      color: grey,
+                      color: "#dcdcdc",
                       mt: "-2px",
                     }}
                   >

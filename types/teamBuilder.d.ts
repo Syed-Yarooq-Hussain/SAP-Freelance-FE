@@ -1,7 +1,9 @@
 import type { STATUS } from "@/constants/status_dropdown";
+import type { IUser } from "./common-auth";
+import type { IConsultantMeta } from "./consultant";
 
 export interface ShortlistedRow {
-  id: string;
+  id: string | number;
   modules: string;
   experience: string;
   hourlyRate: string;
@@ -17,7 +19,7 @@ export interface CandidateRow {
   experience: string;
   hourlyRate: string;
   signed: string;
-  role: string;
+  role?: string;
 }
 
 export type TeamCreationProps = {
@@ -147,3 +149,69 @@ export interface IAddConsultantsResponse {
   consultant_id: number;
   requested_hours: number;
 }
+
+export interface IProjectConsultant {
+  id: string;
+  consultant_id: string;
+  project_id: string;
+  status: string;
+  role: string | null;
+  decided_rate: number;
+  booking_schedule: string | null;
+  is_joic_signed: boolean;
+  requested_hours: number;
+  deleted_at: string | null;
+  user: IUser & {
+    consultants: IConsultantMeta | null;
+  };
+}
+
+export interface IMeeting {
+  created_at: string;
+  deleted_at: string | null;
+  id: number;
+  sender_id: number;
+  url: string;
+  date_time: string;
+  duration: number;
+  status: string;
+  event_type: string;
+  project_id: number | null;
+}
+
+export interface IMeetingInvitee {
+  deleted_at: string | null;
+  id: number;
+  meeting_id: number;
+  user_id: number;
+}
+
+export interface IMeetingInviteResponse {
+  message: string;
+  meeting: IMeeting;
+  invitees: IMeetingInvitee[];
+}
+
+export interface IMeetingInviteBody {
+  date_time: string;
+  invitees_id: string[];
+  duration: number;
+  event_type: "interview";
+}
+
+export interface IUpdateConsultantStatusPayload {
+  consultant_id: number | string;
+  project_id: number | string;
+  status: string;
+  role: string;
+}
+
+export type IUpdateConsultantStatusResponse = [
+  number,
+  IProjectConsultant[]
+];
+
+type TeamConfirmationProps = {
+  onNext?: (projectId: string) => void;
+  projectId?: string | null;
+};

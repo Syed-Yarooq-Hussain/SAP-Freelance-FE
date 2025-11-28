@@ -58,7 +58,7 @@ export default function TeamCreation({ onNext }: TeamCreationProps) {
               const c = item.consultants;
 
               return {
-                id: c.id ?? `consultant-${index + 1}`,
+                id: item.id,
                 modules: c.module_id ? String(c.module_id) : "N/A",
                 experience: c.experience ? `${c.experience} Years` : "N/A",
                 rate: c.rate ? `$${c.rate}/hour` : "N/A",
@@ -67,7 +67,6 @@ export default function TeamCreation({ onNext }: TeamCreationProps) {
                 avatar: `/img/u${((index % 5) + 1).toString()}.png`,
               };
             }) ?? [];
-
         setConsultantRows(mapped);
       },
       onError: (error) => {

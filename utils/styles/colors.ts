@@ -33,6 +33,7 @@ export const statusColors: Record<string, keyof typeof colors> = {
   Accepted: "GREEN",
   Planning: "BLUE",
   "Not selected": "RED",
+  Shortlisted: "YELLOW",
 };
 
 export const buttonColors: Record<string, keyof typeof colors> = {

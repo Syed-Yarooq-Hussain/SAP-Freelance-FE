@@ -12,4 +12,8 @@ export const API_ROUTES = {
   UPDATE_MILESTONE: "/projects/milestones",
   UPDATE_TASKS: "/projects/tasks",
   SHORTLIST_CANDIDATES: "/projects",
+  PROJECT_CONSULTANTS: "/projects",
+  MEETING_INVITE: "/common/meeting-invite",
+  GET_CONSULTANT_LEVELS: "/common/consultant-levels",
+  UPDATE_CONSULTANT_STATUS: "/projects/consultant/status",
 };
