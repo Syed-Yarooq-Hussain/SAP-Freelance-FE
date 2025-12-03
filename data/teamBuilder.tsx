@@ -8,6 +8,7 @@ import AssignmentIcon from "@mui/icons-material/Assignment";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import EventSeatIcon from "@mui/icons-material/EventSeat";
 import Groups2Icon from "@mui/icons-material/Groups2";
 import { Box, IconButton, Stack, Tooltip, Typography } from "@mui/material";
@@ -74,12 +75,33 @@ export const teamBuilderStats: StatCardProps[] = [
 export const teamBuilderColumns = (
   onRequestChange: (id: string | number, value: number, avail: number) => void
 ): GridColDef[] => [
-  { field: "id", headerName: "IDs", flex: 1 },
-  { field: "modules", headerName: "Modules", flex: 2 },
+  { field: "id", headerName: "IDs" },
+  { field: "coremodules", headerName: "Modules (Core)", flex: 2 },
+  { field: "othersmodules", headerName: "Modules (Others)", flex: 2 },
   { field: "experience", headerName: "Experience", flex: 1 },
   { field: "rate", headerName: "Rate (Hrs)", flex: 1 },
-  { field: "avail", headerName: "Avail. (Hrs)", flex: 1 },
-
+  { field: "avail", headerName: "Avail. (Hrs)" },
+  {
+    field: "calendar",
+    headerName: "Cal.",
+    flex: 0.5,
+    sortable: false,
+    renderCell: (params) => {
+      return (
+        <Box
+          sx={{
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          onClick={() => params.row.openSchedule(params.row)}
+        >
+          <EventAvailableIcon sx={{ color: colors.BLUE, fontSize: 24 }} />
+        </Box>
+      );
+    },
+  },
   {
     field: "request",
     headerName: "Request Hrs",
@@ -147,8 +169,9 @@ export const getShortlistedColumns = (
   setSelectedCandidateId: (id: string) => void,
   setInterviewOpen: (v: boolean) => void
 ): GridColDef[] => [
-  { field: "id", headerName: "ID", flex: 1 },
-  { field: "modules", headerName: "Modules", flex: 1 },
+  { field: "id", headerName: "ID" },
+  { field: "coremodules", headerName: "Modules (Core)", flex: 2 },
+  { field: "othersmodules", headerName: "Modules (Others)", flex: 2 },
   { field: "experience", headerName: "Experience", flex: 1 },
   { field: "hourlyRate", headerName: "Hourly Rate", flex: 1 },
   {
@@ -166,27 +189,30 @@ export const getShortlistedColumns = (
     field: "interview",
     headerName: "Interview",
     flex: 1,
-    sortable: false,
-    renderCell: (params: GridRenderCellParams<GridValidRowModel, string>) => (
-      <Box
-        sx={{
-          color: params.value === "Request" ? colors.BLUE : "text.primary",
-          fontWeight: params.value === "Request" ? 600 : 400,
-          cursor: params.value === "Request" ? "pointer" : "default",
-          "&:hover": {
-            textDecoration: params.value === "Request" ? "underline" : "none",
-          },
-        }}
-        onClick={() => {
-          if (params.value === "Request") {
-            setSelectedCandidateId(params.row.id as string);
-            setInterviewOpen(true);
-          }
-        }}
-      >
-        {params.value}
-      </Box>
-    ),
+    renderCell: (params) => {
+      const val = params.value;
+
+      const isRequest = val === "Request";
+
+      return (
+        <Box
+          sx={{
+            color: isRequest ? colors.BLUE : "text.primary",
+            cursor: isRequest ? "pointer" : "default",
+            fontWeight: isRequest ? 600 : 400,
+            "&:hover": { textDecoration: isRequest ? "underline" : "none" },
+          }}
+          onClick={() => {
+            if (isRequest) {
+              setSelectedCandidateId(params.row.id);
+              setInterviewOpen(true);
+            }
+          }}
+        >
+          {val}
+        </Box>
+      );
+    },
   },
 ];
 
@@ -276,11 +302,11 @@ export const getCandidateColumns = (
   rejectCandidate: (row: CandidateRow) => void
 ): GridColDef[] => [
   { field: "name", headerName: "Name", flex: 1 },
-  { field: "modules", headerName: "Modules", flex: 1 },
+  { field: "coremodules", headerName: "Modules (Core)", flex: 2 },
+  { field: "othersmodules", headerName: "Modules (Others)", flex: 2 },
   { field: "experience", headerName: "Experience", flex: 1 },
   { field: "hourlyRate", headerName: "Hourly Rate", flex: 1 },
   { field: "signed", headerName: "Signed Contact", flex: 1 },
-
   {
     field: "action",
     headerName: "Action",
@@ -290,6 +316,20 @@ export const getCandidateColumns = (
       params: GridRenderCellParams<GridValidRowModel, unknown, CandidateRow>
     ) => {
       const row = params.row as CandidateRow;
+
+      if (row.status === "rejected") {
+        return (
+          <Typography
+            sx={{
+              fontWeight: 700,
+              color: colors.RED,
+              textTransform: "capitalize",
+            }}
+          >
+            Rejected
+          </Typography>
+        );
+      }
 
       if (row.role) {
         return (

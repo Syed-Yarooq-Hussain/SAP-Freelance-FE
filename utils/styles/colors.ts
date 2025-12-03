@@ -43,3 +43,10 @@ export const buttonColors: Record<string, keyof typeof colors> = {
 };
 
 export default colors;
+
+statusColors["Shortlisted"] = "YELLOW";
+statusColors["Interview Schedule"] = "LIGHT_BLUE";
+statusColors["Interviewed"] = "BLUE";
+statusColors["Offered"] = "LIGHT_BLUE";
+statusColors["Hired"] = "GREEN";
+statusColors["Rejected"] = "RED";

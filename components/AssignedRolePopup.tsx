@@ -81,7 +81,9 @@ export function AssignedRolePopup({
               {row.name || "N/A"}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              {row.modules || "N/A"}
+              {row.coremodules || row.othersmodules
+                ? `${row.coremodules ?? ""} ${row.othersmodules ?? ""}`.trim()
+                : "N/A"}
             </Typography>
           </Box>
         </Box>

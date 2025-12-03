@@ -1,25 +1,32 @@
-import type { STATUS } from "@/constants/status_dropdown";
-import type { IUser } from "./common-auth";
-import type { IConsultantMeta } from "./consultant";
-
 export interface ShortlistedRow {
   id: string | number;
-  modules: string;
+  coremodules: string;
+  othersmodules: string;
   experience: string;
   hourlyRate: string;
-  status: STATUS;
-  interview: string;
+  status: string;
+  interview: STATUS | string;
 }
 
 export interface CandidateRow {
   id: number;
   avatar: string;
   name: string;
-  modules: string;
+  coremodules: string;
+  othersmodules: string;
   experience: string;
   hourlyRate: string;
   signed: string;
   role?: string;
+  status?: string;
+  working_schedule?: {
+    weekdays: {
+      day: string;
+      start?: string;
+      end?: string;
+      active: boolean;
+    }[];
+  };
 }
 
 export type TeamCreationProps = {
@@ -28,12 +35,22 @@ export type TeamCreationProps = {
 
 export interface TeamBuilderRow {
   id: string | number;
-  modules: string;
+  coremodules: string;
+  othersmodules: string;
   experience: string;
   rate: string;
   avail: number;
   request: number;
+  error?: string;
   avatar?: string;
+  working_schedule?: {
+    weekdays: {
+      day: string;
+      start?: string;
+      end?: string;
+      active: boolean;
+    }[];
+  };
 }
 
 export interface ITask {
@@ -154,15 +171,32 @@ export interface IProjectConsultant {
   id: string;
   consultant_id: string;
   project_id: string;
+  project_consultants_id;
   status: string;
   role: string | null;
   decided_rate: number;
-  booking_schedule: string | null;
+  booking_schedule?: {
+    date_time: string;
+    status: string;
+  } | null;
   is_joic_signed: boolean;
+  is_doc_signed: boolean;
   requested_hours: number;
   deleted_at: string | null;
-  user: IUser & {
-    consultants: IConsultantMeta | null;
+  name: string;
+  experience: number;
+  rate: number;
+  modules: {
+    core: string;
+    others: string;
+  };
+  working_schedule?: {
+    weekdays: {
+      day: string;
+      start?: string;
+      end?: string;
+      active: boolean;
+    }[];
   };
 }
 
@@ -197,6 +231,7 @@ export interface IMeetingInviteBody {
   invitees_id: number[];
   duration: number;
   event_type: "interview";
+  project_id: number;
 }
 
 export interface IUpdateConsultantStatusPayload {
@@ -204,14 +239,35 @@ export interface IUpdateConsultantStatusPayload {
   project_id: number | string;
   status: string;
   role: string;
+  booking_schedule?: {
+    weekdays: {
+      day: string;
+      start?: string;
+      end?: string;
+      active: boolean;
+    }[];
+  };
 }
 
-export type IUpdateConsultantStatusResponse = [
-  number,
-  IProjectConsultant[]
-];
+export type IUpdateConsultantStatusResponse = [number, IProjectConsultant[]];
 
 type TeamConfirmationProps = {
   onNext?: (projectId: string) => void;
   projectId?: string | null;
+};
+
+type Weekday = NonNullable<
+  NonNullable<TeamBuilderRow["working_schedule"]>["weekdays"]
+>[number];
+
+type ClientConsultantDTO = {
+  id: string | number;
+  experience?: number;
+  rate?: number;
+  weekly_available_hours?: number;
+  modules?: {
+    core?: string;
+    others?: string;
+  };
+  working_schedule?: TeamBuilderRow["working_schedule"];
 };

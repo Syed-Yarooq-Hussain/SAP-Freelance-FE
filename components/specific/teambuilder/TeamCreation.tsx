@@ -6,11 +6,16 @@ import { useCreateProject } from "@/actions/projects/useCreateProject";
 import AppButton from "@/components/Button";
 import DataTable from "@/components/DataTable";
 import FilterDrawer from "@/components/FilterDrawer";
+import DynamicPopup from "@/components/Popup";
 import StatCard from "@/components/StatCard";
 import { teamBuilderColumns, teamBuilderStats } from "@/data/teamBuilder";
 import { useToast } from "@/providers/ToastProvider";
-import type { IConsultantUser } from "@/types/consultant";
-import type { TeamBuilderRow, TeamCreationProps } from "@/types/teamBuilder";
+import type {
+  ClientConsultantDTO,
+  TeamBuilderRow,
+  TeamCreationProps,
+  Weekday,
+} from "@/types/teamBuilder";
 import colors from "@/utils/styles/colors";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import {
@@ -37,36 +42,39 @@ export default function TeamCreation({ onNext }: TeamCreationProps) {
   const { mutate: createProject, isPending: isCreating } = useCreateProject();
   const { toast } = useToast();
   const addConsultants = useAddConsultants();
+  const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
+  const [scheduleData, setScheduleData] = useState<
+    TeamBuilderRow["working_schedule"] | null
+  >(null);
+
+  const openSchedule = (row: TeamBuilderRow) => {
+    setScheduleData(row.working_schedule);
+    setScheduleModalOpen(true);
+  };
+  const rowsWithSchedule = consultantRows.map((r) => ({
+    ...r,
+    openSchedule,
+  }));
 
   useEffect(() => {
     loadConsultants(undefined, {
       onSuccess: (res) => {
         const mapped: TeamBuilderRow[] =
-          res.data
-            ?.filter((item: IConsultantUser) => {
-              const c = item.consultants;
-              return !(
-                c?.id === null &&
-                c?.module_id === null &&
-                c?.level_id === null &&
-                c?.experience === null &&
-                c?.rate === null &&
-                c?.weekly_available_hours === null
-              );
-            })
-            .map((item: IConsultantUser, index: number) => {
-              const c = item.consultants;
+          res.data?.map((item: ClientConsultantDTO, index: number) => {
+            return {
+              id: item.id,
+              coremodules: item.modules?.core || "N/A",
+              othersmodules: item.modules?.others || "N/A",
+              experience: item.experience ? `${item.experience} Years` : "N/A",
+              rate: item.rate ? `$${item.rate}/hour` : "N/A",
+              avail: item.weekly_available_hours ?? 0,
+              request: 0,
+              error: "",
+              avatar: `/img/u${((index % 5) + 1).toString()}.png`,
+              working_schedule: item.working_schedule || undefined,
+            };
+          }) ?? [];
 
-              return {
-                id: item.id,
-                modules: c.module_id ? String(c.module_id) : "N/A",
-                experience: c.experience ? `${c.experience} Years` : "N/A",
-                rate: c.rate ? `$${c.rate}/hour` : "N/A",
-                avail: c.weekly_available_hours ?? 0,
-                request: 0,
-                avatar: `/img/u${((index % 5) + 1).toString()}.png`,
-              };
-            }) ?? [];
         setConsultantRows(mapped);
       },
       onError: (error) => {
@@ -219,7 +227,7 @@ export default function TeamCreation({ onNext }: TeamCreationProps) {
             <DataTable
               title="Consultant Selection"
               columns={teamBuilderColumns(handleRequestChange)}
-              rows={consultantRows}
+              rows={rowsWithSchedule}
               pageSize={10}
               showAvatar
               avatarField="avatar"
@@ -227,6 +235,37 @@ export default function TeamCreation({ onNext }: TeamCreationProps) {
               onSelectionChange={(ids) => setSelectedRows(ids)}
             />
           )}
+
+          <DynamicPopup
+            open={scheduleModalOpen}
+            onClose={() => setScheduleModalOpen(false)}
+            title="Working Schedule"
+            description=""
+          >
+            <Box sx={{ mt: 2 }}>
+              {scheduleData?.weekdays?.map((day: Weekday, i: number) => (
+                <Box
+                  key={i}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    p: 1,
+                    borderBottom: "1px solid #eee",
+                  }}
+                >
+                  <Typography>{day.day}</Typography>
+
+                  {day.active ? (
+                    <Typography>
+                      {day.start} - {day.end}
+                    </Typography>
+                  ) : (
+                    <Typography color="red">Not Active</Typography>
+                  )}
+                </Box>
+              ))}
+            </Box>
+          </DynamicPopup>
 
           <Box
             display="flex"

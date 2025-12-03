@@ -36,9 +36,9 @@ interface DynamicPopupProps {
   fileUpload?: boolean;
   fileValue?: File | null;
   onFileChange?: (file: File) => void;
-  buttonText: string;
+  buttonText?: string;
   buttonColor?: keyof typeof colors;
-  onSubmit: () => void;
+  onSubmit?: () => void;
   description?: string;
   noteText?: string;
   disableSubmit?: boolean;
@@ -238,13 +238,15 @@ const DynamicPopup: React.FC<DynamicPopupProps> = ({
           </Typography>
         )}
 
-        <AppButton
-          label={buttonText}
-          colorKey={buttonColor}
-          onClick={onSubmit}
-          disabled={disableSubmit}
-          sx={{ width: 150, px: 0, py: 0.8, fontWeight: 500 }}
-        />
+        {buttonText && (
+          <AppButton
+            label={buttonText}
+            colorKey={buttonColor}
+            onClick={onSubmit}
+            disabled={disableSubmit}
+            sx={{ width: 150, px: 0, py: 0.8, fontWeight: 500 }}
+          />
+        )}
       </DialogActions>
     </Dialog>
   );
