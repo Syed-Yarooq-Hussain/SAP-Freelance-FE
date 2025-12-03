@@ -1,8 +1,11 @@
 "use client";
 
+import { useMeetingInvite } from "@/actions/common/useMeetingInvite";
 import DataTable from "@/components/DataTable";
 import FilterDrawer from "@/components/FilterDrawer";
 import DynamicPopup from "@/components/Popup";
+import { INTERVIEW_DURATION_OPTIONS } from "@/data/options";
+import { IMeetingInviteBody } from "@/types/teamBuilder";
 import colors from "@/utils/styles/colors";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { Box, Button, Link, Typography } from "@mui/material";
@@ -16,7 +19,7 @@ import { useState } from "react";
 interface MeetingData {
   date: string;
   time: string;
-  link: string;
+  duration: string;
 }
 
 interface ConsultantProps<T extends GridValidRowModel = GridValidRowModel> {
@@ -25,6 +28,7 @@ interface ConsultantProps<T extends GridValidRowModel = GridValidRowModel> {
   rows: T[];
   showMeetingActions?: boolean;
   showFilters?: boolean;
+  projectId?: string | number | null;
 }
 
 export default function Consultant<
@@ -35,37 +39,75 @@ export default function Consultant<
   rows,
   showMeetingActions = false,
   showFilters = false,
+  projectId,
 }: ConsultantProps<T>) {
   const [filterOpen, setFilterOpen] = useState(false);
   const [scheduleOpen, setScheduleOpen] = useState(false);
   const [rescheduleOpen, setRescheduleOpen] = useState(false);
+  const meetingInvite = useMeetingInvite();
+  const [selectedConsultantId, setSelectedConsultantId] = useState<
+    number | null
+  >(null);
   const [scheduleData, setScheduleData] = useState<MeetingData>({
     date: "",
     time: "",
-    link: "",
+    duration: "",
   });
   const [rescheduleData, setRescheduleData] = useState<MeetingData>({
     date: "",
     time: "",
-    link: "",
+    duration: "",
   });
 
   const handleCloseSchedule = () => {
     setScheduleOpen(false);
-    setScheduleData({ date: "", time: "", link: "" });
+    setScheduleData({ date: "", time: "", duration: "" });
   };
   const handleCloseReschedule = () => {
     setRescheduleOpen(false);
-    setRescheduleData({ date: "", time: "", link: "" });
+    setRescheduleData({ date: "", time: "", duration: "" });
   };
 
   const handleScheduleSubmit = () => {
-    console.log("Schedule meeting data:", scheduleData);
-    handleCloseSchedule();
+    if (!selectedConsultantId || !projectId) return;
+
+    const dateTime = `${scheduleData.date} ${scheduleData.time}`;
+
+    const body: IMeetingInviteBody = {
+      date_time: dateTime,
+      invitees_id: [Number(selectedConsultantId)],
+      duration: Number(scheduleData.duration ?? 30),
+      event_type: "meeting",
+      project_id: Number(projectId),
+    };
+
+    meetingInvite.mutate(body, {
+      onSuccess: () => {
+        console.log("Meeting scheduled!");
+        handleCloseSchedule();
+      },
+    });
   };
+
   const handleRescheduleSubmit = () => {
-    console.log("Reschedule data:", rescheduleData);
-    handleCloseReschedule();
+    if (!selectedConsultantId || !projectId) return;
+
+    const dateTime = `${rescheduleData.date} ${rescheduleData.time}`;
+
+    const body: IMeetingInviteBody = {
+      date_time: dateTime,
+      invitees_id: [Number(selectedConsultantId)],
+      duration: Number(rescheduleData.duration ?? 30),
+      event_type: "meeting",
+      project_id: Number(projectId),
+    };
+
+    meetingInvite.mutate(body, {
+      onSuccess: () => {
+        console.log("Meeting rescheduled!");
+        handleCloseReschedule();
+      },
+    });
   };
 
   const finalColumns = showMeetingActions
@@ -86,6 +128,8 @@ export default function Consultant<
               }}
               onClick={(e) => {
                 e.preventDefault();
+                setSelectedConsultantId(Number(params.row.id));
+
                 if (params.value === "Reschedule") {
                   setRescheduleOpen(true);
                 } else {
@@ -179,6 +223,17 @@ export default function Consultant<
             },
           },
           {
+            id: "duration",
+            label: "Select Duration",
+            placeholder: "Select duration",
+            options: INTERVIEW_DURATION_OPTIONS.map((d) => d.label),
+            value: scheduleData.duration,
+            onChange: (val: string | File) => {
+              if (typeof val === "string")
+                setScheduleData((p) => ({ ...p, duration: val }));
+            },
+          },
+          {
             id: "time",
             label: "Time",
             type: "time",
@@ -188,23 +243,12 @@ export default function Consultant<
                 setScheduleData((p) => ({ ...p, time: val }));
             },
           },
-          {
-            id: "link",
-            label: "",
-            type: "text",
-            value: scheduleData.link,
-            onChange: (val: string | File) => {
-              if (typeof val === "string")
-                setScheduleData((p) => ({ ...p, link: val }));
-            },
-            placeholder: "Meeting link",
-          },
         ]}
         buttonText="Send Invite"
         buttonColor="BLUE"
         onSubmit={handleScheduleSubmit}
         disableSubmit={
-          !scheduleData.date || !scheduleData.time || !scheduleData.link
+          !scheduleData.date || !scheduleData.duration || !scheduleData.time
         }
       />
 
@@ -224,6 +268,17 @@ export default function Consultant<
             },
           },
           {
+            id: "duration",
+            label: "Select Duration",
+            placeholder: "Select duration",
+            options: INTERVIEW_DURATION_OPTIONS.map((d) => d.label),
+            value: rescheduleData.duration,
+            onChange: (val: string | File) => {
+              if (typeof val === "string")
+                setRescheduleData((p) => ({ ...p, duration: val }));
+            },
+          },
+          {
             id: "time",
             label: "Time",
             type: "time",
@@ -233,23 +288,14 @@ export default function Consultant<
                 setRescheduleData((p) => ({ ...p, time: val }));
             },
           },
-          {
-            id: "link",
-            label: "",
-            type: "text",
-            value: rescheduleData.link,
-            onChange: (val: string | File) => {
-              if (typeof val === "string")
-                setRescheduleData((p) => ({ ...p, link: val }));
-            },
-            placeholder: "Meeting link",
-          },
         ]}
         buttonText="Suggest"
         buttonColor="BLUE"
         onSubmit={handleRescheduleSubmit}
         disableSubmit={
-          !rescheduleData.date || !rescheduleData.time || !rescheduleData.link
+          !rescheduleData.date ||
+          !rescheduleData.time ||
+          !rescheduleData.duration
         }
       />
     </>

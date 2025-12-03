@@ -1,8 +1,9 @@
+import { API_STATUS } from "@/constants/api_status";
+import type { ApiResponse } from "@/types/api";
+import type { IClientProjectDTO } from "@/types/client";
+import type { IProject } from "@/types/projects";
 import { API_ROUTES } from "@/utils/api_routes";
 import { request } from "@/utils/request";
-import { API_STATUS } from "@/constants/api_status";
-import type { IProject } from "@/types/projects";
-import type { ApiResponse } from "@/types/api";
 import { getSession } from "next-auth/react";
 
 export async function createProjectService(): Promise<ApiResponse<IProject>> {
@@ -21,6 +22,29 @@ export async function createProjectService(): Promise<ApiResponse<IProject>> {
 
   if (response.status === API_STATUS.ERROR) {
     throw new Error(response.message || "Failed to create project");
+  }
+
+  return response;
+}
+
+export async function fetchClientProjects(): Promise<
+  ApiResponse<IClientProjectDTO[]>
+> {
+  const session = await getSession();
+  const token = session?.accessToken;
+
+  const response = await request<undefined, IClientProjectDTO[]>({
+    url: API_ROUTES.CLIENT_PROJECTS,
+    method: "GET",
+    headers: token
+      ? {
+          Authorization: `Bearer ${token}`,
+        }
+      : undefined,
+  });
+
+  if (response.status === API_STATUS.ERROR) {
+    throw new Error(response.message || "Failed to load client projects");
   }
 
   return response;

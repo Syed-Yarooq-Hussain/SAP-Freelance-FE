@@ -123,3 +123,8 @@ export const buildMonthMatrix = (view: Date): Date[][] => {
   }
   return weeks;
 };
+
+export const formatYMD = (date: string | Date): string => {
+  const d = typeof date === "string" ? new Date(date) : date;
+  return ymd(d);
+};

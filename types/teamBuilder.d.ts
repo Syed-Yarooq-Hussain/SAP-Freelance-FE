@@ -230,7 +230,7 @@ export interface IMeetingInviteBody {
   date_time: string;
   invitees_id: number[];
   duration: number;
-  event_type: "interview";
+  event_type: string;
   project_id: number;
 }
 
@@ -262,6 +262,7 @@ type Weekday = NonNullable<
 
 type ClientConsultantDTO = {
   id: string | number;
+  name?: string;
   experience?: number;
   rate?: number;
   weekly_available_hours?: number;

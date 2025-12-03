@@ -16,4 +16,6 @@ export const API_ROUTES = {
   MEETING_INVITE: "/common/meeting-invite",
   GET_CONSULTANT_LEVELS: "/common/consultant-levels",
   UPDATE_CONSULTANT_STATUS: "/projects/consultant/status",
+  CLIENT_PAYMENTS: "/clients/payments",
+  CLIENT_PROJECTS: "/clients/projects",
 };

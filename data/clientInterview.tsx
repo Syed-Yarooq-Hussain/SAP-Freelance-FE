@@ -32,8 +32,8 @@ export const clientInterviewStats: StatCardProps[] = [
 ];
 
 export const clientInterviewColumns: GridColDef[] = [
-  { field: "client", headerName: "Client", flex: 1 },
-  { field: "modules", headerName: "Modules", flex: 2 },
+  { field: "consultant", headerName: "Consultant", flex: 1 },
+  { field: "projectname", headerName: "Project Name", flex: 2 },
   { field: "requestDate", headerName: "Request Date", flex: 1 },
   { field: "datetime", headerName: "Date – Time", flex: 2 },
   { field: "duration", headerName: "Duration", flex: 1 },
