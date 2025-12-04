@@ -124,7 +124,21 @@ export const buildMonthMatrix = (view: Date): Date[][] => {
   return weeks;
 };
 
-export const formatYMD = (date: string | Date): string => {
-  const d = typeof date === "string" ? new Date(date) : date;
-  return ymd(d);
+export const formatYMD = (iso: string) => {
+  if (!iso) return "N/A";
+  return iso.split("T")[0];
+};
+
+export const formatDateTimeAmPm = (iso: string) => {
+  if (!iso) return "N/A";
+
+  const d = new Date(iso);
+  const date = d.toISOString().split("T")[0];
+
+  let hours = d.getHours();
+  const minutes = d.getMinutes().toString().padStart(2, "0");
+  const ampm = hours >= 12 ? "PM" : "AM";
+  hours = hours % 12 || 12;
+
+  return `${date} - ${hours}:${minutes} ${ampm}`;
 };

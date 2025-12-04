@@ -272,3 +272,21 @@ type ClientConsultantDTO = {
   };
   working_schedule?: TeamBuilderRow["working_schedule"];
 };
+
+export interface ClientTaskRow {
+  id: string | number;
+  name: string;
+  dependencies: string;
+  details: string;
+  deadline: string;
+  status: string;
+}
+
+type ClientMilestoneRow = {
+  id: string | number;
+  name: string;
+  dependencies: string;
+  details: string;
+  deadline: string;
+  status: string;
+};

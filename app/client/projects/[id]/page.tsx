@@ -1,5 +1,6 @@
 "use client";
 
+import { useGetProjectMilestones } from "@/actions/projects/useGetProjectMilestones";
 import AppButton from "@/components/Button";
 import DataTable from "@/components/DataTable";
 import DynamicPopup from "@/components/Popup";
@@ -8,18 +9,20 @@ import ProjectDetailsLayout from "@/components/specific/ProjectDetailsLayout";
 import {
   dependencyOptions,
   milestoneColumns,
-  milestoneRows,
   projectInfoData,
   projectStats,
   teamMembers,
 } from "@/data/clientProjectDetails";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import type { ClientMilestoneRow, IMilestone } from "@/types/teamBuilder";
+import { useParams, useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
-export default function ClientMilestoneDetails() {
+export default function ClientProjectDetailsPage() {
   const router = useRouter();
+  const params = useParams();
+  const projectId = params?.id as string;
+  const [milestones, setMilestones] = useState<ClientMilestoneRow[]>([]);
   const [openPopup, setOpenPopup] = useState(false);
-
   const [milestoneData, setMilestoneData] = useState({
     name: "",
     dependencies: "",
@@ -53,6 +56,33 @@ export default function ClientMilestoneDetails() {
     handleClosePopup();
   };
 
+  const { mutate: loadMilestones } = useGetProjectMilestones();
+  const fetchMilestones = useCallback(() => {
+    if (!projectId) return;
+
+    loadMilestones(projectId, {
+      onSuccess: (res) => {
+        const list = res.data ?? [];
+
+        const formatted = list.map((m: IMilestone) => ({
+          id: m.id,
+          name: m.name,
+          dependencies: "N/A",
+          details: m.description ?? "N/A",
+          deadline: m.due_date ? m.due_date.split("T")[0] : "N/A",
+          status: m.status ?? "N/A",
+        }));
+
+        setMilestones(formatted);
+      },
+      onError: (err) => console.error(err),
+    });
+  }, [projectId, loadMilestones]);
+
+  useEffect(() => {
+    fetchMilestones();
+  }, [fetchMilestones]);
+
   return (
     <Sidebar>
       <ProjectDetailsLayout
@@ -63,12 +93,14 @@ export default function ClientMilestoneDetails() {
         <DataTable
           title="Milestones"
           columns={milestoneColumns}
-          rows={milestoneRows}
+          rows={milestones}
           pageSize={10}
           showBackButton
           onBackClick={() => router.back()}
           onRowClick={(params) =>
-            router.push(`/client/projects/${params.id}/taskdetail`)
+            router.push(
+              `/client/projects/${projectId}/taskdetail?id=${params.id}`
+            )
           }
           actionButton={
             <AppButton
@@ -92,8 +124,8 @@ export default function ClientMilestoneDetails() {
               id: "milestoneName",
               label: "",
               value: milestoneData.name,
-              onChange: (v) => handleFieldChange("name", v as string),
               placeholder: "Enter milestone name",
+              onChange: (v) => handleFieldChange("name", v as string),
             },
             {
               id: "dependencies",
@@ -113,8 +145,8 @@ export default function ClientMilestoneDetails() {
               id: "description",
               label: "",
               value: milestoneData.description,
-              onChange: (v) => handleFieldChange("description", v as string),
               placeholder: "Enter milestone description",
+              onChange: (v) => handleFieldChange("description", v as string),
             },
           ]}
         />

@@ -29,7 +29,7 @@ const getTheme = (mode: "light" | "dark") =>
         styleOverrides: {
           root: {
             background: "#3088B7",
-            color: "#fff",
+            color: "#000000ff",
           },
         },
       },

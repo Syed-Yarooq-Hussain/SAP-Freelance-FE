@@ -80,3 +80,38 @@ export interface ClientProjectRow {
   estimated: string;
   status: string;
 }
+
+export interface IClientMeetingDTO {
+  id: number | string;
+  sender_id?: number;
+  url?: string;
+  date_time: string;
+  duration: number | null;
+  status: string;
+  event_type: string;
+  project_id?: number | string;
+  created_at: string;
+  sender_name?: string;
+  invitees_names?: string;
+  project_name?: string;
+}
+
+export interface ClientMeetingRow {
+  id: number;
+  consultant: string;
+  projectname: string;
+  requestDate: string;
+  datetime: string;
+  duration: string;
+  status: string;
+}
+
+export interface ClientInterviewRow {
+  id: number | string;
+  consultant: string;
+  projectname: string;
+  requestDate: string;
+  datetime: string;
+  duration: string | number;
+  status: string;
+}

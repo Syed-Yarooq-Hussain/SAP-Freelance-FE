@@ -75,7 +75,8 @@ export const teamMembers = [
 
 export const taskColumns: GridColDef[] = [
   { field: "name", headerName: "Name", flex: 2 },
-  { field: "details", headerName: "Details", flex: 3 },
+  { field: "dependencies", headerName: "Dependencies", flex: 2 },
+  { field: "details", headerName: "Details", flex: 2 },
   { field: "deadline", headerName: "Deadline", flex: 1 },
   {
     field: "status",
@@ -146,8 +147,9 @@ export const taskRows = [
 
 export const milestoneColumns: GridColDef[] = [
   { field: "name", headerName: "Name", flex: 2 },
-  { field: "details", headerName: "Details", flex: 4 },
-  { field: "deadline", headerName: "Deadline", flex: 2 },
+  { field: "dependencies", headerName: "Dependencies", flex: 2 },
+  { field: "details", headerName: "Details", flex: 2 },
+  { field: "deadline", headerName: "Deadline", flex: 1 },
   {
     field: "status",
     headerName: "Status",
@@ -157,7 +159,6 @@ export const milestoneColumns: GridColDef[] = [
   {
     field: "actions",
     headerName: "Actions",
-    flex: 1,
     sortable: false,
     filterable: false,
     disableColumnMenu: true,
@@ -189,65 +190,6 @@ export const milestoneColumns: GridColDef[] = [
         </Tooltip>
       </Box>
     ),
-  },
-];
-
-export const milestoneRows = [
-  {
-    id: 1,
-    name: "Blueprint Documentation",
-    details: "One of the cool things about this font generator is that you...",
-    deadline: "15.09.2025",
-    status: "In progress",
-  },
-  {
-    id: 2,
-    name: "Client workshop",
-    details: "One of the cool things about this font generator is that you...",
-    deadline: "19.09.2025",
-    status: "To do",
-  },
-  {
-    id: 3,
-    name: "Blueprint Documentation",
-    details: "One of the cool things about this font generator is that you...",
-    deadline: "15.09.2025",
-    status: "In progress",
-  },
-  {
-    id: 4,
-    name: "Blueprint Documentation",
-    details: "One of the cool things about this font generator is that you...",
-    deadline: "15.09.2025",
-    status: "In progress",
-  },
-  {
-    id: 5,
-    name: "Client workshop",
-    details: "One of the cool things about this font generator is that you...",
-    deadline: "19.09.2025",
-    status: "To do",
-  },
-  {
-    id: 6,
-    name: "Data entry",
-    details: "One of the cool things about this font generator is that you...",
-    deadline: "05.08.2025",
-    status: "Delayed",
-  },
-  {
-    id: 7,
-    name: "Client workshop",
-    details: "One of the cool things about this font generator is that you...",
-    deadline: "19.09.2025",
-    status: "To do",
-  },
-  {
-    id: 8,
-    name: "Data entry",
-    details: "One of the cool things about this font generator is that you...",
-    deadline: "05.08.2025",
-    status: "Delayed",
   },
 ];
 

@@ -64,6 +64,7 @@ export default function DataTable<T extends GridValidRowModel>({
   slotProps,
   slots,
   onSelectionChange,
+  onRowClick,
 }: DataTableProps<T>) {
   const [selectedRows, setSelectedRows] = React.useState<Set<string>>(
     new Set()
@@ -206,14 +207,8 @@ export default function DataTable<T extends GridValidRowModel>({
           pagination
           disableRowSelectionOnClick
           checkboxSelection={false}
-          onRowSelectionModelChange={(selection) => {
-            const ids = Array.isArray(selection)
-              ? selection.map(String)
-              : [String(selection)];
-
-            queueMicrotask(() => {
-              onSelectionChange?.(ids);
-            });
+          onRowClick={(params, event) => {
+            if (onRowClick) onRowClick(params, event);
           }}
           slots={{
             noRowsOverlay: () => (
@@ -249,8 +244,15 @@ export default function DataTable<T extends GridValidRowModel>({
               display: "flex",
               alignItems: "center",
             },
+
             "& .MuiDataGrid-row": {
               backgroundColor: "#fff",
+              transition: "background-color 0.2s ease",
+            },
+
+            "& .MuiDataGrid-row:hover": {
+              cursor: "pointer",
+              backgroundColor: "#f1f7ff",
             },
           }}
         />
