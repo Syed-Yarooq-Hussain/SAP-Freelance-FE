@@ -452,7 +452,7 @@ export default function TeamConfirmation({
             id: "duration",
             label: "Select Duration",
             placeholder: "Select duration",
-            options: INTERVIEW_DURATION_OPTIONS.map((d) => d.label),
+            options: INTERVIEW_DURATION_OPTIONS,
             value: interviewData.duration,
             onChange: (val: string | File) => {
               if (typeof val === "string")

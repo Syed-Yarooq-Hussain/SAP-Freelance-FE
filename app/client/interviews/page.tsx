@@ -41,9 +41,6 @@ export default function ClientInterviewPage() {
     });
   }, [loadMeetings]);
 
-  /** -------------------------
-   * ENHANCED COLUMNS (STATUS)
-   * ------------------------- */
   const enhancedColumns = clientInterviewColumns.map((col) => {
     if (col.field !== "status") return col;
 
@@ -84,6 +81,24 @@ export default function ClientInterviewPage() {
         columns={enhancedColumns}
         rows={rows}
         rescheduleEnabled
+        onRefresh={() => {
+          loadMeetings(undefined, {
+            onSuccess: (res) => {
+              const mapped: ClientInterviewRow[] =
+                res.data?.map((item: IClientMeetingDTO) => ({
+                  id: Number(item.id),
+                  consultant: item.invitees_names ?? "N/A",
+                  projectname: item.project_name ?? "N/A",
+                  requestDate: formatYMD(item.created_at),
+                  datetime: formatDateTimeAmPm(item.date_time),
+                  duration: item.duration ? `${item.duration} mins` : "-",
+                  status: item.status ?? "Pending",
+                })) ?? [];
+
+              setRows(mapped);
+            },
+          });
+        }}
       />
     </Sidebar>
   );

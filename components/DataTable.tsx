@@ -45,6 +45,7 @@ export type DataTableProps<T extends GridValidRowModel> = {
   slotProps?: GridSlotsComponentsProps;
   slots?: Partial<GridSlotsComponent>;
   onSelectionChange?: (selectedIds: string[]) => void;
+  hidePagination?: boolean;
 };
 
 export default function DataTable<T extends GridValidRowModel>({
@@ -65,6 +66,7 @@ export default function DataTable<T extends GridValidRowModel>({
   slots,
   onSelectionChange,
   onRowClick,
+  hidePagination = false,
 }: DataTableProps<T>) {
   const [selectedRows, setSelectedRows] = React.useState<Set<string>>(
     new Set()
@@ -203,8 +205,11 @@ export default function DataTable<T extends GridValidRowModel>({
           initialState={{
             pagination: { paginationModel: { pageSize } },
           }}
-          pageSizeOptions={[pageSize]}
-          pagination
+          pageSizeOptions={hidePagination ? [] : [pageSize]}
+          {...(hidePagination ? {} : { pagination: true })}
+          hideFooter={hidePagination}
+          hideFooterPagination={hidePagination}
+          hideFooterSelectedRowCount={hidePagination}
           disableRowSelectionOnClick
           checkboxSelection={false}
           onRowClick={(params, event) => {

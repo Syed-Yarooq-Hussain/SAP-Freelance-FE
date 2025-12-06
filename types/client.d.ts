@@ -106,6 +106,15 @@ export interface ClientMeetingRow {
   status: string;
 }
 
+export interface MeetingForm {
+  project: string;
+  user: string;
+  date: string;
+  time: string;
+  duration: string;
+  meeting_type: string;
+}
+
 export interface ClientInterviewRow {
   id: number | string;
   consultant: string;

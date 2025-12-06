@@ -3,10 +3,9 @@
 import AppButton from "@/components/Button";
 import { SidebarSectionInfo } from "@/components/DashboardSidebarInfo";
 import { StatCardProps } from "@/components/StatCard";
-import StatusChip from "@/components/StatusChip";
 import StatusDropdown from "@/components/StatusDropdown";
 import { APP_ROUTES } from "@/utils/app_routes";
-import { buttonColors, statusColors } from "@/utils/styles/colors";
+import { buttonColors } from "@/utils/styles/colors";
 import { Box } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
@@ -43,59 +42,6 @@ export const clientAnnouncements = [
   "Check out our new blog post on maximizing your freelance opportunities!",
   "New feature rollout: Enhanced invoice tracking module launching next week!",
   "Reminder: Update your profile to get more relevant project matches.",
-];
-
-export const clientInterviewColumns: GridColDef[] = [
-  { field: "project", headerName: "Project", flex: 1 },
-  {
-    field: "client",
-    headerName: "Client",
-    flex: 1,
-    renderCell: (params) => <strong>{params.value}</strong>,
-  },
-  { field: "modules", headerName: "Modules", flex: 1 },
-  { field: "duration", headerName: "Duration", flex: 1 },
-  { field: "startDate", headerName: "Start Date", flex: 1 },
-  {
-    field: "status",
-    headerName: "Status",
-    flex: 1,
-    renderCell: (params) => {
-      const colorName =
-        statusColors[params.value as keyof typeof statusColors] || "GREY";
-      return <StatusChip label={params.value} color={colorName} />;
-    },
-  },
-];
-
-export const clientInterviewRows = [
-  {
-    id: 1,
-    project: "ERP Upgrade",
-    client: "TechFirm",
-    modules: "SAP MM, S/4HANA",
-    duration: "6 months",
-    startDate: "TBD",
-    status: "Under review",
-  },
-  {
-    id: 2,
-    project: "Global Rollout – Manufacturing",
-    client: "ManuCorp",
-    modules: "SAP SD, S/4HANA",
-    duration: "14 months",
-    startDate: "2025-07-01",
-    status: "Confirmed",
-  },
-  {
-    id: 3,
-    project: "Retail Implementation",
-    client: "RetailCo",
-    modules: "SAP SD, Fiori",
-    duration: "8 months",
-    startDate: "2025-10-01",
-    status: "In progress",
-  },
 ];
 
 export const clientTaskColumns: GridColDef[] = [

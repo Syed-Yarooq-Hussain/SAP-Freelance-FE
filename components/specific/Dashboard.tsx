@@ -21,6 +21,8 @@ interface TableData<T extends GridValidRowModel = GridValidRowModel> {
   enableSelection?: boolean;
   showViewMore?: boolean;
   selectionActions?: React.ReactNode;
+  onViewMoreClick?: () => void;
+  hidePagination?: boolean;
 }
 
 interface DashboardProps<T extends GridValidRowModel = GridValidRowModel> {
@@ -30,6 +32,7 @@ interface DashboardProps<T extends GridValidRowModel = GridValidRowModel> {
   financeTable?: TableData<T>;
   sidebarSections?: SidebarSectionInfo[];
   chart?: React.ReactNode;
+  onViewMoreClick?: () => void;
 }
 
 const Dashboard = <T extends GridValidRowModel = GridValidRowModel>({
@@ -83,6 +86,8 @@ const Dashboard = <T extends GridValidRowModel = GridValidRowModel>({
               enableSelection={projectTable.enableSelection ?? false}
               showViewMore={projectTable.showViewMore ?? false}
               selectionActions={projectTable.selectionActions}
+              onViewMoreClick={projectTable.onViewMoreClick} 
+              hidePagination={projectTable.hidePagination}
             />
           </Box>
 
@@ -105,6 +110,8 @@ const Dashboard = <T extends GridValidRowModel = GridValidRowModel>({
                 avatarField={financeTable.avatarField}
                 enableSelection={financeTable.enableSelection ?? false}
                 showViewMore={financeTable.showViewMore ?? false}
+                onViewMoreClick={financeTable.onViewMoreClick}
+                hidePagination={financeTable.hidePagination}
               />
             </Box>
           )}

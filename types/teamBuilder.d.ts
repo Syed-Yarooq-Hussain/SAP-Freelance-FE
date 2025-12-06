@@ -107,7 +107,7 @@ export type MilestoneRow = {
   name: string;
   date: string;
   description: string;
-  approval: "Required" | "Not required";
+  approval: string;
   tasks: number;
 };
 

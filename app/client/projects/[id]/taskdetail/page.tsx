@@ -1,41 +1,117 @@
 "use client";
 
+import { useCreateTask } from "@/actions/projects/useCreateTask";
+import { useGetMilestoneTasks } from "@/actions/projects/useGetMilestoneTasks";
+import { useProjectDetails } from "@/actions/projects/useGetProjectDetails";
+import { useGetProjectMilestones } from "@/actions/projects/useGetProjectMilestones";
+import { useUpdateTask } from "@/actions/projects/useUpdateTask";
 import AppButton from "@/components/Button";
 import DataTable from "@/components/DataTable";
 import DynamicPopup from "@/components/Popup";
 import Sidebar from "@/components/Sidebar";
 import ProjectDetailsLayout from "@/components/specific/ProjectDetailsLayout";
-
 import {
-  dependencyOptions,
-  projectInfoData,
   projectStats,
   taskColumns,
   teamMembers,
 } from "@/data/clientProjectDetails";
-
-import { useRouter, useSearchParams } from "next/navigation";
+import { getTaskFormFields } from "@/forms/taskForm";
+import type { ProjectInfoData } from "@/types/projects";
+import { ClientMilestoneRow, ClientTaskRow, ITask } from "@/types/teamBuilder";
+import { formatYMD } from "@/utils/dateCalendar";
+import { mapTaskFieldsToPopup } from "@/utils/mapFormToPopup";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-
-import { useGetMilestoneTasks } from "@/actions/projects/useGetMilestoneTasks";
-import { ClientTaskRow } from "@/types/teamBuilder";
 
 export default function ClientTaskDetails() {
   const router = useRouter();
   const params = useSearchParams();
   const milestoneParam = params.get("id");
+  const param = useParams();
+  const projectId = param?.id as string;
   const milestoneId = Array.isArray(milestoneParam)
     ? milestoneParam[0]
     : milestoneParam;
   const [tasks, setTasks] = useState<ClientTaskRow[]>([]);
+  const { mutate: createTask } = useCreateTask();
+  const [milestoneData, setMilestoneData] = useState<
+    ClientMilestoneRow | undefined
+  >();
+  const { mutate: updateTask } = useUpdateTask();
   const [openPopup, setOpenPopup] = useState(false);
   const [taskData, setTaskData] = useState({
-    name: "",
-    dependencies: "",
-    endDate: "",
-    description: "",
+    taskName: "",
+    taskEnd: "",
+    taskAssignee: "",
+    taskDoc: "",
+    taskMilestone: "",
   });
+
+  const [projectInfo, setProjectInfo] = useState<ProjectInfoData>({
+    name: "",
+    clientIndustry: "",
+    module: "",
+    functionalScope: "",
+    technicalScope: "",
+    outOfScope: "",
+    start_date: "",
+    duration: "",
+    status: "",
+  });
+
   const { mutate: loadMilestone } = useGetMilestoneTasks();
+  const { mutate: loadProjectDetails } = useProjectDetails();
+  const { mutate: loadMilestones } = useGetProjectMilestones();
+  const [isEditing, setIsEditing] = useState(false);
+  const [editTaskId, setEditTaskId] = useState<string | number | null>(null);
+
+  useEffect(() => {
+    if (!projectId || !milestoneId) return;
+
+    loadMilestones(projectId, {
+      onSuccess: (res) => {
+        const m = res.data?.find((x) => String(x.id) === String(milestoneId));
+
+        if (!m) {
+          setMilestoneData(undefined);
+          return;
+        }
+
+        const formatted: ClientMilestoneRow = {
+          id: m.id,
+          name: m.name ?? "N/A",
+          dependencies: "N/A",
+          details: m.description ?? "N/A",
+          deadline: formatYMD(m.due_date) || "N/A",
+          status: m.status ?? "N/A",
+        };
+
+        setMilestoneData(formatted);
+      },
+    });
+  }, [projectId, milestoneId, loadMilestones]);
+
+  const milestoneOption = milestoneData
+    ? [{ value: String(milestoneData.id), label: milestoneData.name }]
+    : [];
+
+  const handleEditTask = useCallback(
+    (task: ITask) => {
+      setIsEditing(true);
+      setEditTaskId(task.id);
+
+      setTaskData({
+        taskName: task.name || "",
+        taskDoc: task.description || "",
+        taskEnd: "",
+        taskAssignee: "",
+        taskMilestone: milestoneId || "",
+      });
+
+      setOpenPopup(true);
+    },
+    [milestoneId]
+  );
   const fetchTasks = useCallback(() => {
     if (!milestoneId) return;
 
@@ -54,45 +130,117 @@ export default function ClientTaskDetails() {
           details: task.description ?? "N/A",
           deadline: "-",
           status: m.status ?? "N/A",
+
+          onEdit: () => handleEditTask(task),
+          onDelete: () => console.log("DELETE TASK SOON", task.id),
         }));
 
         setTasks(formatted);
       },
       onError: (err) => console.error("TASK API ERROR:", err),
     });
-  }, [milestoneId, loadMilestone]);
+  }, [milestoneId, loadMilestone, handleEditTask]);
 
   useEffect(() => {
     fetchTasks();
   }, [fetchTasks]);
 
-  const handleFieldChange = (field: keyof typeof taskData, value: string) => {
+  useEffect(() => {
+    if (!projectId) return;
+
+    loadProjectDetails(projectId, {
+      onSuccess: (res) => {
+        const data = res.data;
+
+        const clientIndustry = `${data?.client?.username ?? "N/A"} - ${
+          data?.company_name ?? "N/A"
+        }`;
+
+        setProjectInfo({
+          name: data?.name ?? "N/A",
+          clientIndustry,
+          module: "N/A",
+          functionalScope: "N/A",
+          technicalScope: "N/A",
+          outOfScope: "N/A",
+          start_date: formatYMD(data?.projectDetails?.start_date ?? ""),
+          duration: data?.projectDetails?.duration
+            ? `${data.projectDetails.duration} months`
+            : "N/A",
+          status: data?.status ?? "N/A",
+        });
+      },
+    });
+  }, [projectId, loadProjectDetails]);
+
+  const handleFieldChange = (field: string, value: string) => {
     setTaskData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleClosePopup = () => {
     setOpenPopup(false);
     setTaskData({
-      name: "",
-      dependencies: "",
-      endDate: "",
-      description: "",
+      taskName: "",
+      taskEnd: "",
+      taskAssignee: "",
+      taskDoc: "",
+      taskMilestone: "",
     });
   };
 
-  const isFormValid = Object.values(taskData).every((val) => val.trim() !== "");
+  const isFormValid = Object.values(taskData).every(
+    (val) => (val ?? "").toString().trim() !== ""
+  );
 
-  const handleAddTask = () => {
-    console.log("Task added:", taskData);
-    handleClosePopup();
+  const handleSubmitTask = () => {
+    if (!milestoneId || !projectId) return;
+
+    const payload = {
+      name: taskData.taskName,
+      description: taskData.taskDoc,
+      assignee_id: 3,
+      required_hours: 40,
+      project_milestone_id: Number(milestoneId),
+      project_id: Number(projectId),
+    };
+
+    if (isEditing && editTaskId) {
+      updateTask(
+        { taskId: editTaskId, body: payload },
+        {
+          onSuccess: () => {
+            console.log("Task updated successfully");
+            handleClosePopup();
+            fetchTasks();
+            setIsEditing(false);
+            setEditTaskId(null);
+          },
+          onError: (err) => console.error("Update task failed:", err),
+        }
+      );
+    } else {
+      createTask(
+        { milestoneId, body: payload },
+        {
+          onSuccess: () => {
+            console.log("Task created successfully");
+            handleClosePopup();
+            fetchTasks();
+          },
+          onError: (err) => console.error("Create task failed:", err),
+        }
+      );
+    }
   };
 
   return (
     <Sidebar>
       <ProjectDetailsLayout
         stats={projectStats}
-        projectInfo={projectInfoData}
+        projectInfo={projectInfo}
         teamMembers={teamMembers}
+        milestoneData={milestoneData}
+        showMilestone={true}
       >
         <DataTable
           title="Tasks"
@@ -115,39 +263,14 @@ export default function ClientTaskDetails() {
           open={openPopup}
           onClose={handleClosePopup}
           title="Add Task"
-          buttonText="Add"
-          onSubmit={handleAddTask}
+          buttonText={isEditing ? "Update" : "Add"}
+          onSubmit={handleSubmitTask}
           disableSubmit={!isFormValid}
-          fields={[
-            {
-              id: "taskName",
-              label: "",
-              value: taskData.name,
-              placeholder: "Enter task name",
-              onChange: (v) => handleFieldChange("name", v as string),
-            },
-            {
-              id: "dependencies",
-              label: "Select Dependency Document",
-              value: taskData.dependencies,
-              onChange: (v) => handleFieldChange("dependencies", v as string),
-              options: dependencyOptions,
-            },
-            {
-              id: "endDate",
-              label: "End Date",
-              type: "date",
-              value: taskData.endDate,
-              onChange: (v) => handleFieldChange("endDate", v as string),
-            },
-            {
-              id: "description",
-              label: "",
-              value: taskData.description,
-              placeholder: "Enter task description",
-              onChange: (v) => handleFieldChange("description", v as string),
-            },
-          ]}
+          fields={mapTaskFieldsToPopup(
+            getTaskFormFields(milestoneOption),
+            taskData,
+            handleFieldChange
+          )}
         />
       </ProjectDetailsLayout>
     </Sidebar>

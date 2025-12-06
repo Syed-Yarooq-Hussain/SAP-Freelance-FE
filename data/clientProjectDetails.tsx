@@ -32,19 +32,6 @@ export const projectStats: StatCardProps[] = [
   },
 ];
 
-export const projectInfoData = {
-  projectName: "Global Rollout",
-  clientName: "ManuCorp",
-  industry: "Manufacturing",
-  functionalScope: "file",
-  technicalScope: "file",
-  outOfScope: "file",
-  startDate: "2025-07-01",
-  duration: "14 months",
-  module: "SAP SD, S/4HANA",
-  status: "Project Started",
-};
-
 export const teamMembers = [
   {
     name: "Marvin McKinney",
@@ -84,64 +71,47 @@ export const taskColumns: GridColDef[] = [
     flex: 1,
     renderCell: (params) => <StatusDropdown value={params.value} />,
   },
-];
+  {
+    field: "actions",
+    headerName: "Actions",
+    sortable: false,
+    filterable: false,
+    disableColumnMenu: true,
+    renderCell: (params) => (
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <Tooltip title="Edit">
+          <IconButton
+            size="small"
+            onClick={(e) => {
+              e.stopPropagation();
+              params.row.onEdit?.();
+            }}
+            sx={{
+              color: colors.BLUE,
+              "&:hover": { bgcolor: `${colors.BLUE}15` },
+            }}
+          >
+            <EditIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
 
-export const taskRows = [
-  {
-    id: 1,
-    name: "Blueprint Documentation",
-    details: "One of the cool things about this font generator is that you...",
-    deadline: "15.09.2025",
-    status: "In progress",
-  },
-  {
-    id: 2,
-    name: "Client workshop",
-    details: "One of the cool things about this font generator is that you...",
-    deadline: "19.09.2025",
-    status: "To do",
-  },
-  {
-    id: 3,
-    name: "Blueprint Documentation",
-    details: "One of the cool things about this font generator is that you...",
-    deadline: "15.09.2025",
-    status: "In progress",
-  },
-  {
-    id: 4,
-    name: "Blueprint Documentation",
-    details: "One of the cool things about this font generator is that you...",
-    deadline: "15.09.2025",
-    status: "In progress",
-  },
-  {
-    id: 5,
-    name: "Client workshop",
-    details: "One of the cool things about this font generator is that you...",
-    deadline: "19.09.2025",
-    status: "To do",
-  },
-  {
-    id: 6,
-    name: "Data entry",
-    details: "One of the cool things about this font generator is that you...",
-    deadline: "05.08.2025",
-    status: "Delayed",
-  },
-  {
-    id: 7,
-    name: "Client workshop",
-    details: "One of the cool things about this font generator is that you...",
-    deadline: "19.09.2025",
-    status: "To do",
-  },
-  {
-    id: 8,
-    name: "Data entry",
-    details: "One of the cool things about this font generator is that you...",
-    deadline: "05.08.2025",
-    status: "Delayed",
+        <Tooltip title="Delete">
+          <IconButton
+            size="small"
+            onClick={(e) => {
+              e.stopPropagation();
+              params.row.onDelete?.();
+            }}
+            sx={{
+              color: colors.RED,
+              "&:hover": { bgcolor: `${colors.RED}15` },
+            }}
+          >
+            <DeleteIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+      </Box>
+    ),
   },
 ];
 
@@ -162,12 +132,15 @@ export const milestoneColumns: GridColDef[] = [
     sortable: false,
     filterable: false,
     disableColumnMenu: true,
-    renderCell: () => (
+    renderCell: (params) => (
       <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
         <Tooltip title="Edit">
           <IconButton
             size="small"
-            onClick={() => console.log("Edit")}
+            onClick={(e) => {
+              e.stopPropagation();
+              params.row.onEdit?.();
+            }}
             sx={{
               color: colors.BLUE,
               "&:hover": { bgcolor: `${colors.BLUE}15` },
@@ -176,10 +149,14 @@ export const milestoneColumns: GridColDef[] = [
             <EditIcon fontSize="small" />
           </IconButton>
         </Tooltip>
+
         <Tooltip title="Delete">
           <IconButton
             size="small"
-            onClick={() => console.log("Delete")}
+            onClick={(e) => {
+              e.stopPropagation();
+              params.row.onDelete?.();
+            }}
             sx={{
               color: colors.RED,
               "&:hover": { bgcolor: `${colors.RED}15` },
@@ -215,11 +192,3 @@ export const milestoneOptions = [
   "Data Entry",
   "Kick-off Meeting",
 ];
-
-export const milestoneData = {
-  name: "Blueprint Documentation",
-  dependencies: "Scope and Objectives",
-  details: "One of the cool things about this font generator is that you...",
-  deadline: "15.09.2025",
-  status: "In progress",
-};

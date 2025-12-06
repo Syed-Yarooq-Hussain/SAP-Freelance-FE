@@ -1,19 +1,25 @@
 "use client";
 
+import { useCreateMilestone } from "@/actions/projects/useCreateMilestone";
+import { useProjectDetails } from "@/actions/projects/useGetProjectDetails";
 import { useGetProjectMilestones } from "@/actions/projects/useGetProjectMilestones";
+import { useUpdateMilestone } from "@/actions/projects/useUpdateMilestone";
 import AppButton from "@/components/Button";
 import DataTable from "@/components/DataTable";
 import DynamicPopup from "@/components/Popup";
 import Sidebar from "@/components/Sidebar";
 import ProjectDetailsLayout from "@/components/specific/ProjectDetailsLayout";
 import {
-  dependencyOptions,
   milestoneColumns,
-  projectInfoData,
   projectStats,
   teamMembers,
 } from "@/data/clientProjectDetails";
+import { getMilestoneFormFields } from "@/forms/milestoneForm";
+import { ProjectInfoData } from "@/types/projects";
 import type { ClientMilestoneRow, IMilestone } from "@/types/teamBuilder";
+import { APP_ROUTES } from "@/utils/app_routes";
+import { formatYMD } from "@/utils/dateCalendar";
+import { mapMilestoneFieldsToPopup } from "@/utils/mapFormToPopup";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
@@ -23,27 +29,44 @@ export default function ClientProjectDetailsPage() {
   const projectId = params?.id as string;
   const [milestones, setMilestones] = useState<ClientMilestoneRow[]>([]);
   const [openPopup, setOpenPopup] = useState(false);
-  const [milestoneData, setMilestoneData] = useState({
+  const { mutate: createMilestone } = useCreateMilestone();
+  const [isEditing, setIsEditing] = useState(false);
+  const { mutate: updateMilestone } = useUpdateMilestone();
+  const [editMilestoneId, setEditMilestoneId] = useState<
+    string | number | null
+  >(null);
+  const [projectInfo, setProjectInfo] = useState<ProjectInfoData>({
     name: "",
-    dependencies: "",
-    endDate: "",
-    description: "",
+    clientIndustry: "",
+    module: "",
+    functionalScope: "",
+    technicalScope: "",
+    outOfScope: "",
+    start_date: "",
+    duration: "",
+    status: "",
+  });
+  const [milestoneData, setMilestoneData] = useState({
+    milestoneName: "",
+    milestoneEnd: "",
+    milestoneDeps: "",
+    milestoneDescDoc: "",
   });
 
-  const handleFieldChange = (
-    field: keyof typeof milestoneData,
-    value: string
-  ) => {
+  const handleFieldChange = (field: string, value: string) => {
     setMilestoneData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleClosePopup = () => {
     setOpenPopup(false);
+    setIsEditing(false);
+    setEditMilestoneId(null);
+
     setMilestoneData({
-      name: "",
-      dependencies: "",
-      endDate: "",
-      description: "",
+      milestoneName: "",
+      milestoneDeps: "",
+      milestoneEnd: "",
+      milestoneDescDoc: "",
     });
   };
 
@@ -51,12 +74,59 @@ export default function ClientProjectDetailsPage() {
     (val) => val.trim() !== ""
   );
 
-  const handleAddMilestone = () => {
-    console.log("Milestone added:", milestoneData);
-    handleClosePopup();
+  const handleEditMilestone = (m: IMilestone) => {
+    setMilestoneData({
+      milestoneName: m.name,
+      milestoneEnd: m.due_date ? formatYMD(m.due_date) : "",
+      milestoneDescDoc: m.description ?? "",
+      milestoneDeps: "",
+    });
+
+    setEditMilestoneId(m.id);
+    setIsEditing(true);
+    setOpenPopup(true);
+  };
+
+  const handleSaveMilestone = () => {
+    if (!projectId) return;
+
+    const payload = {
+      name: milestoneData.milestoneName,
+      description: milestoneData.milestoneDescDoc,
+      due_date: milestoneData.milestoneEnd,
+      status: "active",
+      required_hours: 0,
+      project_id: Number(projectId),
+    };
+
+    if (isEditing && editMilestoneId) {
+      updateMilestone(
+        { milestoneId: editMilestoneId, body: payload },
+        {
+          onSuccess: () => {
+            console.log("Milestone updated successfully");
+            handleClosePopup();
+            fetchMilestones();
+          },
+        }
+      );
+    } else {
+      createMilestone(
+        { projectId, body: payload },
+        {
+          onSuccess: () => {
+            console.log("Milestone created successfully");
+            handleClosePopup();
+            fetchMilestones();
+          },
+          onError: (err) => console.error("Create milestone failed:", err),
+        }
+      );
+    }
   };
 
   const { mutate: loadMilestones } = useGetProjectMilestones();
+
   const fetchMilestones = useCallback(() => {
     if (!projectId) return;
 
@@ -69,8 +139,12 @@ export default function ClientProjectDetailsPage() {
           name: m.name,
           dependencies: "N/A",
           details: m.description ?? "N/A",
-          deadline: m.due_date ? m.due_date.split("T")[0] : "N/A",
+          deadline: formatYMD(m.due_date) || "N/A",
           status: m.status ?? "N/A",
+
+          onEdit: () => handleEditMilestone(m),
+
+          onDelete: () => console.log("Delete milestone", m.id),
         }));
 
         setMilestones(formatted);
@@ -83,11 +157,40 @@ export default function ClientProjectDetailsPage() {
     fetchMilestones();
   }, [fetchMilestones]);
 
+  const { mutate: loadProjectDetails } = useProjectDetails();
+
+  useEffect(() => {
+    if (!projectId) return;
+
+    loadProjectDetails(projectId, {
+      onSuccess: (res) => {
+        const data = res.data;
+
+        setProjectInfo({
+          name: data?.name ?? "N/A",
+          clientIndustry: `${data?.client?.username ?? "N/A"} - ${
+            data?.company_name ?? "N/A"
+          }`,
+          module: "N/A",
+          functionalScope: "N/A",
+          technicalScope: "N/A",
+          outOfScope: "N/A",
+          start_date: formatYMD(data?.projectDetails?.start_date ?? ""),
+          duration: data?.projectDetails?.duration
+            ? `${data.projectDetails.duration} months`
+            : "N/A",
+          status: data?.status ?? "N/A",
+        });
+      },
+      onError: (err) => console.error("Failed to load project details", err),
+    });
+  }, [projectId, loadProjectDetails]);
+
   return (
     <Sidebar>
       <ProjectDetailsLayout
         stats={projectStats}
-        projectInfo={projectInfoData}
+        projectInfo={projectInfo}
         teamMembers={teamMembers}
       >
         <DataTable
@@ -99,7 +202,7 @@ export default function ClientProjectDetailsPage() {
           onBackClick={() => router.back()}
           onRowClick={(params) =>
             router.push(
-              `/client/projects/${projectId}/taskdetail?id=${params.id}`
+              `${APP_ROUTES.CLIENT.PROJECTS}/${projectId}/taskdetail?id=${params.id}`
             )
           }
           actionButton={
@@ -115,40 +218,15 @@ export default function ClientProjectDetailsPage() {
         <DynamicPopup
           open={openPopup}
           onClose={handleClosePopup}
-          title="Add Milestone"
-          buttonText="Add"
-          onSubmit={handleAddMilestone}
+          title={isEditing ? "Update Milestone" : "Add Milestone"}
+          buttonText={isEditing ? "Update" : "Add"}
+          onSubmit={handleSaveMilestone}
           disableSubmit={!isFormValid}
-          fields={[
-            {
-              id: "milestoneName",
-              label: "",
-              value: milestoneData.name,
-              placeholder: "Enter milestone name",
-              onChange: (v) => handleFieldChange("name", v as string),
-            },
-            {
-              id: "dependencies",
-              label: "Select Dependency Document",
-              value: milestoneData.dependencies,
-              onChange: (v) => handleFieldChange("dependencies", v as string),
-              options: dependencyOptions,
-            },
-            {
-              id: "endDate",
-              label: "End Date",
-              type: "date",
-              value: milestoneData.endDate,
-              onChange: (v) => handleFieldChange("endDate", v as string),
-            },
-            {
-              id: "description",
-              label: "",
-              value: milestoneData.description,
-              placeholder: "Enter milestone description",
-              onChange: (v) => handleFieldChange("description", v as string),
-            },
-          ]}
+          fields={mapMilestoneFieldsToPopup(
+            getMilestoneFormFields(),
+            milestoneData,
+            handleFieldChange
+          )}
         />
       </ProjectDetailsLayout>
     </Sidebar>

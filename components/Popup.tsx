@@ -1,6 +1,7 @@
 "use client";
 
 import AppButton from "@/components/Button";
+import { IOption } from "@/types/options";
 import { colors } from "@/utils/styles/colors";
 import CloseIcon from "@mui/icons-material/Close";
 import {
@@ -25,7 +26,7 @@ interface FieldConfig {
   placeholder?: string;
   onChange?: (value: string) => void;
   helperText?: string;
-  options?: string[];
+  options?: IOption[];
 }
 
 interface DynamicPopupProps {
@@ -156,10 +157,7 @@ const DynamicPopup: React.FC<DynamicPopupProps> = ({
             key={field.id}
             mb={2}
             sx={{
-              mt:
-                index === 0 && (field.type === "date" || field.type === "time")
-                  ? 1.5
-                  : 0,
+              mt: index === 0 ? 1 : 0,
             }}
           >
             {field.options ? (
@@ -176,11 +174,24 @@ const DynamicPopup: React.FC<DynamicPopupProps> = ({
                     borderRadius: 1,
                   },
                 }}
-                helperText={field.helperText}
+                slotProps={{
+                  select: {
+                    displayEmpty: true,
+                  },
+                  inputLabel: {
+                    shrink: true,
+                  },
+                }}
               >
-                {field.options.map((opt) => (
-                  <MenuItem key={opt} value={opt}>
-                    {opt}
+                {field.placeholder && (
+                  <MenuItem value="" disabled sx={{ color: "#999" }}>
+                    {field.placeholder}
+                  </MenuItem>
+                )}
+
+                {field.options?.map((opt) => (
+                  <MenuItem key={opt.value} value={opt.value}>
+                    {opt.label}
                   </MenuItem>
                 ))}
               </TextField>
@@ -194,10 +205,10 @@ const DynamicPopup: React.FC<DynamicPopupProps> = ({
                 onChange={(e) => field.onChange?.(e.target.value)}
                 size="small"
                 multiline={field.type !== "date" && field.type !== "time"}
-                minRows={3}
+                minRows={field.type === "text" ? 3 : undefined}
                 slotProps={{
                   inputLabel: {
-                    shrink: field.type === "date" || field.type === "time",
+                    shrink: true,
                   },
                 }}
                 sx={{

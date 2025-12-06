@@ -1,21 +1,19 @@
 "use client";
 
+import { useMeetingInvite } from "@/actions/common/useMeetingInvite";
+import { useClientProjects } from "@/actions/projects/useClientProjects";
+import { useGetProjectConsultants } from "@/actions/projects/useGetProjectConsultants";
 import DataTable from "@/components/DataTable";
 import DynamicPopup from "@/components/Popup";
 import { StatCardProps } from "@/components/StatCard";
 import DashboardStats from "@/components/StatsCardList";
+import { INTERVIEW_DURATION_OPTIONS } from "@/data/options";
+import type { IClientProjectDTO, MeetingForm } from "@/types/client";
+import type { IProjectConsultant } from "@/types/teamBuilder";
 import { Box, Grid, MenuItem, TextField, Typography } from "@mui/material";
 import { GridColDef, GridValidRowModel } from "@mui/x-data-grid";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import AppButton from "../Button";
-
-interface MeetingForm {
-  project: string;
-  user: string;
-  date: string;
-  time: string;
-  meeting_type: string;
-}
 
 interface InterviewProps<T extends GridValidRowModel = GridValidRowModel> {
   title: string;
@@ -24,6 +22,7 @@ interface InterviewProps<T extends GridValidRowModel = GridValidRowModel> {
   columns?: GridColDef<T>[];
   getColumns?: (onRescheduleClick: () => void) => GridColDef<T>[];
   rescheduleEnabled?: boolean;
+  onRefresh?: () => void;
 }
 
 export default function Interview<
@@ -35,34 +34,85 @@ export default function Interview<
   columns,
   getColumns,
   rescheduleEnabled = false,
+  onRefresh,
 }: InterviewProps<T>) {
   const [scheduleOpen, setScheduleOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [projects, setProjects] = useState<IClientProjectDTO[]>([]);
+  const [consultants, setConsultants] = useState<IProjectConsultant[]>([]);
   const [scheduleData, setScheduleData] = useState<MeetingForm>({
     project: "",
     user: "",
     date: "",
     time: "",
+    duration: "",
     meeting_type: "",
   });
-  const projects = ["Project A", "Project B", "Project C"];
-  const users = ["Ameed Ghauri", "Ahmed Khan", "John Doe"];
-  const meetingTypes = ["Google Meet", "Microsoft Teams", "Zoom", "Webex"];
 
-  const handleScheduleSubmit = () => {
-    console.log("SENDING MEETING INVITE", scheduleData);
-    setScheduleOpen(false);
+  const { mutate: loadProjects } = useClientProjects();
+  const { mutate: loadConsultants } = useGetProjectConsultants();
+  const { mutate: sendInvite } = useMeetingInvite();
+  const meetingTypes = ["Interview", "Meeting"];
 
-    setScheduleData({
-      project: "",
-      user: "",
-      date: "",
-      time: "",
-      meeting_type: "",
+  useEffect(() => {
+    loadProjects(undefined, {
+      onSuccess: (res) => setProjects(res.data ?? []),
+      onError: () => {},
     });
+  }, [loadProjects]);
+
+  const handleProjectSelect = (projectId: string) => {
+    setScheduleData((p) => ({ ...p, project: projectId, user: "" }));
+
+    const selectedProject = projects.find((p) => String(p.id) === projectId);
+    if (!selectedProject) return;
+
+    loadConsultants(
+      { projectId: selectedProject.id, statuses: [] },
+      {
+        onSuccess: (res) => setConsultants(res.data ?? []),
+        onError: () => {},
+      }
+    );
   };
 
-  const handleCloseSchedule = () => {
-    setScheduleOpen(false);
+  const buildPayload = () => {
+    const date_time = `${scheduleData.date} ${scheduleData.time}`;
+    const durationNumber = parseInt(scheduleData.duration);
+
+    return {
+      date_time,
+      invitees_id: [Number(scheduleData.user)],
+      duration: durationNumber,
+      event_type: scheduleData.meeting_type.toLowerCase(),
+      project_id: Number(scheduleData.project),
+    };
+  };
+
+  const handleScheduleSubmit = () => {
+    setLoading(true);
+    const payload = buildPayload();
+
+    sendInvite(payload, {
+      onSuccess: () => {
+        setTimeout(() => {
+          setScheduleOpen(false);
+        }, 200);
+
+        setScheduleData({
+          project: "",
+          user: "",
+          date: "",
+          time: "",
+          duration: "",
+          meeting_type: "",
+        });
+
+        onRefresh?.();
+      },
+      onError: () => {},
+      onSettled: () => setLoading(false),
+    });
   };
 
   const resolvedColumns = useMemo(() => {
@@ -82,21 +132,14 @@ export default function Interview<
           bgcolor: "background.paper",
         }}
       >
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: 2,
-          }}
-        >
+        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
           <Typography variant="h6" fontWeight="bold">
             {title}
           </Typography>
 
           {rescheduleEnabled && (
             <AppButton
-              label="Schedule meeting"
+              label="Schedule Meeting"
               colorKey="BLUE"
               width={180}
               onClick={() => setScheduleOpen(true)}
@@ -115,16 +158,18 @@ export default function Interview<
       {rescheduleEnabled && (
         <DynamicPopup
           open={scheduleOpen}
-          onClose={handleCloseSchedule}
-          title="Schedule meeting"
-          buttonText="Send invite"
+          onClose={() => setScheduleOpen(false)}
+          title="Schedule Meeting"
+          buttonText={loading ? "Sending..." : "Send invite"}
           buttonColor="BLUE"
           onSubmit={handleScheduleSubmit}
           disableSubmit={
+            loading ||
             !scheduleData.project ||
             !scheduleData.user ||
             !scheduleData.date ||
             !scheduleData.time ||
+            !scheduleData.duration ||
             !scheduleData.meeting_type
           }
         >
@@ -134,15 +179,34 @@ export default function Interview<
                 <TextField
                   fullWidth
                   select
+                  size="small"
                   label="Project"
                   value={scheduleData.project}
-                  onChange={(e) =>
-                    setScheduleData((p) => ({ ...p, project: e.target.value }))
-                  }
+                  onChange={(e) => handleProjectSelect(e.target.value)}
+                  slotProps={{
+                    inputLabel: { shrink: true },
+                    select: {
+                      displayEmpty: true,
+                      renderValue: (selected: unknown) =>
+                        selected ? (
+                          projects.find(
+                            (p) => String(p.id) === String(selected)
+                          )?.name
+                        ) : (
+                          <span style={{ color: "#9CA3AF" }}>
+                            Select project
+                          </span>
+                        ),
+                    },
+                  }}
                 >
-                  {projects.map((p) => (
-                    <MenuItem key={p} value={p}>
-                      {p}
+                  <MenuItem value="">
+                    <span style={{ color: "#9CA3AF" }}>Select project</span>
+                  </MenuItem>
+
+                  {projects.map((proj) => (
+                    <MenuItem key={proj.id} value={proj.id}>
+                      {proj.name}
                     </MenuItem>
                   ))}
                 </TextField>
@@ -152,15 +216,43 @@ export default function Interview<
                 <TextField
                   fullWidth
                   select
+                  size="small"
                   label="User Name"
+                  disabled={consultants.length === 0}
                   value={scheduleData.user}
                   onChange={(e) =>
                     setScheduleData((p) => ({ ...p, user: e.target.value }))
                   }
+                  slotProps={{
+                    inputLabel: { shrink: true },
+                    select: {
+                      displayEmpty: true,
+                      renderValue: (selected: unknown) =>
+                        selected ? (
+                          consultants.find(
+                            (c) => String(c.consultant_id) === String(selected)
+                          )?.name
+                        ) : (
+                          <span style={{ color: "#9CA3AF" }}>
+                            {consultants.length === 0
+                              ? "No consultants"
+                              : "Select user"}
+                          </span>
+                        ),
+                    },
+                  }}
                 >
-                  {users.map((u) => (
-                    <MenuItem key={u} value={u}>
-                      {u}
+                  <MenuItem value="">
+                    <span style={{ color: "#9CA3AF" }}>
+                      {consultants.length === 0
+                        ? "No consultants"
+                        : "Select user"}
+                    </span>
+                  </MenuItem>
+
+                  {consultants.map((c) => (
+                    <MenuItem key={c.consultant_id} value={c.consultant_id}>
+                      {c.name}
                     </MenuItem>
                   ))}
                 </TextField>
@@ -170,6 +262,7 @@ export default function Interview<
                 <TextField
                   fullWidth
                   type="date"
+                  size="small"
                   label="Date"
                   slotProps={{ inputLabel: { shrink: true } }}
                   value={scheduleData.date}
@@ -183,6 +276,7 @@ export default function Interview<
                 <TextField
                   fullWidth
                   type="time"
+                  size="small"
                   label="Time"
                   slotProps={{ inputLabel: { shrink: true } }}
                   value={scheduleData.time}
@@ -192,10 +286,48 @@ export default function Interview<
                 />
               </Grid>
 
-              <Grid size={{ xs: 12 }}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <TextField
                   fullWidth
                   select
+                  size="small"
+                  label="Duration"
+                  value={scheduleData.duration}
+                  onChange={(e) =>
+                    setScheduleData((p) => ({ ...p, duration: e.target.value }))
+                  }
+                  slotProps={{
+                    inputLabel: { shrink: true },
+                    select: {
+                      displayEmpty: true,
+                      renderValue: (selected: unknown) =>
+                        selected ? (
+                          (selected as string)
+                        ) : (
+                          <span style={{ color: "#9CA3AF" }}>
+                            Select duration
+                          </span>
+                        ),
+                    },
+                  }}
+                >
+                  <MenuItem value="">
+                    <span style={{ color: "#9CA3AF" }}>Select duration</span>
+                  </MenuItem>
+
+                  {INTERVIEW_DURATION_OPTIONS.map((d) => (
+                    <MenuItem key={d.value} value={d.value}>
+                      {d.label}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  fullWidth
+                  select
+                  size="small"
                   label="Meeting"
                   value={scheduleData.meeting_type}
                   onChange={(e) =>
@@ -204,7 +336,27 @@ export default function Interview<
                       meeting_type: e.target.value,
                     }))
                   }
+                  slotProps={{
+                    inputLabel: { shrink: true },
+                    select: {
+                      displayEmpty: true,
+                      renderValue: (selected: unknown) =>
+                        selected ? (
+                          (selected as string)
+                        ) : (
+                          <span style={{ color: "#9CA3AF" }}>
+                            Select meeting type
+                          </span>
+                        ),
+                    },
+                  }}
                 >
+                  <MenuItem value="">
+                    <span style={{ color: "#9CA3AF" }}>
+                      Select meeting type
+                    </span>
+                  </MenuItem>
+
                   {meetingTypes.map((m) => (
                     <MenuItem key={m} value={m}>
                       {m}

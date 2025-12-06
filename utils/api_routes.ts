@@ -21,4 +21,5 @@ export const API_ROUTES = {
   CLIENT_PROJECTS: "/clients/projects",
   CLIENT_MEETINGS: "/common/meetings",
   MEETING_STATUS: "/common/meeting-status",
+  GET_PROJECT_DETAILS: "/projects",
 };

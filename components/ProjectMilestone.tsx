@@ -22,13 +22,8 @@ const ProjectMilestone: React.FC<ProjectMilestoneProps> = ({
   showActions = true,
 }) => {
   return (
-    <Box sx={{ mt: 1 }}>
-      <Typography
-        variant="body1"
-        fontWeight={600}
-        mb={1.5}
-        color="text.primary"
-      >
+    <Box sx={{ mt: 2 }}>
+      <Typography variant="h6" fontWeight={700} mb={1.5} color="text.primary">
         Milestone
       </Typography>
 

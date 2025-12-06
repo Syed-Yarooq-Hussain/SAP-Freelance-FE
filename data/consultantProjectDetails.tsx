@@ -2,6 +2,7 @@
 
 import { StatCardProps } from "@/components/StatCard";
 import StatusDropdown from "@/components/StatusDropdown";
+import { ProjectInfoData } from "@/types/projects";
 import { GridColDef } from "@mui/x-data-grid";
 
 export const projectStats: StatCardProps[] = [
@@ -28,17 +29,16 @@ export const projectStats: StatCardProps[] = [
   },
 ];
 
-export const projectInfoData = {
-  projectName: "Global Rollout",
-  clientName: "ManuCorp",
-  industry: "Manufacturing",
-  functionalScope: "file",
-  technicalScope: "file",
-  outOfScope: "file",
-  startDate: "2025-07-01",
-  duration: "14 months",
-  module: "SAP SD, S/4HANA",
-  status: "Project Started",
+export const projectInfoData: ProjectInfoData = {
+  name: "SAP Migration System",
+  clientIndustry: "John Doe - Retail Industry",
+  module: "SAP FI",
+  functionalScope: "Billing automation, AP/AR workflows",
+  technicalScope: "ABAP enhancements, CDS Views",
+  outOfScope: "Legacy integrations",
+  start_date: "2024-01-10",
+  duration: "6 months",
+  status: "Active"
 };
 
 export const teamMembers = [
