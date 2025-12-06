@@ -32,3 +32,20 @@ export const mapTaskFieldsToPopup = (
   }));
 };
 
+export const mapInterviewFieldsToPopup = (
+  fields: IFieldConfig[],
+  data: Record<string, string>,
+  handleFieldChange: (field: string, value: string) => void
+) => {
+  return fields.map((f) => ({
+    id: f.name,
+    label: f.label,
+    placeholder: f.placeholder,
+    type: f.type,
+    options: f.options,
+    value: data[f.name] ?? "",
+    onChange: (val: string) => handleFieldChange(f.name, val),
+  }));
+};
+
+

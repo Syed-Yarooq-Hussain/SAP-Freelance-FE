@@ -113,6 +113,7 @@ export interface MeetingForm {
   time: string;
   duration: string;
   meeting_type: string;
+  [key: string]: string;
 }
 
 export interface ClientInterviewRow {

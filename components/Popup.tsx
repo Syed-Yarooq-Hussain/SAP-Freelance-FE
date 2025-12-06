@@ -27,6 +27,8 @@ interface FieldConfig {
   onChange?: (value: string) => void;
   helperText?: string;
   options?: IOption[];
+  disabled?: boolean;
+  forceDisplayValue?: string;
 }
 
 interface DynamicPopupProps {
@@ -167,28 +169,43 @@ const DynamicPopup: React.FC<DynamicPopupProps> = ({
                 label={field.label}
                 value={field.value || ""}
                 onChange={(e) => field.onChange?.(e.target.value)}
-                size="small"
-                sx={{
-                  "& .MuiInputBase-root": {
-                    backgroundColor: "#f8f9fc",
-                    borderRadius: 1,
-                  },
-                }}
+                disabled={field.disabled}
                 slotProps={{
+                  inputLabel: { shrink: true },
                   select: {
                     displayEmpty: true,
+                    renderValue: (selected) => {
+                      if (field.forceDisplayValue) {
+                        return field.forceDisplayValue;
+                      }
+
+                      if (!selected) {
+                        return field.placeholder || "Select";
+                      }
+
+                      const match = field.options?.find(
+                        (opt) => String(opt.value) === String(selected)
+                      );
+
+                      return match?.label || String(selected);
+                    },
                   },
-                  inputLabel: {
-                    shrink: true,
+                }}
+                sx={{
+                  "& .MuiInputBase-root": {
+                    backgroundColor: field.disabled ? "#f2f2f2" : "#f8f9fc",
+                    borderRadius: 1,
+                    height: 40,
+                  },
+                  "& .MuiSelect-select": {
+                    display: "flex",
+                    alignItems: "center",
+                    height: "100% !important",
+                    paddingTop: "10px !important",
+                    paddingBottom: "10px !important",
                   },
                 }}
               >
-                {field.placeholder && (
-                  <MenuItem value="" disabled sx={{ color: "#999" }}>
-                    {field.placeholder}
-                  </MenuItem>
-                )}
-
                 {field.options?.map((opt) => (
                   <MenuItem key={opt.value} value={opt.value}>
                     {opt.label}
