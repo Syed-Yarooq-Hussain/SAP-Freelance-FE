@@ -18,4 +18,10 @@ export const API_ROUTES = {
   UPDATE_CONSULTANT_STATUS: "/projects/consultant/status",
   CLIENT_PAYMENTS: "/clients/payments",
   CLIENT_PROJECTS: "/clients/projects",
+  SEND_MESSAGE: "/chat/send",
+  GET_CONVERSATION: "/chat/conversation",
+  MARK_READ: "/chat/mark-read",
+  INBOX: "/chat/inbox",
+  PROJECT_CHAT: "/chat/project",
+  USERS: "/users",
 };
