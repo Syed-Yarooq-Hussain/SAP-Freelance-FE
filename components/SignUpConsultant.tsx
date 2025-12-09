@@ -4,7 +4,7 @@ import { useSignupConsultant } from "@/actions/auth/signupConsultant";
 import { CreateForm } from "@/components/CreateForm";
 import { getConsultantFormFields } from "@/forms/consultantForm";
 import { IConsultantSignupPayload } from "@/types/consultant";
-import { Box, Container } from "@mui/material";
+import { Box, Paper } from "@mui/material";
 import { useSearchParams } from "next/navigation";
 import * as React from "react";
 import { FieldValues } from "react-hook-form";
@@ -36,7 +36,7 @@ interface IConsultantForm {
 const SignUpConsultant: React.FC = () => {
   const { mutate, error, isPending } = useSignupConsultant();
   const searchParams = useSearchParams();
-  const role = Number(searchParams.get("type")) || "Invalid role";
+  const role = Number(searchParams.get("type"));
 
   const elements = getConsultantFormFields();
   const [prefillData, setPrefillData] = React.useState<Partial<FieldValues>>(
@@ -86,14 +86,27 @@ const SignUpConsultant: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="sm">
-      <Box
+    <Box
+      sx={{
+        minHeight: "100vh",
+        width: "100vw",
+        bgcolor: "#f7f9fc",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        p: 2,
+        position: "fixed",
+        top: 0,
+        left: 0,
+      }}
+    >
+      <Paper
+        elevation={4}
         sx={{
-          mt: 8,
+          width: "100%",
+          maxWidth: 560,
           p: 4,
-          borderRadius: 2,
-          boxShadow: 3,
-          bgcolor: "background.paper",
+          borderRadius: 3,
         }}
       >
         <AuthHeader
@@ -110,13 +123,14 @@ const SignUpConsultant: React.FC = () => {
           submitButton={{
             children: "Create an Account",
             variant: "contained",
-            fullWidth: false,
-            size: "medium",
+            fullWidth: true,
+            size: "large",
           }}
         />
+
         <LoginLink />
-      </Box>
-    </Container>
+      </Paper>
+    </Box>
   );
 };
 

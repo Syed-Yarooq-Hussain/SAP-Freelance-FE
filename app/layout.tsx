@@ -1,5 +1,7 @@
 "use client";
 
+import "./globals.css";  
+
 import GlobalLoader from "@/components/GlobalLoader";
 import QueryProvider from "@/providers/QueryProvider";
 import ToastProvider from "@/providers/ToastProvider";
