@@ -1,3 +1,4 @@
+import { clearCachedSession } from "@/services/sessionCache";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { APP_ROUTES } from "@/utils/app_routes";
@@ -9,6 +10,7 @@ export const useLogout = () => {
   return useMutation({
     mutationFn: async () => {
       await signOut({ redirect: false });
+      clearCachedSession();
     },
     onSuccess: () => {
       console.log("Logout successful");

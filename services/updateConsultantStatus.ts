@@ -2,7 +2,7 @@ import type { ApiResponse } from "@/types/api";
 import { IUpdateConsultantStatusResponse } from "@/types/teamBuilder";
 import { API_ROUTES } from "@/utils/api_routes";
 import { request } from "@/utils/request";
-import { getSession } from "next-auth/react";
+import { getCachedSession } from "@/services/sessionCache";
 
 export interface IUpdateConsultantStatusPayload {
   consultant_id: number | string;
@@ -14,7 +14,7 @@ export interface IUpdateConsultantStatusPayload {
 export async function updateConsultantStatusService(
   body: IUpdateConsultantStatusPayload
 ): Promise<ApiResponse<IUpdateConsultantStatusResponse>> {
-  const session = await getSession();
+  const session = await getCachedSession();
   const token = session?.accessToken;
 
   return await request<

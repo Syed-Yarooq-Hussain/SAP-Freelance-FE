@@ -137,7 +137,7 @@ export default function TeamConfirmation({
       if (candidateStatuses.includes(item.status)) {
         candidates.push({
           id: Number(item.consultant_id),
-          avatar: "/img/u1.png",
+          avatar: "/public/vercel.svg",
           name: item.name,
           coremodules: core || "N/A",
           othersmodules: others || "N/A",
@@ -199,7 +199,7 @@ export default function TeamConfirmation({
   const mapCandidateOnly = (list: IProjectConsultant[]): CandidateRow[] => {
     return list.map((item) => ({
       id: Number(item.consultant_id),
-      avatar: "/img/u1.png",
+      avatar: "/public/vercel.svg",
       name: item.name,
       coremodules: item.modules?.core ?? "N/A",
       othersmodules: item.modules?.others ?? "N/A",
@@ -245,7 +245,7 @@ export default function TeamConfirmation({
       ) {
         candidates.push({
           id: Number(item.consultant_id),
-          avatar: "/img/u1.png",
+          avatar: "/public/vercel.svg",
           name: item.name,
           coremodules: core || "N/A",
           othersmodules: others || "N/A",

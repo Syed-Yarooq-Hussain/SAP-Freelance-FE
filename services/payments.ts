@@ -2,12 +2,12 @@ import type { ApiResponse } from "@/types/api";
 import type { IClientPaymentDTO } from "@/types/client";
 import { API_ROUTES } from "@/utils/api_routes";
 import { request } from "@/utils/request";
-import { getSession } from "next-auth/react";
+import { getCachedSession } from "@/services/sessionCache";
 
 export async function fetchClientPayments(): Promise<
   ApiResponse<IClientPaymentDTO[]>
 > {
-  const session = await getSession();
+  const session = await getCachedSession();
   const token = session?.accessToken;
 
   return await request<undefined, IClientPaymentDTO[]>({

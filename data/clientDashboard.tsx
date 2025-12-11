@@ -141,12 +141,12 @@ export const getClientSidebar = (router: AppRouterInstance): SidebarSectionInfo[
       { type: "text", value: "Global Rollout" },
       {
         type: "avatars",
-        avatars: ["/img/u1.png", "/img/u2.png", "/img/u3.png"],
+        avatars: ["/public/vercel.svg", "/public/vercel.svg", "/public/vercel.svg"],
       },
       { type: "text", value: "Rental Co." },
       {
         type: "avatars",
-        avatars: ["/img/u4.png", "/img/u5.png", "/img/u6.png"],
+        avatars: ["/public/vercel.svg", "/public/vercel.svg", "/public/vercel.svg"],
       },
     ],
   },

@@ -1,12 +1,12 @@
 import type { ApiResponse } from "@/types/api";
 import { API_ROUTES } from "@/utils/api_routes";
 import { request } from "@/utils/request";
-import { getSession } from "next-auth/react";
+import { getCachedSession } from "@/services/sessionCache";
 
 export async function getConsultantLevelsService(): Promise<
   ApiResponse<string[]>
 > {
-  const session = await getSession();
+  const session = await getCachedSession();
   const token = session?.accessToken;
 
   return await request<undefined, string[]>({
