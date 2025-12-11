@@ -76,33 +76,6 @@ export const clientTaskColumns: GridColDef[] = [
   },
 ];
 
-export const clientTaskRows = [
-  {
-    id: 1,
-    project: "Retail Implementation",
-    dueDate: "15.09.2025",
-    amount: "2,500",
-    status: "Paid",
-    invoice: "Download",
-  },
-  {
-    id: 2,
-    project: "Retail Implementation",
-    dueDate: "15.09.2025",
-    amount: "3,500",
-    status: "Pending",
-    invoice: "Upload receipt",
-  },
-  {
-    id: 3,
-    project: "Retail Implementation",
-    dueDate: "15.09.2025",
-    amount: "3,500",
-    status: "Overdue",
-    invoice: "Upload receipt",
-  },
-];
-
 export const getClientSidebar = (router: AppRouterInstance): SidebarSectionInfo[] => [
   {
     title: "Initialize Projects",

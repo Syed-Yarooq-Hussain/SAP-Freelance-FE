@@ -1,3 +1,7 @@
+export const today = new Date();
+export const currentYear = today.getFullYear();
+export const currentMonth = today.getMonth();
+
 export const getCurrentMonth = (): string => {
   const date = new Date();
   return date.toLocaleString("default", { month: "long" });

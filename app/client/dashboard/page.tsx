@@ -19,7 +19,7 @@ import type {
   IClientProjectDTO,
 } from "@/types/client";
 import { APP_ROUTES } from "@/utils/app_routes";
-import { formatYMD } from "@/utils/dateCalendar";
+import { currentMonth, currentYear, formatYMD } from "@/utils/dateTime";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
@@ -78,16 +78,18 @@ export default function ClientDashboardPage() {
     fetchPayments();
   }, [fetchProjects, fetchPayments]);
 
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = today.getMonth();
-
   return (
     <Sidebar>
       <Dashboard
         announcements={clientAnnouncements}
         stats={clientStats}
-        chart={<EngagementCalendarCard events={[]} year={year} month={month} />}
+        chart={
+        <EngagementCalendarCard
+          events={[]}
+          year={currentYear}
+          month={currentMonth}
+        />
+      }
         projectTable={{
           title: "Project Highlights",
           columns: clientProjectColumns,
