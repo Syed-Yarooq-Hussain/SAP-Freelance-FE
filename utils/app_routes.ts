@@ -1,6 +1,6 @@
 export const APP_ROUTES = {
   HOME: "/",
-  LOGIN: "/",
+  LOGIN: "/auth/login",
   SIGNUP_SELECT: "/auth/signup-select",
   SIGNUP: "/auth/signup",
   TEAMBUILDER: "/teambuilder",

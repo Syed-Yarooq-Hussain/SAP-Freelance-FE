@@ -6,7 +6,7 @@ export function getMilestoneFormFields(): IFieldConfig[] {
     {
       name: "milestoneName",
       label: "Milestone name",
-      placeholder: "Enter name",
+      placeholder: "Enter milestone name",
       rules: { required: "Milestone name is required" },
       column: { xs: 12, md: 4 },
     },
@@ -27,7 +27,7 @@ export function getMilestoneFormFields(): IFieldConfig[] {
     {
       name: "milestoneDescDoc",
       label: "Description",
-      placeholder: "Select document",
+      placeholder: "Add milestone description",
       column: { xs: 12 },
     },
   ];

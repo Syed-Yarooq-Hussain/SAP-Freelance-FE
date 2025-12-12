@@ -10,14 +10,15 @@ import DynamicPopup from "@/components/Popup";
 import RoleHierarchy from "@/components/RoleHierarchy";
 import { CONSULTANT_STATUS } from "@/constants/status";
 import { STATUS } from "@/constants/status_dropdown";
-import { INTERVIEW_DURATION_OPTIONS } from "@/data/options";
 import { getCandidateColumns, getShortlistedColumns } from "@/data/teamBuilder";
+import { getTeamInterviewFormFields } from "@/forms/teamInterviewForm";
 import type {
   CandidateRow,
   IProjectConsultant,
   ShortlistedRow,
   TeamConfirmationProps,
 } from "@/types/teamBuilder";
+import { mapTaskFieldsToPopup } from "@/utils/mapFormToPopup";
 import { normalizeStatus } from "@/utils/normalizeStatus";
 import { Box, Typography } from "@mui/material";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -401,6 +402,7 @@ export default function TeamConfirmation({
         description="Are you sure you want to reject this candidate?"
         buttonText="Yes, Reject"
         buttonColor="RED"
+        fields={[]}
         onSubmit={() => {
           if (!selectedRow) return;
 
@@ -437,41 +439,17 @@ export default function TeamConfirmation({
         open={interviewOpen}
         onClose={() => setInterviewOpen(false)}
         title="Request Interview"
-        fields={[
-          {
-            id: "date",
-            label: "Date",
-            type: "date",
-            value: interviewData.date,
-            onChange: (val: string | File) => {
-              if (typeof val === "string")
-                setInterviewData((p) => ({ ...p, date: val }));
-            },
-          },
-          {
-            id: "duration",
-            label: "Select Duration",
-            placeholder: "Select duration",
-            options: INTERVIEW_DURATION_OPTIONS.map((d) => d.label),
-            value: interviewData.duration,
-            onChange: (val: string | File) => {
-              if (typeof val === "string")
-                setInterviewData((p) => ({ ...p, duration: val }));
-            },
-          },
-          {
-            id: "time",
-            label: "Time",
-            type: "time",
-            value: interviewData.time,
-            onChange: (val: string | File) => {
-              if (typeof val === "string")
-                setInterviewData((p) => ({ ...p, time: val }));
-            },
-          },
-        ]}
+        fields={mapTaskFieldsToPopup(
+          getTeamInterviewFormFields(),
+          interviewData,
+          (field, value) =>
+            setInterviewData((prev) => ({ ...prev, [field]: value }))
+        )}
         buttonText="Assign Interview"
         buttonColor="BLUE"
+        disableSubmit={
+          !interviewData.date || !interviewData.time || !interviewData.duration
+        }
         onSubmit={() => {
           if (!selectedConsultantId) return;
 
@@ -488,15 +466,11 @@ export default function TeamConfirmation({
             {
               onSuccess: () => {
                 setInterviewOpen(false);
-
                 refreshEverything();
               },
             }
           );
         }}
-        disableSubmit={
-          !interviewData.date || !interviewData.time || !interviewData.duration
-        }
       />
     </>
   );

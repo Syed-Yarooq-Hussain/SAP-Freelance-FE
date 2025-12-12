@@ -7,6 +7,7 @@ export const API_ROUTES = {
   PROJECT_UPDATE: "/projects",
   UPDATE_PROJECT: "/projects",
   MILESTONE_CREATE: "/projects",
+  GET_PROJECT_MILESTONE: "/projects",
   GET_MILESTONE_TASKS: "/projects/milestones",
   MILESTONE_TASKS_CREATE: "/projects/milestones",
   UPDATE_MILESTONE: "/projects/milestones",
@@ -24,4 +25,9 @@ export const API_ROUTES = {
   INBOX: "/chat/inbox",
   PROJECT_CHAT: "/chat/project",
   USERS: "/users",
+  CLIENT_MEETINGS: "/common/meetings",
+  MEETING_STATUS: "/common/meeting-status",
+  GET_PROJECT_DETAILS: "/projects",
+  CONSULTANT_PROJECTS: "/consultants/projects",
+  CONSULTANT_PAYMENTS: "/consultants/payments",
 };

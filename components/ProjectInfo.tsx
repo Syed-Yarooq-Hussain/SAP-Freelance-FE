@@ -1,22 +1,12 @@
 "use client";
 
+import type { ProjectInfoData } from "@/types/projects";
 import { Box, Divider, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import React from "react";
 
 type ProjectInfoProps = {
-  data: {
-    projectName: string;
-    clientName: string;
-    industry: string;
-    module: string;
-    functionalScope: string;
-    technicalScope: string;
-    outOfScope: string;
-    startDate: string;
-    duration: string;
-    status: string;
-  };
+  data: ProjectInfoData;
   children?: React.ReactNode;
 };
 
@@ -44,16 +34,14 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ data, children }) => {
       >
         <Grid size={{ xs: 12, md: 4 }}>
           <Typography variant="body2" color="text.secondary">
-            Project name
+            Project Name
           </Typography>
-          <Typography fontWeight={600}>{data.projectName}</Typography>
+          <Typography fontWeight={600}>{data.name}</Typography>
 
           <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
             Client & Industry
           </Typography>
-          <Typography fontWeight={600}>
-            {data.clientName} – {data.industry}
-          </Typography>
+          <Typography fontWeight={600}>{data.clientIndustry}</Typography>
 
           <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
             Module
@@ -72,17 +60,17 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ data, children }) => {
 
         <Grid size={{ xs: 12, md: 4 }}>
           <Typography variant="body2" color="text.secondary">
-            Functional scope
+            Functional Scope
           </Typography>
           <Typography fontWeight={600}>{data.functionalScope}</Typography>
 
           <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-            Technical scope
+            Technical Scope
           </Typography>
           <Typography fontWeight={600}>{data.technicalScope}</Typography>
 
           <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-            Out of scope
+            Out of Scope
           </Typography>
           <Typography fontWeight={600}>{data.outOfScope}</Typography>
         </Grid>
@@ -98,9 +86,9 @@ const ProjectInfo: React.FC<ProjectInfoProps> = ({ data, children }) => {
 
         <Grid size={{ xs: 12, md: 3 }}>
           <Typography variant="body2" color="text.secondary">
-            Start date
+            Start Date
           </Typography>
-          <Typography fontWeight={600}>{data.startDate}</Typography>
+          <Typography fontWeight={600}>{data.start_date}</Typography>
 
           <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
             Duration

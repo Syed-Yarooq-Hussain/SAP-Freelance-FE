@@ -4,7 +4,6 @@ import { useMeetingInvite } from "@/actions/common/useMeetingInvite";
 import DataTable from "@/components/DataTable";
 import FilterDrawer from "@/components/FilterDrawer";
 import DynamicPopup from "@/components/Popup";
-import { INTERVIEW_DURATION_OPTIONS } from "@/data/options";
 import { IMeetingInviteBody } from "@/types/teamBuilder";
 import colors from "@/utils/styles/colors";
 import FilterListIcon from "@mui/icons-material/FilterList";
@@ -226,7 +225,7 @@ export default function Consultant<
             id: "duration",
             label: "Select Duration",
             placeholder: "Select duration",
-            options: INTERVIEW_DURATION_OPTIONS.map((d) => d.label),
+            //options: INTERVIEW_DURATION_OPTIONS.map((d) => d.label),
             value: scheduleData.duration,
             onChange: (val: string | File) => {
               if (typeof val === "string")
@@ -271,7 +270,7 @@ export default function Consultant<
             id: "duration",
             label: "Select Duration",
             placeholder: "Select duration",
-            options: INTERVIEW_DURATION_OPTIONS.map((d) => d.label),
+            //options: INTERVIEW_DURATION_OPTIONS.map((d) => d.label),
             value: rescheduleData.duration,
             onChange: (val: string | File) => {
               if (typeof val === "string")

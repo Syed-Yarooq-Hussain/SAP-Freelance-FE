@@ -107,7 +107,7 @@ export type MilestoneRow = {
   name: string;
   date: string;
   description: string;
-  approval: "Required" | "Not required";
+  approval: string;
   tasks: number;
 };
 
@@ -271,4 +271,22 @@ type ClientConsultantDTO = {
     others?: string;
   };
   working_schedule?: TeamBuilderRow["working_schedule"];
+};
+
+export interface ClientTaskRow {
+  id: string | number;
+  name: string;
+  dependencies: string;
+  details: string;
+  deadline: string;
+  status: string;
+}
+
+type ClientMilestoneRow = {
+  id: string | number;
+  name: string;
+  dependencies: string;
+  details: string;
+  deadline: string;
+  status: string;
 };

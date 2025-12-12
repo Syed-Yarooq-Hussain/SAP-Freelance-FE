@@ -12,7 +12,7 @@ export const useLogout = () => {
     },
     onSuccess: () => {
       console.log("Logout successful");
-      router.push(APP_ROUTES.LOGIN);
+      router.push(APP_ROUTES.HOME);
     },
     onError: (error) => {
       console.error("Logout failed:", error);

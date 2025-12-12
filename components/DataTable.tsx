@@ -45,6 +45,7 @@ export type DataTableProps<T extends GridValidRowModel> = {
   slotProps?: GridSlotsComponentsProps;
   slots?: Partial<GridSlotsComponent>;
   onSelectionChange?: (selectedIds: string[]) => void;
+  hidePagination?: boolean;
 };
 
 export default function DataTable<T extends GridValidRowModel>({
@@ -64,6 +65,8 @@ export default function DataTable<T extends GridValidRowModel>({
   slotProps,
   slots,
   onSelectionChange,
+  onRowClick,
+  hidePagination = false,
 }: DataTableProps<T>) {
   const [selectedRows, setSelectedRows] = React.useState<Set<string>>(
     new Set()
@@ -202,18 +205,15 @@ export default function DataTable<T extends GridValidRowModel>({
           initialState={{
             pagination: { paginationModel: { pageSize } },
           }}
-          pageSizeOptions={[pageSize]}
-          pagination
+          pageSizeOptions={hidePagination ? [] : [pageSize]}
+          {...(hidePagination ? {} : { pagination: true })}
+          hideFooter={hidePagination}
+          hideFooterPagination={hidePagination}
+          hideFooterSelectedRowCount={hidePagination}
           disableRowSelectionOnClick
           checkboxSelection={false}
-          onRowSelectionModelChange={(selection) => {
-            const ids = Array.isArray(selection)
-              ? selection.map(String)
-              : [String(selection)];
-
-            queueMicrotask(() => {
-              onSelectionChange?.(ids);
-            });
+          onRowClick={(params, event) => {
+            if (onRowClick) onRowClick(params, event);
           }}
           slots={{
             noRowsOverlay: () => (
@@ -249,8 +249,15 @@ export default function DataTable<T extends GridValidRowModel>({
               display: "flex",
               alignItems: "center",
             },
+
             "& .MuiDataGrid-row": {
               backgroundColor: "#fff",
+              transition: "background-color 0.2s ease",
+            },
+
+            "& .MuiDataGrid-row:hover": {
+              cursor: "pointer",
+              backgroundColor: "#f1f7ff",
             },
           }}
         />
