@@ -4,7 +4,7 @@ import { useSignupClient } from "@/actions/auth/signupClient";
 import { CreateForm } from "@/components/CreateForm";
 import { getClientFormFields } from "@/forms/clientForm";
 import { IBaseSignupDTO } from "@/types/common-auth";
-import { Box, Container } from "@mui/material";
+import { Box, Paper } from "@mui/material";
 import { useSearchParams } from "next/navigation";
 import * as React from "react";
 import { FieldValues } from "react-hook-form";
@@ -49,14 +49,27 @@ const SignUpClient: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="sm">
-      <Box
+    <Box
+      sx={{
+        minHeight: "100vh",
+        width: "100vw",
+        bgcolor: "#f7f9fc",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "flex-start",
+        p: 2,
+        overflowY: "auto",
+        top: 0,
+        left: 0,
+      }}
+    >
+      <Paper
+        elevation={4}
         sx={{
-          mt: 8,
+          width: "100%",
+          maxWidth: 520,
           p: 4,
-          borderRadius: 2,
-          boxShadow: 3,
-          bgcolor: "background.paper",
+          borderRadius: 3,
         }}
       >
         <AuthHeader
@@ -72,14 +85,14 @@ const SignUpClient: React.FC = () => {
           submitButton={{
             children: "Create an Account",
             variant: "contained",
-            fullWidth: false,
-            size: "medium",
+            fullWidth: true,
+            size: "large",
           }}
         />
 
         <LoginLink />
-      </Box>
-    </Container>
+      </Paper>
+    </Box>
   );
 };
 
