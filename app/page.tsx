@@ -5,21 +5,21 @@ import { useState } from "react";
 import "@/utils/styles/index.css";
 
 // LANDING COMPONENTS
-import { HeroSection } from "@/components/landing/HeroSection";
-import { ClientBenefits } from "@/components/landing/ClientBenefits";
-import { ClientSignUpFlow } from "@/components/landing/ClientSignUpFlow";
-import { ConsultantBenefits } from "@/components/landing/ConsultantBenefits";
-import { TopConsultants } from "@/components/landing/TopConsultants";
-import { TrustMetrics } from "@/components/landing/TrustMetrics";
-import { Footer } from "@/components/landing/Footer";
+import { HeroSection } from "@/components/homepage/HeroSection";
+import { ClientBenefits } from "@/components/homepage/ClientBenefits";
+import { ClientSignUpFlow } from "@/components/homepage/ClientSignUpFlow";
+import { ConsultantBenefits } from "@/components/homepage/ConsultantBenefits";
+import { TopConsultants } from "@/components/homepage/TopConsultants";
+import { TrustMetrics } from "@/components/homepage/TrustMetrics";
+import { Footer } from "@/components/homepage/Footer";
 
 // SHARED COMPONENTS
-import { ConsultantListingPage } from "@/components/landing/ConsultantListingPage";
-import { ContactPage } from "@/components/landing/ContactPage";
-import { LoginModal } from "@/components/landing/LoginModal";
-import { ConsultantDetailModal } from "@/components/landing/ConsultantDetailModal";
-import { SignUpModal } from "@/components/landing/SignUpModal";
-import { Navigation } from "@/components/landing/Navigation";
+import { ConsultantListingPage } from "@/components/homepage/ConsultantListingPage";
+import { ContactPage } from "@/components/homepage/ContactPage";
+import { LoginModal } from "@/components/homepage/LoginModal";
+import { ConsultantDetailModal } from "@/components/homepage/ConsultantDetailModal";
+import { SignUpModal } from "@/components/homepage/SignUpModal";
+import { Navigation } from "@/components/homepage/Navigation";
 
 type Page = "landing" | "consultants" | "contact";
 
