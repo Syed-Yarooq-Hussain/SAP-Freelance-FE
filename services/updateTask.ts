@@ -3,13 +3,13 @@ import type { ApiResponse } from "@/types/api";
 import type { ITask, IUpdateTaskPayload } from "@/types/teamBuilder";
 import { API_ROUTES } from "@/utils/api_routes";
 import { request } from "@/utils/request";
-import { getSession } from "next-auth/react";
+import { getCachedSession } from "@/services/sessionCache";
 
 export async function updateTaskService(
   taskId: string | number,
   body: IUpdateTaskPayload
 ): Promise<ApiResponse<ITask>> {
-  const session = await getSession();
+  const session = await getCachedSession();
   const token = session?.accessToken;
 
   const res = await request<IUpdateTaskPayload, ITask>({
