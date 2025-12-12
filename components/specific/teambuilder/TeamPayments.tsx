@@ -17,12 +17,16 @@ import { APP_ROUTES } from "@/utils/app_routes";
 import { Box, Grid, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useToast } from "@/providers/ToastProvider";
+import { useUpdateProject } from "@/actions/projects/useaddProjectDetails";
 
-export default function TeamPayments() {
+export default function TeamPayments({ projectId }: { projectId: string }) {
   const router = useRouter();
   const [isCustomRange, setIsCustomRange] = useState(false);
   const [openPopup, setOpenPopup] = useState(false);
   const [uploadedFileName, setUploadedFileName] = useState<string>("");
+const updateProject = useUpdateProject();
+const { toast } = useToast();
 
   const handleToggleRange = () => {
     setIsCustomRange(!isCustomRange);
@@ -51,6 +55,24 @@ export default function TeamPayments() {
     setUploadedFileName("");
     setSelectedFileName("");
   };
+
+const handleStartProject = () => {
+  updateProject.mutate(
+    {
+      projectId,
+      body: { status: "in_progress" },
+    },
+    {
+      onSuccess: () => {
+        toast("Project started!", "success");
+        router.push(APP_ROUTES.CLIENT.DASHBOARD);
+      },
+      onError: (err) => {
+        toast(err.message, "error");
+      },
+    }
+  );
+};
 
   return (
     <Box
@@ -123,11 +145,12 @@ export default function TeamPayments() {
       <Box display="flex" justifyContent="flex-end" gap={2} mt={3}>
         <AppButton label="Discard" colorKey="RED" width={180} />
         <AppButton
-          label="Start the Project"
-          colorKey="BLUE"
-          width={180}
-          onClick={() => router.push(APP_ROUTES.CLIENT.DASHBOARD)}
-        />
+  label="Start the Project"
+  colorKey="BLUE"
+  width={180}
+  onClick={handleStartProject}
+  disabled={updateProject.isPending}
+/>
       </Box>
 
       <DynamicPopup

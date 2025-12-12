@@ -87,12 +87,15 @@ function TeamBuilderContent() {
           <TeamProjects
             projectId={projectId}
             onBack={() => setActiveStep(2)}
-            onNext={() => setActiveStep(4)}
+            onNext={(id) => {
+              setProjectId(id);
+              setActiveStep(4);
+            }}
           />
         );
 
       case 4:
-        return <TeamPayments />;
+        return projectId ? <TeamPayments projectId={projectId} /> : null;
 
       default:
         return <TeamCreation onNext={goStep2} />;

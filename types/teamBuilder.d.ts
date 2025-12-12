@@ -123,7 +123,7 @@ export type TasksByMilestone = Record<number, TaskRow[]>;
 
 export type TeamProjectsProps = {
   onBack?: () => void;
-  onNext?: () => void;
+  onNext?: (projectId: string) => void;
   projectId?: string | null;
 };
 
