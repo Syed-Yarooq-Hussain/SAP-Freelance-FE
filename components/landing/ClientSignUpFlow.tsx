@@ -1,3 +1,4 @@
+import { APP_ROUTES } from '@/utils/app_routes';
 import { FileText, Rocket, ArrowRight, Zap, Users, DollarSign } from 'lucide-react';
 
 const steps = [
@@ -27,11 +28,7 @@ const steps = [
   }
 ];
 
-interface ClientSignUpFlowProps {
-  onSignupClick: () => void;
-}
-
-export function ClientSignUpFlow({ onSignupClick }: ClientSignUpFlowProps) {
+export function ClientSignUpFlow() {
   return (
     <div className="py-20 bg-gradient-to-br from-white via-blue-50 to-indigo-50 relative overflow-hidden">
       {/* Decorative Background Elements */}
@@ -102,7 +99,9 @@ export function ClientSignUpFlow({ onSignupClick }: ClientSignUpFlowProps) {
 
         <div className="text-center mt-16">
           <button 
-            onClick={onSignupClick}
+            onClick={() => {
+                window.location.href = (APP_ROUTES.SIGNUP_SELECT);
+              }}
             className="group relative inline-flex items-center justify-center gap-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-12 py-5 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-2xl hover:shadow-blue-500/50 transform hover:scale-105 overflow-hidden"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />

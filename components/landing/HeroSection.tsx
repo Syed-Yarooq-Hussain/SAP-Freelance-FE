@@ -1,11 +1,11 @@
+import { APP_ROUTES } from '@/utils/app_routes';
 import { Search, Briefcase, Sparkles, TrendingUp, Shield, Zap, Users, Clock, Award, CheckCircle, BarChart3, Globe } from 'lucide-react';
 
 interface HeroSectionProps {
   onFindConsultants: () => void;
-  onSignupClick: () => void;
 }
 
-export function HeroSection({ onFindConsultants, onSignupClick }: HeroSectionProps) {
+export function HeroSection({ onFindConsultants}: HeroSectionProps) {
   return (
     <div className="relative bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 overflow-hidden">
       {/* Animated Background Pattern */}
@@ -136,7 +136,9 @@ export function HeroSection({ onFindConsultants, onSignupClick }: HeroSectionPro
               <Zap className="w-4 h-4 text-yellow-500 relative z-10 opacity-0 group-hover:opacity-100 transition-opacity" />
             </button>
             <button 
-              onClick={onSignupClick}
+              onClick={() => {
+                window.location.href = (APP_ROUTES.SIGNUP_SELECT);
+              }}
               className="group flex items-center justify-center gap-2 bg-transparent text-white border-2 border-white/30 backdrop-blur-sm px-10 py-5 rounded-xl hover:bg-white/10 hover:border-white/50 transition-all shadow-lg"
             >
               <Briefcase className="w-5 h-5" />

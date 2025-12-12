@@ -1,11 +1,11 @@
 "use client";
 
+import { APP_ROUTES } from "@/utils/app_routes";
 import { X, Lock } from "lucide-react";
 
 interface ConsultantDetailModalProps {
   consultant: { name: string };
   onClose: () => void;
-  onSignUpClick: () => void;
 }
 
 const benefits = [
@@ -18,7 +18,6 @@ const benefits = [
 export function ConsultantDetailModal({
   consultant,
   onClose,
-  onSignUpClick,
 }: ConsultantDetailModalProps) {
   return (
     <div className="fixed inset-0 bg-black/50 z-[9999] flex items-center justify-center px-4">
@@ -82,7 +81,9 @@ export function ConsultantDetailModal({
           <div className="space-y-3">
             {/* Primary Button */}
             <button
-              onClick={onSignUpClick}
+              onClick={() => {
+                window.location.href = (APP_ROUTES.SIGNUP_SELECT);
+              }}
               className="w-full py-3 text-white rounded-lg text-sm font-medium
               bg-gradient-to-r from-blue-600 to-indigo-600
               hover:from-blue-700 hover:to-indigo-700

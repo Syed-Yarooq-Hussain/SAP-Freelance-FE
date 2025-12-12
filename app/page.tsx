@@ -90,30 +90,24 @@ export default function Home() {
 
   return (
     <div className="tailwind min-h-screen bg-white">
-      {/* -------------------------------------- */}
       {/* NAVIGATION */}
-      {/* -------------------------------------- */}
       <Navigation
         onLoginClick={() => setShowLoginModal(true)}
         onNavigate={setCurrentPage}
         isAuthenticated={isAuthenticated}
       />
 
-      {/* -------------------------------------- */}
       {/* LANDING PAGE */}
-      {/* -------------------------------------- */}
       {currentPage === "landing" && (
         <>
           <HeroSection
             onFindConsultants={() => setCurrentPage("consultants")}
-            onSignupClick={() => handleOpenSignUp()}
           />
 
           <TrustMetrics />
 
           <TopConsultants
             onBrowseConsultants={() => setCurrentPage("consultants")}
-            onSignupClick={() => handleOpenSignUp("consultant")}
           />
 
           <ClientBenefits />
@@ -122,7 +116,7 @@ export default function Home() {
             onRegister={() => handleOpenSignUp("consultant")}
           />
 
-          <ClientSignUpFlow onSignupClick={() => handleOpenSignUp()} />
+          <ClientSignUpFlow />
         </>
       )}
 
@@ -157,10 +151,6 @@ export default function Home() {
         <ConsultantDetailModal
           consultant={selectedConsultant}
           onClose={handleCloseModals}
-          onSignUpClick={() => {
-            setShowConsultantDetail(false);
-            handleOpenSignUp("client");
-          }}
         />
       )}
 

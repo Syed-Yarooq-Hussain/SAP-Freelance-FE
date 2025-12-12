@@ -1,6 +1,6 @@
 import { Star, Award, TrendingUp, ArrowRight, Sparkles, Briefcase, Code, CheckCircle2, Zap } from 'lucide-react';
 import { ImageWithFallback } from './ImageWithFallback';
-
+import { APP_ROUTES } from '@/utils/app_routes';
 
 // Generate top 9 consultants data
 const topConsultants = [
@@ -17,10 +17,9 @@ const topConsultants = [
 
 interface TopConsultantsProps {
   onBrowseConsultants: () => void;
-  onSignupClick: () => void;
 }
 
-export function TopConsultants({ onBrowseConsultants, onSignupClick }: TopConsultantsProps) {
+export function TopConsultants({ onBrowseConsultants }: TopConsultantsProps) {
   return (
     <section className="relative py-24 overflow-hidden">
       {/* Background with gradient */}
@@ -182,7 +181,9 @@ export function TopConsultants({ onBrowseConsultants, onSignupClick }: TopConsul
             </span>
           </button>
           <button
-            onClick={onSignupClick}
+            onClick={() => {
+                window.location.href = (APP_ROUTES.SIGNUP_SELECT);
+              }}
             className="group relative px-8 py-4 bg-white text-blue-600 border-2 border-blue-600 rounded-xl hover:bg-blue-50 transition-all shadow-lg hover:shadow-2xl transform hover:scale-105"
           >
             <span className="flex items-center gap-2">

@@ -56,9 +56,9 @@ const SignUpClient: React.FC = () => {
         bgcolor: "#f7f9fc",
         display: "flex",
         justifyContent: "center",
-        alignItems: "center",
+        alignItems: "flex-start",
         p: 2,
-        position: "fixed",
+        overflowY: "auto",
         top: 0,
         left: 0,
       }}

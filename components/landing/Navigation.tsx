@@ -1,6 +1,5 @@
 import { LogIn, Menu, X, Sparkles } from "lucide-react";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { APP_ROUTES } from "@/utils/app_routes";
 import Image from "next/image";
 
@@ -19,7 +18,6 @@ export function Navigation({
   onNavigate,
   isAuthenticated,
 }: NavigationProps) {
-  const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleNavClick = (page: "landing" | "consultants" | "contact") => {
@@ -60,7 +58,7 @@ export function Navigation({
               </div>
             ) : (
               <button
-                onClick={() => router.push(APP_ROUTES.LOGIN)}
+                onClick={() => window.location.href = APP_ROUTES.LOGIN}
                 className="group relative flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl transform hover:scale-105 overflow-hidden"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
@@ -99,7 +97,7 @@ export function Navigation({
               {!isAuthenticated && (
                 <button
                   onClick={() => {
-                    router.push(APP_ROUTES.LOGIN);
+                    window.location.href = (APP_ROUTES.LOGIN);
                     setIsMobileMenuOpen(false);
                   }}
                   className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg w-full justify-center"
