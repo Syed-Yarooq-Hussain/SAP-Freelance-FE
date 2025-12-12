@@ -1,58 +1,161 @@
 "use client";
 
-import { useLogin } from "@/actions/auth/login";
-import AuthHeader from "@/components/AuthHeader";
-import { CreateForm } from "@/components/CreateForm";
-import SignUpLink from "@/components/SignUpLink";
-import { getLoginFormFields } from "@/forms/loginForm";
-import { ILoginForm } from "@/types/common-auth";
-import { Box, Container } from "@mui/material";
-import * as React from "react";
-import { FieldValues } from "react-hook-form";
+import { useState } from "react";
 
-const LoginPage: React.FC = () => {
-  const { mutate, error, isPending } = useLogin();
+import "@/utils/styles/index.css";
 
-  const elements = getLoginFormFields();
+// LANDING COMPONENTS
+import { HeroSection } from "@/components/homepage/HeroSection";
+import { ClientBenefits } from "@/components/homepage/ClientBenefits";
+import { ClientSignUpFlow } from "@/components/homepage/ClientSignUpFlow";
+import { ConsultantBenefits } from "@/components/homepage/ConsultantBenefits";
+import { TopConsultants } from "@/components/homepage/TopConsultants";
+import { TrustMetrics } from "@/components/homepage/TrustMetrics";
+import { Footer } from "@/components/homepage/Footer";
 
-  const handleSuccess = (data: FieldValues) => {
-    const formData = data as ILoginForm;
-    mutate(formData);
+// SHARED COMPONENTS
+import { ConsultantListingPage } from "@/components/homepage/ConsultantListingPage";
+import { ContactPage } from "@/components/homepage/ContactPage";
+import { LoginModal } from "@/components/homepage/LoginModal";
+import { ConsultantDetailModal } from "@/components/homepage/ConsultantDetailModal";
+import { SignUpModal } from "@/components/homepage/SignUpModal";
+import { Navigation } from "@/components/homepage/Navigation";
+
+type Page = "landing" | "consultants" | "contact";
+
+export interface Consultant {
+  id: number;
+  code: string;
+  module: string;
+  experienceLevel: string;
+  experienceYears: number;
+  rating: number;
+  availability: string;
+  skills: string[];
+  name: string;
+}
+
+export default function Home() {
+  const [currentPage, setCurrentPage] = useState<Page>("landing");
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showSignUpModal, setShowSignUpModal] = useState(false);
+  const [signUpUserType, setSignUpUserType] = useState<
+    "client" | "consultant" | undefined
+  >(undefined);
+
+  const [showConsultantDetail, setShowConsultantDetail] = useState(false);
+  const [selectedConsultant, setSelectedConsultant] =
+    useState<Consultant | null>(null);
+
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const handleConsultantClick = (consultant: Consultant) => {
+    setSelectedConsultant(consultant);
+
+    if (isAuthenticated) {
+      alert("Redirecting to internal portal...");
+    } else {
+      setShowConsultantDetail(true);
+    }
+  };
+
+  const handleLogin = () => {
+    setIsAuthenticated(true);
+    setShowLoginModal(false);
+    setShowConsultantDetail(false);
+  };
+
+  const handleSignUp = () => {
+    setIsAuthenticated(true);
+    setShowSignUpModal(false);
+    setShowConsultantDetail(false);
+  };
+
+  const handleCloseModals = () => {
+    setShowLoginModal(false);
+    setShowSignUpModal(false);
+    setShowConsultantDetail(false);
+    setSignUpUserType(undefined);
+  };
+
+  const handleOpenSignUp = (userType?: "client" | "consultant") => {
+    setSignUpUserType(userType);
+    setShowSignUpModal(true);
+    setShowLoginModal(false);
+  };
+
+  const handleFooterNavigate = (page: Page) => {
+    setCurrentPage(page);
   };
 
   return (
-    <Container maxWidth="sm">
-      <Box
-        sx={{
-          mt: 8,
-          p: { xs: 3, sm: 4 },
-          borderRadius: 2,
-          boxShadow: 3,
-          bgcolor: "background.paper",
-          textAlign: "center",
-        }}
-      >
-        <AuthHeader
-          heading="Welcome Back"
-          description="Please sign in to continue"
-        />
+    <div className="tailwind min-h-screen bg-white">
+      {/* NAVIGATION */}
+      <Navigation
+        onLoginClick={() => setShowLoginModal(true)}
+        onNavigate={setCurrentPage}
+        isAuthenticated={isAuthenticated}
+      />
 
-        <CreateForm
-          elements={elements}
-          onSuccess={handleSuccess}
-          loading={isPending}
-          error={error?.message}
-          submitButton={{
-            children: "Login",
-            variant: "contained",
-            fullWidth: false,
-            size: "medium",
-          }}
+      {/* LANDING PAGE */}
+      {currentPage === "landing" && (
+        <>
+          <HeroSection
+            onFindConsultants={() => setCurrentPage("consultants")}
+          />
+
+          <TrustMetrics />
+
+          <TopConsultants
+            onBrowseConsultants={() => setCurrentPage("consultants")}
+          />
+
+          <ClientBenefits />
+
+          <ConsultantBenefits
+            onRegister={() => handleOpenSignUp("consultant")}
+          />
+
+          <ClientSignUpFlow />
+        </>
+      )}
+
+      {/* CONSULTANTS PAGE */}
+      {currentPage === "consultants" && (
+        <ConsultantListingPage onConsultantClick={handleConsultantClick} />
+      )}
+
+      {/* CONTACT PAGE */}
+      {currentPage === "contact" && <ContactPage onNavigate={setCurrentPage} />}
+
+      {/* LOGIN MODAL */}
+      {showLoginModal && (
+        <LoginModal
+          onClose={handleCloseModals}
+          onLogin={handleLogin}
+          onSwitchToSignUp={() => handleOpenSignUp()}
         />
-        <SignUpLink />
-      </Box>
-    </Container>
+      )}
+
+      {/* SIGNUP MODAL */}
+      {showSignUpModal && (
+        <SignUpModal
+          onClose={handleCloseModals}
+          onSignUp={handleSignUp}
+          defaultUserType={signUpUserType}
+        />
+      )}
+
+      {/* CONSULTANT DETAIL MODAL */}
+      {showConsultantDetail && selectedConsultant && (
+        <ConsultantDetailModal
+          consultant={selectedConsultant}
+          onClose={handleCloseModals}
+        />
+      )}
+
+      {/* FOOTER */}
+      <Footer onNavigate={handleFooterNavigate} />
+    </div>
   );
-};
-
-export default LoginPage;
+}

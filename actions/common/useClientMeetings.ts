@@ -5,6 +5,7 @@ import {
   fetchMeetingStatus,
   updateMeetingStatusService,
 } from "@/services/meetings";
+import { useQuery } from "@tanstack/react-query";
 import type { ApiResponse } from "@/types/api";
 import type { IClientMeetingDTO } from "@/types/client";
 import { useMutation } from "@tanstack/react-query";

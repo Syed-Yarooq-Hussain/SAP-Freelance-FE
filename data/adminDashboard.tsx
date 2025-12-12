@@ -107,7 +107,7 @@ export const adminConsultantColumns: GridColDef[] = [
 export const adminConsultantRows = [
   {
     id: 1,
-    avatar: "/img/u1.png",
+    avatar: "/public/vercel.svg",
     name: "Marvin McKinney",
     modules: "SAP MM, S/4HANA",
     experience: "9 Years",
@@ -115,7 +115,7 @@ export const adminConsultantRows = [
   },
   {
     id: 2,
-    avatar: "/img/u2.png",
+    avatar: "/public/vercel.svg",
     name: "Savannah Nguyen",
     modules: "SAP SD, S/4HANA",
     experience: "9 Years",
@@ -123,7 +123,7 @@ export const adminConsultantRows = [
   },
   {
     id: 3,
-    avatar: "/img/u3.png",
+    avatar: "/public/vercel.svg",
     name: "Ralph Edwards",
     modules: "SAP SD, S/4HANA",
     experience: "9 Years",
@@ -131,7 +131,7 @@ export const adminConsultantRows = [
   },
   {
     id: 4,
-    avatar: "/img/u4.png",
+    avatar: "/public/vercel.svg",
     name: "Vincent Zhang",
     modules: "SAP FI, S/4HANA",
     experience: "9 Years",
@@ -139,7 +139,7 @@ export const adminConsultantRows = [
   },
   {
     id: 5,
-    avatar: "/img/u5.png",
+    avatar: "/public/vercel.svg",
     name: "Noah Brown",
     modules: "SAP CRM, HANA",
     experience: "9 Years",
@@ -147,7 +147,7 @@ export const adminConsultantRows = [
   },
   {
     id: 6,
-    avatar: "/img/u6.png",
+    avatar: "/public/vercel.svg",
     name: "Isabella Martinez",
     modules: "SAP ABAP, S/4HANA",
     experience: "9 Years",
@@ -155,7 +155,7 @@ export const adminConsultantRows = [
   },
   {
     id: 7,
-    avatar: "/img/u7.png",
+    avatar: "/public/vercel.svg",
     name: "Ethan Johnson",
     modules: "SAP PI, Fiori",
     experience: "9 Years",

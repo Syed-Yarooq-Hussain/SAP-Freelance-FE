@@ -1,7 +1,8 @@
+import { getCachedSession } from "@/services/sessionCache";
 import { ILoginForm } from "@/types/common-auth";
 import { APP_ROUTES } from "@/utils/app_routes";
 import { useMutation } from "@tanstack/react-query";
-import { getSession, signIn, SignInResponse } from "next-auth/react";
+import { signIn, SignInResponse } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 export const useLogin = () => {
@@ -19,7 +20,8 @@ export const useLogin = () => {
       return response;
     },
     async onSuccess() {
-      const session = await getSession();
+      // Cache session after login
+      const session = await getCachedSession();
       const role = session?.user?.role;
 
       if (!role) {
