@@ -51,7 +51,6 @@ export default function TeamProjects({
   const getProjectMilestones = useGetProjectMilestones();
   const [editingTask, setEditingTask] = useState<TaskRow | null>(null);
   const updateTask = useUpdateTask();
-
   const [rows, setRows] = useState<MilestoneRow[]>([]);
   const [dynamicTasks, setDynamicTasks] = useState<TasksByMilestone>({});
 
@@ -263,11 +262,14 @@ export default function TeamProjects({
     (id: number) => {
       setExpandedMilestoneId((prev) => (prev === id ? null : id));
 
-      if (!dynamicTasks[id]) {
-        fetchTasksForMilestone(id);
-      }
+      setDynamicTasks((prev) => {
+        if (!prev[id]) {
+          fetchTasksForMilestone(id);
+        }
+        return prev;
+      });
     },
-    [dynamicTasks, fetchTasksForMilestone]
+    [fetchTasksForMilestone]
   );
 
   const handleAddMilestone = (data: TeamProjectFormData) => {
@@ -293,9 +295,8 @@ export default function TeamProjects({
         onSuccess: (res) => {
           toast(res.message, "success");
 
-          // 🔥 NEW — fetch updated milestones immediately
           getProjectMilestones.mutate(projectId, {
-            onSuccess: (fresh) => {
+            onSuccess: async (fresh) => {
               const updatedList = fresh.data ?? [];
 
               const mapped: MilestoneRow[] = updatedList.map(
@@ -311,7 +312,7 @@ export default function TeamProjects({
                 })
               );
 
-              setRows(mapped); // 🔥 refresh table instantly
+              setRows(mapped);
             },
             onError: (err: Error) => toast(err.message, "error"),
           });
@@ -519,6 +520,13 @@ export default function TeamProjects({
           milestones.map(
             (m) =>
               new Promise<{ milestoneId: number; count: number }>((resolve) => {
+                if (dynamicTasks[Number(m.id)]) {
+                  resolve({
+                    milestoneId: Number(m.id),
+                    count: dynamicTasks[Number(m.id)].length,
+                  });
+                  return;
+                }
                 getMilestoneTasks.mutate(Number(m.id), {
                   onSuccess: (res) => {
                     const tasks: ITask[] = res.data?.tasks ?? [];
@@ -557,8 +565,10 @@ export default function TeamProjects({
   }, [projectId, getProjectMilestones, getMilestoneTasks]);
 
   useEffect(() => {
+    if (!projectId) return;
+
     loadAllMilestones();
-  }, [loadAllMilestones]);
+  }, [projectId]);
 
   return (
     <Box

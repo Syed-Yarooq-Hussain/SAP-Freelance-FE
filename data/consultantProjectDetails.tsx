@@ -38,7 +38,7 @@ export const projectInfoData: ProjectInfoData = {
   outOfScope: "Legacy integrations",
   start_date: "2024-01-10",
   duration: "6 months",
-  status: "Active"
+  status: "Active",
 };
 
 export const teamMembers = [
@@ -69,61 +69,15 @@ export const taskColumns: GridColDef[] = [
   },
 ];
 
-export const taskRows = [
+export const milestoneColumns: GridColDef[] = [
+  { field: "name", headerName: "Name", flex: 2 },
+  { field: "dependencies", headerName: "Dependencies", flex: 2 },
+  { field: "details", headerName: "Details", flex: 2 },
+  { field: "deadline", headerName: "Deadline", flex: 2 },
   {
-    id: 1,
-    name: "Blueprint Documentation",
-    details: "One of the cool things about this font generator is that you...",
-    deadline: "15.09.2025",
-    status: "In progress",
-  },
-  {
-    id: 2,
-    name: "Client workshop",
-    details: "One of the cool things about this font generator is that you...",
-    deadline: "19.09.2025",
-    status: "To do",
-  },
-  {
-    id: 3,
-    name: "Blueprint Documentation",
-    details: "One of the cool things about this font generator is that you...",
-    deadline: "15.09.2025",
-    status: "In progress",
-  },
-  {
-    id: 4,
-    name: "Blueprint Documentation",
-    details: "One of the cool things about this font generator is that you...",
-    deadline: "15.09.2025",
-    status: "In progress",
-  },
-  {
-    id: 5,
-    name: "Client workshop",
-    details: "One of the cool things about this font generator is that you...",
-    deadline: "19.09.2025",
-    status: "To do",
-  },
-  {
-    id: 6,
-    name: "Data entry",
-    details: "One of the cool things about this font generator is that you...",
-    deadline: "05.08.2025",
-    status: "Delayed",
-  },
-  {
-    id: 7,
-    name: "Client workshop",
-    details: "One of the cool things about this font generator is that you...",
-    deadline: "19.09.2025",
-    status: "To do",
-  },
-  {
-    id: 8,
-    name: "Data entry",
-    details: "One of the cool things about this font generator is that you...",
-    deadline: "05.08.2025",
-    status: "Delayed",
+    field: "status",
+    headerName: "Status",
+    flex: 1,
+    renderCell: (params) => <StatusDropdown value={params.value} />,
   },
 ];

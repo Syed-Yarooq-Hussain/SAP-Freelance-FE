@@ -2,17 +2,20 @@
 
 import { useMeetingInvite } from "@/actions/common/useMeetingInvite";
 import { useClientProjects } from "@/actions/projects/useClientProjects";
+import { useConsultantProjects } from "@/actions/projects/useConsultantProjects";
 import { useGetProjectConsultants } from "@/actions/projects/useGetProjectConsultants";
 import DataTable from "@/components/DataTable";
 import DynamicPopup from "@/components/Popup";
 import { StatCardProps } from "@/components/StatCard";
 import DashboardStats from "@/components/StatsCardList";
+import { Roles } from "@/constants/roles";
 import { getInterviewFormFields } from "@/forms/interviewForm";
-import type { IClientProjectDTO, MeetingForm } from "@/types/client";
+import type { MeetingForm } from "@/types/client";
 import type { IProjectConsultant } from "@/types/teamBuilder";
 import { mapTaskFieldsToPopup } from "@/utils/mapFormToPopup";
 import { Box, Typography } from "@mui/material";
 import { GridColDef, GridValidRowModel } from "@mui/x-data-grid";
+import { useSession } from "next-auth/react";
 import { useEffect, useMemo, useState } from "react";
 import AppButton from "../Button";
 
@@ -39,10 +42,11 @@ export default function Interview<
 }: InterviewProps<T>) {
   const [scheduleOpen, setScheduleOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  const [projects, setProjects] = useState<IClientProjectDTO[]>([]);
+  const [projects, setProjects] = useState<{ id: string; name: string }[]>([]);
+  const { mutate: loadConsultantProjects } = useConsultantProjects();
   const [consultants, setConsultants] = useState<IProjectConsultant[]>([]);
-
+  const { data: session } = useSession();
+  const role = session?.user?.role;
   const [scheduleData, setScheduleData] = useState<MeetingForm>({
     project: "",
     user: "",
@@ -57,10 +61,38 @@ export default function Interview<
   const { mutate: sendInvite } = useMeetingInvite();
 
   useEffect(() => {
-    loadProjects(undefined, {
-      onSuccess: (res) => setProjects(res.data ?? []),
-    });
-  }, [loadProjects]);
+    if (!role) return;
+
+    if (role === Roles.CLIENT) {
+      loadProjects(undefined, {
+        onSuccess: (res) => {
+          const mapped =
+            res.data?.map((p) => ({
+              id: String(p.id),
+              name: p.name,
+            })) ?? [];
+
+          setProjects(mapped);
+        },
+        onError: () => setProjects([]),
+      });
+    }
+
+    if (role === Roles.CONSULTANT) {
+      loadConsultantProjects(undefined, {
+        onSuccess: (res) => {
+          const mapped =
+            res.data?.map((p) => ({
+              id: String(p.project_id),
+              name: p.project_name,
+            })) ?? [];
+
+          setProjects(mapped);
+        },
+        onError: () => setProjects([]),
+      });
+    }
+  }, [role, loadProjects, loadConsultantProjects]);
 
   const interviewFields = getInterviewFormFields().map((field) => {
     if (field.name === "project") {
@@ -68,7 +100,7 @@ export default function Interview<
         ...field,
         options: projects.map((p) => ({
           label: p.name,
-          value: String(p.id),
+          value: p.id,
         })),
       };
     }

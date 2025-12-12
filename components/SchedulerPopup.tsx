@@ -14,7 +14,7 @@ import {
   inRange,
   sameDay,
   toISO,
-} from "@/utils/dateCalendar";
+} from "@/utils/dateTime";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import {
@@ -123,16 +123,16 @@ function RangeCalendar({
             isStart || isEnd
               ? "#6E9EFF"
               : isInside
-              ? "rgba(110,158,255,0.25)"
-              : "transparent";
+                ? "rgba(110,158,255,0.25)"
+                : "transparent";
           const color =
             isStart || isEnd ? "#fff" : isThisMonth ? "#111827" : "#9ca3af";
           const border =
             isStart || isEnd
               ? "1px solid #6E9EFF"
               : isInside
-              ? "1px solid rgba(110,158,255,0.35)"
-              : "1px solid #e5e7eb";
+                ? "1px solid rgba(110,158,255,0.35)"
+                : "1px solid #e5e7eb";
 
           return (
             <Box
@@ -231,8 +231,8 @@ export default function SchedulerLauncher() {
     active === "weekly"
       ? !weeklyValid
       : !startTime ||
-        !endTime ||
-        (active === "customDate" && customDates.length === 0);
+      !endTime ||
+      (active === "customDate" && customDates.length === 0);
 
   const resetForm = () => {
     setActive("default");
@@ -252,7 +252,7 @@ export default function SchedulerLauncher() {
       active === "customDate"
         ? { ...base, startTime, endTime, customDates }
         : active === "weekly"
-        ? {
+          ? {
             ...base,
             weekly: weeklyRows
               .filter((r) => r.enabled && r.startTime && r.endTime)
@@ -262,7 +262,7 @@ export default function SchedulerLauncher() {
                 endTime: r.endTime,
               })),
           }
-        : {
+          : {
             ...base,
             daysOfWeek: getSelectedDays(dayPreset),
             startTime,

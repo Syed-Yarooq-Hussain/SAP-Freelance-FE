@@ -2,10 +2,11 @@
 
 import AppButton from "@/components/Button";
 import { SidebarSectionInfo } from "@/components/DashboardSidebarInfo";
+import { CalendarEvent } from "@/components/MonthlyCalendar";
 import { StatCardProps } from "@/components/StatCard";
 import StatusChip from "@/components/StatusChip";
 import StatusDropdown from "@/components/StatusDropdown";
-import { getCurrentMonth } from "@/utils/dateCalendar";
+import { currentMonth, currentYear, getCurrentMonth } from "@/utils/dateTime";
 import { buttonColors, statusColors } from "@/utils/styles/colors";
 import { Box } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
@@ -67,36 +68,6 @@ export const interviewColumns: GridColDef[] = [
   },
 ];
 
-export const interviewRows = [
-  {
-    id: 1,
-    project: "ERP Upgrade",
-    client: "TechFirm",
-    modules: "SAP MM, S/4HANA",
-    duration: "6 months",
-    startDate: "TBD",
-    status: "Under review",
-  },
-  {
-    id: 2,
-    project: "Global Rollout – Manufacturing",
-    client: "ManuCorp",
-    modules: "SAP SD, S/4HANA",
-    duration: "14 months",
-    startDate: "2025-07-01",
-    status: "Confirmed",
-  },
-  {
-    id: 3,
-    project: "Retail Implementation",
-    client: "RetailCo",
-    modules: "SAP SD, Fiori",
-    duration: "8 months",
-    startDate: "2025-10-01",
-    status: "In progress",
-  },
-];
-
 export const taskColumns: GridColDef[] = [
   { field: "project", headerName: "Project", flex: 1 },
   { field: "dueDate", headerName: "Due Dates", flex: 1 },
@@ -126,33 +97,6 @@ export const taskColumns: GridColDef[] = [
       const colorKey = buttonColors[label] || "GREY";
       return <AppButton label={label} colorKey={colorKey} />;
     },
-  },
-];
-
-export const taskRows = [
-  {
-    id: 1,
-    project: "Retail Implementation",
-    dueDate: "15.09.2025",
-    amount: "2,500",
-    status: "Paid",
-    invoice: "Download",
-  },
-  {
-    id: 2,
-    project: "Retail Implementation",
-    dueDate: "15.09.2025",
-    amount: "3,500",
-    status: "Pending",
-    invoice: "-",
-  },
-  {
-    id: 3,
-    project: "Retail Implementation",
-    dueDate: "15.09.2025",
-    amount: "3,500",
-    status: "Overdue",
-    invoice: "-",
   },
 ];
 
@@ -199,3 +143,26 @@ export const consultantSidebar: SidebarSectionInfo[] = [
     ],
   },
 ];
+
+export const events: CalendarEvent[] = [
+    {
+      date: `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-02`,
+      type: "project",
+    },
+    {
+      date: `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-07`,
+      type: "interview",
+    },
+    {
+      date: `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-11`,
+      type: "project",
+    },
+    {
+      date: `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-18`,
+      type: "project",
+    },
+    {
+      date: `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-23`,
+      type: "interview",
+    },
+  ];

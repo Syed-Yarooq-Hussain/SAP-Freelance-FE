@@ -18,7 +18,7 @@ import { getMilestoneFormFields } from "@/forms/milestoneForm";
 import { ProjectInfoData } from "@/types/projects";
 import type { ClientMilestoneRow, IMilestone } from "@/types/teamBuilder";
 import { APP_ROUTES } from "@/utils/app_routes";
-import { formatYMD } from "@/utils/dateCalendar";
+import { formatYMD } from "@/utils/dateTime";
 import { mapMilestoneFieldsToPopup } from "@/utils/mapFormToPopup";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -168,9 +168,8 @@ export default function ClientProjectDetailsPage() {
 
         setProjectInfo({
           name: data?.name ?? "N/A",
-          clientIndustry: `${data?.client?.username ?? "N/A"} - ${
-            data?.company_name ?? "N/A"
-          }`,
+          clientIndustry: `${data?.client?.username ?? "N/A"} - ${data?.company_name ?? "N/A"
+            }`,
           module: "N/A",
           functionalScope: "N/A",
           technicalScope: "N/A",

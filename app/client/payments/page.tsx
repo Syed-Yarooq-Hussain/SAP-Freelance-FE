@@ -5,7 +5,7 @@ import Sidebar from "@/components/Sidebar";
 import Payment from "@/components/specific/Payment";
 import { clientPaymentColumns } from "@/data/clientPayment";
 import type { ClientPaymentRow, IClientPaymentDTO } from "@/types/client";
-import { formatYMD } from "@/utils/dateCalendar";
+import { formatYMD } from "@/utils/dateTime";
 import { useCallback, useEffect, useState } from "react";
 
 export default function ClientPaymentPage() {
