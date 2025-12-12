@@ -2,12 +2,12 @@ import type { ApiResponse } from "@/types/api";
 import type { IClientMeetingDTO } from "@/types/client";
 import { API_ROUTES } from "@/utils/api_routes";
 import { request } from "@/utils/request";
-import { getSession } from "next-auth/react";
+import { getCachedSession } from "@/services/sessionCache";
 
 export async function fetchClientMeetings(): Promise<
   ApiResponse<IClientMeetingDTO[]>
 > {
-  const session = await getSession();
+  const session = await getCachedSession();
   const token = session?.accessToken;
 
   return await request<undefined, IClientMeetingDTO[]>({
@@ -18,7 +18,7 @@ export async function fetchClientMeetings(): Promise<
 }
 
 export async function fetchMeetingStatus(): Promise<ApiResponse<string[]>> {
-  const session = await getSession();
+  const session = await getCachedSession();
   const token = session?.accessToken;
 
   return await request<undefined, string[]>({
@@ -32,7 +32,7 @@ export async function updateMeetingStatusService(
   meetingId: number | string,
   status: string
 ): Promise<ApiResponse<IClientMeetingDTO>> {
-  const session = await getSession();
+  const session = await getCachedSession();
   const token = session?.accessToken;
 
   return await request<{ status: string }, IClientMeetingDTO>({

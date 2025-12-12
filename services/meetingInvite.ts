@@ -5,12 +5,12 @@ import {
 } from "@/types/teamBuilder";
 import { API_ROUTES } from "@/utils/api_routes";
 import { request } from "@/utils/request";
-import { getSession } from "next-auth/react";
+import { getCachedSession } from "@/services/sessionCache";
 
 export async function meetingInviteService(
   body: IMeetingInviteBody
 ): Promise<ApiResponse<IMeetingInviteResponse>> {
-  const session = await getSession();
+  const session = await getCachedSession();
   const token = session?.accessToken;
 
   return await request<IMeetingInviteBody, IMeetingInviteResponse>({
