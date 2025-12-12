@@ -22,4 +22,6 @@ export const API_ROUTES = {
   CLIENT_MEETINGS: "/common/meetings",
   MEETING_STATUS: "/common/meeting-status",
   GET_PROJECT_DETAILS: "/projects",
+  CONSULTANT_PROJECTS: "/consultants/projects",
+  CONSULTANT_PAYMENTS: "/consultants/payments",
 };

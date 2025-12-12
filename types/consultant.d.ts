@@ -31,3 +31,56 @@ export interface IConsultantMeta {
 export interface IConsultantUser extends IUser {
   consultants: IConsultantMeta;
 }
+
+export interface IConsultantProject {
+  requested_hours: number | null;
+  duration: number | null;
+  project_id: string;
+  project_name: string;
+  project_status: string;
+  client_id: number;
+  client_name: string;
+  modules: string[];
+  start_date: string;
+}
+
+export interface IConsultantProjectRow {
+  id: number;
+  project_name: string;
+  client_name: string;
+  modules: string;
+  duration: string | null;
+  start_date: string;
+  status: string;
+}
+
+export interface IConsultantPaymentProject {
+  id: string;
+  name: string;
+  consultant_id: number;
+  company_name: string;
+  status: string;
+  deleted_at: string | null;
+}
+
+export interface IConsultantPaymentDTO {
+  id: string;
+  project_id: string;
+  project_milestone_id: string | null;
+  doc_id: string | null;
+  amount: number;
+  payment_module: string;
+  is_paid: boolean | null;
+  deleted_at: string | null;
+  project: IConsultantPaymentProject;
+  due_date: string;
+}
+
+export interface ConsultantPaymentRow {
+  id: string;
+  project: string;
+  duedates: string;
+  amount: string;
+  status: string;
+  invoice: string;
+}

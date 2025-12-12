@@ -1,7 +1,10 @@
 "use client";
 
 import AppButton from "@/components/Button";
-import { SidebarSectionInfo } from "@/components/DashboardSidebarInfo";
+import {
+  SidebarSectionInfo,
+  SidebarSectionItem,
+} from "@/components/DashboardSidebarInfo";
 import { StatCardProps } from "@/components/StatCard";
 import StatusDropdown from "@/components/StatusDropdown";
 import { APP_ROUTES } from "@/utils/app_routes";
@@ -9,6 +12,8 @@ import { buttonColors } from "@/utils/styles/colors";
 import { Box } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+
+export type OngoingProject = { id: string; name: string; step: number };
 
 export const clientStats: StatCardProps[] = [
   {
@@ -76,92 +81,63 @@ export const clientTaskColumns: GridColDef[] = [
   },
 ];
 
-export const clientTaskRows = [
-  {
-    id: 1,
-    project: "Retail Implementation",
-    dueDate: "15.09.2025",
-    amount: "2,500",
-    status: "Paid",
-    invoice: "Download",
-  },
-  {
-    id: 2,
-    project: "Retail Implementation",
-    dueDate: "15.09.2025",
-    amount: "3,500",
-    status: "Pending",
-    invoice: "Upload receipt",
-  },
-  {
-    id: 3,
-    project: "Retail Implementation",
-    dueDate: "15.09.2025",
-    amount: "3,500",
-    status: "Overdue",
-    invoice: "Upload receipt",
-  },
-];
+export const getClientSidebar = (
+  router: AppRouterInstance,
+  ongoingProjects: OngoingProject[] = []
+): SidebarSectionInfo[] => {
+  const projectItems: SidebarSectionItem[] = ongoingProjects.flatMap((p) => [
+    {
+      type: "text",
+      label: "Team Project",
+      value: p.name,
+    },
+    {
+      type: "button",
+      buttonText: "Go to completion",
+      buttonColor: "BLUE",
+      onButtonClick: () => {
+        const step = p.step ?? 2;
+        router.push(`${APP_ROUTES.TEAMBUILDER}?step=${step}&projectId=${p.id}`);
+      },
+    },
+  ]);
 
-export const getClientSidebar = (router: AppRouterInstance): SidebarSectionInfo[] => [
-  {
-    title: "Initialize Projects",
-    items: [
-      {
-        type: "button",
-        buttonText: "Start new project",
-        buttonColor: "GREEN",
-        onButtonClick: () => router.push(APP_ROUTES.TEAMBUILDER),
-      },
-      {
-        type: "text",
-        label: "Team Confirmation",
-        value: "SAP FI, SAP S/4HANA",
-      },
-      {
-        type: "button",
-        buttonText: "Go to completion",
-        buttonColor: "BLUE",
-        onButtonClick: () => router.push("/admin/dashboard"),},
-      {
-        type: "text",
-        label: "Project Scope",
-        value: "ABAP, Fiori",
-      },
-      {
-        type: "button",
-        buttonText: "Go to completion",
-        buttonColor: "BLUE",
-      },
-    ],
-  },
-  {
-    title: "Projects & Teams",
-    items: [
-      { type: "text", value: "Global Rollout" },
-      {
-        type: "avatars",
-        avatars: ["/public/vercel.svg", "/public/vercel.svg", "/public/vercel.svg"],
-      },
-      { type: "text", value: "Rental Co." },
-      {
-        type: "avatars",
-        avatars: ["/public/vercel.svg", "/public/vercel.svg", "/public/vercel.svg"],
-      },
-    ],
-  },
-  {
-    title: "System Alert",
-    items: [
-      { type: "text", label: "Interview invite from RetailCo – 02-Aug" },
-      { type: "text", label: "Profile approved by Admin" },
-    ],
-  },
-  {
-    title: "Payment Alert",
-    items: [
-      { type: "text", label: 'Payment made on "RetailCo."' },
-      { type: "text", label: 'Payment due for "RetailCo."' },
-    ],
-  },
-];
+  return [
+    {
+      title: "Initialize Projects",
+      items: [
+        {
+          type: "button",
+          buttonText: "Start new project",
+          buttonColor: "GREEN",
+          onButtonClick: () => {
+            localStorage.removeItem("tb_project_id");
+            localStorage.removeItem("tb_project_name");
+            localStorage.removeItem("tb_project_in_progress");
+            router.push(`${APP_ROUTES.TEAMBUILDER}?step=1`);
+          },
+        },
+
+        ...projectItems.slice(0, 10),
+      ],
+    },
+
+    {
+      title: "Projects & Teams",
+      items: [
+        { type: "text", value: "Global Rollout" },
+        {
+          type: "avatars",
+          avatars: ["/img/u1.png", "/img/u2.png", "/img/u3.png"],
+        },
+      ],
+    },
+
+    {
+      title: "System Alert",
+      items: [
+        { type: "text", label: "Interview invite from RetailCo – 02-Aug" },
+      ],
+    },
+  ];
+};

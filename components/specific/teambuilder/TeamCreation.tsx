@@ -89,12 +89,27 @@ export default function TeamCreation({ onNext }: TeamCreationProps) {
     createProject(undefined, {
       onSuccess: (res) => {
         const projectId = res.data?.id;
+        const projectName = res.data?.name;
 
         if (!projectId) {
           toast("Invalid project response from server", "error");
           return;
         }
 
+        const newProject = {
+          id: projectId,
+          name: projectName || "Untitled Project",
+          step: 2,
+          status: res.data?.status ?? "Initiated",
+        };
+
+        let stored = JSON.parse(localStorage.getItem("tb_projects") || "[]");
+
+        stored.push(newProject);
+        stored = stored.slice(-5);
+
+        localStorage.setItem("tb_projects", JSON.stringify(stored));
+        window.dispatchEvent(new Event("tb_projects_updated"));
         toast("Project created!", "success");
 
         const payload = selectedRows.map((id) => {

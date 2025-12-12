@@ -12,7 +12,7 @@ import {
   clientInterviewStats,
 } from "@/data/clientInterview";
 import type { ClientInterviewRow, IClientMeetingDTO } from "@/types/client";
-import { formatDateTimeAmPm, formatYMD } from "@/utils/dateCalendar";
+import { formatDateTimeAmPm, formatYMD } from "@/utils/dateTime";
 import { GridRenderCellParams } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 

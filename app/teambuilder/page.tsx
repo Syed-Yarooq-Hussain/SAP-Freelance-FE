@@ -3,13 +3,11 @@
 import AppNavbar from "@/components/AppNavbar";
 import StepProgress from "@/components/StepProgress";
 import TeamConfirmation from "@/components/specific/teambuilder/TeamConfirmation";
-import {
-  default as Step01,
-  default as TeamCreation,
-} from "@/components/specific/teambuilder/TeamCreation";
+import TeamCreation from "@/components/specific/teambuilder/TeamCreation";
 import TeamPayments from "@/components/specific/teambuilder/TeamPayments";
 import TeamProjects from "@/components/specific/teambuilder/TeamProjects";
 import { teamBuilderSteps } from "@/data/teamBuilder";
+import { useProjectProgress } from "@/utils/useProjectProgress";
 import { Box } from "@mui/material";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useState } from "react";
@@ -17,6 +15,8 @@ import { Suspense, useEffect, useMemo, useState } from "react";
 function TeamBuilderContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  const { updateProjectStep } = useProjectProgress();
 
   const stepParam = searchParams.get("step");
   const projectParam = searchParams.get("projectId");
@@ -27,16 +27,39 @@ function TeamBuilderContent() {
   const [projectId, setProjectId] = useState<string | null>(projectParam);
 
   useEffect(() => {
-    const q = new URLSearchParams(Array.from(searchParams.entries()));
+    if (!projectParam) return;
 
-    q.set("step", String(activeStep));
+    setProjectId((prev) => (prev !== projectParam ? projectParam : prev));
+  }, [projectParam]);
 
-    if (projectId) {
-      q.set("projectId", projectId);
+  useEffect(() => {
+    if (projectId) return;
+
+    const resume = localStorage.getItem("tb_project_in_progress");
+    const stored = localStorage.getItem("tb_project_id");
+
+    if (resume === "true" && stored) {
+      setProjectId(stored);
     }
+  }, []);
+
+  useEffect(() => {
+    if (!projectId) return;
+    updateProjectStep(projectId, activeStep);
+  }, [projectId, activeStep]);
+
+  useEffect(() => {
+    const currentStep = searchParams.get("step");
+    const currentPid = searchParams.get("projectId");
+
+    if (currentStep === String(activeStep) && currentPid === projectId) return;
+
+    const q = new URLSearchParams();
+    q.set("step", String(activeStep));
+    if (projectId) q.set("projectId", projectId);
 
     router.replace(`?${q.toString()}`, { scroll: false });
-  }, [activeStep, projectId, searchParams, router]);
+  }, [activeStep, projectId]);
 
   const goStep2 = (id: string) => {
     setProjectId(id);
@@ -46,7 +69,7 @@ function TeamBuilderContent() {
   const current = useMemo(() => {
     switch (activeStep) {
       case 1:
-        return <Step01 onNext={goStep2} />;
+        return <TeamCreation onNext={goStep2} />;
 
       case 2:
         return (
