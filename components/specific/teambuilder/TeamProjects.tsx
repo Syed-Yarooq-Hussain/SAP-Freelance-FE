@@ -268,17 +268,17 @@ export default function TeamProjects({
   );
 
   const handleExpandMilestone = (id: number) => {
-  if (expandedMilestoneId === id) {
-    setExpandedMilestoneId(null);
-    return;
-  }
+    if (expandedMilestoneId === id) {
+      setExpandedMilestoneId(null);
+      return;
+    }
 
-  setExpandedMilestoneId(id);
+    setExpandedMilestoneId(id);
 
-  if (!dynamicTasks[id]) {
-    fetchTasksForMilestone(id);
-  }
-};
+    if (!dynamicTasks[id]) {
+      fetchTasksForMilestone(id);
+    }
+  };
 
   const handleAddMilestone = (data: TeamProjectFormData) => {
     setEditingMilestone(null);
@@ -478,36 +478,44 @@ export default function TeamProjects({
       value: String(m.id),
     }));
 
-    return getTaskFormFields(milestoneOptions).map((el) => {
-      if (el.name === "taskMilestone") {
-        const selectedMilestone = milestoneOptions.find(
+    return getTaskFormFields(milestoneOptions).flatMap((el) => {
+      if (el.name === "taskMilestoneLabel") {
+        const selected = milestoneOptions.find(
           (m) => m.value === String(expandedMilestoneId)
         );
 
-        return {
-          ...el,
-          type: "text",
-          defaultValue: selectedMilestone?.label || "",
-          disabled: true,
-          options: undefined,
-        };
+        return [
+          {
+            ...el,
+            type: "text",
+            defaultValue: selected?.label || "",
+            disabled: true,
+          },
+        ];
       }
 
-      if (!editingTask) return el;
+      if (el.name === "taskMilestone") {
+        return [
+          {
+            ...el,
+            type: "hidden",
+            defaultValue: String(expandedMilestoneId ?? ""),
+          },
+        ];
+      }
+
+      if (!editingTask) return [el];
 
       if (el.name === "taskName")
-        return { ...el, defaultValue: editingTask.name };
-
-      if (el.name === "taskEnd")
-        return { ...el, defaultValue: editingTask.date };
+        return [{ ...el, defaultValue: editingTask.name }];
 
       if (el.name === "taskDoc")
-        return { ...el, defaultValue: editingTask.description };
+        return [{ ...el, defaultValue: editingTask.description }];
 
       if (el.name === "taskAssignee")
-        return { ...el, defaultValue: editingTask.assignees };
+        return [{ ...el, defaultValue: editingTask.assignees }];
 
-      return el;
+      return [el];
     });
   }, [editingTask, expandedMilestoneId, rows]);
 
