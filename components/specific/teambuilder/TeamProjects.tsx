@@ -9,10 +9,9 @@ import { useGetProjectMilestones } from "@/actions/projects/useGetProjectMilesto
 import { useUpdateMilestone } from "@/actions/projects/useUpdateMilestone";
 import { useUpdateTask } from "@/actions/projects/useUpdateTask";
 import AppButton from "@/components/Button";
-import { CreateForm } from "@/components/CreateForm";
-import DataTable from "@/components/DataTable";
+import { CreateForm, IFieldConfig } from "@/components/CreateForm";
+import MilestoneExpandableTable from "@/components/MilestoneExpandableTable";
 import DynamicPopup from "@/components/Popup";
-import { getMilestoneCols, taskColumns } from "@/data/teamBuilder";
 import { getMilestoneFormFields } from "@/forms/milestoneForm";
 import { getProjectFormFields } from "@/forms/projectForm";
 import { getTaskFormFields } from "@/forms/taskForm";
@@ -267,15 +266,10 @@ export default function TeamProjects({
     [getMilestoneTasks, toast, setDynamicTasks]
   );
 
-  const handleExpandMilestone = (id: number) => {
-    if (expandedMilestoneId === id) {
-      setExpandedMilestoneId(null);
-      return;
-    }
-
+  const handleExpandMilestone = (id: number | null) => {
     setExpandedMilestoneId(id);
 
-    if (!dynamicTasks[id]) {
+    if (id !== null && !dynamicTasks[id]) {
       fetchTasksForMilestone(id);
     }
   };
@@ -443,16 +437,6 @@ export default function TeamProjects({
       ? "Upload Out-of-Scope Documents OR write by yourself."
       : undefined;
 
-  const milestoneCols = useMemo(
-    () =>
-      getMilestoneCols(
-        expandedMilestoneId,
-        handleExpandMilestone,
-        handleEditMilestoneClick
-      ),
-    [expandedMilestoneId, handleExpandMilestone, handleEditMilestoneClick]
-  );
-
   const milestoneFormElements = useMemo(
     () =>
       getMilestoneFormFields().map((f) => {
@@ -473,51 +457,32 @@ export default function TeamProjects({
   );
 
   const taskFormElements = useMemo(() => {
-    const milestoneOptions = rows.map((m) => ({
-      label: m.name,
-      value: String(m.id),
-    }));
+    const selectedMilestone = rows.find((m) => m.id === expandedMilestoneId);
 
-    return getTaskFormFields(milestoneOptions).flatMap((el) => {
-      if (el.name === "taskMilestoneLabel") {
-        const selected = milestoneOptions.find(
-          (m) => m.value === String(expandedMilestoneId)
-        );
-
-        return [
-          {
-            ...el,
-            type: "text",
-            defaultValue: selected?.label || "",
-            disabled: true,
-          },
-        ];
-      }
-
+    return getTaskFormFields([]).flatMap<IFieldConfig>((el) => {
       if (el.name === "taskMilestone") {
         return [
           {
-            ...el,
+            name: "taskMilestoneLabel",
+            label: "Milestone",
+            type: "text",
+            defaultValue: selectedMilestone?.name ?? "",
+            disabled: true,
+            column: { xs: 12, md: 6 },
+          },
+          {
+            name: "taskMilestone",
+            label: "Milestone Id",
             type: "hidden",
+            hidden: true,
             defaultValue: String(expandedMilestoneId ?? ""),
           },
         ];
       }
 
-      if (!editingTask) return [el];
-
-      if (el.name === "taskName")
-        return [{ ...el, defaultValue: editingTask.name }];
-
-      if (el.name === "taskDoc")
-        return [{ ...el, defaultValue: editingTask.description }];
-
-      if (el.name === "taskAssignee")
-        return [{ ...el, defaultValue: editingTask.assignees }];
-
       return [el];
     });
-  }, [editingTask, expandedMilestoneId, rows]);
+  }, [expandedMilestoneId, rows]);
 
   const mappedProjectFormFields = useMemo(() => {
     if (!projectData) return getProjectFormFields();
@@ -699,36 +664,17 @@ export default function TeamProjects({
           Milestones
         </Typography>
 
-        <DataTable<MilestoneRow>
-          title=""
-          columns={milestoneCols}
-          rows={rows}
-          pageSize={5}
-        />
-
-        {expandedMilestoneId !== null && (
-          <Box
-            sx={{
-              mt: 2,
-              p: 2,
-              borderRadius: 2,
-              border: "1px solid #d8dfef",
-              bgcolor: "#FFFAF3",
-            }}
-          >
-            <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
-              Task
-            </Typography>
-
-            <DataTable<TaskRow>
-              title=""
-              columns={taskColumns(handleEditTaskClick)}
-              rows={dynamicTasks[expandedMilestoneId] || []}
-              pageSize={4}
-            />
-
+        <MilestoneExpandableTable
+          milestones={rows}
+          tasksByMilestone={dynamicTasks}
+          expandedMilestoneId={expandedMilestoneId}
+          onExpand={handleExpandMilestone}
+          onEditTask={handleEditTaskClick}
+          onEditMilestone={handleEditMilestoneClick}
+          onDeleteMilestone={(m) => console.log("Delete milestone", m.id)}
+          taskForm={
             <CreateForm
-              key={taskFormKey}
+              key={`${taskFormKey}-${expandedMilestoneId}`}
               elements={taskFormElements}
               onSuccess={editingTask ? handleUpdateTask : handleAddTask}
               actionsContainerProps={{
@@ -736,8 +682,8 @@ export default function TeamProjects({
               }}
               submitButton={{ children: editingTask ? "Update" : "Add" }}
             />
-          </Box>
-        )}
+          }
+        />
 
         <CreateForm
           key={milestoneFormKey}

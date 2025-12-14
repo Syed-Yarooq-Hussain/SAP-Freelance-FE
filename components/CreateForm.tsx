@@ -47,6 +47,7 @@ export interface IFieldConfig {
   inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
   select?: boolean;
   defaultValue?: string | number | boolean | null;
+  hidden?: boolean;
 }
 
 interface ICreateFormProps {
@@ -162,6 +163,17 @@ export const CreateForm: FC<ICreateFormProps> = ({
       }}
     >
       {elements.map((element) => {
+        if (element.hidden) {
+          return (
+            <Controller
+              key={element.name}
+              name={element.name}
+              defaultValue={element.defaultValue ?? ""}
+              control={control}
+              render={({ field }) => <input type="hidden" {...field} />}
+            />
+          );
+        }
         const gridColumn = generateSpans("column", element.column);
         const gridRow = generateSpans("row", element.row);
         const isPassword = element.type === "password";
