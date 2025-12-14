@@ -10,25 +10,22 @@ import { teamBuilderSteps } from "@/data/teamBuilder";
 import { useProjectProgress } from "@/utils/useProjectProgress";
 import { Box } from "@mui/material";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 
 function TeamBuilderContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-
   const { updateProjectStep } = useProjectProgress();
-
   const stepParam = searchParams.get("step");
   const projectParam = searchParams.get("projectId");
-
   const [activeStep, setActiveStep] = useState(
     stepParam ? Math.max(1, Math.min(4, Number(stepParam))) : 1
   );
   const [projectId, setProjectId] = useState<string | null>(projectParam);
+  const lastSavedStepRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (!projectParam) return;
-
     setProjectId((prev) => (prev !== projectParam ? projectParam : prev));
   }, [projectParam]);
 
@@ -41,12 +38,16 @@ function TeamBuilderContent() {
     if (resume === "true" && stored) {
       setProjectId(stored);
     }
-  }, []);
+  }, [projectId]);
 
   useEffect(() => {
     if (!projectId) return;
+
+    if (lastSavedStepRef.current === activeStep) return;
+
+    lastSavedStepRef.current = activeStep;
     updateProjectStep(projectId, activeStep);
-  }, [projectId, activeStep]);
+  }, [projectId, activeStep, updateProjectStep]);
 
   useEffect(() => {
     const currentStep = searchParams.get("step");
@@ -59,7 +60,7 @@ function TeamBuilderContent() {
     if (projectId) q.set("projectId", projectId);
 
     router.replace(`?${q.toString()}`, { scroll: false });
-  }, [activeStep, projectId]);
+  }, [activeStep, projectId, router, searchParams]);
 
   const goStep2 = (id: string) => {
     setProjectId(id);
