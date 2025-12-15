@@ -196,7 +196,7 @@ export const CreateForm: FC<ICreateFormProps> = ({
                     <Box
                       sx={{
                         border: "1px dashed #4680FF",
-                        borderRadius: 2,
+                        borderRadius: 1,
                         py: 4,
                         textAlign: "center",
                         cursor: "pointer",

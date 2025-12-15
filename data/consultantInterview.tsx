@@ -2,31 +2,32 @@
 
 import { StatCardProps } from "@/components/StatCard";
 import StatusDropdown from "@/components/StatusDropdown";
+import { colors } from "@/utils/styles/colors";
 import { GridColDef } from "@mui/x-data-grid";
 
 export const consultantInterviewStats: StatCardProps[] = [
   {
     title: "Interview Requests",
     subtitle: 5,
-    color: "linear-gradient(135deg,  #4680FF 50%, #97B7FF 100%)",
+    color: colors.BLUE,
     icon: "MarkEmailUnreadIcon",
   },
   {
     title: "Interview Scheduled",
     subtitle: 3,
-    color: "linear-gradient(135deg, #00997B 50%, #4BD7BB 100%)",
+    color: colors.BLUE,
     icon: "EventAvailableIcon",
   },
   {
     title: "Reschedule Requests",
     subtitle: 4,
-    color: "linear-gradient(135deg, #FFB64E 50%, #F6BD6C 100%)",
+    color: colors.BLUE,
     icon: "UpdateIcon",
   },
   {
     title: "Rejected Interviews",
     subtitle: 3,
-    color: "linear-gradient(135deg, #FF5471 50%, #FF99AB 100%)",
+    color: colors.BLUE,
     icon: "HighlightOffIcon",
   },
 ];

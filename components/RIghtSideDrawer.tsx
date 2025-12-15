@@ -158,7 +158,6 @@ const RightSideDrawer: React.FC<RightSideDrawerProps> = ({
                     alignSelf: msg.sender === "me" ? "flex-end" : "flex-start",
                     bgcolor: msg.sender === "me" ? "#1976d2" : "#f1f1f1",
                     color: msg.sender === "me" ? "#fff" : "#000",
-                    borderRadius: 2,
                     px: 1.5,
                     py: 0.75,
                     maxWidth: "80%",
@@ -213,7 +212,6 @@ const RightSideDrawer: React.FC<RightSideDrawerProps> = ({
                 sx={{
                   bgcolor: "#f8f8f8",
                   p: 1.8,
-                  borderRadius: 2,
                   mb: 2,
                   boxShadow: "0px 1px 3px rgba(0,0,0,0.05)",
                 }}

@@ -7,7 +7,7 @@ import { StatCardProps } from "@/components/StatCard";
 import StatusChip from "@/components/StatusChip";
 import StatusDropdown from "@/components/StatusDropdown";
 import { currentMonth, currentYear, getCurrentMonth } from "@/utils/dateTime";
-import { buttonColors, statusColors } from "@/utils/styles/colors";
+import colors, { buttonColors, statusColors } from "@/utils/styles/colors";
 import { Box } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 
@@ -15,25 +15,25 @@ export const consultantStats: StatCardProps[] = [
   {
     title: "Appeared in Search",
     subtitle: 360,
-    color: "linear-gradient(135deg,  #4680FF 50%, #97B7FF 100%)",
+    color: colors.BLUE,
     icon: "QueryStatsIcon",
   },
   {
     title: "Interview Scheduled",
     subtitle: 10,
-    color: "linear-gradient(135deg, #00997B 50%, #4BD7BB 100%)",
+    color: colors.BLUE,
     icon: "PeopleAltIcon",
   },
   {
     title: "Projected Monthly Revenue",
     subtitle: "$3000",
-    color: "linear-gradient(135deg, #FFB64E 50%, #F6BD6C 100%)",
+    color: colors.BLUE,
     icon: "CurrencyExchangeIcon",
   },
   {
     title: `Invoices Values (${getCurrentMonth()})`,
     subtitle: "$12,000",
-    color: "linear-gradient(135deg, #FF5471 50%, #FF99AB 100%)",
+    color: colors.BLUE,
     icon: "BallotIcon",
   },
 ];

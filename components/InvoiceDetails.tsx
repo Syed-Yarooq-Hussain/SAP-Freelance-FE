@@ -49,7 +49,6 @@ const InvoiceDetails: React.FC<InvoiceDetailsProps> = ({
   return (
     <Box
       sx={{
-        borderRadius: 2,
         p: 2.5,
         bgcolor: "#f7f7f7",
         boxShadow: "0 1px 3px rgba(0,0,0,0.1)",

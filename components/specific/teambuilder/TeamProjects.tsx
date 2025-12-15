@@ -602,7 +602,6 @@ export default function TeamProjects({
     <Box
       sx={{
         p: 2,
-        borderRadius: 2,
         boxShadow: 2,
         bgcolor: "background.paper",
         mt: 3,

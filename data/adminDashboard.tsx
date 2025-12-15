@@ -11,50 +11,57 @@ export const adminStats: StatCardProps[] = [
   {
     title: "Number of Projects",
     subtitle: 360,
-    color: "linear-gradient(135deg,  #4680FF 50%, #97B7FF 100%)",
-    icon: "QueryStatsIcon" as const,
+    color: "linear-gradient(135deg, #97B7FF 0%, #3088B7 100%)",
+    icon: "QueryStatsIcon",
   },
+
   {
     title: "Interviews Scheduled",
     subtitle: 10,
-    color: "linear-gradient(135deg, #00997B 50%, #4BD7BB 100%)",
-    icon: "PeopleAltIcon" as const,
+    color: "linear-gradient(135deg, #4BD7BB 0%, #519F85 100%)",
+    icon: "PeopleAltIcon",
   },
+
   {
     title: "Total Spend on Projects",
     subtitle: "$3000",
-    color: "linear-gradient(135deg, #FFB64E 50%, #F6BD6C 100%)",
-    icon: "CurrencyExchangeIcon" as const,
+    color: "linear-gradient(135deg, #F6BD6C 0%, #024E76 100%)",
+    icon: "CurrencyExchangeIcon",
   },
+
   {
     title: "Pending Invoices",
     subtitle: "$12,000",
-    color: "linear-gradient(135deg, #FF5471 50%, #FF99AB 100%)",
-    icon: "BallotIcon" as const,
+    color: "linear-gradient(135deg, #FF99AB 0%, #005C8A 100%)",
+    icon: "BallotIcon",
   },
+
   {
     title: "Active Consultant",
     subtitle: 230,
-    color: "linear-gradient(135deg, #002DFF, #00125B)",
-    icon: "WorkOutlineIcon" as const,
+    color: "linear-gradient(135deg, #0040CC 0%, #100858 100%)",
+    icon: "WorkOutlineIcon",
   },
+
   {
     title: "Active Clients",
     subtitle: 160,
-    color: "linear-gradient(135deg, #0DBA7C, #004A2D)",
-    icon: "GroupWorkIcon" as const,
+    color: "linear-gradient(135deg, #0BA45D 0%, #0C2D17 100%)",
+    icon: "GroupWorkIcon",
   },
+
   {
     title: "Interviews this Week",
     subtitle: 20,
-    color: "linear-gradient(135deg, #FF9800, #7A4300)",
-    icon: "EventAvailableIcon" as const,
+    color: "linear-gradient(135deg, #FB9400 0%, #653B00 100%)",
+    icon: "EventAvailableIcon",
   },
+
   {
     title: "Upcoming Projects",
     subtitle: 5,
-    color: "linear-gradient(135deg, #FF3B5F, #2B0010)",
-    icon: "UpdateIcon" as const,
+    color: "linear-gradient(135deg, #B3001E 0%, #200005 100%)",
+    icon: "UpdateIcon",
   },
 ];
 
