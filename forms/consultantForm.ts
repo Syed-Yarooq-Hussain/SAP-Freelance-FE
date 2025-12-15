@@ -1,7 +1,15 @@
 import { IFieldConfig } from "@/components/CreateForm";
 import { LEVEL_OPTIONS, MODULE_OPTIONS } from "@/data/options";
+import { fetchSapModules } from "@/services/common";
+import { IOption } from "@/types/options";
 
-export function getConsultantFormFields(): IFieldConfig[] {
+export async function getConsultantFormFields(): Promise<IFieldConfig[]> {
+  const { data } = await fetchSapModules();
+
+  const coreOptions = convertModuleOptions(data?.core || []);
+  const otherOptions = convertModuleOptions(data?.others || []);
+  
+  
   return [
     {
       name: "cv",
@@ -48,34 +56,23 @@ export function getConsultantFormFields(): IFieldConfig[] {
       rules: { required: "Confirm Password is required" },
     },
     {
-      name: "city",
-      label: "City",
-      placeholder: "Enter city",
-      type: "text",
-    },
-    {
-      name: "country",
-      label: "Country",
-      placeholder: "Enter country",
-      type: "text",
-    },
-    {
-      name: "module",
-      label: "Module",
+      name: "core_module",
+      label: "Core Module",
       placeholder: "Select module",
       select: true,
       rules: { required: "Module is required" },
       defaultValue: "",
-      options: MODULE_OPTIONS,
+      multiple: true,
+      options: coreOptions,
     },
     {
-      name: "level",
-      label: "Level",
-      placeholder: "Select level",
+      name: "other_module",
+      label: "Other Module",
+      placeholder: "Select module",
       select: true,
-      rules: { required: "Level is required" },
+      rules: { required: "Module is required" },
       defaultValue: "",
-      options: LEVEL_OPTIONS,
+      options: otherOptions,
     },
     {
       name: "experience",
@@ -91,5 +88,39 @@ export function getConsultantFormFields(): IFieldConfig[] {
       type: "number",
       rules: { required: "Rate is required", min: 1 },
     },
+    {
+      name: "weekly_available_hours",
+      label: "Hours (Available per week)",
+      placeholder: "Enter hours",
+      type: "number",
+      rules: { required: "Rate is required", min: 1 },
+    },
+    {
+      name: "city",
+      label: "City",
+      placeholder: "Enter city",
+      type: "text",
+    },
+    {
+      name: "country",
+      label: "Country",
+      placeholder: "Enter country",
+      type: "text",
+    },
   ];
+
+  
 }
+
+interface IModule {
+  id: number;
+  name: string;
+}
+
+export function convertModuleOptions(modules: IModule[]): IOption[] {
+  return modules.map((m) => ({
+    label: m.name,
+    value: String(m.id),
+  }));
+}
+

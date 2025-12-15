@@ -1,7 +1,7 @@
 "use client";
 
 import { useSignupConsultant } from "@/actions/auth/signupConsultant";
-import { CreateForm } from "@/components/CreateForm";
+import { CreateForm, IFieldConfig } from "@/components/CreateForm";
 import { getConsultantFormFields } from "@/forms/consultantForm";
 import { IConsultantSignupPayload } from "@/types/consultant";
 import { Box, Paper } from "@mui/material";
@@ -19,8 +19,9 @@ interface IConsultantForm {
   confirmPassword: string;
   city: string;
   country: string;
-  module: string;
-  level: string;
+  core_module: string;
+  other_module: string;
+  weekly_available_hours: number;
   experience: number;
   rate: number;
   availableHours: number;
@@ -37,11 +38,19 @@ const SignUpConsultant: React.FC = () => {
   const { mutate, error, isPending } = useSignupConsultant();
   const searchParams = useSearchParams();
   const role = Number(searchParams.get("type"));
+  const [elements, setElements] = React.useState<IFieldConfig[]>([]);
 
-  const elements = getConsultantFormFields();
   const [prefillData, setPrefillData] = React.useState<Partial<FieldValues>>(
     {}
   );
+
+  React.useEffect(() => {
+    async function loadElements() {
+      const fields = await getConsultantFormFields(); 
+      setElements(fields);
+    }
+    loadElements();
+  }, []);
 
   const handleCVParsed = (parsed: Partial<FieldValues>) => {
     setPrefillData((prev) => ({ ...prev, ...parsed }));
@@ -52,11 +61,11 @@ const SignUpConsultant: React.FC = () => {
 
     const payload: IConsultantSignupPayload = {
       consultant: {
-        module: formData.module,
-        level: formData.level,
+        core_module: [formData.core_module],
+        other_module: [formData.other_module],
         experience: Number(formData.experience) || 0,
         rate: formData.rate,
-        weekly_available_hours: 20,
+        weekly_available_hours: formData.weekly_available_hours,
         schedule: {
           monday: "9-5",
           tuesday: "9-5",

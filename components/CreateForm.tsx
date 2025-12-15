@@ -46,6 +46,7 @@ export interface IFieldConfig {
   row?: IGridSpan;
   inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
   select?: boolean;
+  multiple?: boolean;
   defaultValue?: string | number | boolean | null;
 }
 
