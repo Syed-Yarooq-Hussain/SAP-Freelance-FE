@@ -36,7 +36,6 @@ export default function DynamicModal({
       slotProps={{
         paper: {
           sx: {
-            borderRadius: 2,
             width,
           },
         },

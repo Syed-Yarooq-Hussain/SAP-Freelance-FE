@@ -57,7 +57,6 @@ const Dashboard = <T extends GridValidRowModel = GridValidRowModel>({
             <Box
               sx={{
                 p: 2,
-                borderRadius: 2,
                 boxShadow: 2,
                 mb: 2,
                 bgcolor: "background.paper",
@@ -70,7 +69,6 @@ const Dashboard = <T extends GridValidRowModel = GridValidRowModel>({
           <Box
             sx={{
               p: 2,
-              borderRadius: 2,
               boxShadow: 2,
               bgcolor: "background.paper",
               mb: financeTable ? 2 : 0,
@@ -95,7 +93,6 @@ const Dashboard = <T extends GridValidRowModel = GridValidRowModel>({
             <Box
               sx={{
                 p: 2,
-                borderRadius: 2,
                 boxShadow: 2,
                 bgcolor: "background.paper",
                 mb: 2,

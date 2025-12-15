@@ -49,7 +49,6 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({
           sx: {
             mt: 0,
             minWidth: 200,
-            borderRadius: 2,
             overflow: "hidden",
             boxShadow:
               "0px 2px 8px rgba(0,0,0,0.1), 0px 4px 20px rgba(0,0,0,0.08)",

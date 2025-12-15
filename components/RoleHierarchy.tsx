@@ -34,7 +34,6 @@ export default function RoleHierarchy() {
     <Box
       sx={{
         p: 3,
-        borderRadius: 2,
         boxShadow: 2,
         bgcolor: "background.paper",
         mt: 3,

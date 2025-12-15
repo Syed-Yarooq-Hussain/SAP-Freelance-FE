@@ -14,7 +14,7 @@ export async function updateProjectService(
   const token = session?.accessToken;
 
   const res = await request<typeof body, IProject>({
-    url: `${API_ROUTES.PROJECT_UPDATE}/${projectId}`,
+    url: `${API_ROUTES.ADD_PROJECT_DETAILS}/${projectId}`,
     method: "PUT",
     data: body,
     headers: token ? { Authorization: `Bearer ${token}` } : undefined,

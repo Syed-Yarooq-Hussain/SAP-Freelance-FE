@@ -39,6 +39,7 @@ export interface IFieldConfig {
   inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
   select?: boolean;
   defaultValue?: string | number | boolean | null;
+  hidden?: boolean;
 }
 
 /* other props unchanged */
@@ -178,17 +179,28 @@ export const CreateForm: FC<ICreateFormProps> = ({
     if (file) await handleFileSelection(file, fieldName, onChange);
   };
 
-  /* render only current step's field (instead of full grid) */
   const renderCurrentField = () => {
     const element = elements[step];
     if (!element) return null;
 
     const isPassword = element.type === "password";
     const isFile = element.type === "file";
-    const isSelect = !!element.options?.length || !!dynamicOptions[element.name];
+    const isSelect = !!element.options?.length || !!dynamicOptions[element.name]?.length;
+
+    if (element.hidden) {
+      return (
+        <Controller
+          key={element.name}
+          name={element.name}
+          defaultValue={element.defaultValue ?? ""}
+          control={control}
+          render={({ field }) => <input type="hidden" {...field} />}
+        />
+      );
+    }
 
     return (
-      <FormControl fullWidth key={element.name} sx={{ width: "100%" }}>
+      <FormControl fullWidth sx={{ width: "100%" }}>
         <Controller
           name={element.name}
           defaultValue={element.defaultValue ?? ""}

@@ -85,7 +85,6 @@ const DynamicPopup: React.FC<DynamicPopupProps> = ({
       slotProps={{
         paper: {
           sx: {
-            borderRadius: 2,
             p: 2,
             width: 500,
             maxWidth: "640px",
@@ -127,7 +126,6 @@ const DynamicPopup: React.FC<DynamicPopupProps> = ({
           <Box
             sx={{
               border: "1px dashed #4680FF",
-              borderRadius: 2,
               py: 4,
               textAlign: "center",
               cursor: "pointer",

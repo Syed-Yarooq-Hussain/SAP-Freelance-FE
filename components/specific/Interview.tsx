@@ -178,7 +178,6 @@ export default function Interview<
       <Box
         sx={{
           p: 2,
-          borderRadius: 2,
           boxShadow: 2,
           bgcolor: "background.paper",
         }}

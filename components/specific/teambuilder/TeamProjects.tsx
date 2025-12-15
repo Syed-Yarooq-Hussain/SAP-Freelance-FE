@@ -1,18 +1,17 @@
 "use client";
 
+import { useUpdateProject } from "@/actions/projects/useaddProjectDetails";
 import { useCreateMilestone } from "@/actions/projects/useCreateMilestone";
 import { useCreateTask } from "@/actions/projects/useCreateTask";
 import { useGetMilestoneTasks } from "@/actions/projects/useGetMilestoneTasks";
 import { useGetProject } from "@/actions/projects/useGetProject";
 import { useGetProjectMilestones } from "@/actions/projects/useGetProjectMilestones";
 import { useUpdateMilestone } from "@/actions/projects/useUpdateMilestone";
-import { useUpdateProject } from "@/actions/projects/useUpdateProject";
 import { useUpdateTask } from "@/actions/projects/useUpdateTask";
 import AppButton from "@/components/Button";
-import { CreateForm } from "@/components/CreateForm";
-import DataTable from "@/components/DataTable";
+import { CreateForm, IFieldConfig } from "@/components/CreateForm";
+import MilestoneExpandableTable from "@/components/MilestoneExpandableTable";
 import DynamicPopup from "@/components/Popup";
-import { getMilestoneCols, taskColumns } from "@/data/teamBuilder";
 import { getMilestoneFormFields } from "@/forms/milestoneForm";
 import { getProjectFormFields } from "@/forms/projectForm";
 import { getTaskFormFields } from "@/forms/taskForm";
@@ -53,7 +52,7 @@ export default function TeamProjects({
   const updateTask = useUpdateTask();
   const [rows, setRows] = useState<MilestoneRow[]>([]);
   const [dynamicTasks, setDynamicTasks] = useState<TasksByMilestone>({});
-
+  const [projectData, setProjectData] = useState<any>(null);
   const [expandedMilestoneId, setExpandedMilestoneId] = useState<number | null>(
     null
   );
@@ -188,7 +187,8 @@ export default function TeamProjects({
   const handleSubmit = useCallback(
     (data: TeamProjectFormData) => {
       if (!projectId) {
-        toast("Project ID missing! Please complete Step 01 again.", "error");
+        console.log("Project ID not available yet… retrying");
+        setTimeout(() => handleSubmit(data), 200);
         return;
       }
 
@@ -210,25 +210,33 @@ export default function TeamProjects({
         {
           onSuccess: () => {
             toast("Project updated!", "success");
+            console.log("CALLING getProject FOR ID →", projectId);
 
             getProject.mutate(projectId, {
               onSuccess: (fresh) => {
                 console.log("Updated project fetched:", fresh.data);
-                toast("Latest project loaded!", "success");
+                setProjectData(fresh.data);
+                toast("Updated project loaded!", "success");
               },
-              onError: (err: Error) => {
-                toast(err.message, "error");
-              },
+              onError: (err) => toast(err.message, "error"),
             });
           },
-          onError: (err: Error) => {
-            toast(err.message, "error");
-          },
+          onError: (err) => toast(err.message, "error"),
         }
       );
     },
     [updateProject, toast, session, getProject, projectId]
   );
+
+  useEffect(() => {
+    if (!projectId) return;
+
+    getProject.mutate(projectId, {
+      onSuccess: (fresh) => {
+        setProjectData(fresh.data);
+      },
+    });
+  }, [projectId]);
 
   const fetchTasksForMilestone = useCallback(
     (milestoneId: number) => {
@@ -258,19 +266,13 @@ export default function TeamProjects({
     [getMilestoneTasks, toast, setDynamicTasks]
   );
 
-  const handleExpandMilestone = useCallback(
-    (id: number) => {
-      setExpandedMilestoneId((prev) => (prev === id ? null : id));
+  const handleExpandMilestone = (id: number | null) => {
+    setExpandedMilestoneId(id);
 
-      setDynamicTasks((prev) => {
-        if (!prev[id]) {
-          fetchTasksForMilestone(id);
-        }
-        return prev;
-      });
-    },
-    [fetchTasksForMilestone]
-  );
+    if (id !== null && !dynamicTasks[id]) {
+      fetchTasksForMilestone(id);
+    }
+  };
 
   const handleAddMilestone = (data: TeamProjectFormData) => {
     setEditingMilestone(null);
@@ -435,16 +437,6 @@ export default function TeamProjects({
       ? "Upload Out-of-Scope Documents OR write by yourself."
       : undefined;
 
-  const milestoneCols = useMemo(
-    () =>
-      getMilestoneCols(
-        expandedMilestoneId,
-        handleExpandMilestone,
-        handleEditMilestoneClick
-      ),
-    [expandedMilestoneId, handleExpandMilestone, handleEditMilestoneClick]
-  );
-
   const milestoneFormElements = useMemo(
     () =>
       getMilestoneFormFields().map((f) => {
@@ -465,38 +457,74 @@ export default function TeamProjects({
   );
 
   const taskFormElements = useMemo(() => {
-    const milestoneOptions = rows.map((m) => ({
-      label: m.name,
-      value: String(m.id),
-    }));
+    const selectedMilestone = rows.find((m) => m.id === expandedMilestoneId);
 
-    return getTaskFormFields(milestoneOptions).map((el) => {
+    return getTaskFormFields([]).flatMap<IFieldConfig>((el) => {
       if (el.name === "taskMilestone") {
-        return {
-          ...el,
-          options: milestoneOptions,
-          defaultValue: editingTask ? String(expandedMilestoneId) : undefined,
-          disabled: !!editingTask,
-        };
+        return [
+          {
+            name: "taskMilestoneLabel",
+            label: "Milestone",
+            type: "text",
+            defaultValue: selectedMilestone?.name ?? "",
+            disabled: true,
+            column: { xs: 12, md: 6 },
+          },
+          {
+            name: "taskMilestone",
+            label: "Milestone Id",
+            type: "hidden",
+            hidden: true,
+            defaultValue: String(expandedMilestoneId ?? ""),
+          },
+        ];
       }
 
-      if (!editingTask) return el;
-
-      if (el.name === "taskName")
-        return { ...el, defaultValue: editingTask.name };
-
-      if (el.name === "taskEnd")
-        return { ...el, defaultValue: editingTask.date };
-
-      if (el.name === "taskDoc")
-        return { ...el, defaultValue: editingTask.description };
-
-      if (el.name === "taskAssignee")
-        return { ...el, defaultValue: editingTask.assignees };
-
-      return el;
+      return [el];
     });
-  }, [editingTask, expandedMilestoneId, rows]);
+  }, [expandedMilestoneId, rows]);
+
+  const mappedProjectFormFields = useMemo(() => {
+    if (!projectData) return getProjectFormFields();
+
+    const details = projectData.projectDetails || {};
+    const client = projectData.client || {};
+
+    return getProjectFormFields().map((f) => {
+      switch (f.name) {
+        case "projectName":
+          return { ...f, defaultValue: projectData.name };
+
+        case "client":
+          return {
+            ...f,
+            defaultValue: client.username ?? "",
+            disabled: true,
+          };
+
+        case "startDate":
+          return {
+            ...f,
+            defaultValue: details.start_date?.split("T")[0] ?? "",
+          };
+
+        case "endDate":
+          return {
+            ...f,
+            defaultValue: details.end_date?.split("T")[0] ?? "",
+          };
+
+        case "duration":
+          return {
+            ...f,
+            defaultValue: String(details.duration ?? ""),
+          };
+
+        default:
+          return f;
+      }
+    });
+  }, [projectData]);
 
   const loadAllMilestones = useCallback(() => {
     if (!projectId) return;
@@ -574,7 +602,6 @@ export default function TeamProjects({
     <Box
       sx={{
         p: 2,
-        borderRadius: 2,
         boxShadow: 2,
         bgcolor: "background.paper",
         mt: 3,
@@ -584,22 +611,19 @@ export default function TeamProjects({
         Basic Details
       </Typography>
 
-      <CreateForm
-        elements={getProjectFormFields().map((f) =>
-          f.name === "client"
-            ? {
-                ...f,
-                defaultValue: session?.user?.username ?? "",
-                disabled: true,
-              }
-            : f
-        )}
-        onSuccess={handleSubmit}
-        actionsContainerProps={{
-          sx: { mt: 2, justifyContent: "flex-start" },
-        }}
-        submitButton={{ children: "Add" }}
-      />
+      {!projectData ? (
+        <Typography>Loading Basic Details...</Typography>
+      ) : (
+        <CreateForm
+          key={projectData.id}
+          elements={mappedProjectFormFields}
+          onSuccess={handleSubmit}
+          actionsContainerProps={{
+            sx: { mt: 2, justifyContent: "flex-start" },
+          }}
+          submitButton={{ children: "Add" }}
+        />
+      )}
 
       <Box sx={{ borderTop: "1px solid #eee", my: 2 }} />
 
@@ -639,36 +663,17 @@ export default function TeamProjects({
           Milestones
         </Typography>
 
-        <DataTable<MilestoneRow>
-          title=""
-          columns={milestoneCols}
-          rows={rows}
-          pageSize={5}
-        />
-
-        {expandedMilestoneId !== null && (
-          <Box
-            sx={{
-              mt: 2,
-              p: 2,
-              borderRadius: 2,
-              border: "1px solid #d8dfef",
-              bgcolor: "#fbfcff",
-            }}
-          >
-            <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
-              Task
-            </Typography>
-
-            <DataTable<TaskRow>
-              title=""
-              columns={taskColumns(handleEditTaskClick)}
-              rows={dynamicTasks[expandedMilestoneId] || []}
-              pageSize={4}
-            />
-
+        <MilestoneExpandableTable
+          milestones={rows}
+          tasksByMilestone={dynamicTasks}
+          expandedMilestoneId={expandedMilestoneId}
+          onExpand={handleExpandMilestone}
+          onEditTask={handleEditTaskClick}
+          onEditMilestone={handleEditMilestoneClick}
+          onDeleteMilestone={(m) => console.log("Delete milestone", m.id)}
+          taskForm={
             <CreateForm
-              key={taskFormKey}
+              key={`${taskFormKey}-${expandedMilestoneId}`}
               elements={taskFormElements}
               onSuccess={editingTask ? handleUpdateTask : handleAddTask}
               actionsContainerProps={{
@@ -676,8 +681,8 @@ export default function TeamProjects({
               }}
               submitButton={{ children: editingTask ? "Update" : "Add" }}
             />
-          </Box>
-        )}
+          }
+        />
 
         <CreateForm
           key={milestoneFormKey}
@@ -713,8 +718,8 @@ export default function TeamProjects({
           <AppButton
             label="Proceed to next step"
             colorKey="BLUE"
-            onClick={onNext}
             width={180}
+            onClick={() => onNext?.(projectId!)}
           />
         </Box>
       </Box>

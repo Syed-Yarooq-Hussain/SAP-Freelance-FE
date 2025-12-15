@@ -73,7 +73,7 @@ export async function fetchProjectDetails(
 export async function fetchConsultantProjects(): Promise<
   ApiResponse<IConsultantProject[]>
 > {
-  const session = await getSession();
+  const session = await getCachedSession();
   const token = session?.accessToken;
 
   const response = await request<undefined, IConsultantProject[]>({

@@ -8,7 +8,7 @@ import {
 import { StatCardProps } from "@/components/StatCard";
 import StatusDropdown from "@/components/StatusDropdown";
 import { APP_ROUTES } from "@/utils/app_routes";
-import { buttonColors } from "@/utils/styles/colors";
+import colors, { buttonColors } from "@/utils/styles/colors";
 import { Box } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
@@ -19,25 +19,25 @@ export const clientStats: StatCardProps[] = [
   {
     title: "Number of Projects",
     subtitle: 360,
-    color: "linear-gradient(135deg,  #4680FF 50%, #97B7FF 100%)",
+    color: colors.BLUE,
     icon: "QueryStatsIcon",
   },
   {
     title: "Interviews Scheduled",
     subtitle: 10,
-    color: "linear-gradient(135deg, #00997B 50%, #4BD7BB 100%)",
+    color: colors.BLUE,
     icon: "PeopleAltIcon",
   },
   {
     title: "Total Spend on Projects",
     subtitle: "$3000",
-    color: "linear-gradient(135deg, #FFB64E 50%, #F6BD6C 100%)",
+    color: colors.BLUE,
     icon: "CurrencyExchangeIcon",
   },
   {
     title: "Pending Invoices",
     subtitle: "$12,000",
-    color: "linear-gradient(135deg, #FF5471 50%, #FF99AB 100%)",
+    color: colors.BLUE,
     icon: "BallotIcon",
   },
 ];

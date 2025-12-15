@@ -91,10 +91,10 @@ export const ASSIGNEE_OPTIONS: IOption[] = [
 ];
 
 export const INTERVIEW_DURATION_OPTIONS: IOption[] = [
-  { value: "15 mins", label: "15 mins" },
-  { value: "30 mins", label: "30 mins" },
-  { value: "45 mins", label: "45 mins" },
-  { value: "60 mins", label: "60 mins" },
-  { value: "75 mins", label: "75 mins" },
-  { value: "90 mins", label: "90 mins" },
+  { value: "15", label: "15 mins" },
+  { value: "30", label: "30 mins" },
+  { value: "45", label: "45 mins" },
+  { value: "60", label: "60 mins" },
+  { value: "75", label: "75 mins" },
+  { value: "90", label: "90 mins" },
 ];

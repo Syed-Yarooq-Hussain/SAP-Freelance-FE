@@ -63,7 +63,6 @@ export default function Document<
     <Box
       sx={{
         p: 2,
-        borderRadius: 2,
         boxShadow: 2,
         bgcolor: "background.paper",
       }}

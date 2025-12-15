@@ -13,7 +13,7 @@ const getTheme = (mode: "light" | "dark") =>
         main: "#73b4ff",
       },
       background: {
-        default: mode === "light" ? "#f4f6f8" : "#1a1a1a",
+        default: mode === "light" ? "#F6F7FB" : "#1a1a1a",
         paper: mode === "light" ? "#ffffff" : "#222222",
       },
       text: {
@@ -21,9 +21,12 @@ const getTheme = (mode: "light" | "dark") =>
         secondary: mode === "light" ? "#555" : "#ccc",
       },
     },
+
     typography: {
-      fontFamily: "var(--font-open-sans), 'Open Sans','Helvetica Neue',Helvetica,Arial,sans-serif",
+      fontFamily:
+        "var(--font-open-sans), 'Open Sans','Helvetica Neue',Helvetica,Arial,sans-serif",
     },
+
     components: {
       MuiAppBar: {
         styleOverrides: {
@@ -33,6 +36,7 @@ const getTheme = (mode: "light" | "dark") =>
           },
         },
       },
+
       MuiToolbar: {
         styleOverrides: {
           root: {
@@ -40,6 +44,34 @@ const getTheme = (mode: "light" | "dark") =>
             "@media (min-width:600px)": {
               minHeight: 50,
             },
+          },
+        },
+      },
+
+      MuiPopover: {
+        defaultProps: {
+          disableScrollLock: true,
+        },
+      },
+      MuiMenu: {
+        defaultProps: {
+          disableScrollLock: true,
+        },
+      },
+      MuiModal: {
+        defaultProps: {
+          disableScrollLock: true,
+        },
+      },
+      MuiAutocomplete: {
+        defaultProps: {
+          disablePortal: true,
+        },
+      },
+      MuiSelect: {
+        defaultProps: {
+          MenuProps: {
+            disableScrollLock: true,
           },
         },
       },

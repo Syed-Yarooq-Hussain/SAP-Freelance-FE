@@ -4,7 +4,7 @@ export const API_ROUTES = {
   SIGNUP_CONSULTANT: "/auth/signup/consultant",
   CLIENT_CONSULTANTS: "/clients/consultants",
   PROJECT_CREATE: "/projects/create",
-  PROJECT_UPDATE: "/projects",
+  ADD_PROJECT_DETAILS: "/projects",
   UPDATE_PROJECT: "/projects",
   MILESTONE_CREATE: "/projects",
   GET_PROJECT_MILESTONE: "/projects",
