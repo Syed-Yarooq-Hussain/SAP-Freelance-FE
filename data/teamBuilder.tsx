@@ -1,9 +1,7 @@
 import { StatCardProps } from "@/components/StatCard";
 import StatusChip from "@/components/StatusChip";
-import type { CandidateRow, MilestoneRow, TaskRow } from "@/types/teamBuilder";
+import type { CandidateRow, TaskRow } from "@/types/teamBuilder";
 import { colors, statusColors } from "@/utils/styles/colors";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -49,25 +47,25 @@ export const teamBuilderStats: StatCardProps[] = [
   {
     title: "Hours Per Week",
     subtitle: 6,
-    color: "linear-gradient(135deg, #5AA9FF 50%, #80C4FF 100%)",
+    color: colors.BLUE,
     icon: "QueryStatsIcon" as const,
   },
   {
     title: "Avg. Rate Per Hour",
     subtitle: "$20",
-    color: "linear-gradient(135deg, #00997B 50%, #4BD7BB 100%)",
+    color: colors.BLUE,
     icon: "CurrencyExchangeIcon" as const,
   },
   {
     title: "Hours Per Month",
     subtitle: 30,
-    color: "linear-gradient(135deg, #FFB64E 50%, #FFD27F 100%)",
+    color: colors.BLUE,
     icon: "EventAvailableIcon" as const,
   },
   {
     title: "Per Month Cost",
     subtitle: "$12,000",
-    color: "linear-gradient(135deg, #FF5471 50%, #FF99AB 100%)",
+    color: colors.BLUE,
     icon: "BallotIcon" as const,
   },
 ];
