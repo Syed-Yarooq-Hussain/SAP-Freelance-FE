@@ -4,7 +4,8 @@ import { useMeetingInvite } from "@/actions/common/useMeetingInvite";
 import DataTable from "@/components/DataTable";
 import FilterDrawer from "@/components/FilterDrawer";
 import DynamicPopup from "@/components/Popup";
-import { IMeetingInviteBody } from "@/types/teamBuilder";
+import { getTeamInterviewFormFields } from "@/forms/teamInterviewForm";
+import { mapTaskFieldsToPopup } from "@/utils/mapFormToPopup";
 import colors from "@/utils/styles/colors";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { Box, Button, Link, Typography } from "@mui/material";
@@ -14,12 +15,6 @@ import {
   GridValidRowModel,
 } from "@mui/x-data-grid";
 import { useState } from "react";
-
-interface MeetingData {
-  date: string;
-  time: string;
-  duration: string;
-}
 
 interface ConsultantProps<T extends GridValidRowModel = GridValidRowModel> {
   title: string;
@@ -47,67 +42,11 @@ export default function Consultant<
   const [selectedConsultantId, setSelectedConsultantId] = useState<
     number | null
   >(null);
-  const [scheduleData, setScheduleData] = useState<MeetingData>({
+  const [meetingData, setMeetingData] = useState<Record<string, string>>({
     date: "",
     time: "",
     duration: "",
   });
-  const [rescheduleData, setRescheduleData] = useState<MeetingData>({
-    date: "",
-    time: "",
-    duration: "",
-  });
-
-  const handleCloseSchedule = () => {
-    setScheduleOpen(false);
-    setScheduleData({ date: "", time: "", duration: "" });
-  };
-  const handleCloseReschedule = () => {
-    setRescheduleOpen(false);
-    setRescheduleData({ date: "", time: "", duration: "" });
-  };
-
-  const handleScheduleSubmit = () => {
-    if (!selectedConsultantId || !projectId) return;
-
-    const dateTime = `${scheduleData.date} ${scheduleData.time}`;
-
-    const body: IMeetingInviteBody = {
-      date_time: dateTime,
-      invitees_id: [Number(selectedConsultantId)],
-      duration: Number(scheduleData.duration ?? 30),
-      event_type: "meeting",
-      project_id: Number(projectId),
-    };
-
-    meetingInvite.mutate(body, {
-      onSuccess: () => {
-        console.log("Meeting scheduled!");
-        handleCloseSchedule();
-      },
-    });
-  };
-
-  const handleRescheduleSubmit = () => {
-    if (!selectedConsultantId || !projectId) return;
-
-    const dateTime = `${rescheduleData.date} ${rescheduleData.time}`;
-
-    const body: IMeetingInviteBody = {
-      date_time: dateTime,
-      invitees_id: [Number(selectedConsultantId)],
-      duration: Number(rescheduleData.duration ?? 30),
-      event_type: "meeting",
-      project_id: Number(projectId),
-    };
-
-    meetingInvite.mutate(body, {
-      onSuccess: () => {
-        console.log("Meeting rescheduled!");
-        handleCloseReschedule();
-      },
-    });
-  };
 
   const finalColumns = showMeetingActions
     ? [
@@ -207,94 +146,84 @@ export default function Consultant<
 
       <DynamicPopup
         open={scheduleOpen}
-        onClose={handleCloseSchedule}
+        onClose={() => {
+          setScheduleOpen(false);
+          setMeetingData({ date: "", time: "", duration: "" });
+        }}
         title="Schedule Meeting"
-        fields={[
-          {
-            id: "date",
-            label: "Date",
-            type: "date",
-            value: scheduleData.date,
-            onChange: (val: string | File) => {
-              if (typeof val === "string")
-                setScheduleData((p) => ({ ...p, date: val }));
-            },
-          },
-          {
-            id: "duration",
-            label: "Select Duration",
-            placeholder: "Select duration",
-            //options: INTERVIEW_DURATION_OPTIONS.map((d) => d.label),
-            value: scheduleData.duration,
-            onChange: (val: string | File) => {
-              if (typeof val === "string")
-                setScheduleData((p) => ({ ...p, duration: val }));
-            },
-          },
-          {
-            id: "time",
-            label: "Time",
-            type: "time",
-            value: scheduleData.time,
-            onChange: (val: string | File) => {
-              if (typeof val === "string")
-                setScheduleData((p) => ({ ...p, time: val }));
-            },
-          },
-        ]}
+        fields={mapTaskFieldsToPopup(
+          getTeamInterviewFormFields(),
+          meetingData,
+          (field, value) =>
+            setMeetingData((prev) => ({ ...prev, [field]: value }))
+        )}
         buttonText="Send Invite"
         buttonColor="BLUE"
-        onSubmit={handleScheduleSubmit}
         disableSubmit={
-          !scheduleData.date || !scheduleData.duration || !scheduleData.time
+          !meetingData.date || !meetingData.time || !meetingData.duration
         }
+        onSubmit={() => {
+          if (!selectedConsultantId || !projectId) return;
+
+          const dateTime = `${meetingData.date} ${meetingData.time}`;
+
+          meetingInvite.mutate(
+            {
+              date_time: dateTime,
+              invitees_id: [Number(selectedConsultantId)],
+              duration: Number(meetingData.duration),
+              event_type: "meeting",
+              project_id: Number(projectId),
+            },
+            {
+              onSuccess: () => {
+                setScheduleOpen(false);
+                setMeetingData({ date: "", time: "", duration: "" });
+              },
+            }
+          );
+        }}
       />
 
       <DynamicPopup
         open={rescheduleOpen}
-        onClose={handleCloseReschedule}
+        onClose={() => {
+          setRescheduleOpen(false);
+          setMeetingData({ date: "", time: "", duration: "" });
+        }}
         title="Reschedule Meeting"
-        fields={[
-          {
-            id: "date",
-            label: "Date",
-            type: "date",
-            value: rescheduleData.date,
-            onChange: (val: string | File) => {
-              if (typeof val === "string")
-                setRescheduleData((p) => ({ ...p, date: val }));
-            },
-          },
-          {
-            id: "duration",
-            label: "Select Duration",
-            placeholder: "Select duration",
-            //options: INTERVIEW_DURATION_OPTIONS.map((d) => d.label),
-            value: rescheduleData.duration,
-            onChange: (val: string | File) => {
-              if (typeof val === "string")
-                setRescheduleData((p) => ({ ...p, duration: val }));
-            },
-          },
-          {
-            id: "time",
-            label: "Time",
-            type: "time",
-            value: rescheduleData.time,
-            onChange: (val: string | File) => {
-              if (typeof val === "string")
-                setRescheduleData((p) => ({ ...p, time: val }));
-            },
-          },
-        ]}
+        fields={mapTaskFieldsToPopup(
+          getTeamInterviewFormFields(),
+          meetingData,
+          (field, value) =>
+            setMeetingData((prev) => ({ ...prev, [field]: value }))
+        )}
         buttonText="Suggest"
         buttonColor="BLUE"
-        onSubmit={handleRescheduleSubmit}
         disableSubmit={
-          !rescheduleData.date ||
-          !rescheduleData.time ||
-          !rescheduleData.duration
+          !meetingData.date || !meetingData.time || !meetingData.duration
         }
+        onSubmit={() => {
+          if (!selectedConsultantId || !projectId) return;
+
+          const dateTime = `${meetingData.date} ${meetingData.time}`;
+
+          meetingInvite.mutate(
+            {
+              date_time: dateTime,
+              invitees_id: [Number(selectedConsultantId)],
+              duration: Number(meetingData.duration),
+              event_type: "meeting",
+              project_id: Number(projectId),
+            },
+            {
+              onSuccess: () => {
+                setRescheduleOpen(false);
+                setMeetingData({ date: "", time: "", duration: "" });
+              },
+            }
+          );
+        }}
       />
     </>
   );

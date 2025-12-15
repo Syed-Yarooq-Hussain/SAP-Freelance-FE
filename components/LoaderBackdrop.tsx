@@ -1,14 +1,32 @@
 "use client";
 
+import colors from "@/utils/styles/colors";
 import { Backdrop, CircularProgress } from "@mui/material";
 
-export default function LoaderBackdrop({ open }: { open: boolean }) {
+type LoaderBackdropProps = {
+  open: boolean;
+  color?: string;
+};
+
+export default function LoaderBackdrop({
+  open,
+  color = colors.BLUE,
+}: LoaderBackdropProps) {
   return (
     <Backdrop
       open={open}
-      sx={{ color: "#fff", zIndex: (t) => t.zIndex.tooltip + 1 }}
+      sx={{
+        zIndex: (theme) => theme.zIndex.modal + 1,
+        backdropFilter: "blur(3px)",
+        backgroundColor: "rgba(0,0,0,0.1)",
+      }}
     >
-      <CircularProgress thickness={4} />
+      <CircularProgress
+        thickness={4}
+        sx={{
+          color,
+        }}
+      />
     </Backdrop>
   );
 }
