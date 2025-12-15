@@ -21,10 +21,12 @@ const getTheme = (mode: "light" | "dark") =>
         secondary: mode === "light" ? "#555" : "#ccc",
       },
     },
+
     typography: {
       fontFamily:
         "var(--font-open-sans), 'Open Sans','Helvetica Neue',Helvetica,Arial,sans-serif",
     },
+
     components: {
       MuiAppBar: {
         styleOverrides: {
@@ -34,6 +36,7 @@ const getTheme = (mode: "light" | "dark") =>
           },
         },
       },
+
       MuiToolbar: {
         styleOverrides: {
           root: {
@@ -41,6 +44,34 @@ const getTheme = (mode: "light" | "dark") =>
             "@media (min-width:600px)": {
               minHeight: 50,
             },
+          },
+        },
+      },
+
+      MuiPopover: {
+        defaultProps: {
+          disableScrollLock: true,
+        },
+      },
+      MuiMenu: {
+        defaultProps: {
+          disableScrollLock: true,
+        },
+      },
+      MuiModal: {
+        defaultProps: {
+          disableScrollLock: true,
+        },
+      },
+      MuiAutocomplete: {
+        defaultProps: {
+          disablePortal: true,
+        },
+      },
+      MuiSelect: {
+        defaultProps: {
+          MenuProps: {
+            disableScrollLock: true,
           },
         },
       },
