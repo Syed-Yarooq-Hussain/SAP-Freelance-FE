@@ -17,6 +17,7 @@ export default function ClientProjectPage() {
         const mapped: ClientProjectRow[] =
           res.data?.map((item: IClientProjectDTO, index) => ({
             id: `${item.id}-${index}`,
+            projectId: String(item.id),
             name: item.name,
             members: item.members,
             duration: item.projectDetails?.duration

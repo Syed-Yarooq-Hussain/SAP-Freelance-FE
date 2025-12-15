@@ -21,6 +21,7 @@ export default function ConsultantProjectPage() {
         const mapped: IConsultantProjectRow[] =
           res.data?.map((item: IConsultantProject) => ({
             id: Number(item.project_id),
+            projectId: String(item.project_id),
             project_name: item.project_name,
             client_name: item.client_name,
             modules: item.modules?.length ? item.modules.join(", ") : "N/A",
