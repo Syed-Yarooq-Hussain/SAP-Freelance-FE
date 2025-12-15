@@ -4,12 +4,13 @@ import {
   DESKTOP_DRAWER_WIDTH,
   MOBILE_DRAWER_WIDTH,
 } from "@/constants/dimensions";
-import { Box, CssBaseline, Drawer, useMediaQuery } from "@mui/material";
+import { Box, CssBaseline, Drawer } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import Image from "next/image";
-import React, { FC } from "react";
+import React, { FC, useEffect, useState } from "react";
 import AppNavbar from "./AppNavbar";
 import DrawerList from "./DrawerList";
+import DrawerListSkeleton from "./DrawerListSkeleton";
 
 type ISidebarProps = {
   children: React.ReactNode;
@@ -17,23 +18,39 @@ type ISidebarProps = {
 
 const Sidebar: FC<ISidebarProps> = ({ children }) => {
   const theme = useTheme();
-  const open = useMediaQuery(theme.breakpoints.up("md"));
+  const [mounted, setMounted] = useState(false);
+  const [open, setOpen] = useState(true);
+
+  useEffect(() => {
+    setMounted(true);
+
+    const handleResize = () => {
+      setOpen(window.innerWidth >= theme.breakpoints.values.md);
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, [theme.breakpoints.values.md]);
+
+  if (!mounted) return null;
 
   const appBarHeight = theme.mixins.toolbar.minHeight;
 
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
-
       <AppNavbar />
 
       <Drawer
         variant="permanent"
-        open={true}
         sx={{
           width: open ? DESKTOP_DRAWER_WIDTH : MOBILE_DRAWER_WIDTH,
+          flexShrink: 0,
           "& .MuiDrawer-paper": {
             width: open ? DESKTOP_DRAWER_WIDTH : MOBILE_DRAWER_WIDTH,
+            boxSizing: "border-box",
           },
         }}
       >
@@ -62,22 +79,14 @@ const Sidebar: FC<ISidebarProps> = ({ children }) => {
 
         <Box
           sx={{
-            width: "100%",
             height: 64,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            px: 1.5,
-            py: 1,
+            px: 2,
           }}
         >
-          <Box
-            sx={{
-              position: "relative",
-              width: { xs: 100, sm: 120, md: 140 },
-              height: 40,
-            }}
-          >
+          <Box sx={{ position: "relative", width: 140, height: 40 }}>
             <Image
               src="/vx9-logo-02.png"
               alt="Logo"
@@ -88,7 +97,7 @@ const Sidebar: FC<ISidebarProps> = ({ children }) => {
           </Box>
         </Box>
 
-        <DrawerList open={open} />
+        {mounted ? <DrawerList open={open} /> : <DrawerListSkeleton />}
       </Drawer>
 
       <Box
@@ -96,7 +105,8 @@ const Sidebar: FC<ISidebarProps> = ({ children }) => {
         sx={{
           flexGrow: 1,
           p: 2,
-          marginTop: `${appBarHeight}px`,
+          mt: `${appBarHeight}px`,
+          minHeight: "100vh",
         }}
       >
         {children}
