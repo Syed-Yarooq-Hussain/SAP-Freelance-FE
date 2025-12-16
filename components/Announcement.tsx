@@ -37,9 +37,10 @@ export default function Announcement({
       sx={{
         display: "flex",
         alignItems: "center",
-        bgcolor: "#F2F3F7",
+        bgcolor: "#E6F1FA",
         px: 2,
         py: 1,
+        borderRadius: 2,
         mb: 1,
       }}
     >
@@ -59,7 +60,7 @@ export default function Announcement({
           onClick={handlePrev}
           sx={{ p: 0.5, color: "text.secondary" }}
         >
-          <ArrowBackIosNewIcon sx={{ fontSize: 16 }} />
+          <ArrowBackIosNewIcon sx={{ fontSize: 16, color:"red" }} />
         </IconButton>
       </Typography>
 
@@ -71,6 +72,8 @@ export default function Announcement({
           textAlign: "center",
           whiteSpace: "nowrap",
           overflow: "hidden",
+          fontStyle: "italic",
+          fontfamily:"serif",
           textOverflow: "ellipsis",
           px: 1,
         }}
@@ -83,7 +86,7 @@ export default function Announcement({
         onClick={handleNext}
         sx={{ color: "text.secondary" }}
       >
-        <ArrowForwardIosIcon sx={{ fontSize: 16 }} />
+        <ArrowForwardIosIcon sx={{ fontSize: 16, color:"red" }} />
       </IconButton>
     </Box>
   );

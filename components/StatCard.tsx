@@ -46,7 +46,7 @@ const StatCard: FC<StatCardProps> = ({
   return (
     <Card
       sx={{
-        height: 110,
+        height: 90,
         background: color,
         color: "#fff",
         display: "flex",
@@ -67,6 +67,7 @@ const StatCard: FC<StatCardProps> = ({
             variant="body2"
             sx={{
               opacity: 0.9,
+              fontSize: 12,
               fontWeight: 500,
             }}
           >
@@ -76,7 +77,8 @@ const StatCard: FC<StatCardProps> = ({
           <Typography
             sx={{
               fontSize: 28,
-              fontWeight: 700,
+              fontWeight: 1000,
+              fontFamily: "serif",
               lineHeight: 1.2,
               mt: 0.5,
             }}
@@ -100,8 +102,8 @@ const StatCard: FC<StatCardProps> = ({
 
         <Box
           sx={{
-            width: 44,
-            height: 44,
+            width: 35,
+            height: 35,
             borderRadius: "50%",
             background: "rgba(255,255,255,0.2)",
             display: "flex",

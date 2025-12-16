@@ -2,12 +2,11 @@
 
 import { useLogout } from "@/actions/auth/logout";
 import { DESKTOP_DRAWER_WIDTH } from "@/constants/dimensions";
-import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
-import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
+import Person2Icon from '@mui/icons-material/Person2';
+import ForumIcon from '@mui/icons-material/ForumOutlined';
 import MenuIcon from "@mui/icons-material/Menu";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
-import {
+import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';import {
   AppBar,
   Badge,
   Box,
@@ -62,7 +61,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
             ? { md: `calc(100% - ${DESKTOP_DRAWER_WIDTH}px)` }
             : "100%",
           ml: showSidebar ? { md: `${DESKTOP_DRAWER_WIDTH}px` } : 0,
-          backgroundColor: "#E6EEF9",
+          backgroundColor: "#DAE6F2",
           transition: "all 0.3s ease",
         }}
       >
@@ -73,7 +72,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
             alignItems: "center",
           }}
         >
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <Box sx={{ display: "flex", alignItems: "center",fontFamily:"serif", gap: 1 }}>
             {showSidebar && (
               <Box sx={{ display: { xs: "flex", md: "none" }, mr: 1 }}>
                 <IconButton size="large" edge="start" color="inherit">
@@ -97,7 +96,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
               onClick={() => openDrawer("notification")}
             >
               <Badge badgeContent={17} color="error">
-                <NotificationsNoneIcon />
+                <NotificationsActiveIcon sx={{ color: "#f59e0b", fontSize:28}} />
               </Badge>
             </IconButton>
 
@@ -107,7 +106,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
               onClick={() => openDrawer("chat")}
             >
               <Badge badgeContent={4} color="error">
-                <ChatOutlinedIcon />
+                <ForumIcon sx={{ color: "#3b82f6" }}/>
               </Badge>
             </IconButton>
 
@@ -117,7 +116,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
               color="inherit"
               onClick={handleProfileMenuOpen}
             >
-              <AccountCircleOutlinedIcon />
+              <Person2Icon sx={{ color: "#22c55e" ,fontSize:32 }}/>
             </IconButton>
           </Box>
 
@@ -142,7 +141,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
           <MenuItem onClick={() => openDrawer("chat")}>
             <IconButton size="large" color="inherit">
               <Badge badgeContent={4} color="error">
-                <ChatOutlinedIcon />
+                <ForumIcon />
               </Badge>
             </IconButton>
             <p>Messages</p>
@@ -150,14 +149,14 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
           <MenuItem onClick={() => openDrawer("notification")}>
             <IconButton size="large" color="inherit">
               <Badge badgeContent={17} color="error">
-                <NotificationsNoneIcon />
+                <NotificationsActiveIcon />
               </Badge>
             </IconButton>
             <p>Notifications</p>
           </MenuItem>
           <MenuItem onClick={handleProfileMenuOpen}>
             <IconButton size="large" color="inherit">
-              <AccountCircleOutlinedIcon />
+              <Person2Icon />
             </IconButton>
             <p>Account</p>
           </MenuItem>

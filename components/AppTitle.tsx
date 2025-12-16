@@ -60,8 +60,10 @@ const AppTitle: React.FC = () => {
         sx={{
           fontWeight: 700,
           fontSize: "1.35rem",
-          color: "#1A1A1A",
+          color: "#4290BD",
           letterSpacing: "0.5px",
+          fontFamily:"sans-serif",
+          textShadow: "-0.5px 0.5px 1px rgba(0, 0, 0)",
         }}
       >
         {getTitle()}

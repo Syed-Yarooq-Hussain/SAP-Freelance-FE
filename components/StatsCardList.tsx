@@ -19,7 +19,7 @@ const StatsCardList: FC<DashboardStatsProps> = ({ stats, containerProps }) => {
         gridTemplateColumns: {
           xs: "1fr",
           sm: "repeat(2, 1fr)",
-          md: "repeat(auto-fit, minmax(260px, 1fr))",
+          md: "repeat(auto-fit, minmax(200px, 1fr))",
         },
         alignItems: "stretch",
         ...(containerProps?.sx || {}),
