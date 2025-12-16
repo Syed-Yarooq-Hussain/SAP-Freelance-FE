@@ -4,7 +4,7 @@ import { useSignupClient } from "@/actions/auth/signupClient";
 import { CreateForm } from "@/components/CreateForm";
 import { getClientFormFields } from "@/forms/clientForm";
 import { IBaseSignupDTO } from "@/types/common-auth";
-import { ISignUpClientForm } from "@/types/sign-up";
+import { ISignUpClientForm } from "@/types/signup-form";
 import { Box, Paper } from "@mui/material";
 import { useSearchParams } from "next/navigation";
 import * as React from "react";

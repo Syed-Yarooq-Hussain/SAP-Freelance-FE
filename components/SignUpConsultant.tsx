@@ -4,7 +4,7 @@ import { useSignupConsultant } from "@/actions/auth/signupConsultant";
 import { CreateForm } from "@/components/CreateForm";
 import { getConsultantFormFields } from "@/forms/consultantForm";
 import { IConsultantSignupPayload } from "@/types/consultant";
-import { ISignUpConsultantForm } from "@/types/sign-up";
+import { ISignUpConsultantForm } from "@/types/signup-form";
 import { Box, Paper } from "@mui/material";
 import { useSearchParams } from "next/navigation";
 import * as React from "react";
