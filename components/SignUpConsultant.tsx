@@ -4,34 +4,13 @@ import { useSignupConsultant } from "@/actions/auth/signupConsultant";
 import { CreateForm } from "@/components/CreateForm";
 import { getConsultantFormFields } from "@/forms/consultantForm";
 import { IConsultantSignupPayload } from "@/types/consultant";
+import { ISignUpConsultantForm } from "@/types/sign-up";
 import { Box, Paper } from "@mui/material";
 import { useSearchParams } from "next/navigation";
 import * as React from "react";
 import { FieldValues } from "react-hook-form";
 import AuthHeader from "./AuthHeader";
 import LoginLink from "./LoginLink";
-
-interface IConsultantForm {
-  fullName: string;
-  email: string;
-  phone: string;
-  password: string;
-  confirmPassword: string;
-  city: string;
-  country: string;
-  module: string;
-  level: string;
-  experience: number;
-  rate: number;
-  availableHours: number;
-  availability: {
-    day: string;
-    enabled: boolean;
-    start?: string;
-    end?: string;
-  }[];
-  cvUrl: string;
-}
 
 const SignUpConsultant: React.FC = () => {
   const { mutate, error, isPending } = useSignupConsultant();
@@ -48,7 +27,7 @@ const SignUpConsultant: React.FC = () => {
   };
 
   const handleSuccess = (data: FieldValues) => {
-    const formData = { ...prefillData, ...data } as IConsultantForm;
+    const formData = { ...prefillData, ...data } as ISignUpConsultantForm;
 
     const payload: IConsultantSignupPayload = {
       consultant: {
@@ -90,12 +69,12 @@ const SignUpConsultant: React.FC = () => {
       sx={{
         minHeight: "100vh",
         width: "100vw",
-        bgcolor: "#f7f9fc",
         display: "flex",
         justifyContent: "center",
-        alignItems: "flex-start",
+        alignItems: "center",
+        bgcolor: "#f7f9fc",
         p: 2,
-        overflowY: "auto",
+        position: "fixed",
         top: 0,
         left: 0,
       }}
@@ -104,8 +83,8 @@ const SignUpConsultant: React.FC = () => {
         elevation={4}
         sx={{
           width: "100%",
-          maxWidth: 560,
-          p: 4,
+          maxWidth: 480,
+          p: { xs: 3, sm: 4 },
           borderRadius: 3,
         }}
       >
@@ -127,7 +106,6 @@ const SignUpConsultant: React.FC = () => {
             size: "large",
           }}
         />
-
         <LoginLink />
       </Paper>
     </Box>

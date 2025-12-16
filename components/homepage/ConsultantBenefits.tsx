@@ -142,9 +142,10 @@ export function ConsultantBenefits({ onRegister }: ConsultantBenefitsProps) {
 
         <div className="text-center">
           <button
-            onClick={() => {
-              window.location.href = APP_ROUTES.SIGNUP_SELECT;
-            }}
+            // onClick={() => {
+            //   window.location.href = APP_ROUTES.SIGNUP_SELECT;
+            // }}
+            onClick={onRegister}
             className="group relative inline-flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-12 py-5 rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all shadow-2xl hover:shadow-purple-500/50 transform hover:scale-105 overflow-hidden"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
