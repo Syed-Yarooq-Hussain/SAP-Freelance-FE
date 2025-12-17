@@ -1,4 +1,4 @@
-import { IFieldConfig } from "@/components/CreateForm";
+import { IFieldConfig } from "@/types/create-form";
 import { SKILLS_OPTIONS } from "./options";
 
 export const consultantProfileData = {
