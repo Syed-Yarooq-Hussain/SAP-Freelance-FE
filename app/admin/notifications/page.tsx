@@ -1,18 +1,24 @@
 "use client";
 
 import Sidebar from "@/components/Sidebar";
-import Consultant from "@/components/specific/Consultant";
-import { AdminNotificationRow, adminNotificationRows, getAdminNotificationColumns } from "@/data/adminNotification";
+import Notification from "@/components/specific/Notification";
+import {
+  AdminNotificationRow,
+  adminNotificationRows,
+  getAdminNotificationColumns,
+} from "@/data/adminNotification";
 import { useMemo, useState } from "react";
 
 export default function AdminNotificationPage() {
-  const [rows, setRows] = useState<AdminNotificationRow[]>(adminNotificationRows);
+  const [rows, setRows] = useState<AdminNotificationRow[]>(
+    adminNotificationRows
+  );
 
   const columns = useMemo(
     () =>
       getAdminNotificationColumns((id) =>
         setRows((prev) =>
-          prev.map((r) => (r.id === id ? { ...r,} : r))
+          prev.map((r) => (r.id === id ? { ...r, enabled: !r.enabled } : r))
         )
       ),
     []
@@ -20,7 +26,7 @@ export default function AdminNotificationPage() {
 
   return (
     <Sidebar>
-      <Consultant title="Notifications" columns={columns} rows={rows} />
+      <Notification title="Notifications" rows={rows} columns={columns} />
     </Sidebar>
   );
 }

@@ -246,10 +246,12 @@ export default function DataTable<T extends GridValidRowModel>({
             },
             "& .MuiDataGrid-cell": {
               fontSize: "0.875rem",
-              display: "flex",
-              alignItems: "center",
+              alignItems: "flex-start",
+              whiteSpace: "normal",
+              wordBreak: "break-word",
+              lineHeight: 1.4,
+              py: 1,
             },
-
             "& .MuiDataGrid-row": {
               backgroundColor: "#fff",
               transition: "background-color 0.2s ease",
