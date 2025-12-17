@@ -1,4 +1,4 @@
-import { IFieldConfig } from "@/components/CreateForm";
+import { IFieldConfig } from "@/types/create-form";
 
 export function getLoginFormFields(): IFieldConfig[] {
   return [

@@ -1,9 +1,7 @@
 import { StatCardProps } from "@/components/StatCard";
 import StatusChip from "@/components/StatusChip";
-import type { CandidateRow, MilestoneRow, TaskRow } from "@/types/teamBuilder";
+import type { CandidateRow, TaskRow } from "@/types/teamBuilder";
 import { colors, statusColors } from "@/utils/styles/colors";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -49,25 +47,25 @@ export const teamBuilderStats: StatCardProps[] = [
   {
     title: "Hours Per Week",
     subtitle: 6,
-    color: "linear-gradient(135deg, #5AA9FF 50%, #80C4FF 100%)",
+    color: colors.BLUE,
     icon: "QueryStatsIcon" as const,
   },
   {
     title: "Avg. Rate Per Hour",
     subtitle: "$20",
-    color: "linear-gradient(135deg, #00997B 50%, #4BD7BB 100%)",
+    color: colors.BLUE,
     icon: "CurrencyExchangeIcon" as const,
   },
   {
     title: "Hours Per Month",
     subtitle: 30,
-    color: "linear-gradient(135deg, #FFB64E 50%, #FFD27F 100%)",
+    color: colors.BLUE,
     icon: "EventAvailableIcon" as const,
   },
   {
     title: "Per Month Cost",
     subtitle: "$12,000",
-    color: "linear-gradient(135deg, #FF5471 50%, #FF99AB 100%)",
+    color: colors.BLUE,
     icon: "BallotIcon" as const,
   },
 ];
@@ -213,87 +211,6 @@ export const getShortlistedColumns = (
         </Box>
       );
     },
-  },
-];
-
-export const getMilestoneCols = (
-  expandedMilestoneId: number | null,
-  onExpandMilestone: (id: number) => void,
-  onEditMilestone: (row: MilestoneRow) => void
-): GridColDef[] => [
-  { field: "name", headerName: "Name", flex: 1 },
-
-  {
-    field: "date",
-    headerName: "Date",
-    flex: 0.6,
-    renderCell: (p: GridRenderCellParams) => {
-      const iso = String(p.row.date ?? "");
-      if (!iso) return <>-</>;
-      const [y, m, d] = iso.split("-");
-      return <>{`${d}.${m}.${y}`}</>;
-    },
-  },
-
-  { field: "description", headerName: "Description", flex: 1.6 },
-  { field: "approval", headerName: "Approval", flex: 0.8 },
-
-  {
-    field: "tasks",
-    headerName: "Tasks",
-    flex: 0.6,
-    sortable: false,
-    renderCell: (p: GridRenderCellParams) => {
-      const row = p.row;
-      const isOpen = expandedMilestoneId === row.id;
-
-      return (
-        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-          <Typography
-            sx={{
-              color: colors.BLUE,
-              fontWeight: 600,
-              cursor: "pointer",
-              "&:hover": { textDecoration: "underline" },
-            }}
-            onClick={() => onExpandMilestone(row.id)}
-          >
-            {row.tasks}
-          </Typography>
-
-          {isOpen ? (
-            <ArrowDropUpIcon fontSize="small" sx={{ color: "#8f9bb3" }} />
-          ) : (
-            <ArrowDropDownIcon fontSize="small" sx={{ color: "#8f9bb3" }} />
-          )}
-        </Box>
-      );
-    },
-  },
-
-  {
-    field: "actions",
-    headerName: "Actions",
-    flex: 0.7,
-    sortable: false,
-    renderCell: (p: GridRenderCellParams) => (
-      <Stack direction="row" spacing={1}>
-        <Tooltip title="Edit">
-          <IconButton
-            size="small"
-            sx={{ color: colors.BLUE }}
-            onClick={() => onEditMilestone(p.row)}
-          >
-            <EditIcon fontSize="small" />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Delete">
-          <IconButton size="small" sx={{ color: colors.RED }}>
-            <DeleteIcon fontSize="small" />
-          </IconButton>
-        </Tooltip>
-      </Stack>
-    ),
   },
 ];
 

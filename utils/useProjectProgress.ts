@@ -12,15 +12,15 @@ export interface StoredProject {
 export function useProjectProgress() {
   const [projects, setProjects] = useState<StoredProject[]>([]);
   const [loading, setLoading] = useState(true);
+
   const loadProjects = useCallback(() => {
     if (typeof window === "undefined") return;
 
-    const stored = JSON.parse(localStorage.getItem("tb_projects") || "[]");
-
-    const filtered = stored.filter(
-      (p: StoredProject) => p.status === "Initiated"
+    const stored: StoredProject[] = JSON.parse(
+      localStorage.getItem("tb_projects") || "[]"
     );
 
+    const filtered = stored.filter((p) => p.status === "Initiated");
     setProjects(filtered);
     setLoading(false);
   }, []);
@@ -32,37 +32,68 @@ export function useProjectProgress() {
   };
 
   const addProject = (proj: StoredProject) => {
-    const stored = JSON.parse(localStorage.getItem("tb_projects") || "[]");
-    stored.push(proj);
-    const trimmed = stored.slice(-5);
+    const stored: StoredProject[] = JSON.parse(
+      localStorage.getItem("tb_projects") || "[]"
+    );
 
+    const exists = stored.some((p) => p.id === proj.id);
+    if (exists) return;
+
+    const trimmed = [...stored, proj].slice(-5);
     saveProjects(trimmed);
   };
 
+  /**
+   * ✅ SAFE step persistence
+   * - Adds project if missing
+   * - Never rolls step backward
+   */
   const updateProjectStep = (projectId: string, step: number) => {
-    const stored = JSON.parse(localStorage.getItem("tb_projects") || "[]");
-
-    const updated = stored.map((p: StoredProject) =>
-      p.id == projectId ? { ...p, step } : p
+    const stored: StoredProject[] = JSON.parse(
+      localStorage.getItem("tb_projects") || "[]"
     );
+
+    let found = false;
+
+    const updated = stored.map((p) => {
+      if (p.id === projectId) {
+        found = true;
+        return {
+          ...p,
+          step: Math.max(p.step ?? 1, step),
+        };
+      }
+      return p;
+    });
+
+    // 🔥 Project not found → ADD IT
+    if (!found) {
+      updated.push({
+        id: projectId,
+        name: "Untitled Project",
+        step,
+        status: "Initiated",
+      });
+    }
+
+    localStorage.setItem("tb_project_id", projectId);
+    localStorage.setItem("tb_project_in_progress", "true");
 
     saveProjects(updated);
   };
 
   const removeProject = (projectId: string) => {
-    const stored = JSON.parse(localStorage.getItem("tb_projects") || "[]");
+    const stored: StoredProject[] = JSON.parse(
+      localStorage.getItem("tb_projects") || "[]"
+    );
 
-    const updated = stored.filter((p: StoredProject) => p.id != projectId);
-
-    saveProjects(updated);
+    saveProjects(stored.filter((p) => p.id !== projectId));
   };
 
   useEffect(() => {
     loadProjects();
-
     const handler = () => loadProjects();
     window.addEventListener("tb_projects_updated", handler);
-
     return () => window.removeEventListener("tb_projects_updated", handler);
   }, [loadProjects]);
 

@@ -38,7 +38,6 @@ export default function Announcement({
         display: "flex",
         alignItems: "center",
         bgcolor: "#F2F3F7",
-        borderRadius: 2,
         px: 2,
         py: 1,
         mb: 1,

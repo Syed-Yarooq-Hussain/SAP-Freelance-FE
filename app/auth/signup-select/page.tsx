@@ -88,7 +88,6 @@ export default function SignUpSelectionPage() {
                 sx={{
                   width: 60,
                   height: 60,
-                  borderRadius: 2,
                   background: "linear-gradient(180deg, #4d8cff, #0056d6 90%)",
                   display: "flex",
                   alignItems: "center",
@@ -130,7 +129,6 @@ export default function SignUpSelectionPage() {
                 sx={{
                   width: 60,
                   height: 60,
-                  borderRadius: 2,
                   background: "linear-gradient(180deg, #d75aff, #a300d6 90%)",
                   display: "flex",
                   alignItems: "center",
@@ -158,7 +156,6 @@ export default function SignUpSelectionPage() {
             onClick={handleContinue}
             width="100%"
             sx={{
-              borderRadius: 2,
               py: 1.2,
               bgcolor: selectedRole ? "#4d8cff" : "#d3d7de",
             }}

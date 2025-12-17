@@ -56,7 +56,6 @@ function RangeCalendar({
     <Box
       sx={{
         border: "1px solid #e5e7eb",
-        borderRadius: 2,
         p: 2,
         mb: 2,
         bgcolor: "white",

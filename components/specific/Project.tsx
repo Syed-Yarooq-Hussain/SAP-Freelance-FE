@@ -37,7 +37,6 @@ export default function Project<
       <Box
         sx={{
           p: 2,
-          borderRadius: 2,
           boxShadow: 2,
           bgcolor: "background.paper",
         }}
@@ -48,7 +47,12 @@ export default function Project<
           rows={rows}
           pageSize={10}
           onRowClick={(params) => {
-            if (routeBase) router.push(`${routeBase}/${params.id}`);
+            if (!routeBase) return;
+
+            const row = params.row as any;
+            const targetId = row.projectId ?? params.id;
+
+            router.push(`${routeBase}/${targetId}`);
           }}
         />
       </Box>

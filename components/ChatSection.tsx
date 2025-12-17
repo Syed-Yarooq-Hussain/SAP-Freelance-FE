@@ -328,7 +328,6 @@ const ChatSection: React.FC<ChatSectionProps> = ({
                 sx={{
                   bgcolor: "#f8f8f8",
                   p: 1.8,
-                  borderRadius: 2,
                   mb: 2,
                 }}
               >

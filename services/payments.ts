@@ -21,7 +21,7 @@ export async function fetchClientPayments(): Promise<
 export async function fetchConsultantPayments(): Promise<
   ApiResponse<IConsultantPaymentDTO[]>
 > {
-  const session = await getSession();
+  const session = await getCachedSession();
   const token = session?.accessToken;
 
   return await request<undefined, IConsultantPaymentDTO[]>({

@@ -1,8 +1,8 @@
 import { IBaseUser, IUser } from "./common-auth";
 
 export interface IConsultantExtra {
-  module: string;
-  level: string;
+  core_module: string[];
+  other_module: string[];
   experience: number;
   rate: number;
   weekly_available_hours: number;

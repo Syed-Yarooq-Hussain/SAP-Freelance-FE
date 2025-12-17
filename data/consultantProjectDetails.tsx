@@ -3,6 +3,7 @@
 import { StatCardProps } from "@/components/StatCard";
 import StatusDropdown from "@/components/StatusDropdown";
 import { ProjectInfoData } from "@/types/projects";
+import colors from "@/utils/styles/colors";
 import { GridColDef } from "@mui/x-data-grid";
 
 export const projectStats: StatCardProps[] = [
@@ -10,21 +11,21 @@ export const projectStats: StatCardProps[] = [
     title: "Employer",
     subtitle: "Global Rollout",
     description: "18/6 month project – lead consultant",
-    color: "linear-gradient(135deg, #4680FF 50%, #97B7FF 100%)",
+    color: colors.BLUE,
     icon: "WorkOutlineIcon",
   },
   {
     title: "Upcoming Employer",
     subtitle: "Rental Co.",
     description: "12-5-2025 – for 6 months – SD Lead",
-    color: "linear-gradient(135deg, #00997B 50%, #4BD7BB 100%)",
+    color: colors.BLUE,
     icon: "GroupWorkIcon",
   },
   {
     title: "Tasks",
     subtitle: "15",
     description: "1 is delayed",
-    color: "linear-gradient(135deg, #FF5471 50%, #FF99AB 100%)",
+    color: colors.BLUE,
     icon: "AssignmentTurnedInIcon",
   },
 ];

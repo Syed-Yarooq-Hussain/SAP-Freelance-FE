@@ -4,23 +4,13 @@ import { useSignupClient } from "@/actions/auth/signupClient";
 import { CreateForm } from "@/components/CreateForm";
 import { getClientFormFields } from "@/forms/clientForm";
 import { IBaseSignupDTO } from "@/types/common-auth";
+import { ISignUpClientForm } from "@/types/signup-form";
 import { Box, Paper } from "@mui/material";
 import { useSearchParams } from "next/navigation";
 import * as React from "react";
 import { FieldValues } from "react-hook-form";
 import AuthHeader from "./AuthHeader";
 import LoginLink from "./LoginLink";
-
-interface ISignUpClientForm {
-  fullName: string;
-  companyName: string;
-  email: string;
-  phone: string;
-  password: string;
-  confirmPassword: string;
-  city: string;
-  country: string;
-}
 
 const SignUpClient: React.FC = () => {
   const { mutate, error, isPending } = useSignupClient();
@@ -53,12 +43,12 @@ const SignUpClient: React.FC = () => {
       sx={{
         minHeight: "100vh",
         width: "100vw",
-        bgcolor: "#f7f9fc",
         display: "flex",
         justifyContent: "center",
-        alignItems: "flex-start",
+        alignItems: "center",
+        bgcolor: "#f7f9fc",
         p: 2,
-        overflowY: "auto",
+        position: "fixed",
         top: 0,
         left: 0,
       }}
@@ -67,8 +57,8 @@ const SignUpClient: React.FC = () => {
         elevation={4}
         sx={{
           width: "100%",
-          maxWidth: 520,
-          p: 4,
+          maxWidth: 480,
+          p: { xs: 3, sm: 4 },
           borderRadius: 3,
         }}
       >
@@ -89,7 +79,6 @@ const SignUpClient: React.FC = () => {
             size: "large",
           }}
         />
-
         <LoginLink />
       </Paper>
     </Box>

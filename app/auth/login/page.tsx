@@ -62,10 +62,7 @@ const LoginPage: React.FC = () => {
             size: "large",
           }}
         />
-
-        <Box mt={2}>
-          <SignUpLink />
-        </Box>
+        <SignUpLink />
       </Paper>
     </Box>
   );

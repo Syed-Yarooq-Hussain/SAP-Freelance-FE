@@ -1,5 +1,6 @@
 "use client";
 
+import { useUpdateProject } from "@/actions/projects/useaddProjectDetails";
 import AppButton from "@/components/Button";
 import DataTable from "@/components/DataTable";
 import InvoiceDetails from "@/components/InvoiceDetails";
@@ -13,16 +14,19 @@ import {
   teamBuilderPaymentMilestoneRows,
   teamBuilderPaymentStats,
 } from "@/data/teamBuilder";
+import { useToast } from "@/providers/ToastProvider";
 import { APP_ROUTES } from "@/utils/app_routes";
 import { Box, Grid, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export default function TeamPayments() {
+export default function TeamPayments({ projectId }: { projectId: string }) {
   const router = useRouter();
   const [isCustomRange, setIsCustomRange] = useState(false);
   const [openPopup, setOpenPopup] = useState(false);
   const [uploadedFileName, setUploadedFileName] = useState<string>("");
+  const updateProject = useUpdateProject();
+  const { toast } = useToast();
 
   const handleToggleRange = () => {
     setIsCustomRange(!isCustomRange);
@@ -52,11 +56,28 @@ export default function TeamPayments() {
     setSelectedFileName("");
   };
 
+  const handleStartProject = () => {
+    updateProject.mutate(
+      {
+        projectId,
+        body: { status: "in_progress" },
+      },
+      {
+        onSuccess: () => {
+          toast("Project started!", "success");
+          router.push(APP_ROUTES.CLIENT.DASHBOARD);
+        },
+        onError: (err) => {
+          toast(err.message, "error");
+        },
+      }
+    );
+  };
+
   return (
     <Box
       sx={{
         p: 2,
-        borderRadius: 2,
         boxShadow: 2,
         bgcolor: "background.paper",
         mt: 3,
@@ -126,7 +147,8 @@ export default function TeamPayments() {
           label="Start the Project"
           colorKey="BLUE"
           width={180}
-          onClick={() => router.push(APP_ROUTES.CLIENT.DASHBOARD)}
+          onClick={handleStartProject}
+          disabled={updateProject.isPending}
         />
       </Box>
 
