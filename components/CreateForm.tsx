@@ -1,6 +1,8 @@
 "use client";
 
+import { useSapModules } from "@/actions/common/useSapModules";
 import AppButton from "@/components/Button";
+import { ICreateFormProps } from "@/types/create-form";
 import { IOption } from "@/types/options";
 import { parseCV } from "@/utils/cvParser";
 import Visibility from "@mui/icons-material/Visibility";
@@ -17,19 +19,8 @@ import {
   Typography,
 } from "@mui/material";
 import React, { FC, useEffect, useRef, useState } from "react";
-import {
-  Controller,
-  FieldValues,
-  useForm,
-} from "react-hook-form";
+import { Controller, FieldValues, useForm } from "react-hook-form";
 import FormProgress from "./FormProgress";
-import { ICreateFormProps, IFieldConfig } from "@/types/create-form";
-
-const interpolate = (template: string, vals: FieldValues) =>
-  template.replace(/\{\{(\w+)\}\}/g, (_, key) => {
-    const v = vals[key];
-    return v == null ? "" : encodeURIComponent(String(v));
-  });
 
 export const CreateForm: FC<ICreateFormProps> = ({
   elements,
@@ -47,7 +38,6 @@ export const CreateForm: FC<ICreateFormProps> = ({
     control,
     handleSubmit,
     setValue,
-    getValues,
     trigger,
     formState: { errors },
   } = useForm({
@@ -59,48 +49,29 @@ export const CreateForm: FC<ICreateFormProps> = ({
   const [fileNames, setFileNames] = useState<Record<string, string>>({});
   const autoFilledRef = useRef<Set<string>>(new Set());
   const [step, setStep] = useState<number>(0);
+  const { data, isLoading, isError } = useSapModules();
   const [dynamicOptions, setDynamicOptions] = useState<
     Record<string, IOption[]>
   >({});
-  const [loadingOptions, setLoadingOptions] = useState<Record<string, boolean>>(
-    {}
-  );
 
   const handleTogglePassword = (name: string) => {
     setShowPassword((prev) => ({ ...prev, [name]: !prev[name] }));
   };
 
-  const fetchOptionsFor = async (field: IFieldConfig) => {
-    if (!field?.fetchUrl) return;
-    const url = interpolate(field.fetchUrl, getValues());
-    setLoadingOptions((s) => ({ ...s, [field.name]: true }));
-    try {
-      const res = await fetch(url);
-      if (!res.ok) throw new Error("fetch failed");
-      const json = await res.json();
-      const opts: IOption[] = Array.isArray(json)
-        ? json.map((item: any) => ({
-            value: item.value ?? item.id,
-            label: item.label ?? item.name ?? String(item.value ?? item.id),
-          }))
-        : [];
-      setDynamicOptions((s) => ({ ...s, [field.name]: opts }));
-    } catch (e) {
-      console.error("fetchOptions error", e);
-      setDynamicOptions((s) => ({ ...s, [field.name]: [] }));
-    } finally {
-      setLoadingOptions((s) => ({ ...s, [field.name]: false }));
-    }
-  };
-
   useEffect(() => {
-    const fld = elements[step];
-    if (!fld) return;
-    if (fld.fetchUrl && !dynamicOptions[fld.name]) {
-      fetchOptionsFor(fld);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [step]);
+    if (!data?.data) return;
+
+    setDynamicOptions({
+      coreModule: data.data.core.map((item) => ({
+        value: item.id,
+        label: item.name,
+      })),
+      otherModule: data.data.others.map((item) => ({
+        value: item.id,
+        label: item.name,
+      })),
+    });
+  }, [data]);
 
   const handleFileSelection = async (
     file: File,
@@ -137,10 +108,6 @@ export const CreateForm: FC<ICreateFormProps> = ({
 
         const nextIndex = step + 1;
         if (nextIndex < elements.length) {
-          const nextField = elements[nextIndex];
-          if (nextField?.fetchUrl) {
-            await fetchOptionsFor(nextField);
-          }
           setStep(nextIndex);
         }
       } catch (err) {
@@ -257,7 +224,7 @@ export const CreateForm: FC<ICreateFormProps> = ({
                 error={!!errors[element.name]}
                 helperText={errors[element.name]?.message?.toString()}
                 placeholder={element.placeholder}
-                disabled={loading || loadingOptions[element.name]}
+                disabled={loading || isLoading}
                 select={isSelect}
                 slotProps={{
                   inputLabel: {

@@ -1,5 +1,5 @@
-import { IFieldConfig } from "@/components/CreateForm";
 import { INTERVIEW_DURATION_OPTIONS } from "@/data/options";
+import { IFieldConfig } from "@/types/create-form";
 
 export function getTeamInterviewFormFields(): IFieldConfig[] {
   return [

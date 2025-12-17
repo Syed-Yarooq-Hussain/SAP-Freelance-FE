@@ -1,4 +1,3 @@
-import { LEVEL_OPTIONS, MODULE_OPTIONS } from "@/data/options";
 import { IFieldConfig } from "@/types/create-form";
 
 export function getConsultantFormFields(): IFieldConfig[] {
@@ -60,22 +59,16 @@ export function getConsultantFormFields(): IFieldConfig[] {
       type: "text",
     },
     {
-      name: "module",
-      label: "Module",
-      placeholder: "Select module",
+      name: "coreModule",
+      label: "Core Module",
       select: true,
-      rules: { required: "Module is required" },
-      defaultValue: "",
-      options: MODULE_OPTIONS,
+      rules: { required: "Core Module is required" },
     },
     {
-      name: "level",
-      label: "Level",
-      placeholder: "Select level",
+      name: "otherModule",
+      label: "Others Module",
       select: true,
-      rules: { required: "Level is required" },
-      defaultValue: "",
-      options: LEVEL_OPTIONS,
+      rules: { required: "Others Module is required" },
     },
     {
       name: "experience",

@@ -1,10 +1,10 @@
-import { IFieldConfig } from "@/components/CreateForm";
 import {
   LOCATION_OPTIONS,
   VISIBILITY_OPTIONS,
   ROLE_OPTIONS,
   DURATION_OPTIONS,
 } from "@/data/options";
+import { IFieldConfig } from "@/types/create-form";
 
 export function getProfileMainFields(): IFieldConfig[] {
   return [

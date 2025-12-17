@@ -1,18 +1,5 @@
 import { IOption } from "@/types/options";
 
-export const MODULE_OPTIONS: IOption[] = [
-  { value: "frontend", label: "frontend" },
-  { value: "backend", label: "backend" },
-  { value: "fullstack", label: "fullstack" },
-  { value: "design", label: "design" },
-];
-
-export const LEVEL_OPTIONS: IOption[] = [
-  { value: "junior", label: "junior" },
-  { value: "senior", label: "senior" },
-  { value: "lead", label: "lead" },
-];
-
 export const LOCATION_OPTIONS: IOption[] = [
   { value: "Germany", label: "Germany" },
   { value: "USA", label: "USA" },

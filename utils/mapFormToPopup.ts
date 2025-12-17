@@ -1,4 +1,5 @@
-import type { IFieldConfig } from "@/components/CreateForm";
+import { IFieldConfig } from "@/types/create-form";
+
 
 export const mapMilestoneFieldsToPopup = (
   fields: IFieldConfig[],

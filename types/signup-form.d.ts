@@ -12,13 +12,13 @@ export interface ISignUpClientForm {
 export interface ISignUpConsultantForm {
   fullName: string;
   email: string;
-  phone: string;
+  phone?: string;
   password: string;
   confirmPassword: string;
-  city: string;
-  country: string;
-  module: string;
-  level: string;
+  city?: string;
+  country?: string;
+  coreModule: string;
+  otherModule: string;
   experience: number;
   rate: number;
   availableHours: number;
@@ -28,5 +28,6 @@ export interface ISignUpConsultantForm {
     start?: string;
     end?: string;
   }[];
-  cvUrl: string;
+
+  cvUrl?: string;
 }
