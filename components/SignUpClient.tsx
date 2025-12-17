@@ -72,6 +72,8 @@ const SignUpClient: React.FC = () => {
           onSuccess={handleSuccess}
           loading={isPending}
           error={error?.message}
+          showProgress={true}
+          mode="wizard"
           submitButton={{
             children: "Create an Account",
             variant: "contained",

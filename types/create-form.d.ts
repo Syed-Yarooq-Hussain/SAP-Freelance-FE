@@ -12,6 +12,16 @@ export interface IFieldConfig {
   select?: boolean;
   defaultValue?: string | number | boolean | null;
   hidden?: boolean;
+  column?: IGridSpan;
+  row?: IGridSpan;
+}
+
+export interface IGridSpan {
+  xs?: number;
+  sm?: number;
+  md?: number;
+  lg?: number;
+  xl?: number;
 }
 
 interface ICreateFormProps {
@@ -26,4 +36,6 @@ interface ICreateFormProps {
   cancelButton?: ButtonProps;
   leadingContent?: ReactNode;
   inlineActions?: boolean;
+  showProgress?: boolean;
+  mode?: "wizard" | "normal";
 }

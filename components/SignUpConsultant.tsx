@@ -30,36 +30,36 @@ const SignUpConsultant: React.FC = () => {
     const formData = { ...prefillData, ...data } as ISignUpConsultantForm;
 
     const payload: IConsultantSignupPayload = {
-  consultant: {
-    core_module: [formData.coreModule],
-    other_module: [formData.otherModule],
-    experience: Number(formData.experience) || 0,
-    rate: formData.rate,
-    weekly_available_hours: 20,
-    schedule: {
-      monday: "9-5",
-      tuesday: "9-5",
-      wednesday: "off",
-      thursday: "9-5",
-      friday: "9-5",
-      saturday: "off",
-      sunday: "off",
-    },
-    cv_url: formData.cvUrl ?? "",
-  },
-  user: {
-    username: formData.fullName,
-    role,
-    email: formData.email,
-    phone: formData.phone,
-    password: formData.password,
-    confirmPassword: formData.confirmPassword,
-    currency: "EUR",
-    city: formData.city,
-    country: formData.country,
-    status: 1,
-  },
-};
+      consultant: {
+        core_module: [formData.coreModule],
+        other_module: [formData.otherModule],
+        experience: Number(formData.experience) || 0,
+        rate: formData.rate,
+        weekly_available_hours: 20,
+        schedule: {
+          monday: "9-5",
+          tuesday: "9-5",
+          wednesday: "off",
+          thursday: "9-5",
+          friday: "9-5",
+          saturday: "off",
+          sunday: "off",
+        },
+        cv_url: formData.cvUrl ?? "",
+      },
+      user: {
+        username: formData.fullName,
+        role,
+        email: formData.email,
+        phone: formData.phone,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+        currency: "EUR",
+        city: formData.city,
+        country: formData.country,
+        status: 1,
+      },
+    };
 
     mutate(payload);
   };
@@ -98,6 +98,8 @@ const SignUpConsultant: React.FC = () => {
           onSuccess={handleSuccess}
           loading={isPending}
           error={error?.message}
+          showProgress={true}
+          mode="wizard"
           onCVParsed={handleCVParsed}
           submitButton={{
             children: "Create an Account",
