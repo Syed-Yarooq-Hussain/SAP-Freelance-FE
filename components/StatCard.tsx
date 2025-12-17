@@ -30,7 +30,7 @@ const icons = {
 
 export interface StatCardProps {
   title: string;
-  subtitle: string | number;
+  subtitle?: string | number;
   description?: string;
   color: string;
   icon: keyof typeof icons;
