@@ -17,8 +17,8 @@ export interface ISignUpConsultantForm {
   confirmPassword: string;
   city?: string;
   country?: string;
-  coreModule: string;
-  otherModule: string;
+  coreModule: string[];
+  otherModule: string[];
   experience: number;
   rate: number;
   availableHours: number;

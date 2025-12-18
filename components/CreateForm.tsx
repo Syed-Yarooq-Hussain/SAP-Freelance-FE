@@ -215,10 +215,47 @@ export const CreateForm: FC<ICreateFormProps> = ({
                 helperText={errors[element.name]?.message?.toString()}
                 disabled={loading || isLoading}
                 select={isSelect}
-                slotProps={{
-                  inputLabel: { shrink: true },
-                  htmlInput: element.inputProps,
-                  input: isPassword
+                SelectProps={{
+                  multiple: element.multiple === true,
+                  displayEmpty: true,
+                  renderValue: (selected) => {
+                    if (
+                      !selected ||
+                      (Array.isArray(selected) && selected.length === 0)
+                    ) {
+                      return (
+                        <Typography color="gray">
+                          Select {element.label}
+                        </Typography>
+                      );
+                    }
+
+                    if (Array.isArray(selected)) {
+                      return selected
+                        .map((val) => {
+                          const opt =
+                            element.options?.find((o) => o.value === val) ||
+                            dynamicOptions[element.name]?.find(
+                              (o) => o.value === val
+                            );
+                          return opt?.label ?? val;
+                        })
+                        .join(", ");
+                    }
+
+                    const opt =
+                      element.options?.find((o) => o.value === selected) ||
+                      dynamicOptions[element.name]?.find(
+                        (o) => o.value === selected
+                      );
+
+                    return opt?.label ?? String(selected);
+                  },
+                }}
+                InputLabelProps={{ shrink: true }}
+                inputProps={element.inputProps}
+                InputProps={
+                  isPassword
                     ? {
                         endAdornment: (
                           <InputAdornment position="end">
@@ -235,46 +272,33 @@ export const CreateForm: FC<ICreateFormProps> = ({
                           </InputAdornment>
                         ),
                       }
-                    : undefined,
-                  select: isSelect
-                    ? {
-                        displayEmpty: true,
-                        renderValue: (value) => {
-                          if (!value) {
-                            return (
-                              <Typography color="gray">
-                                Select {element.label}
-                              </Typography>
-                            );
-                          }
-
-                          const option =
-                            element.options?.find((o) => o.value === value) ||
-                            dynamicOptions[element.name]?.find(
-                              (o) => o.value === value
-                            );
-
-                          return option?.label ?? String(value);
-                        },
-                      }
-                    : undefined,
-                }}
+                    : undefined
+                }
               >
-                <MenuItem value="">
-                  <em>{element.placeholder ?? `Select ${element.label}`}</em>
-                </MenuItem>
-
-                {element.options?.map((opt) => (
-                  <MenuItem key={String(opt.value)} value={opt.value}>
-                    {opt.label}
+                {!element.multiple && (
+                  <MenuItem value="">
+                    <em>{element.placeholder ?? `Select ${element.label}`}</em>
                   </MenuItem>
-                ))}
+                )}
 
-                {dynamicOptions[element.name]?.map((opt) => (
-                  <MenuItem key={String(opt.value)} value={opt.value}>
-                    {opt.label}
-                  </MenuItem>
-                ))}
+                {(element.options ?? dynamicOptions[element.name] ?? []).map(
+                  (opt) => (
+                    <MenuItem key={String(opt.value)} value={opt.value}>
+                      {element.multiple && (
+                        <input
+                          type="checkbox"
+                          checked={
+                            Array.isArray(field.value) &&
+                            field.value.includes(opt.value)
+                          }
+                          readOnly
+                          style={{ marginRight: 8 }}
+                        />
+                      )}
+                      {opt.label}
+                    </MenuItem>
+                  )
+                )}
               </TextField>
             );
           }}
@@ -391,16 +415,28 @@ export const CreateForm: FC<ICreateFormProps> = ({
       >
         {mode === "wizard" ? (
           <>
-            {step > 0 && <AppButton label="Back" onClick={goPrev} />}
+            {step > 0 && (
+              <AppButton
+                label="Back"
+                onClick={goPrev}
+                sx={{ width: "auto", minWidth: "160px" }}
+              />
+            )}
 
             {step === elements.length - 1 ? (
               <AppButton
-                label={submitButton?.children || "Submit"}
+                label={String(submitButton?.children || "Submit")}
+                color="primary"
                 onClick={handleSubmit(submitHandler)}
                 loading={loading}
+                sx={{ width: "auto", minWidth: "160px", ...submitButton?.sx }}
               />
             ) : (
-              <AppButton label="Next" onClick={goNext} />
+              <AppButton
+                label="Next"
+                onClick={goNext}
+                sx={{ width: "auto", minWidth: "160px" }}
+              />
             )}
           </>
         ) : (
@@ -408,7 +444,7 @@ export const CreateForm: FC<ICreateFormProps> = ({
             label={submitButton?.children || "Submit"}
             onClick={handleSubmit(submitHandler)}
             loading={loading}
-            fullWidth
+            sx={{ width: "auto", minWidth: "160px", ...submitButton?.sx }}
           />
         )}
       </Stack>
