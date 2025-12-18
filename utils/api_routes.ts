@@ -31,5 +31,6 @@ export const API_ROUTES = {
   CONSULTANT_PROJECTS: "/consultants/projects",
   CONSULTANT_PAYMENTS: "/consultants/payments",
   SAP_MODULES: "/common/sap-modules",
-  ADMIN_STATS: "/admin/stats"
+  ADMIN_STATS: "/admin/stats",
+  ADMIN_PROJECTS: "/admin/projects",
 };

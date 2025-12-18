@@ -72,3 +72,16 @@ export interface IProjectDetailsResponse {
     deleted_at: string | null;
   };
 }
+
+export interface IAdminProject {
+  id: string;
+  name: string;
+  status: string;
+  client_name: string;
+  start_date: string;
+  duration: string;
+  modules: {
+    core: string;
+    others: string;
+  };
+}
