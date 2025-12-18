@@ -7,59 +7,51 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { Box, IconButton, Tooltip, Typography } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 
-export const adminStats: StatCardProps[] = [
+export const adminStatsConfig: Omit<StatCardProps, "subtitle">[] = [
   {
-    title: "Number of Projects",
-    subtitle: 360,
+    title: "Total Consultants",
     color: "linear-gradient(135deg, #97B7FF 0%, #3088B7 100%)",
     icon: "QueryStatsIcon",
   },
 
   {
-    title: "Interviews Scheduled",
-    subtitle: 10,
+    title: "Total Clients",
     color: "linear-gradient(135deg, #4BD7BB 0%, #519F85 100%)",
     icon: "PeopleAltIcon",
   },
 
   {
-    title: "Total Spend on Projects",
-    subtitle: "$3000",
+    title: "Pending Profile",
     color: "linear-gradient(135deg, #F6BD6C 0%, #024E76 100%)",
     icon: "CurrencyExchangeIcon",
   },
 
   {
-    title: "Pending Invoices",
-    subtitle: "$12,000",
+    title: "Active Projects",
     color: "linear-gradient(135deg, #FF99AB 0%, #005C8A 100%)",
     icon: "BallotIcon",
   },
 
   {
     title: "Active Consultant",
-    subtitle: 230,
     color: "linear-gradient(135deg, #0040CC 0%, #100858 100%)",
     icon: "WorkOutlineIcon",
   },
 
   {
     title: "Active Clients",
-    subtitle: 160,
     color: "linear-gradient(135deg, #0BA45D 0%, #0C2D17 100%)",
     icon: "GroupWorkIcon",
   },
 
   {
     title: "Interviews this Week",
-    subtitle: 20,
     color: "linear-gradient(135deg, #FB9400 0%, #653B00 100%)",
     icon: "EventAvailableIcon",
   },
 
   {
     title: "Upcoming Projects",
-    subtitle: 5,
     color: "linear-gradient(135deg, #B3001E 0%, #200005 100%)",
     icon: "UpdateIcon",
   },

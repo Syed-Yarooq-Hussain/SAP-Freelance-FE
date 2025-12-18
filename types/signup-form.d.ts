@@ -31,3 +31,10 @@ export interface ISignUpConsultantForm {
 
   cvUrl?: string;
 }
+
+export interface ISapModule {
+  id: string;
+  name: string;
+  is_core: boolean;
+  deleted_at: string | null;
+}

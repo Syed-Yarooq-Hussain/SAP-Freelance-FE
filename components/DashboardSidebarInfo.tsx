@@ -40,7 +40,7 @@ const Section: FC<{ title: string; children: ReactNode }> = ({
   <Card
     sx={{
       mb: 2,
-      boxShadow: 1,
+      boxShadow: 2,
       bgcolor: "#ffffff",
     }}
   >

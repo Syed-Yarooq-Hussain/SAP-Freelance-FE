@@ -1,6 +1,7 @@
 import { StatCardProps } from "@/components/StatCard";
 import StatusChip from "@/components/StatusChip";
 import type { CandidateRow, TaskRow } from "@/types/teamBuilder";
+import { formatDateTimeAmPm } from "@/utils/dateTime";
 import { colors, statusColors } from "@/utils/styles/colors";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
@@ -164,8 +165,8 @@ export const getShortlistedColumns = (
   setInterviewOpen: (v: boolean) => void
 ): GridColDef[] => [
   { field: "id", headerName: "ID" },
-  { field: "coremodules", headerName: "Modules (Core)", flex: 2 },
-  { field: "othersmodules", headerName: "Modules (Others)", flex: 2 },
+  { field: "coremodules", headerName: "Modules (Core)", flex: 1.5 },
+  { field: "othersmodules", headerName: "Modules (Others)", flex: 1.5 },
   { field: "experience", headerName: "Experience", flex: 1 },
   { field: "hourlyRate", headerName: "Hourly Rate", flex: 1 },
   {
@@ -180,30 +181,71 @@ export const getShortlistedColumns = (
     },
   },
   {
-    field: "interview",
-    headerName: "Interview",
-    flex: 1,
+    field: "interviewDateTime",
+    headerName: "Interview Date",
+    flex: 1.5,
     renderCell: (params) => {
-      const val = params.value;
-
-      const isRequest = val === "Request";
+      if (!params.value) return "N/A";
+      return formatDateTimeAmPm(params.value);
+    },
+  },
+  {
+    field: "interview",
+    headerName: "Interview Action",
+    flex: 1.5,
+    sortable: false,
+    renderCell: (params) => {
+      const hasInterview = Boolean(params.row.interviewDateTime);
 
       return (
-        <Box
-          sx={{
-            color: isRequest ? colors.BLUE : "text.primary",
-            cursor: isRequest ? "pointer" : "default",
-            fontWeight: isRequest ? 600 : 400,
-            "&:hover": { textDecoration: isRequest ? "underline" : "none" },
-          }}
-          onClick={() => {
-            if (isRequest) {
-              setSelectedCandidateId(params.row.id);
-              setInterviewOpen(true);
-            }
-          }}
-        >
-          {val}
+        <Box sx={{ display: "flex", gap: 1 }}>
+          {!hasInterview ? (
+            <Box
+              sx={{
+                color: colors.BLUE,
+                cursor: "pointer",
+                fontWeight: 600,
+                "&:hover": { textDecoration: "underline" },
+              }}
+              onClick={() => {
+                setSelectedCandidateId(params.row.id);
+                setInterviewOpen(true);
+              }}
+            >
+              Request
+            </Box>
+          ) : (
+            <>
+              <Box
+                sx={{
+                  color: colors.BLUE,
+                  cursor: "pointer",
+                  fontWeight: 600,
+                  "&:hover": { textDecoration: "underline" },
+                }}
+                onClick={() => {
+                  setSelectedCandidateId(params.row.id);
+                  setInterviewOpen(true);
+                }}
+              >
+                Reschedule
+              </Box>
+
+              <Box
+                sx={{
+                  color: colors.RED,
+                  cursor: "pointer",
+                  fontWeight: 600,
+                  "&:hover": { textDecoration: "underline" },
+                }}
+                onClick={() => {
+                  console.log("Cancel interview for", params.row.id);
+                }}
+              >
+                Cancel
+              </Box>
+            </>
+          )}
         </Box>
       );
     },

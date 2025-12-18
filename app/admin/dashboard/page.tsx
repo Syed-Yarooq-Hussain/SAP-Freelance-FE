@@ -1,5 +1,5 @@
 "use client";
-
+import { useAdminDashboardStats } from "@/actions/admin/useAdminDashboardStats";
 import AppButton from "@/components/Button";
 import Sidebar from "@/components/Sidebar";
 import Dashboard from "@/components/specific/Dashboard";
@@ -7,14 +7,15 @@ import VisibilityChart from "@/components/VisibilityChart";
 import {
   adminConsultantColumns,
   adminConsultantRows,
-  adminStats,
 } from "@/data/adminDashboard";
 
 export default function AdminDashboardPage() {
+  const stats = useAdminDashboardStats();
+
   return (
     <Sidebar>
       <Dashboard
-        stats={adminStats}
+        stats={stats}
         chart={<VisibilityChart />}
         projectTable={{
           title: "Consultant Account Request",
