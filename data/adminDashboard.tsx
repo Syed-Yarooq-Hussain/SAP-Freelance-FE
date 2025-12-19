@@ -82,7 +82,7 @@ export const adminConsultantColumns: GridColDef[] = [
               "&:hover": { bgcolor: `${colors.GREEN}15` },
             }}
           >
-            <CheckCircleIcon fontSize="small" />
+            <CheckCircleIcon sx={{ fontSize: 20 }}  />
           </IconButton>
         </Tooltip>
         <Tooltip title="Reject">
@@ -93,7 +93,7 @@ export const adminConsultantColumns: GridColDef[] = [
               "&:hover": { bgcolor: `${colors.RED}15` },
             }}
           >
-            <CancelIcon fontSize="small" />
+            <CancelIcon sx={{ fontSize: 20 }}  />
           </IconButton>
         </Tooltip>
       </Box>

@@ -43,9 +43,11 @@ const AppTitle: React.FC = () => {
       if (pathname.startsWith(APP_ROUTES.ADMIN.CONSULTANTS))
         return "Consultant";
       if (pathname.startsWith(APP_ROUTES.ADMIN.CLIENT)) return "Clients";
+      if (pathname.startsWith(APP_ROUTES.ADMIN.NOTIFICATIONS))
+        return "Notifications";
+
       return "Dashboard";
     }
-
     if (pathname.startsWith(APP_ROUTES.TEAMBUILDER)) return "Team Builder";
 
     return "SAP Portal";
