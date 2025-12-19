@@ -21,3 +21,13 @@ export type AdminConsultantRow = {
   hourlyRate: string;
   locked?: boolean;
 };
+
+export type AdminClientRow = {
+  id: number;
+  avatar: string;
+  name: string;
+  activeprojects: number;
+  completedprojects: number;
+  draftprojects: number;
+  locked?: boolean;
+};

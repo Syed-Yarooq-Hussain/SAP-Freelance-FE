@@ -1,27 +1,27 @@
 "use client";
 
-import { updateConsultantStatus } from "@/services/admin/consultants";
+import { updateClientStatus } from "@/services/admin/clients";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-export const useUpdateConsultantStatus = () => {
+export const useUpdateClientStatus = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: ({
-      consultantId,
+      clientId,
       status,
     }: {
-      consultantId: number;
+      clientId: number;
       status: "active" | "rejected" | "locked";
-    }) => updateConsultantStatus(consultantId, status),
+    }) => updateClientStatus(clientId, status),
 
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["admin-pending-consultants"],
+        queryKey: ["admin-clients"],
       });
 
       queryClient.refetchQueries({
-        queryKey: ["admin-consultants"],
+        queryKey: ["admin-clients"],
         type: "active",
       });
     },

@@ -20,7 +20,7 @@ export async function fetchPendingConsultants(): Promise<
 
 export async function updateConsultantStatus(
   consultantId: number,
-  status: "active" | "rejected"
+  status: "active" | "rejected" | "locked"
 ): Promise<ApiResponse<null>> {
   return request({
     url: `${API_ROUTES.UPDATE_ADMIN_CONSULTANT_STATUS}/${consultantId}`,

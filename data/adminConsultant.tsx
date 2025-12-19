@@ -3,14 +3,13 @@
 import { AdminConsultantRow } from "@/types/admin";
 import { colors } from "@/utils/styles/colors";
 import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
 import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { Box, IconButton, Tooltip } from "@mui/material";
 import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 
 export const getAdminConsultantColumns = (
-  onToggleLock: (id: number) => void
+  onToggleLock: (id: number, locked: boolean) => void
 ): GridColDef<AdminConsultantRow>[] => [
   { field: "name", headerName: "Name", flex: 2 },
   { field: "coremodules", headerName: "Modules (Core)", flex: 1.5 },
@@ -30,36 +29,28 @@ export const getAdminConsultantColumns = (
 
       return (
         <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-          <Tooltip title={isLocked ? "Unlock" : "Lock"}>
-            <IconButton
-              size="small"
-              onClick={() => onToggleLock(row.id)}
-              sx={{
-                color: isLocked ? colors.RED : colors.GRAY_DARK,
-                "&:hover": {
-                  bgcolor: isLocked ? `${colors.RED}15` : "action.hover",
-                },
-              }}
-            >
-              {isLocked ? (
-                <LockOutlinedIcon fontSize="small" />
-              ) : (
-                <LockOpenOutlinedIcon fontSize="small" />
-              )}
-            </IconButton>
-          </Tooltip>
-
-          <Tooltip title="Edit">
-            <IconButton
-              size="small"
-              onClick={() => console.log("Edit", row)}
-              sx={{
-                color: colors.BLUE,
-                "&:hover": { bgcolor: `${colors.BLUE}15` },
-              }}
-            >
-              <EditIcon fontSize="small" />
-            </IconButton>
+          <Tooltip
+            title={isLocked ? "Locked (cannot be changed)" : "Lock consultant"}
+          >
+            <span>
+              <IconButton
+                size="small"
+                disabled={isLocked} // 🚫 DISABLE on locked rows
+                onClick={() => onToggleLock(row.id, isLocked)}
+                sx={{
+                  color: isLocked ? colors.RED : colors.GRAY_DARK,
+                  "&:hover": {
+                    bgcolor: isLocked ? "transparent" : "action.hover",
+                  },
+                }}
+              >
+                {isLocked ? (
+                  <LockOutlinedIcon fontSize="small" />
+                ) : (
+                  <LockOpenOutlinedIcon fontSize="small" />
+                )}
+              </IconButton>
+            </span>
           </Tooltip>
 
           <Tooltip title="Delete">
