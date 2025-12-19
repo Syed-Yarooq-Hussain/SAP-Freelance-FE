@@ -10,3 +10,14 @@ export interface IAdminPendingConsultant {
     others: string;
   };
 }
+
+export type AdminConsultantRow = {
+  id: number;
+  avatar: string;
+  name: string;
+  coremodules: string;
+  othersmodules: string;
+  experience: string;
+  hourlyRate: string;
+  locked?: boolean;
+};

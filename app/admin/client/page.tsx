@@ -2,7 +2,11 @@
 
 import Sidebar from "@/components/Sidebar";
 import Consultant from "@/components/specific/Consultant";
-import { getAdminClientColumns, adminClientRows, AdminClientRow } from "@/data/adminClient";
+import {
+  AdminClientRow,
+  adminClientRows,
+  getAdminClientColumns,
+} from "@/data/adminClient";
 import { useMemo, useState } from "react";
 
 export default function AdminClientPage() {
@@ -20,7 +24,7 @@ export default function AdminClientPage() {
 
   return (
     <Sidebar>
-      <Consultant title="Clients" columns={columns} rows={rows} />
+      <Consultant title="Clients" columns={columns} rows={rows} showTabs />
     </Sidebar>
   );
 }

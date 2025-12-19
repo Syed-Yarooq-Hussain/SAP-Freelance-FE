@@ -1,10 +1,7 @@
 "use client";
 
+import AdminConsultantActionCell from "@/components/AdminConsultantActionCell";
 import { StatCardProps } from "@/components/StatCard";
-import { colors } from "@/utils/styles/colors";
-import CancelIcon from "@mui/icons-material/Cancel";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import { Box, IconButton, Tooltip } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 
 export const adminStatsConfig: Omit<StatCardProps, "subtitle">[] = [
@@ -58,11 +55,7 @@ export const adminStatsConfig: Omit<StatCardProps, "subtitle">[] = [
 ];
 
 export const adminConsultantColumns: GridColDef[] = [
-  {
-    field: "name",
-    headerName: "Name",
-    flex: 1.5,
-  },
+  { field: "name", headerName: "Name", flex: 1.5 },
   { field: "coremodules", headerName: "Modules (Core)", flex: 1.5 },
   { field: "othersmodules", headerName: "Modules (Others)", flex: 1.5 },
   { field: "experience", headerName: "Experience", flex: 1 },
@@ -72,31 +65,8 @@ export const adminConsultantColumns: GridColDef[] = [
     headerName: "Action",
     flex: 1,
     sortable: false,
-    renderCell: () => (
-      <Box display="flex" alignItems="center" gap={1.5}>
-        <Tooltip title="Accept">
-          <IconButton
-            size="small"
-            sx={{
-              color: colors.GREEN,
-              "&:hover": { bgcolor: `${colors.GREEN}15` },
-            }}
-          >
-            <CheckCircleIcon sx={{ fontSize: 20 }}  />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Reject">
-          <IconButton
-            size="small"
-            sx={{
-              color: colors.RED,
-              "&:hover": { bgcolor: `${colors.RED}15` },
-            }}
-          >
-            <CancelIcon sx={{ fontSize: 20 }}  />
-          </IconButton>
-        </Tooltip>
-      </Box>
+    renderCell: (params) => (
+      <AdminConsultantActionCell consultantId={params.row.consultantId} />
     ),
   },
 ];

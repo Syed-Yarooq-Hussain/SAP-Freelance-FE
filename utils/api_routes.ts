@@ -34,4 +34,5 @@ export const API_ROUTES = {
   ADMIN_STATS: "/admin/stats",
   ADMIN_PROJECTS: "/admin/projects",
   ADMIN_CONSULTANTS: "/admin/consultants/all",
+  UPDATE_ADMIN_CONSULTANT_STATUS: "/admin/consultants",
 };

@@ -17,3 +17,32 @@ export async function fetchPendingConsultants(): Promise<
 
   return res;
 }
+
+export async function updateConsultantStatus(
+  consultantId: number,
+  status: "active" | "rejected"
+): Promise<ApiResponse<null>> {
+  return request({
+    url: `${API_ROUTES.UPDATE_ADMIN_CONSULTANT_STATUS}/${consultantId}`,
+    method: "POST",
+    data: { status },
+  });
+}
+
+export type ConsultantStatus = "active" | "pending" | "locked";
+
+export async function fetchAdminConsultants(
+  status: ConsultantStatus
+): Promise<ApiResponse<any[]>> {
+  const res = await request<undefined, any>({
+    url: `${API_ROUTES.ADMIN_CONSULTANTS}?status=${status}`,
+    method: "GET",
+  });
+
+  if (res.status !== "success") {
+    throw new Error(res.message || "Failed to load consultants");
+  }
+  const data = Array.isArray(res.data) ? res.data : [res.data];
+
+  return { ...res, data };
+}
