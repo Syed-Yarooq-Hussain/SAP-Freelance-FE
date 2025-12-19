@@ -4,7 +4,7 @@ import { StatCardProps } from "@/components/StatCard";
 import { colors } from "@/utils/styles/colors";
 import CancelIcon from "@mui/icons-material/Cancel";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import { Box, IconButton, Tooltip, Typography } from "@mui/material";
+import { Box, IconButton, Tooltip } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 
 export const adminStatsConfig: Omit<StatCardProps, "subtitle">[] = [
@@ -62,11 +62,9 @@ export const adminConsultantColumns: GridColDef[] = [
     field: "name",
     headerName: "Name",
     flex: 1.5,
-    renderCell: (params) => (
-      <Typography sx={{ fontWeight: 500 }}>{params.value}</Typography>
-    ),
   },
-  { field: "modules", headerName: "Modules", flex: 1.5 },
+  { field: "coremodules", headerName: "Modules (Core)", flex: 1.5 },
+  { field: "othersmodules", headerName: "Modules (Others)", flex: 1.5 },
   { field: "experience", headerName: "Experience", flex: 1 },
   { field: "hourlyRate", headerName: "Hourly Rate", flex: 1 },
   {
@@ -100,64 +98,5 @@ export const adminConsultantColumns: GridColDef[] = [
         </Tooltip>
       </Box>
     ),
-  },
-];
-
-export const adminConsultantRows = [
-  {
-    id: 1,
-    avatar: "/public/vercel.svg",
-    name: "Marvin McKinney",
-    modules: "SAP MM, S/4HANA",
-    experience: "9 Years",
-    hourlyRate: "$15/hour",
-  },
-  {
-    id: 2,
-    avatar: "/public/vercel.svg",
-    name: "Savannah Nguyen",
-    modules: "SAP SD, S/4HANA",
-    experience: "9 Years",
-    hourlyRate: "$20/hour",
-  },
-  {
-    id: 3,
-    avatar: "/public/vercel.svg",
-    name: "Ralph Edwards",
-    modules: "SAP SD, S/4HANA",
-    experience: "9 Years",
-    hourlyRate: "$22/hour",
-  },
-  {
-    id: 4,
-    avatar: "/public/vercel.svg",
-    name: "Vincent Zhang",
-    modules: "SAP FI, S/4HANA",
-    experience: "9 Years",
-    hourlyRate: "$19/hour",
-  },
-  {
-    id: 5,
-    avatar: "/public/vercel.svg",
-    name: "Noah Brown",
-    modules: "SAP CRM, HANA",
-    experience: "9 Years",
-    hourlyRate: "$23/hour",
-  },
-  {
-    id: 6,
-    avatar: "/public/vercel.svg",
-    name: "Isabella Martinez",
-    modules: "SAP ABAP, S/4HANA",
-    experience: "9 Years",
-    hourlyRate: "$14/hour",
-  },
-  {
-    id: 7,
-    avatar: "/public/vercel.svg",
-    name: "Ethan Johnson",
-    modules: "SAP PI, Fiori",
-    experience: "9 Years",
-    hourlyRate: "$26/hour",
   },
 ];

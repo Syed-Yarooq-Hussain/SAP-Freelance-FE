@@ -17,7 +17,7 @@ export default function AdminProjectPage() {
       client_name: project.client_name,
       coremodules: project.modules?.core || "N/A",
       othersmodules: project.modules?.others || "N/A",
-      duration: `${project.duration}mins`,
+      duration: `${project.duration} mins`,
       start_date: formatYMD(project.start_date),
       status: project.status,
     }));

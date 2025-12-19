@@ -1,16 +1,25 @@
 "use client";
 import { useAdminDashboardStats } from "@/actions/admin/useAdminDashboardStats";
+import { usePendingConsultants } from "@/actions/admin/usePendingConsultants";
 import AppButton from "@/components/Button";
 import Sidebar from "@/components/Sidebar";
 import Dashboard from "@/components/specific/Dashboard";
 import VisibilityChart from "@/components/VisibilityChart";
-import {
-  adminConsultantColumns,
-  adminConsultantRows,
-} from "@/data/adminDashboard";
+import { adminConsultantColumns } from "@/data/adminDashboard";
 
 export default function AdminDashboardPage() {
   const stats = useAdminDashboardStats();
+  const { data } = usePendingConsultants();
+
+  const rows =
+    data?.data?.map((consultant, index) => ({
+      id: `pending-consultant-${consultant.id}-${index}`,
+      name: consultant.username,
+      coremodules: consultant.modules?.core || "N/A",
+      othersmodules: consultant.modules?.others || "N/A",
+      experience: `${consultant.experience} Years`,
+      hourlyRate: `${consultant.rate}/hour`,
+    })) ?? [];
 
   return (
     <Sidebar>
@@ -20,10 +29,10 @@ export default function AdminDashboardPage() {
         projectTable={{
           title: "Consultant Account Request",
           columns: adminConsultantColumns,
-          rows: adminConsultantRows,
+          rows,
           pageSize: 10,
           showAvatar: true,
-          avatarField: "avatar",
+          avatarField: "name",
           enableSelection: true,
           selectionActions: (
             <>
