@@ -23,6 +23,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FC, useMemo } from "react";
 import DrawerListSkeleton from "./DrawerListSkeleton";
+import { HyperText } from "./homepage/ui/hyperText";
 
 type DrawerItem = {
   icon: React.ReactNode;
@@ -99,26 +100,53 @@ const DrawerList: FC<DrawerListProps> = ({ open }) => {
               sx={{
                 py: 1.5,
                 px: 2,
+                position: "relative", 
                 bgcolor: isActive ? "#F2F3F7" : "transparent",
-                "&:hover": { bgcolor: isActive ? "grey.300" : "grey.100" },
+                overflow: "hidden",
+                "&::before, &::after": {
+                  content: '""',
+                  position: "absolute",
+                  width: "100%",
+                  height: "3px",
+                  background: "linear-gradient(to right, #8C00FF, #00FFFF)",
+                  left: 0,
+                  transform: "scaleX(0)",
+                  transition: "transform 0.5s ease-out",
+                },
+                "&::before": {top: "-2px",transformOrigin: "left",},
+                "&::after": {bottom: "-2px",transformOrigin: "right",},
+                "&:hover::before, &:hover::after": {transform: "scaleX(1)",},
+                "&:hover .hyper-text-letter": { color: "#000180",},
               }}
             >
-              <ListItemIcon
-                sx={{
-                  color: isActive ? colors.BLUE : "grey.700",
-                  minWidth: 32,
-                }}
-              >
-                {item.icon}
-              </ListItemIcon>
+            <ListItemIcon
+              sx={{
+                color: isActive ? colors.BLUE : "grey.700",
+                minWidth: 32,
+              }}
+            >
+              {item.icon}
+            </ListItemIcon>
 
-              {open && (
-                <ListItemText
-                  primary={item.label}
+            {open && (
+              <ListItemText
+                primary={
+                  <HyperText
+                    text={item.label}
+                    duration={800}
+                    className="hyper-text-letter"
+                    animateOnLoad={false}
+                    framerProps={{
+                      initial: { opacity: 0, y: -5 },
+                      animate: { opacity: 1, y: 0 },
+                      exit: { opacity: 0, y: 2 },
+                    }}
+                  />
+                }
                   primaryTypographyProps={{
                     fontWeight: isActive ? "bold" : 500,
                     fontSize: 14,
-                    color: isActive ? "primary.main" : "inherit",
+                    color: "inherit",
                   }}
                 />
               )}

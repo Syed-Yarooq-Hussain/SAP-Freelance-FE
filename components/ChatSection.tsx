@@ -22,13 +22,13 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 
-interface RightSideDrawerProps {
+interface ChatSectionProps {
   open: boolean;
   type: "chat" | "notification";
   onClose: () => void;
 }
 
-const RightSideDrawer: React.FC<RightSideDrawerProps> = ({
+const ChatSection: React.FC<ChatSectionProps> = ({
   open,
   type,
   onClose,
@@ -253,4 +253,4 @@ const RightSideDrawer: React.FC<RightSideDrawerProps> = ({
   );
 };
 
-export default RightSideDrawer;
+export default ChatSection;

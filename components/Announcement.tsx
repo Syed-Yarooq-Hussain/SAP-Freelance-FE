@@ -34,60 +34,108 @@ export default function Announcement({
 
   return (
     <Box
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        bgcolor: "#E6F1FA",
-        px: 2,
-        py: 1,
-        borderRadius: 2,
-        mb: 1,
-      }}
-    >
+  sx={{
+    display: "flex", alignItems: "center",
+    px: 2.5, py: 1.2, mb: 1.5,
+    borderRadius: "14px", position: "relative",
+    background:"linear-gradient(135deg, #e6f1fa, #f8fbff)",
+    overflow: "hidden", backdropFilter: "blur(6px)",
+    transition: "all 0.35s ease",
+    "&:hover": {boxShadow: "0 12px 30px rgba(59,130,246,0.15)", transform: "translateY(-2px)",},
+    "&::after": {
+      content: '""', position: "absolute",
+      bottom: 0, left: 0,
+      height: "3px", width: "100%",
+      background:"linear-gradient(90deg, #3b82f6, #22d3ee, #3b82f6)",
+      backgroundSize: "200% 100%",
+      animation: "gradientMove 4s linear infinite",
+    },
+  }}>
       <Typography
         variant="subtitle1"
-        fontWeight="bold"
+        fontWeight={700}
         sx={{
           display: "flex",
           alignItems: "center",
           gap: 1,
-          minWidth: "130px",
-        }}
-      >
+          minWidth: "140px",
+          position: "relative",
+          color: "#1e293b",
+          transition: "all 0.3s ease",
+          cursor: "pointer",
+          "&:hover": { color: "#2563eb", transform: "translateY(-1px)",},
+          "&::after": {
+            content: '""',position: "absolute", bottom: -4,
+            left: 0, width: "100%", height: "2px",
+            background:"linear-gradient(90deg, #2563eb, #22d3ee)",
+            transform: "scaleX(0)",transformOrigin: "right",
+            transition: "transform 0.35s ease",
+          },
+          "&:hover::after": {transform: "scaleX(1)",transformOrigin: "left",},
+        }}>
         Announcement
+
         <IconButton
           size="small"
           onClick={handlePrev}
-          sx={{ p: 0.5, color: "text.secondary" }}
-        >
-          <ArrowBackIosNewIcon sx={{ fontSize: 16, color:"red" }} />
+          sx={{p: 0.6,
+          transition: "all 0.25s ease",
+          "&:hover": {transform: "translateX(-4px) scale(1.1)",color: "#ef4444",},
+        }}>
+        <ArrowBackIosNewIcon sx={{ fontSize: 15 }} />
         </IconButton>
       </Typography>
 
       <Typography
+        key={index}
         variant="body2"
         sx={{
           flex: 1,
-          color: "text.secondary",
           textAlign: "center",
           whiteSpace: "nowrap",
           overflow: "hidden",
-          fontStyle: "italic",
-          fontfamily:"serif",
           textOverflow: "ellipsis",
-          px: 1,
-        }}
-      >
+          px: 2,
+          fontStyle: "italic",
+          fontFamily: "serif",
+          color: "#334155",
+          animation: "textSlideBlur 0.55s ease",
+        }}>
         {items[index]}
       </Typography>
 
       <IconButton
         size="small"
         onClick={handleNext}
-        sx={{ color: "text.secondary" }}
-      >
-        <ArrowForwardIosIcon sx={{ fontSize: 16, color:"red" }} />
+        sx={{
+          p: 0.6,
+          transition: "all 0.25s ease",
+          "&:hover": {transform: "translateX(4px) scale(1.1)",color: "#ef4444",},
+    }}>
+      <ArrowForwardIosIcon sx={{ fontSize: 15 }} />
       </IconButton>
+
+  <style>
+    {`
+      @keyframes textSlideBlur {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+          filter: blur(4px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+          filter: blur(0);
+        }
+      }
+
+      @keyframes gradientMove {
+        from { background-position: 0% 50%; }
+        to { background-position: 200% 50%; }
+      }
+    `}
+  </style>
     </Box>
   );
 }

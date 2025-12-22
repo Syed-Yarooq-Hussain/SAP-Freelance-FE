@@ -47,11 +47,39 @@ const StatCard: FC<StatCardProps> = ({
     <Card
       sx={{
         height: 90,
-        background: color,
+        background: "linear-gradient(#23618C, #4094CF, #3BB2F5)",
         color: "#fff",
+        borderRadius: "15px",
+        position: "relative",
+        overflow: "hidden",
+        transition: "all 0.5s ease",
         display: "flex",
         alignItems: "center",
         px: 2.5,
+        border: "2px solid transparent",
+        "&::before": {
+          content: '""',
+          position: "absolute",
+          top: "-50%",
+          left: "-30%",
+          width: "200%",
+          height: "200%",
+          background:
+          "linear-gradient(0deg, transparent, transparent 30%, rgba(7, 224, 237,0.6))",
+          transform: "rotate(-45deg)",
+          transition: "all 0.8s ease",
+          opacity: 0,
+          pointerEvents: "none",
+        },
+        "&:hover": {
+          transform: "scale(1.05)",
+          boxShadow: "1px 1px 5px rgba(0, 212, 212)",
+          borderColor: "rgba(7, 10, 140)",
+        },
+        "&:hover::before": {
+          opacity: 1,
+          transform: "rotate(-45deg) translateY(100%)",
+        },
       }}
     >
       <Box

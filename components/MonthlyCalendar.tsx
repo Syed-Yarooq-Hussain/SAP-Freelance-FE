@@ -55,14 +55,8 @@ export interface MonthlyCalendarProps {
     showNav?: boolean;
 }
 
-const dotStyle = (bg: string) => ({
-    width: 8,
-    height: 8,
-    borderRadius: "50%",
-    background: bg,
-});
-const eventColor = (t: CalendarEventType) =>
-    t === "project" ? colors.GREEN : colors.RED;
+const eventEmoji = (t: CalendarEventType) =>
+    t === "project" ? "🔥" : "🤞";
 
 export default function MonthlyCalendar({
     month,
@@ -254,11 +248,10 @@ export default function MonthlyCalendar({
                             }}
                         >
                             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                                <Box sx={dotStyle(eventColor("project"))} />
+                                <Typography variant="body2">{eventEmoji("project")}</Typography>
                                 <Typography variant="caption">Project Work</Typography>
                             </Box>
                             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                                <Box sx={dotStyle(eventColor("interview"))} />
                                 <Typography variant="caption">Interview</Typography>
                             </Box>
                         </Box>
@@ -276,28 +269,54 @@ export default function MonthlyCalendar({
                     mb: 1,
                 }}
             >
-                {WEEKDAYS.map((w) => (
+                {WEEKDAYS.map((w, index) => (
                     <Box
                         key={w}
                         sx={{
-                            border: "1px solid",
                             borderColor: "grey.300",
-                            bgcolor: "grey.100",
+                            bgcolor: "#F5F7FF",
                             borderRadius: 1,
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
-                            py: 0.75,
-                        }}
-                    >
-                        <Typography
-                            variant="caption"
-                            sx={{ fontWeight: 700, letterSpacing: 0.2 }}
-                        >
-                            {w}
-                        </Typography>
-                    </Box>
-                ))}
+                            py: 1,
+                            px: 2,
+                            cursor: "pointer",
+                            fontWeight: 700,
+                            letterSpacing: 0.5,
+                            overflow: "hidden",
+                            color: "#030342",
+                            border:"1px solid #5EE0FF",
+                            position: "relative",
+                                                    transition: "all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)",
+                            "&:hover": {
+                                color: "#030342",
+                                fontweight: 1000,
+                                transform: "rotate(-3deg) scale(1.1)",
+                                borderColor: "primary.main",
+                            },
+      "&::before": {
+        content: '""',
+        position: "absolute",
+        top: 0,
+        left: "-75%",
+        width: "50%",
+        height: "100%",
+        bgcolor: "primary.main",
+        transform: "skewX(-20deg)",
+        transition: "all 0.5s ease-in-out",
+      },
+      "&:hover::before": {
+        left: "125%",
+      },
+    }}
+  >
+    <Typography variant="caption" sx={{ position: "relative", zIndex: 1 }}>
+      {w}
+    </Typography>
+  </Box>
+))}
+
             </Box>
 
             <Box
@@ -314,22 +333,27 @@ export default function MonthlyCalendar({
                     const showGreenDot = hasProject || hasInterview;
 
                     return (
-                        <Box
-                            key={`${iso}-${i}`}
-                            sx={{
-                                minHeight: isFull ? 96 : 56,
-                                borderRadius: 1.5,
-                                border: "1px solid",
-                                borderColor: isThisMonth ? "divider" : "grey.200",
-                                bgcolor: isThisMonth
-                                    ? isFull && hasProject
-                                        ? PROJECT_BG
-                                        : "#fff"
-                                    : "grey.50",
-                                p: 1,
-                                display: "flex",
-                                flexDirection: "column",
-                                gap: 0.5,
+                       <Box
+                        key={`${iso}-${i}`}
+                        sx={{
+                            minHeight: isFull ? 96 : 56,
+                            borderRadius: 1.5,
+                            border: "1px solid #5A9FD6",
+                            bgcolor: isThisMonth
+                            ? isFull && hasProject
+                                ? PROJECT_BG
+                                : "#fff"
+                            : "grey.50",
+                            p: 1,
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 0.5,
+                            transition: "all 0.2s ease",
+                            "&:hover": {
+                            transform: "scale(1.2)",
+                            boxShadow: 3,
+                            border:"1px solid #070A8C",
+                            },
                             }}
                         >
                             <Typography
@@ -350,13 +374,13 @@ export default function MonthlyCalendar({
                                     flexWrap: "wrap",
                                 }}
                             >
-                                {isFull
-                                    ? showGreenDot && <Box sx={dotStyle(colors.GREEN)} />
-                                    : (["project", "interview"] as CalendarEventType[]).map((t) =>
+                                        {["project", "interview"].map((t) =>
                                         dayEvents.some((e) => e.type === t) ? (
-                                            <Box key={t} sx={dotStyle(eventColor(t))} />
+                                            <Typography key={t} variant="body2">
+                                                {eventEmoji(t as CalendarEventType)}
+                                            </Typography>
                                         ) : null
-                                    )}
+                                        )}
                             </Box>
 
                             {isFull && (hasProject || hasInterview) && (
