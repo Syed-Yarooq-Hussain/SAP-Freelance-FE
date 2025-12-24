@@ -84,7 +84,7 @@ const ChatSection: React.FC<ChatSectionProps> = ({
             project_id: m.project_id ?? null,
             message: m.message,
             message_type: m.type,
-            created_at: m.created_at,
+            createdAt: m.date_time,
             is_read: m.is_read,
           }))
         );
@@ -97,14 +97,14 @@ const ChatSection: React.FC<ChatSectionProps> = ({
   };
 
   // MARK READ FUNCTION
-  const markConversationRead = async (receiverId: number) => {
+  const markConversationRead = async () => {
+    if (!selectedChat) return;
     try {
-      await markRead({
-        sender_id: receiverId,
+      const payload = {
+        sender_id: selectedChat.id,
         receiver_id: currentUser.id,
-      });
-
-      setMessages((prev) => prev.map((m) => ({ ...m, is_read: true })));
+      };
+      await markRead(payload);
     } catch (err) {
       console.error("Failed to mark messages read:", err);
     }
@@ -115,7 +115,7 @@ const ChatSection: React.FC<ChatSectionProps> = ({
 
     const loadChat = async () => {
       await fetchConversationForUser(selectedChat);
-      await markConversationRead(selectedChat.id);
+      await markConversationRead();
     };
 
     loadChat();
@@ -146,7 +146,7 @@ const ChatSection: React.FC<ChatSectionProps> = ({
             project_id: payload.project_id,
             message: payload.message,
             message_type: payload.message_type,
-            created_at: new Date().toISOString(),
+            createdAt:  new Date().toISOString(),
             is_read: false,
           },
         ]);
@@ -155,6 +155,21 @@ const ChatSection: React.FC<ChatSectionProps> = ({
     } catch (err) {
       console.error("Failed to send message:", err);
     }
+  };
+
+
+const formatTime = (pgTime?: string) => {
+  if (!pgTime) return "Invalid Time";
+
+  // Convert backend string to JS Date directly
+  const date = new Date(pgTime); // JS automatically handles ISO format
+  if (isNaN(date.getTime())) return "Invalid Time";
+
+  return date.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
   };
 
   return (
@@ -170,6 +185,7 @@ const ChatSection: React.FC<ChatSectionProps> = ({
             borderTopLeftRadius: 2,
             borderTopRightRadius: 2,
             boxShadow: 4,
+            background: "linear-gradient(#D9EBFF, #EBFCFF, #FFF5F5)",
           },
         },
       }}
@@ -184,33 +200,37 @@ const ChatSection: React.FC<ChatSectionProps> = ({
             justifyContent: "space-between",
             px: 1,
             py: 1,
-            borderBottom: "1px solid #e0e0e0",
+            borderBottom: "1.33px solid #006F75",
+            flexShrink: 0,
           }}
         >
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             {type === "chat" && selectedChat && (
               <IconButton size="small" onClick={() => setSelectedChat(null)}>
-                <ArrowBackIcon fontSize="small" />
+                <ArrowBackIcon fontSize="small" sx={{color: "#75000E"}} />
               </IconButton>
             )}
-            <Typography variant="h6" sx={{ fontSize: "1rem", fontWeight: 600 }}>
+            <Typography variant="h6" sx={{ fontSize: "1.1rem", marginLeft:2, fontWeight: 1000, color: "#062441" }}>
               {type === "chat" ? "Chat" : "Notification"}
             </Typography>
           </Box>
           <IconButton onClick={onClose}>
-            <CloseIcon />
+            <CloseIcon sx={{color: "#75000E"}}/>
           </IconButton>
         </Box>
 
         {/* CHAT LIST */}
         {type === "chat" && !selectedChat && (
+          <Box sx={{ display: "flex", flexDirection: "column", flex: 1, overflow: "hidden" }}>
+            {/* Scrollable chat list */}
           <List sx={{ flex: 1, overflowY: "auto" }}>
             {chatList.map((chat) => (
               <React.Fragment key={chat.id}>
                 <ListItem disablePadding>
                   <ListItemButton onClick={() => setSelectedChat(chat)}>
                     <ListItemAvatar>
-                      <Avatar src={chat.avatar} />
+                      <Avatar sx={{ border: "1.34px solid #006F75"}}
+                       src={chat.avatar} />
                     </ListItemAvatar>
                     <ListItemText
                       primary={chat.name}
@@ -220,21 +240,23 @@ const ChatSection: React.FC<ChatSectionProps> = ({
                     />
                   </ListItemButton>
                 </ListItem>
-                <Divider variant="inset" component="li" />
+                <Divider variant="inset" component="li" 
+                sx={{ borderBottom: "1.33px solid #006F75", flexShrink: 0 }}/>
               </React.Fragment>
             ))}
           </List>
+        </Box>
         )}
 
         {/* CHAT WINDOW */}
         {type === "chat" && selectedChat && (
-          <Box sx={{ display: "flex", flexDirection: "column", flex: 1 }}>
+          <Box sx={{ display: "flex", flexDirection: "column", flex: 1, overflow: "hidden" }}>
             
             {/* CHAT HEADER */}
-            <Box sx={{ p: 2, borderBottom: "1px solid #eee" }}>
+            <Box sx={{ borderBottom: "1.33px solid #006F75", flexShrink: 0 }}>
               <ListItem>
                 <ListItemAvatar>
-                  <Avatar src={selectedChat.avatar} />
+                  <Avatar sx={{ border: "1.34px solid #006F75"}} src={selectedChat.avatar} />
                 </ListItemAvatar>
                 <ListItemText
                   primary={selectedChat.name}
@@ -254,16 +276,25 @@ const ChatSection: React.FC<ChatSectionProps> = ({
                 py: 1,
                 display: "flex",
                 flexDirection: "column",
-                gap: 1.2,
               }}
             >
               {messages.map((msg) => (
-                <Box
-                  key={msg.id}
+                <React.Fragment key={msg.id}>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      fontSize: "0.73rem",
+                      fontWeight: 1000,
+                      alignSelf: msg.message_type === "send" ? "flex-end" : "flex-start",
+                    }}
+                  >
+                    {msg.message_type === "send" ? "You" : selectedChat?.name}
+                  </Typography>
+                  <Box
                   sx={{
                     alignSelf: msg.message_type === "send" ? "flex-end" : "flex-start",
-                    bgcolor: msg.message_type === "send" ? "#1976d2" : "#f1f1f1",
-                    color: msg.message_type === "send" ? "#fff" : "#000",
+                    bgcolor: msg.message_type === "send" ? "#1479DE" : "#2D909C",
+                    color: msg.message_type === "send" ? "#fff" : "#fff",
                     borderRadius: 2,
                     px: 1.5,
                     py: 0.75,
@@ -271,15 +302,8 @@ const ChatSection: React.FC<ChatSectionProps> = ({
                   }}
                 >
                   <Typography
-                    variant="caption"
-                    sx={{ fontSize: "0.65rem", fontWeight: 600 }}
-                  >
-                    {msg.message_type === "send" ? "You" : selectedChat?.name}
-                  </Typography>
-
-                  <Typography
                     variant="body2"
-                    sx={{ fontSize: "0.8rem" }}
+                    sx={{ fontSize: "0.8rem",fontWeight: 600 }}
                   >
                     {msg.message}
                   </Typography>
@@ -287,17 +311,21 @@ const ChatSection: React.FC<ChatSectionProps> = ({
                   {msg.message_type === "send" && (
                     <Typography
                       variant="caption"
-                      sx={{ mt: 0.25, opacity: 0.7, fontSize: "0.65rem" }}
+                      sx={{ mt: 0.25, opacity: 0.7, display: "flex", fontWeight: "1000", gap: 1 }}
                     >
-                      {msg.is_read ? "Read ✅" : "Unread"}
+                        <Typography sx={{ fontSize: "0.70rem" }}>{formatTime(msg.createdAt)}</Typography>
+                        <Typography sx={{ fontSize: "0.70rem", fontWeight: "1000" }}>
+                          {msg.is_read ? <span style={{ color: "#39F525" }}>✔✔</span> : <span style={{ color: "#EBEBEB" }}>✔✔</span>}
+                        </Typography>
                     </Typography>
                   )}
                 </Box>
+              </React.Fragment>
               ))}
             </Box>
 
             {/* MESSAGE INPUT */}
-            <Box sx={{ p: 1, borderTop: "1px solid #ddd" }}>
+            <Box sx={{ p: 1, borderTop: "1px solid #006F75", flexShrink: 0 }}>
               <TextField
                 fullWidth
                 variant="outlined"
@@ -305,6 +333,14 @@ const ChatSection: React.FC<ChatSectionProps> = ({
                 placeholder="Message..."
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {borderColor: "#006F75", borderWidth: "1.5px",
+                    transition: "border-color 0.3s ease",},
+                    "&:hover fieldset": {borderColor: "#22c55e"},
+                    "&.Mui-focused fieldset": {borderColor: "#16a34a"},
+                  },
+                }}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
@@ -328,6 +364,7 @@ const ChatSection: React.FC<ChatSectionProps> = ({
                 sx={{
                   bgcolor: "#f8f8f8",
                   p: 1.8,
+                  borderRadius: 2,
                   mb: 2,
                 }}
               >

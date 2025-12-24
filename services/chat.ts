@@ -31,9 +31,9 @@ export async function getConversation(params: IConversationParams) {
 
 // ➤ MARK READ
 export async function markRead(payload: IMarkReadPayload) {
-  return await request<IMarkReadPayload, ApiResponse<null>>({
+  return await request<IMarkReadPayload, ApiResponse<IMessage>>({
     url: API_ROUTES.MARK_READ,
-    method: "POST",
+    method: "PATCH",
     data: payload,
   });
 }
