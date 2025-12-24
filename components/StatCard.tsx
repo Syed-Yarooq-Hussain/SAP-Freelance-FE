@@ -1,7 +1,5 @@
 "use client";
 
-import { Box, Card, Typography } from "@mui/material";
-import { FC } from "react";
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
 import BallotIcon from "@mui/icons-material/Ballot";
 import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
@@ -13,6 +11,8 @@ import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import QueryStatsIcon from "@mui/icons-material/QueryStats";
 import UpdateIcon from "@mui/icons-material/Update";
 import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
+import { Box, Card, Skeleton, Typography } from "@mui/material";
+import { FC } from "react";
 
 const icons = {
   WorkOutlineIcon: <WorkOutlineIcon />,
@@ -30,10 +30,11 @@ const icons = {
 
 export interface StatCardProps {
   title: string;
-  subtitle: string | number;
+  subtitle?: string | number;
   description?: string;
   color: string;
   icon: keyof typeof icons;
+  loading?: boolean;
 }
 
 const StatCard: FC<StatCardProps> = ({
@@ -42,6 +43,7 @@ const StatCard: FC<StatCardProps> = ({
   description,
   color,
   icon,
+  loading = false,
 }) => {
   return (
     <Card
@@ -73,16 +75,28 @@ const StatCard: FC<StatCardProps> = ({
             {title}
           </Typography>
 
-          <Typography
-            sx={{
-              fontSize: 28,
-              fontWeight: 700,
-              lineHeight: 1.2,
-              mt: 0.5,
-            }}
-          >
-            {subtitle}
-          </Typography>
+          {loading ? (
+            <Skeleton
+              variant="text"
+              width={80}
+              height={36}
+              sx={{
+                bgcolor: "rgba(255,255,255,0.35)",
+                mt: 0.5,
+              }}
+            />
+          ) : (
+            <Typography
+              sx={{
+                fontSize: 28,
+                fontWeight: 700,
+                lineHeight: 1.2,
+                mt: 0.5,
+              }}
+            >
+              {subtitle}
+            </Typography>
+          )}
 
           {description && (
             <Typography

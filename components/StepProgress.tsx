@@ -22,7 +22,6 @@ export default function StepProgress({ steps, activeStep }: StepProgressProps) {
         width: "100%",
         bgcolor: "#fff",
         p: 2,
-        borderRadius: 1,
         boxShadow: 1,
         border: "1px solid #E5E7EB",
       }}

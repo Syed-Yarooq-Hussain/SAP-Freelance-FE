@@ -6,6 +6,7 @@ export interface ShortlistedRow {
   hourlyRate: string;
   status: string;
   interview: STATUS | string;
+  interviewDateTime?: string | null;
 }
 
 export interface CandidateRow {
@@ -175,6 +176,7 @@ export interface IProjectConsultant {
   status: string;
   role: string | null;
   decided_rate: number;
+  interview_date?: string | null;
   booking_schedule?: {
     date_time: string;
     status: string;

@@ -9,13 +9,14 @@ import { useGetProjectMilestones } from "@/actions/projects/useGetProjectMilesto
 import { useUpdateMilestone } from "@/actions/projects/useUpdateMilestone";
 import { useUpdateTask } from "@/actions/projects/useUpdateTask";
 import AppButton from "@/components/Button";
-import { CreateForm, IFieldConfig } from "@/components/CreateForm";
+import { CreateForm } from "@/components/CreateForm";
 import MilestoneExpandableTable from "@/components/MilestoneExpandableTable";
 import DynamicPopup from "@/components/Popup";
 import { getMilestoneFormFields } from "@/forms/milestoneForm";
 import { getProjectFormFields } from "@/forms/projectForm";
 import { getTaskFormFields } from "@/forms/taskForm";
 import { useToast } from "@/providers/ToastProvider";
+import { IFieldConfig } from "@/types/create-form";
 import type { TeamProjectFormData } from "@/types/teamBuilder";
 import {
   ICreateMilestonePayload,

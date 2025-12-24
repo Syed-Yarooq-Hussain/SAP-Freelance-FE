@@ -30,4 +30,11 @@ export const API_ROUTES = {
   GET_PROJECT_DETAILS: "/projects",
   CONSULTANT_PROJECTS: "/consultants/projects",
   CONSULTANT_PAYMENTS: "/consultants/payments",
+  SAP_MODULES: "/common/sap-modules",
+  ADMIN_STATS: "/admin/stats",
+  ADMIN_PROJECTS: "/admin/projects",
+  ADMIN_CONSULTANTS: "/admin/consultants/all",
+  UPDATE_ADMIN_CONSULTANT_STATUS: "/admin/consultants",
+  ADMIN_CLIENTS: "/admin/clients/all",
+  UPDATE_ADMIN_CLIENT_STATUS: "/admin/clients",
 };

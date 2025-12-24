@@ -1,5 +1,5 @@
-import { IFieldConfig } from "@/components/CreateForm";
 import { DEPENDENCIES_OPTIONS } from "@/data/options";
+import { IFieldConfig } from "@/types/create-form";
 
 export function getMilestoneFormFields(): IFieldConfig[] {
   return [

@@ -1,5 +1,5 @@
-import { IFieldConfig } from "@/components/CreateForm";
 import { ASSIGNEE_OPTIONS } from "@/data/options";
+import { IFieldConfig } from "@/types/create-form";
 import { IOption } from "@/types/options";
 
 export function getTaskFormFields(milestones: IOption[]): IFieldConfig[] {

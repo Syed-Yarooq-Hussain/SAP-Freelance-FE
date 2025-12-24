@@ -31,5 +31,6 @@ export const APP_ROUTES = {
     PROFILE: "/admin/profile",
     CONSULTANTS: "/admin/consultant",
     CLIENT: "/admin/client",
+    NOTIFICATIONS: "/admin/notifications"
   },
 };

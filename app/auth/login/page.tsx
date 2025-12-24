@@ -55,6 +55,8 @@ const LoginPage: React.FC = () => {
           onSuccess={handleSuccess}
           loading={isPending}
           error={error?.message}
+          mode="wizard"
+          showProgress={true}
           submitButton={{
             children: "Login",
             variant: "contained",
@@ -62,10 +64,7 @@ const LoginPage: React.FC = () => {
             size: "large",
           }}
         />
-
-        <Box mt={2}>
-          <SignUpLink />
-        </Box>
+        <SignUpLink />
       </Paper>
     </Box>
   );

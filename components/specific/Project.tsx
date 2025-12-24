@@ -46,12 +46,13 @@ export default function Project<
           columns={columns}
           rows={rows}
           pageSize={10}
+          rowClickable={role !== Roles.ADMIN}
           onRowClick={(params) => {
+            if (role === Roles.ADMIN) return;
             if (!routeBase) return;
 
             const row = params.row as any;
             const targetId = row.projectId ?? params.id;
-
             router.push(`${routeBase}/${targetId}`);
           }}
         />

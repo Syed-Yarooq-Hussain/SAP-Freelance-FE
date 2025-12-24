@@ -1,4 +1,4 @@
-import type { Chat, Message, Notification } from "@/types/rightSideDrawer";
+import type { Chat, Message, Notification } from "@/types/chat";
 
 
 export const chatList: Chat[] = [

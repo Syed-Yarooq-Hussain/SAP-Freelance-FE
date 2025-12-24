@@ -17,6 +17,13 @@ import type {
   Weekday,
 } from "@/types/teamBuilder";
 import colors from "@/utils/styles/colors";
+import {
+  calculateAvgRatePerHour,
+  calculateHoursPerMonthFromRates,
+  calculateHoursPerWeek,
+  calculatePerMonthCost,
+} from "@/utils/teamBuilderCalculations";
+import { useAnimatedCounter } from "@/utils/useAnimatedCounter";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import {
   Alert,
@@ -43,6 +50,17 @@ export default function TeamCreation({ onNext }: TeamCreationProps) {
   const { toast } = useToast();
   const addConsultants = useAddConsultants();
   const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
+  const hoursPerWeek = calculateHoursPerWeek(consultantRows, selectedRows);
+  const avgRatePerHour = calculateAvgRatePerHour(hoursPerWeek);
+  const hoursPerMonth = calculateHoursPerMonthFromRates(
+    consultantRows,
+    selectedRows
+  );
+  const perMonthCost = calculatePerMonthCost(hoursPerMonth, avgRatePerHour);
+  const animatedHoursPerWeek = useAnimatedCounter(hoursPerWeek);
+  const animatedAvgRatePerHour = useAnimatedCounter(avgRatePerHour);
+  const animatedHoursPerMonth = useAnimatedCounter(hoursPerMonth);
+  const animatedPerMonthCost = useAnimatedCounter(perMonthCost);
   const [scheduleData, setScheduleData] = useState<
     TeamBuilderRow["working_schedule"] | null
   >(null);
@@ -220,7 +238,20 @@ export default function TeamCreation({ onNext }: TeamCreationProps) {
         <Grid container spacing={2} mt={3}>
           {teamBuilderStats.map((s, index) => (
             <Grid key={index} size={{ xs: 12, sm: 6, md: 3 }}>
-              <StatCard {...s} />
+              <StatCard
+                {...s}
+                subtitle={
+                  index === 0
+                    ? animatedHoursPerWeek
+                    : index === 1
+                    ? `$${animatedAvgRatePerHour}`
+                    : index === 2
+                    ? animatedHoursPerMonth
+                    : index === 3
+                    ? `$${Number(animatedPerMonthCost).toLocaleString()}`
+                    : s.subtitle
+                }
+              />
             </Grid>
           ))}
         </Grid>
