@@ -23,6 +23,7 @@ interface TableData<T extends GridValidRowModel = GridValidRowModel> {
   selectionActions?: React.ReactNode;
   onViewMoreClick?: () => void;
   hidePagination?: boolean;
+  onSelectionChange?: (ids: string[]) => void;
 }
 
 interface DashboardProps<T extends GridValidRowModel = GridValidRowModel> {
@@ -84,8 +85,9 @@ const Dashboard = <T extends GridValidRowModel = GridValidRowModel>({
               enableSelection={projectTable.enableSelection ?? false}
               showViewMore={projectTable.showViewMore ?? false}
               selectionActions={projectTable.selectionActions}
-              onViewMoreClick={projectTable.onViewMoreClick} 
+              onViewMoreClick={projectTable.onViewMoreClick}
               hidePagination={projectTable.hidePagination}
+              onSelectionChange={projectTable.onSelectionChange}
             />
           </Box>
 

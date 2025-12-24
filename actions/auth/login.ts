@@ -20,7 +20,6 @@ export const useLogin = () => {
       return response;
     },
     async onSuccess() {
-      // Cache session after login
       const session = await getCachedSession();
       const role = session?.user?.role;
 

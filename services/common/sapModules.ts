@@ -1,13 +1,7 @@
 import type { ApiResponse } from "@/types/api";
+import { ISapModule } from "@/types/signup-form";
 import { API_ROUTES } from "@/utils/api_routes";
 import { request } from "@/utils/request";
-
-export interface ISapModule {
-  id: string;
-  name: string;
-  is_core: boolean;
-  deleted_at: string | null;
-}
 
 export interface ISapModulesResponse {
   core: ISapModule[];
@@ -18,7 +12,7 @@ export async function fetchSapModules(): Promise<
   ApiResponse<ISapModulesResponse>
 > {
   const res = await request<undefined, ISapModulesResponse>({
-    url: API_ROUTES.SAP_MODULES, // /common/sap-modules
+    url: API_ROUTES.SAP_MODULES,
     method: "GET",
   });
 

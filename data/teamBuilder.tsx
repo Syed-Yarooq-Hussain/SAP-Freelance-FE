@@ -1,6 +1,7 @@
 import { StatCardProps } from "@/components/StatCard";
 import StatusChip from "@/components/StatusChip";
 import type { CandidateRow, TaskRow } from "@/types/teamBuilder";
+import { formatDateTimeAmPm } from "@/utils/dateTime";
 import { colors, statusColors } from "@/utils/styles/colors";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
@@ -46,25 +47,21 @@ export const teamBuilderSteps = [
 export const teamBuilderStats: StatCardProps[] = [
   {
     title: "Hours Per Week",
-    subtitle: 6,
     color: colors.BLUE,
     icon: "QueryStatsIcon" as const,
   },
   {
     title: "Avg. Rate Per Hour",
-    subtitle: "$20",
     color: colors.BLUE,
     icon: "CurrencyExchangeIcon" as const,
   },
   {
     title: "Hours Per Month",
-    subtitle: 30,
     color: colors.BLUE,
     icon: "EventAvailableIcon" as const,
   },
   {
     title: "Per Month Cost",
-    subtitle: "$12,000",
     color: colors.BLUE,
     icon: "BallotIcon" as const,
   },
@@ -74,9 +71,9 @@ export const teamBuilderColumns = (
   onRequestChange: (id: string | number, value: number, avail: number) => void
 ): GridColDef[] => [
   { field: "id", headerName: "IDs" },
-  { field: "coremodules", headerName: "Modules (Core)", flex: 2 },
-  { field: "othersmodules", headerName: "Modules (Others)", flex: 2 },
-  { field: "experience", headerName: "Experience", flex: 1 },
+  { field: "coremodules", headerName: "Modules (Core)", flex: 1.5 },
+  { field: "othersmodules", headerName: "Modules (Others)", flex: 1.5 },
+  { field: "experience", headerName: "Experience" },
   { field: "rate", headerName: "Rate (Hrs)", flex: 1 },
   { field: "avail", headerName: "Avail. (Hrs)" },
   {
@@ -102,7 +99,7 @@ export const teamBuilderColumns = (
   },
   {
     field: "request",
-    headerName: "Request Hrs",
+    headerName: "Request (Hrs)/Week",
     flex: 1,
     sortable: false,
     renderCell: (params) => {
@@ -168,8 +165,8 @@ export const getShortlistedColumns = (
   setInterviewOpen: (v: boolean) => void
 ): GridColDef[] => [
   { field: "id", headerName: "ID" },
-  { field: "coremodules", headerName: "Modules (Core)", flex: 2 },
-  { field: "othersmodules", headerName: "Modules (Others)", flex: 2 },
+  { field: "coremodules", headerName: "Modules (Core)", flex: 1.5 },
+  { field: "othersmodules", headerName: "Modules (Others)", flex: 1.5 },
   { field: "experience", headerName: "Experience", flex: 1 },
   { field: "hourlyRate", headerName: "Hourly Rate", flex: 1 },
   {
@@ -184,30 +181,71 @@ export const getShortlistedColumns = (
     },
   },
   {
-    field: "interview",
-    headerName: "Interview",
-    flex: 1,
+    field: "interviewDateTime",
+    headerName: "Interview Date",
+    flex: 1.5,
     renderCell: (params) => {
-      const val = params.value;
-
-      const isRequest = val === "Request";
+      if (!params.value) return "N/A";
+      return formatDateTimeAmPm(params.value);
+    },
+  },
+  {
+    field: "interview",
+    headerName: "Interview Action",
+    flex: 1.5,
+    sortable: false,
+    renderCell: (params) => {
+      const hasInterview = Boolean(params.row.interviewDateTime);
 
       return (
-        <Box
-          sx={{
-            color: isRequest ? colors.BLUE : "text.primary",
-            cursor: isRequest ? "pointer" : "default",
-            fontWeight: isRequest ? 600 : 400,
-            "&:hover": { textDecoration: isRequest ? "underline" : "none" },
-          }}
-          onClick={() => {
-            if (isRequest) {
-              setSelectedCandidateId(params.row.id);
-              setInterviewOpen(true);
-            }
-          }}
-        >
-          {val}
+        <Box sx={{ display: "flex", gap: 1 }}>
+          {!hasInterview ? (
+            <Box
+              sx={{
+                color: colors.BLUE,
+                cursor: "pointer",
+                fontWeight: 600,
+                "&:hover": { textDecoration: "underline" },
+              }}
+              onClick={() => {
+                setSelectedCandidateId(params.row.id);
+                setInterviewOpen(true);
+              }}
+            >
+              Request
+            </Box>
+          ) : (
+            <>
+              <Box
+                sx={{
+                  color: colors.BLUE,
+                  cursor: "pointer",
+                  fontWeight: 600,
+                  "&:hover": { textDecoration: "underline" },
+                }}
+                onClick={() => {
+                  setSelectedCandidateId(params.row.id);
+                  setInterviewOpen(true);
+                }}
+              >
+                Reschedule
+              </Box>
+
+              <Box
+                sx={{
+                  color: colors.RED,
+                  cursor: "pointer",
+                  fontWeight: 600,
+                  "&:hover": { textDecoration: "underline" },
+                }}
+                onClick={() => {
+                  console.log("Cancel interview for", params.row.id);
+                }}
+              >
+                Cancel
+              </Box>
+            </>
+          )}
         </Box>
       );
     },
@@ -361,25 +399,25 @@ export const teamBuilderPaymentStats = [
   {
     title: "Total Project Cost",
     subtitle: "$12,000",
-    color: "linear-gradient(135deg, #5AA9FF, #80C4FF)",
+    color: colors.BLUE,
     icon: "QueryStatsIcon" as const,
   },
   {
     title: "System Charges",
     subtitle: "$1,500",
-    color: "linear-gradient(135deg, #00997B, #4BD7BB)",
+    color: colors.BLUE,
     icon: "CurrencyExchangeIcon" as const,
   },
   {
     title: "Consultant Cost",
     subtitle: "$10,500",
-    color: "linear-gradient(135deg, #FFB64E, #FFD27F)",
+    color: colors.BLUE,
     icon: "EventAvailableIcon" as const,
   },
   {
     title: "Monthly Milestone",
     subtitle: "$5,000",
-    color: "linear-gradient(135deg, #FF5471, #FF99AB)",
+    color: colors.BLUE,
     icon: "BallotIcon" as const,
   },
 ];

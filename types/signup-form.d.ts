@@ -17,8 +17,8 @@ export interface ISignUpConsultantForm {
   confirmPassword: string;
   city?: string;
   country?: string;
-  coreModule: string;
-  otherModule: string;
+  coreModule: string[];
+  otherModule: string[];
   experience: number;
   rate: number;
   availableHours: number;
@@ -30,4 +30,11 @@ export interface ISignUpConsultantForm {
   }[];
 
   cvUrl?: string;
+}
+
+export interface ISapModule {
+  id: string;
+  name: string;
+  is_core: boolean;
+  deleted_at: string | null;
 }

@@ -8,13 +8,16 @@ import { getTeamInterviewFormFields } from "@/forms/teamInterviewForm";
 import { mapTaskFieldsToPopup } from "@/utils/mapFormToPopup";
 import colors from "@/utils/styles/colors";
 import FilterListIcon from "@mui/icons-material/FilterList";
-import { Box, Button, Link, Typography } from "@mui/material";
+import { Box, Button, Divider, Link, Typography } from "@mui/material";
 import {
   GridColDef,
   GridRenderCellParams,
   GridValidRowModel,
 } from "@mui/x-data-grid";
 import { useState } from "react";
+import AppButton from "../Button";
+
+type ConsultantTabKey = "active" | "pending" | "locked";
 
 interface ConsultantProps<T extends GridValidRowModel = GridValidRowModel> {
   title: string;
@@ -23,6 +26,9 @@ interface ConsultantProps<T extends GridValidRowModel = GridValidRowModel> {
   showMeetingActions?: boolean;
   showFilters?: boolean;
   projectId?: string | number | null;
+  showTabs?: boolean;
+  activeTab?: ConsultantTabKey;
+  onTabChange?: (tab: ConsultantTabKey) => void;
 }
 
 export default function Consultant<
@@ -34,7 +40,11 @@ export default function Consultant<
   showMeetingActions = false,
   showFilters = false,
   projectId,
+  showTabs = false,
+  onTabChange,
+  activeTab,
 }: ConsultantProps<T>) {
+  const norm = (v: unknown) => String(v ?? "").toLowerCase();
   const [filterOpen, setFilterOpen] = useState(false);
   const [scheduleOpen, setScheduleOpen] = useState(false);
   const [rescheduleOpen, setRescheduleOpen] = useState(false);
@@ -130,6 +140,35 @@ export default function Consultant<
           </Box>
         )}
 
+        {showTabs && (
+          <>
+            <Box sx={{ display: "flex", gap: 1, mb: 1.5, flexWrap: "wrap" }}>
+              <AppButton
+                label="Active"
+                colorKey="BLUE"
+                variant={activeTab === "active" ? "contained" : "outlined"}
+                onClick={() => onTabChange?.("active")}
+                width={150}
+              />
+              <AppButton
+                label="Pending"
+                colorKey="BLUE"
+                variant={activeTab === "pending" ? "contained" : "outlined"}
+                onClick={() => onTabChange?.("pending")}
+                width={150}
+              />
+              <AppButton
+                label="Locked"
+                colorKey="BLUE"
+                variant={activeTab === "locked" ? "contained" : "outlined"}
+                onClick={() => onTabChange?.("locked")}
+                width={150}
+              />
+            </Box>
+
+            <Divider sx={{ mb: 2 }} />
+          </>
+        )}
         <DataTable
           title={showFilters ? "" : title}
           columns={finalColumns}

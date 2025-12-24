@@ -55,6 +55,8 @@ const LoginPage: React.FC = () => {
           onSuccess={handleSuccess}
           loading={isPending}
           error={error?.message}
+          mode="wizard"
+          showProgress={true}
           submitButton={{
             children: "Login",
             variant: "contained",

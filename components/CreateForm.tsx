@@ -2,7 +2,7 @@
 
 import { useSapModules } from "@/actions/common/useSapModules";
 import AppButton from "@/components/Button";
-import { ICreateFormProps } from "@/types/create-form";
+import { ICreateFormProps, IFieldConfig } from "@/types/create-form";
 import { IOption } from "@/types/options";
 import { parseCV } from "@/utils/cvParser";
 import Visibility from "@mui/icons-material/Visibility";
@@ -25,14 +25,14 @@ import FormProgress from "./FormProgress";
 export const CreateForm: FC<ICreateFormProps> = ({
   elements,
   onSuccess,
-  onCancel,
   loading = false,
   error,
   submitButton,
-  cancelButton,
   actionsContainerProps,
   leadingContent,
   onCVParsed,
+  showProgress = false,
+  mode = "normal",
 }) => {
   const {
     control,
@@ -49,7 +49,7 @@ export const CreateForm: FC<ICreateFormProps> = ({
   const [fileNames, setFileNames] = useState<Record<string, string>>({});
   const autoFilledRef = useRef<Set<string>>(new Set());
   const [step, setStep] = useState<number>(0);
-  const { data, isLoading, isError } = useSapModules();
+  const { data, isLoading } = useSapModules();
   const [dynamicOptions, setDynamicOptions] = useState<
     Record<string, IOption[]>
   >({});
@@ -126,10 +126,7 @@ export const CreateForm: FC<ICreateFormProps> = ({
     if (file) await handleFileSelection(file, fieldName, onChange);
   };
 
-  const renderCurrentField = () => {
-    const element = elements[step];
-    if (!element) return null;
-
+  const renderField = (element: IFieldConfig) => {
     const isPassword = element.type === "password";
     const isFile = element.type === "file";
     const isSelect =
@@ -148,9 +145,8 @@ export const CreateForm: FC<ICreateFormProps> = ({
     }
 
     return (
-      <FormControl fullWidth sx={{ width: "100%" }}>
+      <FormControl fullWidth sx={{ width: "100%" }} key={element.name}>
         <Controller
-          key={element.name}
           name={element.name}
           defaultValue={element.defaultValue ?? ""}
           control={control}
@@ -173,33 +169,27 @@ export const CreateForm: FC<ICreateFormProps> = ({
                   <input
                     id={element.name}
                     type="file"
-                    style={{ display: "none" }}
+                    hidden
                     accept={element.inputProps?.accept}
                     onChange={(e) => {
                       const file = e.target.files?.[0];
-                      if (file)
+                      if (file) {
                         handleFileSelection(file, element.name, field.onChange);
+                      }
                     }}
                   />
+
                   <label
                     htmlFor={element.name}
                     onDrop={(e) =>
                       handleFileDrop(e, element.name, field.onChange)
                     }
-                    style={{ display: "block", cursor: "pointer" }}
+                    style={{ cursor: "pointer", display: "block" }}
                   >
-                    <Typography
-                      variant="subtitle1"
-                      fontWeight="bold"
-                      color="#4680FF"
-                    >
+                    <Typography fontWeight="bold" color="#4680FF">
                       {fileNames[element.name] || element.label || "Upload"}
                     </Typography>
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      sx={{ mt: 0.5 }}
-                    >
+                    <Typography variant="body2" color="text.secondary">
                       Click or drag to choose a file (.pdf, .doc, .docx)
                     </Typography>
                   </label>
@@ -212,8 +202,8 @@ export const CreateForm: FC<ICreateFormProps> = ({
                 {...field}
                 fullWidth
                 size="small"
-                variant="outlined"
                 label={element.label}
+                placeholder={element.placeholder}
                 type={
                   isPassword
                     ? showPassword[element.name]
@@ -223,22 +213,55 @@ export const CreateForm: FC<ICreateFormProps> = ({
                 }
                 error={!!errors[element.name]}
                 helperText={errors[element.name]?.message?.toString()}
-                placeholder={element.placeholder}
                 disabled={loading || isLoading}
                 select={isSelect}
-                slotProps={{
-                  inputLabel: {
-                    shrink: true,
+                SelectProps={{
+                  multiple: element.multiple === true,
+                  displayEmpty: true,
+                  renderValue: (selected) => {
+                    if (
+                      !selected ||
+                      (Array.isArray(selected) && selected.length === 0)
+                    ) {
+                      return (
+                        <Typography color="gray">
+                          Select {element.label}
+                        </Typography>
+                      );
+                    }
+
+                    if (Array.isArray(selected)) {
+                      return selected
+                        .map((val) => {
+                          const opt =
+                            element.options?.find((o) => o.value === val) ||
+                            dynamicOptions[element.name]?.find(
+                              (o) => o.value === val
+                            );
+                          return opt?.label ?? val;
+                        })
+                        .join(", ");
+                    }
+
+                    const opt =
+                      element.options?.find((o) => o.value === selected) ||
+                      dynamicOptions[element.name]?.find(
+                        (o) => o.value === selected
+                      );
+
+                    return opt?.label ?? String(selected);
                   },
-                  htmlInput: element.inputProps,
-                  input: isPassword
+                }}
+                InputLabelProps={{ shrink: true }}
+                inputProps={element.inputProps}
+                InputProps={
+                  isPassword
                     ? {
                         endAdornment: (
                           <InputAdornment position="end">
                             <IconButton
-                              onClick={() => handleTogglePassword(element.name)}
-                              edge="end"
                               size="small"
+                              onClick={() => handleTogglePassword(element.name)}
                             >
                               {showPassword[element.name] ? (
                                 <VisibilityOff fontSize="small" />
@@ -249,52 +272,97 @@ export const CreateForm: FC<ICreateFormProps> = ({
                           </InputAdornment>
                         ),
                       }
-                    : undefined,
-
-                  select: isSelect
-                    ? {
-                        displayEmpty: true,
-                        renderValue: (value) => {
-                          if (!value) {
-                            return (
-                              <Typography color="gray">
-                                Select {element.label}
-                              </Typography>
-                            );
-                          }
-
-                          const option =
-                            element.options?.find((o) => o.value === value) ||
-                            dynamicOptions[element.name]?.find(
-                              (o) => o.value === value
-                            );
-
-                          return option?.label ?? String(value);
-                        },
-                      }
-                    : undefined,
-                }}
+                    : undefined
+                }
               >
-                <MenuItem value="">
-                  <em>{element.placeholder ?? `Select ${element.label}`}</em>
-                </MenuItem>
-
-                {element.options?.map((opt) => (
-                  <MenuItem key={String(opt.value)} value={opt.value}>
-                    {opt.label}
+                {!element.multiple && (
+                  <MenuItem value="">
+                    <em>{element.placeholder ?? `Select ${element.label}`}</em>
                   </MenuItem>
-                ))}
+                )}
 
-                {dynamicOptions[element.name]?.map((opt) => (
-                  <MenuItem key={String(opt.value)} value={opt.value}>
-                    {opt.label}
-                  </MenuItem>
-                ))}
+                {(element.options ?? dynamicOptions[element.name] ?? []).map(
+                  (opt) => (
+                    <MenuItem key={String(opt.value)} value={opt.value}>
+                      {element.multiple && (
+                        <input
+                          type="checkbox"
+                          checked={
+                            Array.isArray(field.value) &&
+                            field.value.includes(opt.value)
+                          }
+                          readOnly
+                          style={{ marginRight: 8 }}
+                        />
+                      )}
+                      {opt.label}
+                    </MenuItem>
+                  )
+                )}
               </TextField>
             );
           }}
         />
       </FormControl>
+    );
+  };
+
+  const renderCurrentField = () => {
+    const element = elements[step];
+    if (!element) return null;
+    return renderField(element);
+  };
+
+  const generateSpans = (
+    type: "row" | "column",
+    spans?: {
+      xs?: number;
+      sm?: number;
+      md?: number;
+      lg?: number;
+      xl?: number;
+    }
+  ) => {
+    const defaultSpan = type === "row" ? 1 : 12;
+
+    const result: Record<string, string> = {
+      xs: `span ${defaultSpan}`,
+    };
+
+    if (!spans) return result;
+
+    (["xs", "sm", "md", "lg", "xl"] as const).forEach((bp) => {
+      if (spans[bp] !== undefined) {
+        result[bp] = `span ${spans[bp]}`;
+      }
+    });
+
+    return result;
+  };
+
+  const renderAllFields = () => {
+    return (
+      <Box
+        sx={{
+          mt: 2,
+          display: "grid",
+          gridTemplateColumns: "repeat(12, 1fr)",
+          gap: "20px",
+        }}
+      >
+        {elements.map((element) => (
+          <FormControl
+            key={element.name}
+            sx={{
+              width: "100%",
+              gridColumn: generateSpans("column", element.column),
+              gridRow: generateSpans("row", element.row),
+            }}
+          >
+            {renderField(element)}
+          </FormControl>
+        ))}
+      </Box>
     );
   };
 
@@ -322,7 +390,9 @@ export const CreateForm: FC<ICreateFormProps> = ({
 
   return (
     <Box component="form" onSubmit={handleSubmit(submitHandler)}>
-      <FormProgress currentStep={step} totalSteps={elements.length} />
+      {mode === "wizard" && showProgress && (
+        <FormProgress currentStep={step} totalSteps={elements.length} />
+      )}
 
       {error && <Alert severity="error">{error}</Alert>}
 
@@ -332,7 +402,9 @@ export const CreateForm: FC<ICreateFormProps> = ({
           <Box sx={{ flex: 1, minWidth: 0 }}>{renderCurrentField()}</Box>
         </Box>
       ) : (
-        <Box sx={{ mt: 2 }}>{renderCurrentField()}</Box>
+        <Box sx={{ mt: 2 }}>
+          {mode === "wizard" ? renderCurrentField() : renderAllFields()}
+        </Box>
       )}
 
       <Stack
@@ -340,40 +412,39 @@ export const CreateForm: FC<ICreateFormProps> = ({
         spacing={2}
         justifyContent="center"
         sx={{ mt: 3, ...actionsContainerProps?.sx }}
-        {...actionsContainerProps}
       >
-        {step > 0 && (
-          <AppButton
-            label="Back"
-            color="secondary"
-            onClick={goPrev}
-            sx={{ minWidth: "160px" }}
-          />
-        )}
+        {mode === "wizard" ? (
+          <>
+            {step > 0 && (
+              <AppButton
+                label="Back"
+                onClick={goPrev}
+                sx={{ width: "auto", minWidth: "160px" }}
+              />
+            )}
 
-        {step === elements.length - 1 ? (
-          <AppButton
-            label={String(submitButton?.children || "Submit")}
-            color="primary"
-            onClick={handleSubmit(submitHandler)}
-            loading={loading}
-            sx={{ minWidth: "160px", ...submitButton?.sx }}
-          />
+            {step === elements.length - 1 ? (
+              <AppButton
+                label={String(submitButton?.children || "Submit")}
+                color="primary"
+                onClick={handleSubmit(submitHandler)}
+                loading={loading}
+                sx={{ width: "auto", minWidth: "160px", ...submitButton?.sx }}
+              />
+            ) : (
+              <AppButton
+                label="Next"
+                onClick={goNext}
+                sx={{ width: "auto", minWidth: "160px" }}
+              />
+            )}
+          </>
         ) : (
           <AppButton
-            label="Next"
-            color="primary"
-            onClick={goNext}
-            sx={{ minWidth: "160px" }}
-          />
-        )}
-
-        {onCancel && (
-          <AppButton
-            label={String(cancelButton?.children || "Cancel")}
-            color="secondary"
-            onClick={onCancel}
-            sx={{ minWidth: "160px", ...cancelButton?.sx }}
+            label={submitButton?.children || "Submit"}
+            onClick={handleSubmit(submitHandler)}
+            loading={loading}
+            sx={{ width: "auto", minWidth: "160px", ...submitButton?.sx }}
           />
         )}
       </Stack>

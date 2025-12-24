@@ -35,6 +35,7 @@ export type DataTableProps<T extends GridValidRowModel> = {
     params: GridRowParams<T>,
     event: MuiEvent<React.MouseEvent>
   ) => void;
+  rowClickable?: boolean;
   showBackButton?: boolean;
   onBackClick?: () => void;
   showAvatar?: boolean;
@@ -67,6 +68,7 @@ export default function DataTable<T extends GridValidRowModel>({
   onSelectionChange,
   onRowClick,
   hidePagination = false,
+  rowClickable = true,
 }: DataTableProps<T>) {
   const [selectedRows, setSelectedRows] = React.useState<Set<string>>(
     new Set()
@@ -246,18 +248,20 @@ export default function DataTable<T extends GridValidRowModel>({
             },
             "& .MuiDataGrid-cell": {
               fontSize: "0.875rem",
-              display: "flex",
-              alignItems: "center",
+              alignItems: "flex-start",
+              whiteSpace: "normal",
+              wordBreak: "break-word",
+              lineHeight: 1.4,
+              py: 1,
             },
-
             "& .MuiDataGrid-row": {
               backgroundColor: "#fff",
               transition: "background-color 0.2s ease",
+              cursor: rowClickable ? "pointer" : "default",
             },
 
             "& .MuiDataGrid-row:hover": {
-              cursor: "pointer",
-              backgroundColor: "#f1f7ff",
+              backgroundColor: rowClickable ? "#f1f7ff" : "#fff",
             },
           }}
         />

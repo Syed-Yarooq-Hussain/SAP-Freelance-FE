@@ -7,10 +7,12 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import DescriptionIcon from "@mui/icons-material/Description";
 import EventNoteIcon from "@mui/icons-material/EventNote";
+import NotificationsIcon from "@mui/icons-material/Notifications";
 import PaymentIcon from "@mui/icons-material/Payment";
 import PeopleIcon from "@mui/icons-material/People";
 import ProfileIcon from "@mui/icons-material/Person";
 import WorkIcon from "@mui/icons-material/Work";
+
 import {
   List,
   ListItem,
@@ -52,6 +54,11 @@ const DrawerList: FC<DrawerListProps> = ({ open }) => {
         { icon: <WorkIcon />, label: "Projects", link: r.PROJECTS },
         { icon: <EventNoteIcon />, label: "Interviews", link: r.INTERVIEWS },
         { icon: <PaymentIcon />, label: "Payments", link: r.PAYMENTS },
+        {
+          icon: <NotificationsIcon />,
+          label: "Notifications",
+          link: r.NOTIFICATIONS,
+        },
       ];
     }
 

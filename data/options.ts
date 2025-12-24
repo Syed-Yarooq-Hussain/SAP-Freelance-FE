@@ -85,3 +85,21 @@ export const INTERVIEW_DURATION_OPTIONS: IOption[] = [
   { value: "75", label: "75 mins" },
   { value: "90", label: "90 mins" },
 ];
+
+export const NOTIFICATION_TARGET_OPTIONS: IOption[] = [
+  { value: "consultants", label: "All Consultants" },
+  { value: "custom_consultants", label: "Custom Consultants" },
+  { value: "custom_clients", label: "Custom Clients" },
+];
+
+export const CUSTOM_CONSULTANT_OPTIONS: IOption[] = [
+  { value: "1", label: "Albert Flores" },
+  { value: "2", label: "Marvin McKinney" },
+  { value: "3", label: "Savannah Nguyen" },
+];
+
+export const CUSTOM_CLIENT_OPTIONS: IOption[] = [
+  { value: "101", label: "Client – ABC Corp" },
+  { value: "102", label: "Client – Delta Ltd" },
+  { value: "103", label: "Client – Nova Systems" },
+];
