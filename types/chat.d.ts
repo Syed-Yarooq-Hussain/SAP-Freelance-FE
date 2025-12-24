@@ -12,7 +12,7 @@ export interface IMessage {
   project_id?: number | null;
   message: string;
   message_type: string;
-  created_at: string;
+  createdAt: string;
   is_read: boolean;
 }
 
