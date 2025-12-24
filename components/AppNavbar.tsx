@@ -19,7 +19,7 @@ import {
 import * as React from "react";
 import AppTitle from "./AppTitle";
 import ProfileMenu from "./ProfileMenu";
-import RIghtSideDrawer from "./RIghtSideDrawer";
+import ChatSection from "./ChatSection";
 
 interface AppNavbarProps {
   showSidebar?: boolean;
@@ -62,7 +62,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
             ? { md: `calc(100% - ${DESKTOP_DRAWER_WIDTH}px)` }
             : "100%",
           ml: showSidebar ? { md: `${DESKTOP_DRAWER_WIDTH}px` } : 0,
-          backgroundColor: "#3088B7",
+          backgroundColor: "#E6EEF9",
           transition: "all 0.3s ease",
         }}
       >
@@ -175,7 +175,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
         }}
       />
 
-      <RIghtSideDrawer
+      <ChatSection
         open={drawerOpen}
         type={drawerType || "chat"}
         onClose={() => setDrawerOpen(false)}

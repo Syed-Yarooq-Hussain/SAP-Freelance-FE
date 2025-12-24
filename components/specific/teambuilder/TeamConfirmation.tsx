@@ -8,15 +8,18 @@ import AppButton from "@/components/Button";
 import DataTable from "@/components/DataTable";
 import DynamicPopup from "@/components/Popup";
 import RoleHierarchy from "@/components/RoleHierarchy";
+import { CONSULTANT_STATUS } from "@/constants/status";
 import { STATUS } from "@/constants/status_dropdown";
-import { INTERVIEW_DURATION_OPTIONS } from "@/data/options";
 import { getCandidateColumns, getShortlistedColumns } from "@/data/teamBuilder";
+import { getTeamInterviewFormFields } from "@/forms/teamInterviewForm";
 import type {
   CandidateRow,
   IProjectConsultant,
   ShortlistedRow,
   TeamConfirmationProps,
 } from "@/types/teamBuilder";
+import { mapTaskFieldsToPopup } from "@/utils/mapFormToPopup";
+import { normalizeStatus } from "@/utils/normalizeStatus";
 import { Box, Typography } from "@mui/material";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -44,10 +47,6 @@ export default function TeamConfirmation({
     duration: "",
   });
 
-  const rejectCandidate = useCallback((row: CandidateRow): void => {
-    setCandidates((prev) => prev.filter((r) => r.id !== row.id));
-  }, []);
-
   const shortlistedColumns = useMemo(
     () =>
       getShortlistedColumns(
@@ -72,49 +71,216 @@ export default function TeamConfirmation({
     []
   );
 
-  const mapConsultants = (list: IProjectConsultant[]) => {
-    const shortlisted: ShortlistedRow[] = list.map((item) => ({
-      id: item.consultant_id,
-      modules: "N/A",
-      experience: item.user.consultants?.experience
-        ? `${item.user.consultants.experience} Years`
-        : "N/A",
-      hourlyRate: item.user.consultants?.rate
-        ? `$${item.user.consultants.rate}/hour`
-        : "N/A",
-      status: STATUS.SHORTLISTED,
-      interview: "Request",
-    }));
+  const refreshEverything = () => {
+    if (!projectId) return;
 
-    const candidates: CandidateRow[] = list.map((item) => ({
+    getProjectConsultants.mutate(
+      {
+        projectId,
+        statuses: [
+          CONSULTANT_STATUS.SHORTLISTED,
+          CONSULTANT_STATUS.INTERVIEW_SCHEDULE,
+          CONSULTANT_STATUS.INTERVIEWED,
+          CONSULTANT_STATUS.OFFERED,
+          CONSULTANT_STATUS.HIRED,
+          CONSULTANT_STATUS.REJECTED,
+        ],
+      },
+      {
+        onSuccess: (res) => {
+          const all = res.data ?? [];
+
+          const { shortlisted, candidates } = fullMap(all);
+
+          setShortlisted(shortlisted);
+          setCandidates(candidates);
+        },
+      }
+    );
+  };
+
+  const fullMap = (list: IProjectConsultant[]) => {
+    const shortlisted: ShortlistedRow[] = [];
+    const candidates: CandidateRow[] = [];
+
+    list.forEach((item) => {
+      const core = item.modules?.core || "N/A";
+      const others = item.modules?.others || "N/A";
+      const experience = `${item.experience} Years`;
+      const hourlyRate = `$${item.rate}/hour`;
+
+      if (
+        item.status === CONSULTANT_STATUS.SHORTLISTED ||
+        item.status === CONSULTANT_STATUS.INTERVIEW_SCHEDULE
+      ) {
+        shortlisted.push({
+          id: item.consultant_id,
+          coremodules: core,
+          othersmodules: others,
+          experience,
+          hourlyRate,
+          status: normalizeStatus(item.status),
+          interview: item.booking_schedule
+            ? normalizeStatus(item.booking_schedule.status)
+            : STATUS.REQUEST,
+          interviewDateTime: item.interview_date ?? null
+        });
+      }
+
+      const candidateStatuses: string[] = [
+        CONSULTANT_STATUS.INTERVIEW_SCHEDULE,
+        CONSULTANT_STATUS.INTERVIEWED,
+        CONSULTANT_STATUS.OFFERED,
+        CONSULTANT_STATUS.HIRED,
+        CONSULTANT_STATUS.REJECTED,
+      ];
+
+      if (candidateStatuses.includes(item.status)) {
+        candidates.push({
+          id: Number(item.consultant_id),
+          avatar: "/public/vercel.svg",
+          name: item.name,
+          coremodules: core || "N/A",
+          othersmodules: others || "N/A",
+          experience,
+          hourlyRate,
+          signed: item.is_doc_signed ? "Yes" : "No",
+          role: item.role ?? undefined,
+        });
+      }
+    });
+
+    return { shortlisted, candidates };
+  };
+
+  const refreshAllData = () => {
+    if (!projectId) return;
+
+    getProjectConsultants.mutate(
+      {
+        projectId,
+        statuses: [
+          CONSULTANT_STATUS.SHORTLISTED,
+          CONSULTANT_STATUS.INTERVIEW_SCHEDULE,
+        ],
+      },
+      {
+        onSuccess: (res) => {
+          const { shortlisted, candidates } = mapConsultants(res.data ?? []);
+          setShortlisted(shortlisted);
+          setCandidates(candidates);
+        },
+      }
+    );
+  };
+
+  const getCandidatesList = useCallback(() => {
+    if (!projectId) return;
+
+    getProjectConsultants.mutate(
+      {
+        projectId,
+        statuses: [
+          CONSULTANT_STATUS.OFFERED,
+          CONSULTANT_STATUS.HIRED,
+          CONSULTANT_STATUS.REJECTED,
+          CONSULTANT_STATUS.INTERVIEWED,
+          CONSULTANT_STATUS.INTERVIEW_SCHEDULE,
+        ],
+      },
+      {
+        onSuccess: (res) => {
+          const mapped = mapCandidateOnly(res.data ?? []);
+          setCandidates(mapped);
+        },
+      }
+    );
+  }, [projectId, getProjectConsultants]);
+
+  const mapCandidateOnly = (list: IProjectConsultant[]): CandidateRow[] => {
+    return list.map((item) => ({
       id: Number(item.consultant_id),
-      avatar: "/img/u1.png",
-      name: item.user.username,
-      modules: "N/A",
-      experience: item.user.consultants?.experience
-        ? `${item.user.consultants.experience} Years`
-        : "N/A",
-      hourlyRate: item.user.consultants?.rate
-        ? `$${item.user.consultants.rate}/hour`
-        : "N/A",
-      signed: item.is_joic_signed ? "Yes" : "No",
+      avatar: "/public/vercel.svg",
+      name: item.name,
+      coremodules: item.modules?.core ?? "N/A",
+      othersmodules: item.modules?.others ?? "N/A",
+      experience: `${item.experience} Years`,
+      hourlyRate: `$${item.rate}/hour`,
+      signed: item.is_doc_signed ? "Yes" : "No",
       role: item.role ?? undefined,
+      status: item.status,
+      working_schedule: item.working_schedule,
     }));
+  };
+
+  const mapConsultants = (list: IProjectConsultant[]) => {
+    const shortlisted: ShortlistedRow[] = [];
+    const candidates: CandidateRow[] = [];
+
+    list.forEach((item) => {
+      const core = item.modules?.core || "N/A";
+      const others = item.modules?.others || "N/A";
+      const experience = `${item.experience} Years`;
+      const hourlyRate = `$${item.rate}/hour`;
+
+      if (
+        item.status === CONSULTANT_STATUS.SHORTLISTED ||
+        item.status === CONSULTANT_STATUS.INTERVIEW_SCHEDULE
+      ) {
+        shortlisted.push({
+          id: item.consultant_id,
+          coremodules: core,
+          othersmodules: others,
+          experience,
+          hourlyRate,
+          status: normalizeStatus(item.status),
+          interview: item.booking_schedule
+            ? normalizeStatus(item.booking_schedule.status)
+            : STATUS.REQUEST,
+          interviewDateTime: item.interview_date ?? null,
+        });
+      }
+
+      if (
+        item.status === CONSULTANT_STATUS.INTERVIEWED ||
+        item.status === CONSULTANT_STATUS.INTERVIEW_SCHEDULE
+      ) {
+        candidates.push({
+          id: Number(item.consultant_id),
+          avatar: "/public/vercel.svg",
+          name: item.name,
+          coremodules: core || "N/A",
+          othersmodules: others || "N/A",
+          experience,
+          hourlyRate,
+          signed: item.is_doc_signed ? "Yes" : "No",
+          role: item.role ?? undefined,
+        });
+      }
+    });
 
     return { shortlisted, candidates };
   };
 
   useEffect(() => {
     if (!projectId) return;
-
-    getProjectConsultants.mutate(projectId, {
-      onSuccess: (res) => {
-        const list = (res.data ?? []) as IProjectConsultant[];
-        const { shortlisted, candidates } = mapConsultants(list);
-        setShortlisted(shortlisted);
-        setCandidates(candidates);
+    getCandidatesList();
+    getProjectConsultants.mutate(
+      {
+        projectId,
+        statuses: [
+          CONSULTANT_STATUS.SHORTLISTED,
+          CONSULTANT_STATUS.INTERVIEW_SCHEDULE,
+        ],
       },
-    });
+      {
+        onSuccess: (res) => {
+          const { shortlisted, candidates } = mapConsultants(res.data ?? []);
+          setShortlisted(shortlisted);
+          setCandidates(candidates);
+        },
+      }
+    );
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId]);
@@ -124,8 +290,7 @@ export default function TeamConfirmation({
       <Box
         sx={{
           p: 2,
-          borderRadius: 1,
-          boxShadow: 1,
+          boxShadow: 2,
           bgcolor: "background.paper",
           mt: 3,
         }}
@@ -141,8 +306,7 @@ export default function TeamConfirmation({
       <Box
         sx={{
           p: 2,
-          borderRadius: 1,
-          boxShadow: 1,
+          boxShadow: 2,
           bgcolor: "background.paper",
           mt: 3,
         }}
@@ -163,8 +327,7 @@ export default function TeamConfirmation({
         sx={{
           mt: 3,
           p: 2,
-          borderRadius: 1,
-          boxShadow: 1,
+          boxShadow: 2,
           bgcolor: "background.paper",
           display: "flex",
           justifyContent: "space-between",
@@ -197,15 +360,7 @@ export default function TeamConfirmation({
         row={selectedRow}
         projectId={projectId!}
         onUpdated={() => {
-          getProjectConsultants.mutate(projectId!, {
-            onSuccess: (res) => {
-              const list = res.data ?? [];
-              const { shortlisted, candidates } = mapConsultants(list);
-
-              setShortlisted(shortlisted);
-              setCandidates(candidates);
-            },
-          });
+          refreshAllData();
         }}
         onAssign={(role) => {
           if (!selectedRow) return;
@@ -214,22 +369,25 @@ export default function TeamConfirmation({
             {
               consultant_id: selectedRow.id,
               project_id: String(projectId),
-              status: "active",
-              role,
+              status: CONSULTANT_STATUS.OFFERED,
+              role: role,
+              booking_schedule: selectedRow.working_schedule
+                ? {
+                    weekdays: selectedRow.working_schedule.weekdays.map(
+                      (day) => ({
+                        day: day.day,
+                        start: day.start,
+                        end: day.end,
+                        active: day.active,
+                      })
+                    ),
+                  }
+                : undefined,
             },
             {
               onSuccess: () => {
                 setAssignRoleOpen(false);
-
-                getProjectConsultants.mutate(projectId!, {
-                  onSuccess: (res) => {
-                    const list = res.data ?? [];
-                    const { shortlisted, candidates } = mapConsultants(list);
-
-                    setShortlisted(shortlisted);
-                    setCandidates(candidates);
-                  },
-                });
+                getCandidatesList();
               },
             }
           );
@@ -243,9 +401,36 @@ export default function TeamConfirmation({
         description="Are you sure you want to reject this candidate?"
         buttonText="Yes, Reject"
         buttonColor="RED"
+        fields={[]}
         onSubmit={() => {
-          if (selectedRow) rejectCandidate(selectedRow);
-          setRejectConfirmOpen(false);
+          if (!selectedRow) return;
+
+          updateConsultantStatus.mutate(
+            {
+              consultant_id: selectedRow.id,
+              project_id: String(projectId),
+              status: CONSULTANT_STATUS.REJECTED,
+              role: selectedRow.role ?? "",
+              booking_schedule: selectedRow.working_schedule
+                ? {
+                    weekdays: selectedRow.working_schedule.weekdays.map(
+                      (d) => ({
+                        day: d.day,
+                        start: d.start,
+                        end: d.end,
+                        active: d.active,
+                      })
+                    ),
+                  }
+                : undefined,
+            },
+            {
+              onSuccess: () => {
+                setRejectConfirmOpen(false);
+                getCandidatesList();
+              },
+            }
+          );
         }}
       />
 
@@ -253,41 +438,17 @@ export default function TeamConfirmation({
         open={interviewOpen}
         onClose={() => setInterviewOpen(false)}
         title="Request Interview"
-        fields={[
-          {
-            id: "date",
-            label: "Date",
-            type: "date",
-            value: interviewData.date,
-            onChange: (val: string | File) => {
-              if (typeof val === "string")
-                setInterviewData((p) => ({ ...p, date: val }));
-            },
-          },
-          {
-            id: "duration",
-            label: "Select Duration",
-            placeholder: "Select duration",
-            options: INTERVIEW_DURATION_OPTIONS.map((d) => d.label),
-            value: interviewData.duration,
-            onChange: (val: string | File) => {
-              if (typeof val === "string")
-                setInterviewData((p) => ({ ...p, duration: val }));
-            },
-          },
-          {
-            id: "time",
-            label: "Time",
-            type: "time",
-            value: interviewData.time,
-            onChange: (val: string | File) => {
-              if (typeof val === "string")
-                setInterviewData((p) => ({ ...p, time: val }));
-            },
-          },
-        ]}
+        fields={mapTaskFieldsToPopup(
+          getTeamInterviewFormFields(),
+          interviewData,
+          (field, value) =>
+            setInterviewData((prev) => ({ ...prev, [field]: value }))
+        )}
         buttonText="Assign Interview"
         buttonColor="BLUE"
+        disableSubmit={
+          !interviewData.date || !interviewData.time || !interviewData.duration
+        }
         onSubmit={() => {
           if (!selectedConsultantId) return;
 
@@ -299,17 +460,16 @@ export default function TeamConfirmation({
               invitees_id: [Number(selectedConsultantId)],
               duration: Number(interviewData.duration),
               event_type: "interview",
+              project_id: Number(projectId),
             },
             {
               onSuccess: () => {
                 setInterviewOpen(false);
+                refreshEverything();
               },
             }
           );
         }}
-        disableSubmit={
-          !interviewData.date || !interviewData.time || !interviewData.duration
-        }
       />
     </>
   );

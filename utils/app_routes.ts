@@ -1,6 +1,6 @@
 export const APP_ROUTES = {
   HOME: "/",
-  LOGIN: "/",
+  LOGIN: "/auth/login",
   SIGNUP_SELECT: "/auth/signup-select",
   SIGNUP: "/auth/signup",
   TEAMBUILDER: "/teambuilder",
@@ -31,5 +31,6 @@ export const APP_ROUTES = {
     PROFILE: "/admin/profile",
     CONSULTANTS: "/admin/consultant",
     CLIENT: "/admin/client",
+    NOTIFICATIONS: "/admin/notifications"
   },
 };

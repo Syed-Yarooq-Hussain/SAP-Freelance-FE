@@ -1,6 +1,6 @@
 "use client";
 
-import { updateProjectService } from "@/services/updateProject";
+import { updateProjectService } from "@/services/addProjectDetails";
 import type { ApiResponse } from "@/types/api";
 import type { IProject } from "@/types/projects";
 import { IUpdateProjectPayload } from "@/types/teamBuilder";

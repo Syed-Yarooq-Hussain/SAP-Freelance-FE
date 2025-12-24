@@ -4,17 +4,17 @@ import type { IProject } from "@/types/projects";
 import { IUpdateProjectPayload } from "@/types/teamBuilder";
 import { API_ROUTES } from "@/utils/api_routes";
 import { request } from "@/utils/request";
-import { getSession } from "next-auth/react";
+import { getCachedSession } from "@/services/sessionCache";
 
 export async function updateProjectService(
   projectId: string | number,
   body: IUpdateProjectPayload
 ): Promise<ApiResponse<IProject>> {
-  const session = await getSession();
+  const session = await getCachedSession();
   const token = session?.accessToken;
 
   const res = await request<typeof body, IProject>({
-    url: `${API_ROUTES.PROJECT_UPDATE}/${projectId}`,
+    url: `${API_ROUTES.ADD_PROJECT_DETAILS}/${projectId}`,
     method: "PUT",
     data: body,
     headers: token ? { Authorization: `Bearer ${token}` } : undefined,

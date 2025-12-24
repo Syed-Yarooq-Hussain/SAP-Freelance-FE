@@ -43,30 +43,3 @@ export const consultantPaymentColumns: GridColDef[] = [
     },
   },
 ];
-
-export const consultantPaymentRows = [
-  {
-    id: 1,
-    project: "Retail Implementation",
-    duedates: "10.09.2025",
-    amount: "2,500",
-    status: "Paid",
-    invoice: "Download",
-  },
-  {
-    id: 2,
-    project: "Retail Implementation",
-    duedates: "10.10.2025",
-    amount: "3,500",
-    status: "Pending",
-    invoice: "Download",
-  },
-  {
-    id: 3,
-    project: "Retail Implementation",
-    duedates: "10.11.2025",
-    amount: "3,500",
-    status: "Overdue",
-    invoice: "Download",
-  },
-];

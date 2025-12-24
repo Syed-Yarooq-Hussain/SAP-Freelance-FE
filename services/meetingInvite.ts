@@ -1,20 +1,16 @@
 import type { ApiResponse } from "@/types/api";
-import { IMeetingInviteResponse } from "@/types/teamBuilder";
+import {
+  IMeetingInviteBody,
+  IMeetingInviteResponse,
+} from "@/types/teamBuilder";
 import { API_ROUTES } from "@/utils/api_routes";
 import { request } from "@/utils/request";
-import { getSession } from "next-auth/react";
-
-export interface IMeetingInviteBody {
-  date_time: string;
-  invitees_id: number[];
-  duration: number;
-  event_type: "interview";
-}
+import { getCachedSession } from "@/services/sessionCache";
 
 export async function meetingInviteService(
   body: IMeetingInviteBody
 ): Promise<ApiResponse<IMeetingInviteResponse>> {
-  const session = await getSession();
+  const session = await getCachedSession();
   const token = session?.accessToken;
 
   return await request<IMeetingInviteBody, IMeetingInviteResponse>({

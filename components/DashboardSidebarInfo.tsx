@@ -40,8 +40,7 @@ const Section: FC<{ title: string; children: ReactNode }> = ({
   <Card
     sx={{
       mb: 2,
-      borderRadius: 2,
-      boxShadow: 1,
+      boxShadow: 2,
       bgcolor: "#ffffff",
     }}
   >
@@ -74,22 +73,34 @@ const SidebarInfo: FC<SidebarInfoProps> = ({ sections }) => {
             return (
               <Box key={index} mb={item.type !== "avatars" ? 2 : 1}>
                 {item.type === "button" && (
-                  <Button
-                    variant="contained"
-                    fullWidth
-                    size="small"
-                    sx={{
-                      textTransform: "none",
-                      fontWeight: 500,
-                      borderRadius: 1,
-                      bgcolor: buttonBg,
-                      color: "#ffffff",
-                      "&:hover": { bgcolor: buttonBg, opacity: 0.9 },
-                    }}
-                    onClick={item.onButtonClick}
-                  >
-                    {item.buttonText}
-                  </Button>
+                  <>
+                    {item.label && (
+                      <Typography
+                        variant="subtitle2"
+                        fontWeight="bold"
+                        sx={{ mb: 0.5 }}
+                      >
+                        {item.label}
+                      </Typography>
+                    )}
+
+                    <Button
+                      variant="contained"
+                      fullWidth
+                      size="small"
+                      sx={{
+                        textTransform: "none",
+                        fontWeight: 500,
+                        borderRadius: 1,
+                        bgcolor: buttonBg,
+                        color: "#ffffff",
+                        "&:hover": { bgcolor: buttonBg, opacity: 0.9 },
+                      }}
+                      onClick={item.onButtonClick}
+                    >
+                      {item.buttonText}
+                    </Button>
+                  </>
                 )}
 
                 {item.type === "avatars" && item.avatars && (

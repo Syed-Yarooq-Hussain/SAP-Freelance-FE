@@ -4,39 +4,18 @@ import { useSignupConsultant } from "@/actions/auth/signupConsultant";
 import { CreateForm } from "@/components/CreateForm";
 import { getConsultantFormFields } from "@/forms/consultantForm";
 import { IConsultantSignupPayload } from "@/types/consultant";
-import { Box, Container } from "@mui/material";
+import { ISignUpConsultantForm } from "@/types/signup-form";
+import { Box, Paper } from "@mui/material";
 import { useSearchParams } from "next/navigation";
 import * as React from "react";
 import { FieldValues } from "react-hook-form";
 import AuthHeader from "./AuthHeader";
 import LoginLink from "./LoginLink";
 
-interface IConsultantForm {
-  fullName: string;
-  email: string;
-  phone: string;
-  password: string;
-  confirmPassword: string;
-  city: string;
-  country: string;
-  module: string;
-  level: string;
-  experience: number;
-  rate: number;
-  availableHours: number;
-  availability: {
-    day: string;
-    enabled: boolean;
-    start?: string;
-    end?: string;
-  }[];
-  cvUrl: string;
-}
-
 const SignUpConsultant: React.FC = () => {
   const { mutate, error, isPending } = useSignupConsultant();
   const searchParams = useSearchParams();
-  const role = Number(searchParams.get("type")) || "Invalid role";
+  const role = Number(searchParams.get("type"));
 
   const elements = getConsultantFormFields();
   const [prefillData, setPrefillData] = React.useState<Partial<FieldValues>>(
@@ -48,12 +27,12 @@ const SignUpConsultant: React.FC = () => {
   };
 
   const handleSuccess = (data: FieldValues) => {
-    const formData = { ...prefillData, ...data } as IConsultantForm;
+    const formData = { ...prefillData, ...data } as ISignUpConsultantForm;
 
     const payload: IConsultantSignupPayload = {
       consultant: {
-        module: formData.module,
-        level: formData.level,
+        core_module: [formData.coreModule],
+        other_module: [formData.otherModule],
         experience: Number(formData.experience) || 0,
         rate: formData.rate,
         weekly_available_hours: 20,
@@ -86,14 +65,27 @@ const SignUpConsultant: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="sm">
-      <Box
+    <Box
+      sx={{
+        minHeight: "100vh",
+        width: "100vw",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        bgcolor: "#f7f9fc",
+        p: 2,
+        position: "fixed",
+        top: 0,
+        left: 0,
+      }}
+    >
+      <Paper
+        elevation={4}
         sx={{
-          mt: 8,
-          p: 4,
-          borderRadius: 2,
-          boxShadow: 3,
-          bgcolor: "background.paper",
+          width: "100%",
+          maxWidth: 480,
+          p: { xs: 3, sm: 4 },
+          borderRadius: 3,
         }}
       >
         <AuthHeader
@@ -106,17 +98,19 @@ const SignUpConsultant: React.FC = () => {
           onSuccess={handleSuccess}
           loading={isPending}
           error={error?.message}
+          showProgress={true}
+          mode="wizard"
           onCVParsed={handleCVParsed}
           submitButton={{
             children: "Create an Account",
             variant: "contained",
-            fullWidth: false,
-            size: "medium",
+            fullWidth: true,
+            size: "large",
           }}
         />
         <LoginLink />
-      </Box>
-    </Container>
+      </Paper>
+    </Box>
   );
 };
 

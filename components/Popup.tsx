@@ -1,6 +1,7 @@
 "use client";
 
 import AppButton from "@/components/Button";
+import { IOption } from "@/types/options";
 import { colors } from "@/utils/styles/colors";
 import CloseIcon from "@mui/icons-material/Close";
 import {
@@ -25,7 +26,9 @@ interface FieldConfig {
   placeholder?: string;
   onChange?: (value: string) => void;
   helperText?: string;
-  options?: string[];
+  options?: IOption[];
+  disabled?: boolean;
+  forceDisplayValue?: string;
 }
 
 interface DynamicPopupProps {
@@ -36,9 +39,9 @@ interface DynamicPopupProps {
   fileUpload?: boolean;
   fileValue?: File | null;
   onFileChange?: (file: File) => void;
-  buttonText: string;
+  buttonText?: string;
   buttonColor?: keyof typeof colors;
-  onSubmit: () => void;
+  onSubmit?: () => void;
   description?: string;
   noteText?: string;
   disableSubmit?: boolean;
@@ -82,7 +85,6 @@ const DynamicPopup: React.FC<DynamicPopupProps> = ({
       slotProps={{
         paper: {
           sx: {
-            borderRadius: 2,
             p: 2,
             width: 500,
             maxWidth: "640px",
@@ -124,7 +126,6 @@ const DynamicPopup: React.FC<DynamicPopupProps> = ({
           <Box
             sx={{
               border: "1px dashed #4680FF",
-              borderRadius: 2,
               py: 4,
               textAlign: "center",
               cursor: "pointer",
@@ -156,10 +157,7 @@ const DynamicPopup: React.FC<DynamicPopupProps> = ({
             key={field.id}
             mb={2}
             sx={{
-              mt:
-                index === 0 && (field.type === "date" || field.type === "time")
-                  ? 1.5
-                  : 0,
+              mt: index === 0 ? 1 : 0,
             }}
           >
             {field.options ? (
@@ -169,18 +167,46 @@ const DynamicPopup: React.FC<DynamicPopupProps> = ({
                 label={field.label}
                 value={field.value || ""}
                 onChange={(e) => field.onChange?.(e.target.value)}
-                size="small"
-                sx={{
-                  "& .MuiInputBase-root": {
-                    backgroundColor: "#f8f9fc",
-                    borderRadius: 1,
+                disabled={field.disabled}
+                slotProps={{
+                  inputLabel: { shrink: true },
+                  select: {
+                    displayEmpty: true,
+                    renderValue: (selected) => {
+                      if (field.forceDisplayValue) {
+                        return field.forceDisplayValue;
+                      }
+
+                      if (!selected) {
+                        return field.placeholder || "Select";
+                      }
+
+                      const match = field.options?.find(
+                        (opt) => String(opt.value) === String(selected)
+                      );
+
+                      return match?.label || String(selected);
+                    },
                   },
                 }}
-                helperText={field.helperText}
+                sx={{
+                  "& .MuiInputBase-root": {
+                    backgroundColor: field.disabled ? "#f2f2f2" : "#f8f9fc",
+                    borderRadius: 1,
+                    height: 40,
+                  },
+                  "& .MuiSelect-select": {
+                    display: "flex",
+                    alignItems: "center",
+                    height: "100% !important",
+                    paddingTop: "10px !important",
+                    paddingBottom: "10px !important",
+                  },
+                }}
               >
-                {field.options.map((opt) => (
-                  <MenuItem key={opt} value={opt}>
-                    {opt}
+                {field.options?.map((opt) => (
+                  <MenuItem key={opt.value} value={opt.value}>
+                    {opt.label}
                   </MenuItem>
                 ))}
               </TextField>
@@ -194,10 +220,10 @@ const DynamicPopup: React.FC<DynamicPopupProps> = ({
                 onChange={(e) => field.onChange?.(e.target.value)}
                 size="small"
                 multiline={field.type !== "date" && field.type !== "time"}
-                minRows={3}
+                minRows={field.type === "text" ? 3 : undefined}
                 slotProps={{
                   inputLabel: {
-                    shrink: field.type === "date" || field.type === "time",
+                    shrink: true,
                   },
                 }}
                 sx={{
@@ -238,13 +264,15 @@ const DynamicPopup: React.FC<DynamicPopupProps> = ({
           </Typography>
         )}
 
-        <AppButton
-          label={buttonText}
-          colorKey={buttonColor}
-          onClick={onSubmit}
-          disabled={disableSubmit}
-          sx={{ width: 150, px: 0, py: 0.8, fontWeight: 500 }}
-        />
+        {buttonText && (
+          <AppButton
+            label={buttonText}
+            colorKey={buttonColor}
+            onClick={onSubmit}
+            disabled={disableSubmit}
+            sx={{ width: 150, px: 0, py: 0.8, fontWeight: 500 }}
+          />
+        )}
       </DialogActions>
     </Dialog>
   );

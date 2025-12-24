@@ -43,7 +43,7 @@ export default function Payment<
 
   return (
     <Box
-      sx={{ p: 2, borderRadius: 2, boxShadow: 2, bgcolor: "background.paper" }}
+      sx={{ p: 2, boxShadow: 2, bgcolor: "background.paper" }}
     >
       {showTabs && (
         <>

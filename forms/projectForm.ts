@@ -1,5 +1,5 @@
-import { IFieldConfig } from "@/components/CreateForm";
 import { INDUSTRY_OPTIONS } from "@/data/options";
+import { IFieldConfig } from "@/types/create-form";
 
 export function getProjectFormFields(): IFieldConfig[] {
   return [

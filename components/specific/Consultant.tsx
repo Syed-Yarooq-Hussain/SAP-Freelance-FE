@@ -1,23 +1,23 @@
 "use client";
 
+import { useMeetingInvite } from "@/actions/common/useMeetingInvite";
 import DataTable from "@/components/DataTable";
 import FilterDrawer from "@/components/FilterDrawer";
 import DynamicPopup from "@/components/Popup";
+import { getTeamInterviewFormFields } from "@/forms/teamInterviewForm";
+import { mapTaskFieldsToPopup } from "@/utils/mapFormToPopup";
 import colors from "@/utils/styles/colors";
 import FilterListIcon from "@mui/icons-material/FilterList";
-import { Box, Button, Link, Typography } from "@mui/material";
+import { Box, Button, Divider, Link, Typography } from "@mui/material";
 import {
   GridColDef,
   GridRenderCellParams,
   GridValidRowModel,
 } from "@mui/x-data-grid";
 import { useState } from "react";
+import AppButton from "../Button";
 
-interface MeetingData {
-  date: string;
-  time: string;
-  link: string;
-}
+type ConsultantTabKey = "active" | "pending" | "locked";
 
 interface ConsultantProps<T extends GridValidRowModel = GridValidRowModel> {
   title: string;
@@ -25,6 +25,10 @@ interface ConsultantProps<T extends GridValidRowModel = GridValidRowModel> {
   rows: T[];
   showMeetingActions?: boolean;
   showFilters?: boolean;
+  projectId?: string | number | null;
+  showTabs?: boolean;
+  activeTab?: ConsultantTabKey;
+  onTabChange?: (tab: ConsultantTabKey) => void;
 }
 
 export default function Consultant<
@@ -35,38 +39,24 @@ export default function Consultant<
   rows,
   showMeetingActions = false,
   showFilters = false,
+  projectId,
+  showTabs = false,
+  onTabChange,
+  activeTab,
 }: ConsultantProps<T>) {
+  const norm = (v: unknown) => String(v ?? "").toLowerCase();
   const [filterOpen, setFilterOpen] = useState(false);
   const [scheduleOpen, setScheduleOpen] = useState(false);
   const [rescheduleOpen, setRescheduleOpen] = useState(false);
-  const [scheduleData, setScheduleData] = useState<MeetingData>({
+  const meetingInvite = useMeetingInvite();
+  const [selectedConsultantId, setSelectedConsultantId] = useState<
+    number | null
+  >(null);
+  const [meetingData, setMeetingData] = useState<Record<string, string>>({
     date: "",
     time: "",
-    link: "",
+    duration: "",
   });
-  const [rescheduleData, setRescheduleData] = useState<MeetingData>({
-    date: "",
-    time: "",
-    link: "",
-  });
-
-  const handleCloseSchedule = () => {
-    setScheduleOpen(false);
-    setScheduleData({ date: "", time: "", link: "" });
-  };
-  const handleCloseReschedule = () => {
-    setRescheduleOpen(false);
-    setRescheduleData({ date: "", time: "", link: "" });
-  };
-
-  const handleScheduleSubmit = () => {
-    console.log("Schedule meeting data:", scheduleData);
-    handleCloseSchedule();
-  };
-  const handleRescheduleSubmit = () => {
-    console.log("Reschedule data:", rescheduleData);
-    handleCloseReschedule();
-  };
 
   const finalColumns = showMeetingActions
     ? [
@@ -86,6 +76,8 @@ export default function Consultant<
               }}
               onClick={(e) => {
                 e.preventDefault();
+                setSelectedConsultantId(Number(params.row.id));
+
                 if (params.value === "Reschedule") {
                   setRescheduleOpen(true);
                 } else {
@@ -105,7 +97,6 @@ export default function Consultant<
       <Box
         sx={{
           p: 2,
-          borderRadius: 2,
           boxShadow: 2,
           bgcolor: "background.paper",
         }}
@@ -149,6 +140,35 @@ export default function Consultant<
           </Box>
         )}
 
+        {showTabs && (
+          <>
+            <Box sx={{ display: "flex", gap: 1, mb: 1.5, flexWrap: "wrap" }}>
+              <AppButton
+                label="Active"
+                colorKey="BLUE"
+                variant={activeTab === "active" ? "contained" : "outlined"}
+                onClick={() => onTabChange?.("active")}
+                width={150}
+              />
+              <AppButton
+                label="Pending"
+                colorKey="BLUE"
+                variant={activeTab === "pending" ? "contained" : "outlined"}
+                onClick={() => onTabChange?.("pending")}
+                width={150}
+              />
+              <AppButton
+                label="Locked"
+                colorKey="BLUE"
+                variant={activeTab === "locked" ? "contained" : "outlined"}
+                onClick={() => onTabChange?.("locked")}
+                width={150}
+              />
+            </Box>
+
+            <Divider sx={{ mb: 2 }} />
+          </>
+        )}
         <DataTable
           title={showFilters ? "" : title}
           columns={finalColumns}
@@ -165,92 +185,84 @@ export default function Consultant<
 
       <DynamicPopup
         open={scheduleOpen}
-        onClose={handleCloseSchedule}
+        onClose={() => {
+          setScheduleOpen(false);
+          setMeetingData({ date: "", time: "", duration: "" });
+        }}
         title="Schedule Meeting"
-        fields={[
-          {
-            id: "date",
-            label: "Date",
-            type: "date",
-            value: scheduleData.date,
-            onChange: (val: string | File) => {
-              if (typeof val === "string")
-                setScheduleData((p) => ({ ...p, date: val }));
-            },
-          },
-          {
-            id: "time",
-            label: "Time",
-            type: "time",
-            value: scheduleData.time,
-            onChange: (val: string | File) => {
-              if (typeof val === "string")
-                setScheduleData((p) => ({ ...p, time: val }));
-            },
-          },
-          {
-            id: "link",
-            label: "",
-            type: "text",
-            value: scheduleData.link,
-            onChange: (val: string | File) => {
-              if (typeof val === "string")
-                setScheduleData((p) => ({ ...p, link: val }));
-            },
-            placeholder: "Meeting link",
-          },
-        ]}
+        fields={mapTaskFieldsToPopup(
+          getTeamInterviewFormFields(),
+          meetingData,
+          (field, value) =>
+            setMeetingData((prev) => ({ ...prev, [field]: value }))
+        )}
         buttonText="Send Invite"
         buttonColor="BLUE"
-        onSubmit={handleScheduleSubmit}
         disableSubmit={
-          !scheduleData.date || !scheduleData.time || !scheduleData.link
+          !meetingData.date || !meetingData.time || !meetingData.duration
         }
+        onSubmit={() => {
+          if (!selectedConsultantId || !projectId) return;
+
+          const dateTime = `${meetingData.date} ${meetingData.time}`;
+
+          meetingInvite.mutate(
+            {
+              date_time: dateTime,
+              invitees_id: [Number(selectedConsultantId)],
+              duration: Number(meetingData.duration),
+              event_type: "meeting",
+              project_id: Number(projectId),
+            },
+            {
+              onSuccess: () => {
+                setScheduleOpen(false);
+                setMeetingData({ date: "", time: "", duration: "" });
+              },
+            }
+          );
+        }}
       />
 
       <DynamicPopup
         open={rescheduleOpen}
-        onClose={handleCloseReschedule}
+        onClose={() => {
+          setRescheduleOpen(false);
+          setMeetingData({ date: "", time: "", duration: "" });
+        }}
         title="Reschedule Meeting"
-        fields={[
-          {
-            id: "date",
-            label: "Date",
-            type: "date",
-            value: rescheduleData.date,
-            onChange: (val: string | File) => {
-              if (typeof val === "string")
-                setRescheduleData((p) => ({ ...p, date: val }));
-            },
-          },
-          {
-            id: "time",
-            label: "Time",
-            type: "time",
-            value: rescheduleData.time,
-            onChange: (val: string | File) => {
-              if (typeof val === "string")
-                setRescheduleData((p) => ({ ...p, time: val }));
-            },
-          },
-          {
-            id: "link",
-            label: "",
-            type: "text",
-            value: rescheduleData.link,
-            onChange: (val: string | File) => {
-              if (typeof val === "string")
-                setRescheduleData((p) => ({ ...p, link: val }));
-            },
-            placeholder: "Meeting link",
-          },
-        ]}
+        fields={mapTaskFieldsToPopup(
+          getTeamInterviewFormFields(),
+          meetingData,
+          (field, value) =>
+            setMeetingData((prev) => ({ ...prev, [field]: value }))
+        )}
         buttonText="Suggest"
         buttonColor="BLUE"
-        onSubmit={handleRescheduleSubmit}
         disableSubmit={
-          !rescheduleData.date || !rescheduleData.time || !rescheduleData.link
+          !meetingData.date || !meetingData.time || !meetingData.duration
         }
+        onSubmit={() => {
+          if (!selectedConsultantId || !projectId) return;
+
+          const dateTime = `${meetingData.date} ${meetingData.time}`;
+
+          meetingInvite.mutate(
+            {
+              date_time: dateTime,
+              invitees_id: [Number(selectedConsultantId)],
+              duration: Number(meetingData.duration),
+              event_type: "meeting",
+              project_id: Number(projectId),
+            },
+            {
+              onSuccess: () => {
+                setRescheduleOpen(false);
+                setMeetingData({ date: "", time: "", duration: "" });
+              },
+            }
+          );
+        }}
       />
     </>
   );

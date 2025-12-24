@@ -8,7 +8,7 @@ import {
     toAmPm,
     yearsAround,
     ymd,
-} from "@/utils/dateCalendar";
+} from "@/utils/dateTime";
 import colors from "@/utils/styles/colors";
 import ChevronLeft from "@mui/icons-material/ChevronLeft";
 import ChevronRight from "@mui/icons-material/ChevronRight";
@@ -552,7 +552,7 @@ export default function MonthlyCalendar({
 
     return (
         <Box
-            sx={{ p: 2, borderRadius: 2, boxShadow: 2, bgcolor: "background.paper" }}
+            sx={{ p: 2, boxShadow: 2, bgcolor: "background.paper" }}
         >
             {content}
         </Box>

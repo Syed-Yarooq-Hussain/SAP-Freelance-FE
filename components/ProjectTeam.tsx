@@ -17,12 +17,7 @@ type ProjectTeamProps = {
 const ProjectTeam: React.FC<ProjectTeamProps> = ({ team }) => {
   return (
     <Box sx={{ mt: 1 }}>
-      <Typography
-        variant="body1"
-        fontWeight={600}
-        mb={1.5}
-        color="text.primary"
-      >
+      <Typography variant="h6" fontWeight={700} mb={1.5} color="text.primary">
         Team
       </Typography>
 

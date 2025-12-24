@@ -21,6 +21,9 @@ interface TableData<T extends GridValidRowModel = GridValidRowModel> {
   enableSelection?: boolean;
   showViewMore?: boolean;
   selectionActions?: React.ReactNode;
+  onViewMoreClick?: () => void;
+  hidePagination?: boolean;
+  onSelectionChange?: (ids: string[]) => void;
 }
 
 interface DashboardProps<T extends GridValidRowModel = GridValidRowModel> {
@@ -30,6 +33,7 @@ interface DashboardProps<T extends GridValidRowModel = GridValidRowModel> {
   financeTable?: TableData<T>;
   sidebarSections?: SidebarSectionInfo[];
   chart?: React.ReactNode;
+  onViewMoreClick?: () => void;
 }
 
 const Dashboard = <T extends GridValidRowModel = GridValidRowModel>({
@@ -54,7 +58,6 @@ const Dashboard = <T extends GridValidRowModel = GridValidRowModel>({
             <Box
               sx={{
                 p: 2,
-                borderRadius: 2,
                 boxShadow: 2,
                 mb: 2,
                 bgcolor: "background.paper",
@@ -67,7 +70,6 @@ const Dashboard = <T extends GridValidRowModel = GridValidRowModel>({
           <Box
             sx={{
               p: 2,
-              borderRadius: 2,
               boxShadow: 2,
               bgcolor: "background.paper",
               mb: financeTable ? 2 : 0,
@@ -83,6 +85,9 @@ const Dashboard = <T extends GridValidRowModel = GridValidRowModel>({
               enableSelection={projectTable.enableSelection ?? false}
               showViewMore={projectTable.showViewMore ?? false}
               selectionActions={projectTable.selectionActions}
+              onViewMoreClick={projectTable.onViewMoreClick}
+              hidePagination={projectTable.hidePagination}
+              onSelectionChange={projectTable.onSelectionChange}
             />
           </Box>
 
@@ -90,7 +95,6 @@ const Dashboard = <T extends GridValidRowModel = GridValidRowModel>({
             <Box
               sx={{
                 p: 2,
-                borderRadius: 2,
                 boxShadow: 2,
                 bgcolor: "background.paper",
                 mb: 2,
@@ -105,6 +109,8 @@ const Dashboard = <T extends GridValidRowModel = GridValidRowModel>({
                 avatarField={financeTable.avatarField}
                 enableSelection={financeTable.enableSelection ?? false}
                 showViewMore={financeTable.showViewMore ?? false}
+                onViewMoreClick={financeTable.onViewMoreClick}
+                hidePagination={financeTable.hidePagination}
               />
             </Box>
           )}

@@ -1,12 +1,12 @@
-import { IFieldConfig } from "@/components/CreateForm";
 import { DEPENDENCIES_OPTIONS } from "@/data/options";
+import { IFieldConfig } from "@/types/create-form";
 
 export function getMilestoneFormFields(): IFieldConfig[] {
   return [
     {
       name: "milestoneName",
       label: "Milestone name",
-      placeholder: "Enter name",
+      placeholder: "Enter milestone name",
       rules: { required: "Milestone name is required" },
       column: { xs: 12, md: 4 },
     },
@@ -27,7 +27,7 @@ export function getMilestoneFormFields(): IFieldConfig[] {
     {
       name: "milestoneDescDoc",
       label: "Description",
-      placeholder: "Select document",
+      placeholder: "Add milestone description",
       column: { xs: 12 },
     },
   ];

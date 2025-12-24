@@ -35,6 +35,7 @@ export type DataTableProps<T extends GridValidRowModel> = {
     params: GridRowParams<T>,
     event: MuiEvent<React.MouseEvent>
   ) => void;
+  rowClickable?: boolean;
   showBackButton?: boolean;
   onBackClick?: () => void;
   showAvatar?: boolean;
@@ -45,6 +46,7 @@ export type DataTableProps<T extends GridValidRowModel> = {
   slotProps?: GridSlotsComponentsProps;
   slots?: Partial<GridSlotsComponent>;
   onSelectionChange?: (selectedIds: string[]) => void;
+  hidePagination?: boolean;
 };
 
 export default function DataTable<T extends GridValidRowModel>({
@@ -64,6 +66,9 @@ export default function DataTable<T extends GridValidRowModel>({
   slotProps,
   slots,
   onSelectionChange,
+  onRowClick,
+  hidePagination = false,
+  rowClickable = true,
 }: DataTableProps<T>) {
   const [selectedRows, setSelectedRows] = React.useState<Set<string>>(
     new Set()
@@ -202,18 +207,15 @@ export default function DataTable<T extends GridValidRowModel>({
           initialState={{
             pagination: { paginationModel: { pageSize } },
           }}
-          pageSizeOptions={[pageSize]}
-          pagination
+          pageSizeOptions={hidePagination ? [] : [pageSize]}
+          {...(hidePagination ? {} : { pagination: true })}
+          hideFooter={hidePagination}
+          hideFooterPagination={hidePagination}
+          hideFooterSelectedRowCount={hidePagination}
           disableRowSelectionOnClick
           checkboxSelection={false}
-          onRowSelectionModelChange={(selection) => {
-            const ids = Array.isArray(selection)
-              ? selection.map(String)
-              : [String(selection)];
-
-            queueMicrotask(() => {
-              onSelectionChange?.(ids);
-            });
+          onRowClick={(params, event) => {
+            if (onRowClick) onRowClick(params, event);
           }}
           slots={{
             noRowsOverlay: () => (
@@ -246,11 +248,20 @@ export default function DataTable<T extends GridValidRowModel>({
             },
             "& .MuiDataGrid-cell": {
               fontSize: "0.875rem",
-              display: "flex",
-              alignItems: "center",
+              alignItems: "flex-start",
+              whiteSpace: "normal",
+              wordBreak: "break-word",
+              lineHeight: 1.4,
+              py: 1,
             },
             "& .MuiDataGrid-row": {
               backgroundColor: "#fff",
+              transition: "background-color 0.2s ease",
+              cursor: rowClickable ? "pointer" : "default",
+            },
+
+            "& .MuiDataGrid-row:hover": {
+              backgroundColor: rowClickable ? "#f1f7ff" : "#fff",
             },
           }}
         />

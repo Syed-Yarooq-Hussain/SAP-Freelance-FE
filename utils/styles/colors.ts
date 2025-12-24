@@ -1,6 +1,6 @@
 export const colors = {
   BLUE: "#3088B7",
-  GREEN: "#00997B",
+  GREEN: "#519F85",
   YELLOW: "#f9a825",
   ORANGE: "#FFB64E",
   RED: "#FF5471",
@@ -43,3 +43,10 @@ export const buttonColors: Record<string, keyof typeof colors> = {
 };
 
 export default colors;
+
+statusColors["Shortlisted"] = "YELLOW";
+statusColors["Interview Schedule"] = "LIGHT_BLUE";
+statusColors["Interviewed"] = "BLUE";
+statusColors["Offered"] = "LIGHT_BLUE";
+statusColors["Hired"] = "GREEN";
+statusColors["Rejected"] = "RED";

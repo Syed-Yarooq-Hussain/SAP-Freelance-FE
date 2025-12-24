@@ -6,12 +6,24 @@ import { useCreateProject } from "@/actions/projects/useCreateProject";
 import AppButton from "@/components/Button";
 import DataTable from "@/components/DataTable";
 import FilterDrawer from "@/components/FilterDrawer";
+import DynamicPopup from "@/components/Popup";
 import StatCard from "@/components/StatCard";
 import { teamBuilderColumns, teamBuilderStats } from "@/data/teamBuilder";
 import { useToast } from "@/providers/ToastProvider";
-import type { IConsultantUser } from "@/types/consultant";
-import type { TeamBuilderRow, TeamCreationProps } from "@/types/teamBuilder";
+import type {
+  ClientConsultantDTO,
+  TeamBuilderRow,
+  TeamCreationProps,
+  Weekday,
+} from "@/types/teamBuilder";
 import colors from "@/utils/styles/colors";
+import {
+  calculateAvgRatePerHour,
+  calculateHoursPerMonthFromRates,
+  calculateHoursPerWeek,
+  calculatePerMonthCost,
+} from "@/utils/teamBuilderCalculations";
+import { useAnimatedCounter } from "@/utils/useAnimatedCounter";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import {
   Alert,
@@ -37,36 +49,50 @@ export default function TeamCreation({ onNext }: TeamCreationProps) {
   const { mutate: createProject, isPending: isCreating } = useCreateProject();
   const { toast } = useToast();
   const addConsultants = useAddConsultants();
+  const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
+  const hoursPerWeek = calculateHoursPerWeek(consultantRows, selectedRows);
+  const avgRatePerHour = calculateAvgRatePerHour(hoursPerWeek);
+  const hoursPerMonth = calculateHoursPerMonthFromRates(
+    consultantRows,
+    selectedRows
+  );
+  const perMonthCost = calculatePerMonthCost(hoursPerMonth, avgRatePerHour);
+  const animatedHoursPerWeek = useAnimatedCounter(hoursPerWeek);
+  const animatedAvgRatePerHour = useAnimatedCounter(avgRatePerHour);
+  const animatedHoursPerMonth = useAnimatedCounter(hoursPerMonth);
+  const animatedPerMonthCost = useAnimatedCounter(perMonthCost);
+  const [scheduleData, setScheduleData] = useState<
+    TeamBuilderRow["working_schedule"] | null
+  >(null);
+
+  const openSchedule = (row: TeamBuilderRow) => {
+    setScheduleData(row.working_schedule);
+    setScheduleModalOpen(true);
+  };
+  const rowsWithSchedule = consultantRows.map((r) => ({
+    ...r,
+    openSchedule,
+  }));
 
   useEffect(() => {
     loadConsultants(undefined, {
       onSuccess: (res) => {
         const mapped: TeamBuilderRow[] =
-          res.data
-            ?.filter((item: IConsultantUser) => {
-              const c = item.consultants;
-              return !(
-                c?.id === null &&
-                c?.module_id === null &&
-                c?.level_id === null &&
-                c?.experience === null &&
-                c?.rate === null &&
-                c?.weekly_available_hours === null
-              );
-            })
-            .map((item: IConsultantUser, index: number) => {
-              const c = item.consultants;
+          res.data?.map((item: ClientConsultantDTO, index: number) => {
+            return {
+              id: item.id,
+              coremodules: item.modules?.core || "N/A",
+              othersmodules: item.modules?.others || "N/A",
+              experience: item.experience ? `${item.experience} Years` : "N/A",
+              rate: item.rate ? `$${item.rate}/hour` : "N/A",
+              avail: item.weekly_available_hours ?? 0,
+              request: 0,
+              error: "",
+              avatar: `/img/u${((index % 5) + 1).toString()}.png`,
+              working_schedule: item.working_schedule || undefined,
+            };
+          }) ?? [];
 
-              return {
-                id: item.id,
-                modules: c.module_id ? String(c.module_id) : "N/A",
-                experience: c.experience ? `${c.experience} Years` : "N/A",
-                rate: c.rate ? `$${c.rate}/hour` : "N/A",
-                avail: c.weekly_available_hours ?? 0,
-                request: 0,
-                avatar: `/img/u${((index % 5) + 1).toString()}.png`,
-              };
-            }) ?? [];
         setConsultantRows(mapped);
       },
       onError: (error) => {
@@ -81,12 +107,27 @@ export default function TeamCreation({ onNext }: TeamCreationProps) {
     createProject(undefined, {
       onSuccess: (res) => {
         const projectId = res.data?.id;
+        const projectName = res.data?.name;
 
         if (!projectId) {
           toast("Invalid project response from server", "error");
           return;
         }
 
+        const newProject = {
+          id: projectId,
+          name: projectName || "Untitled Project",
+          step: 2,
+          status: res.data?.status ?? "Initiated",
+        };
+
+        let stored = JSON.parse(localStorage.getItem("tb_projects") || "[]");
+
+        stored.push(newProject);
+        stored = stored.slice(-5);
+
+        localStorage.setItem("tb_projects", JSON.stringify(stored));
+        window.dispatchEvent(new Event("tb_projects_updated"));
         toast("Project created!", "success");
 
         const payload = selectedRows.map((id) => {
@@ -145,7 +186,6 @@ export default function TeamCreation({ onNext }: TeamCreationProps) {
       <Box
         sx={{
           p: 2,
-          borderRadius: 2,
           boxShadow: 2,
           bgcolor: "background.paper",
           mt: 3,
@@ -198,7 +238,20 @@ export default function TeamCreation({ onNext }: TeamCreationProps) {
         <Grid container spacing={2} mt={3}>
           {teamBuilderStats.map((s, index) => (
             <Grid key={index} size={{ xs: 12, sm: 6, md: 3 }}>
-              <StatCard {...s} />
+              <StatCard
+                {...s}
+                subtitle={
+                  index === 0
+                    ? animatedHoursPerWeek
+                    : index === 1
+                    ? `$${animatedAvgRatePerHour}`
+                    : index === 2
+                    ? animatedHoursPerMonth
+                    : index === 3
+                    ? `$${Number(animatedPerMonthCost).toLocaleString()}`
+                    : s.subtitle
+                }
+              />
             </Grid>
           ))}
         </Grid>
@@ -219,7 +272,7 @@ export default function TeamCreation({ onNext }: TeamCreationProps) {
             <DataTable
               title="Consultant Selection"
               columns={teamBuilderColumns(handleRequestChange)}
-              rows={consultantRows}
+              rows={rowsWithSchedule}
               pageSize={10}
               showAvatar
               avatarField="avatar"
@@ -227,6 +280,37 @@ export default function TeamCreation({ onNext }: TeamCreationProps) {
               onSelectionChange={(ids) => setSelectedRows(ids)}
             />
           )}
+
+          <DynamicPopup
+            open={scheduleModalOpen}
+            onClose={() => setScheduleModalOpen(false)}
+            title="Working Schedule"
+            description=""
+          >
+            <Box sx={{ mt: 2 }}>
+              {scheduleData?.weekdays?.map((day: Weekday, i: number) => (
+                <Box
+                  key={i}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    p: 1,
+                    borderBottom: "1px solid #eee",
+                  }}
+                >
+                  <Typography>{day.day}</Typography>
+
+                  {day.active ? (
+                    <Typography>
+                      {day.start} - {day.end}
+                    </Typography>
+                  ) : (
+                    <Typography color="red">Not Active</Typography>
+                  )}
+                </Box>
+              ))}
+            </Box>
+          </DynamicPopup>
 
           <Box
             display="flex"

@@ -4,23 +4,13 @@ import { useSignupClient } from "@/actions/auth/signupClient";
 import { CreateForm } from "@/components/CreateForm";
 import { getClientFormFields } from "@/forms/clientForm";
 import { IBaseSignupDTO } from "@/types/common-auth";
-import { Box, Container } from "@mui/material";
+import { ISignUpClientForm } from "@/types/signup-form";
+import { Box, Paper } from "@mui/material";
 import { useSearchParams } from "next/navigation";
 import * as React from "react";
 import { FieldValues } from "react-hook-form";
 import AuthHeader from "./AuthHeader";
 import LoginLink from "./LoginLink";
-
-interface ISignUpClientForm {
-  fullName: string;
-  companyName: string;
-  email: string;
-  phone: string;
-  password: string;
-  confirmPassword: string;
-  city: string;
-  country: string;
-}
 
 const SignUpClient: React.FC = () => {
   const { mutate, error, isPending } = useSignupClient();
@@ -49,14 +39,27 @@ const SignUpClient: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="sm">
-      <Box
+    <Box
+      sx={{
+        minHeight: "100vh",
+        width: "100vw",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        bgcolor: "#f7f9fc",
+        p: 2,
+        position: "fixed",
+        top: 0,
+        left: 0,
+      }}
+    >
+      <Paper
+        elevation={4}
         sx={{
-          mt: 8,
-          p: 4,
-          borderRadius: 2,
-          boxShadow: 3,
-          bgcolor: "background.paper",
+          width: "100%",
+          maxWidth: 480,
+          p: { xs: 3, sm: 4 },
+          borderRadius: 3,
         }}
       >
         <AuthHeader
@@ -69,17 +72,18 @@ const SignUpClient: React.FC = () => {
           onSuccess={handleSuccess}
           loading={isPending}
           error={error?.message}
+          showProgress={true}
+          mode="wizard"
           submitButton={{
             children: "Create an Account",
             variant: "contained",
-            fullWidth: false,
-            size: "medium",
+            fullWidth: true,
+            size: "large",
           }}
         />
-
         <LoginLink />
-      </Box>
-    </Container>
+      </Paper>
+    </Box>
   );
 };
 
