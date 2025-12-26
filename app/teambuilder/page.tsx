@@ -7,6 +7,7 @@ import TeamCreation from "@/components/specific/teambuilder/TeamCreation";
 import TeamPayments from "@/components/specific/teambuilder/TeamPayments";
 import TeamProjects from "@/components/specific/teambuilder/TeamProjects";
 import { teamBuilderSteps } from "@/data/teamBuilder";
+import { TeamBuilderRow } from "@/types/teamBuilder";
 import { useProjectProgress } from "@/utils/useProjectProgress";
 import { Box } from "@mui/material";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -23,6 +24,12 @@ function TeamBuilderContent() {
   );
   const [projectId, setProjectId] = useState<string | null>(projectParam);
   const lastSavedStepRef = useRef<number | null>(null);
+  const [teamCreationRows, setTeamCreationRows] = useState<TeamBuilderRow[]>(
+    []
+  );
+  const [teamCreationSelectedIds, setTeamCreationSelectedIds] = useState<
+    string[]
+  >([]);
 
   useEffect(() => {
     if (!projectParam) return;
@@ -67,10 +74,31 @@ function TeamBuilderContent() {
     setActiveStep(2);
   };
 
+  const discardFromStep2 = () => {
+    setActiveStep(1);
+  };
+
+  const discardFromStep3 = () => {
+    setActiveStep(2);
+  };
+
+  const discardFromStep4 = () => {
+    setActiveStep(3);
+  };
+
   const current = useMemo(() => {
     switch (activeStep) {
       case 1:
-        return <TeamCreation onNext={goStep2} />;
+        return (
+          <TeamCreation
+            onNext={goStep2}
+            projectId={projectId}
+            rows={teamCreationRows}
+            setRows={setTeamCreationRows}
+            selectedIds={teamCreationSelectedIds}
+            setSelectedIds={setTeamCreationSelectedIds}
+          />
+        );
 
       case 2:
         return (
@@ -80,6 +108,7 @@ function TeamBuilderContent() {
               setProjectId(id);
               setActiveStep(3);
             }}
+            onDiscard={discardFromStep2}
           />
         );
 
@@ -87,7 +116,7 @@ function TeamBuilderContent() {
         return (
           <TeamProjects
             projectId={projectId}
-            onBack={() => setActiveStep(2)}
+            onBack={discardFromStep3}
             onNext={(id) => {
               setProjectId(id);
               setActiveStep(4);
@@ -96,12 +125,23 @@ function TeamBuilderContent() {
         );
 
       case 4:
-        return projectId ? <TeamPayments projectId={projectId} /> : null;
+        return projectId ? (
+          <TeamPayments projectId={projectId} onDiscard={discardFromStep4} />
+        ) : null;
 
       default:
-        return <TeamCreation onNext={goStep2} />;
+        return (
+          <TeamCreation
+            onNext={goStep2}
+            projectId={projectId}
+            rows={teamCreationRows}
+            setRows={setTeamCreationRows}
+            selectedIds={teamCreationSelectedIds}
+            setSelectedIds={setTeamCreationSelectedIds}
+          />
+        );
     }
-  }, [activeStep, projectId]);
+  }, [activeStep, projectId, teamCreationRows, teamCreationSelectedIds]);
 
   return (
     <Box sx={{ mt: 10, px: 4 }}>

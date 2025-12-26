@@ -26,6 +26,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 export default function TeamConfirmation({
   onNext,
   projectId,
+  onDiscard,
 }: TeamConfirmationProps) {
   const [shortlisted, setShortlisted] = useState<ShortlistedRow[]>([]);
   const [candidates, setCandidates] = useState<CandidateRow[]>([]);
@@ -123,7 +124,7 @@ export default function TeamConfirmation({
           interview: item.booking_schedule
             ? normalizeStatus(item.booking_schedule.status)
             : STATUS.REQUEST,
-          interviewDateTime: item.interview_date ?? null
+          interviewDateTime: item.interview_date ?? null,
         });
       }
 
@@ -344,7 +345,12 @@ export default function TeamConfirmation({
         </Typography>
 
         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-          <AppButton label="Discard" colorKey="RED" width={180} />
+          <AppButton
+            label="Back"
+            colorKey="RED"
+            width={180}
+            onClick={onDiscard}
+          />
           <AppButton
             label="Proceed to next step"
             colorKey="BLUE"

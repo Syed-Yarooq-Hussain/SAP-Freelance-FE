@@ -37,30 +37,34 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 
-export default function TeamCreation({ onNext }: TeamCreationProps) {
+export default function TeamCreation({
+  onNext,
+  projectId,
+  rows,
+  setRows,
+  selectedIds,
+  setSelectedIds,
+}: TeamCreationProps) {
   const [filterOpen, setFilterOpen] = useState(false);
-  const [selectedCount] = useState(0);
-  const [consultantRows, setConsultantRows] = useState<TeamBuilderRow[]>([]);
+  const selectedCount = selectedIds.length;
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage] = useState("");
   const [snackbarSeverity] = useState<AlertColor>("success");
-  const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const { mutate: loadConsultants, isPending } = useClientConsultants();
   const { mutate: createProject, isPending: isCreating } = useCreateProject();
   const { toast } = useToast();
   const addConsultants = useAddConsultants();
   const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
-  const hoursPerWeek = calculateHoursPerWeek(consultantRows, selectedRows);
+  const hoursPerWeek = calculateHoursPerWeek(rows, selectedIds);
   const avgRatePerHour = calculateAvgRatePerHour(hoursPerWeek);
-  const hoursPerMonth = calculateHoursPerMonthFromRates(
-    consultantRows,
-    selectedRows
-  );
+  const isProjectAlreadyCreated = Boolean(projectId);
+  const hoursPerMonth = calculateHoursPerMonthFromRates(rows, selectedIds);
   const perMonthCost = calculatePerMonthCost(hoursPerMonth, avgRatePerHour);
   const animatedHoursPerWeek = useAnimatedCounter(hoursPerWeek);
   const animatedAvgRatePerHour = useAnimatedCounter(avgRatePerHour);
   const animatedHoursPerMonth = useAnimatedCounter(hoursPerMonth);
   const animatedPerMonthCost = useAnimatedCounter(perMonthCost);
+  const [addedIds, setAddedIds] = useState<number[]>([]);
   const [scheduleData, setScheduleData] = useState<
     TeamBuilderRow["working_schedule"] | null
   >(null);
@@ -69,31 +73,31 @@ export default function TeamCreation({ onNext }: TeamCreationProps) {
     setScheduleData(row.working_schedule);
     setScheduleModalOpen(true);
   };
-  const rowsWithSchedule = consultantRows.map((r) => ({
+  const rowsWithSchedule = rows.map((r) => ({
     ...r,
     openSchedule,
   }));
 
   useEffect(() => {
+    if (rows.length > 0) return;
+
     loadConsultants(undefined, {
       onSuccess: (res) => {
         const mapped: TeamBuilderRow[] =
-          res.data?.map((item: ClientConsultantDTO, index: number) => {
-            return {
-              id: item.id,
-              coremodules: item.modules?.core || "N/A",
-              othersmodules: item.modules?.others || "N/A",
-              experience: item.experience ? `${item.experience} Years` : "N/A",
-              rate: item.rate ? `$${item.rate}/hour` : "N/A",
-              avail: item.weekly_available_hours ?? 0,
-              request: 0,
-              error: "",
-              avatar: `/img/u${((index % 5) + 1).toString()}.png`,
-              working_schedule: item.working_schedule || undefined,
-            };
-          }) ?? [];
+          res.data?.map((item: ClientConsultantDTO, index: number) => ({
+            id: item.id,
+            coremodules: item.modules?.core || "N/A",
+            othersmodules: item.modules?.others || "N/A",
+            experience: item.experience ? `${item.experience} Years` : "N/A",
+            rate: item.rate ? `$${item.rate}/hour` : "N/A",
+            avail: item.weekly_available_hours ?? 0,
+            request: 0,
+            error: "",
+            avatar: `/img/u${((index % 5) + 1).toString()}.png`,
+            working_schedule: item.working_schedule || undefined,
+          })) ?? [];
 
-        setConsultantRows(mapped);
+        setRows(mapped);
       },
       onError: (error) => {
         const msg =
@@ -101,7 +105,7 @@ export default function TeamCreation({ onNext }: TeamCreationProps) {
         toast(msg, "error");
       },
     });
-  }, [loadConsultants, toast]);
+  }, [rows.length, loadConsultants, toast, setRows]);
 
   const handleAddToShortlist = () => {
     createProject(undefined, {
@@ -130,9 +134,8 @@ export default function TeamCreation({ onNext }: TeamCreationProps) {
         window.dispatchEvent(new Event("tb_projects_updated"));
         toast("Project created!", "success");
 
-        const payload = selectedRows.map((id) => {
-          const row = consultantRows.find((c) => c.id.toString() === id);
-
+        const payload = selectedIds.map((id) => {
+          const row = rows.find((c) => c.id.toString() === id);
           return {
             consultant_id: Number(id),
             requested_hours: Number(row?.request ?? 0),
@@ -156,10 +159,50 @@ export default function TeamCreation({ onNext }: TeamCreationProps) {
     });
   };
 
+  const buildConsultantPayload = () =>
+    selectedIds
+      .filter((id) => !addedIds.includes(Number(id)))
+      .map((id) => {
+        const row = rows.find((c) => String(c.id) === String(id));
+        return {
+          consultant_id: Number(id),
+          requested_hours: Number(row?.request ?? 0),
+        };
+      });
+
+  const handleProceedNext = () => {
+    if (!projectId) return;
+
+    const payload = buildConsultantPayload();
+
+    if (payload.length === 0) {
+      onNext?.(projectId);
+      return;
+    }
+
+    addConsultants.mutate(
+      { projectId, body: payload },
+      {
+        onSuccess: () => {
+          setAddedIds((prev) => [
+            ...prev,
+            ...payload.map((p) => p.consultant_id),
+          ]);
+
+          toast("Shortlist updated successfully!", "success");
+          onNext?.(projectId);
+        },
+        onError: (err: Error) => {
+          toast(err.message, "error");
+        },
+      }
+    );
+  };
+
   const isAddDisabled =
-    selectedRows.length === 0 ||
-    selectedRows.some((id) => {
-      const row = consultantRows.find((r) => r.id.toString() === id);
+    rows.length === 0 ||
+    selectedIds.some((id) => {
+      const row = rows.find((r) => String(r.id) === String(id));
       return !row || row.request <= 0 || row.request > row.avail;
     });
 
@@ -168,8 +211,8 @@ export default function TeamCreation({ onNext }: TeamCreationProps) {
     value: number,
     avail: number
   ): void => {
-    setConsultantRows((prev: TeamBuilderRow[]) =>
-      prev.map((row: TeamBuilderRow) =>
+    setRows((prev) =>
+      prev.map((row) =>
         row.id === id
           ? {
               ...row,
@@ -277,7 +320,8 @@ export default function TeamCreation({ onNext }: TeamCreationProps) {
               showAvatar
               avatarField="avatar"
               enableSelection
-              onSelectionChange={(ids) => setSelectedRows(ids)}
+              selectedIds={selectedIds}
+              onSelectionChange={(ids) => setSelectedIds(ids)}
             />
           )}
 
@@ -335,14 +379,23 @@ export default function TeamCreation({ onNext }: TeamCreationProps) {
             )}
 
             <Box display="flex" alignItems="center" gap={1.5}>
-              <AppButton label="Discard" colorKey="RED" width={180} />
-              <AppButton
-                label="Add to Shortlist"
-                colorKey="BLUE"
-                width={180}
-                onClick={handleAddToShortlist}
-                disabled={isCreating || isAddDisabled}
-              />
+              {!isProjectAlreadyCreated ? (
+                <AppButton
+                  label="Add to Shortlist"
+                  colorKey="BLUE"
+                  width={180}
+                  onClick={handleAddToShortlist}
+                  disabled={isCreating || isAddDisabled}
+                />
+              ) : (
+                <AppButton
+                  label="Proceed to next step"
+                  colorKey="BLUE"
+                  width={180}
+                  onClick={handleProceedNext}
+                  disabled={isAddDisabled}
+                />
+              )}
             </Box>
           </Box>
         </Box>

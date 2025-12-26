@@ -47,6 +47,7 @@ export type DataTableProps<T extends GridValidRowModel> = {
   slots?: Partial<GridSlotsComponent>;
   onSelectionChange?: (selectedIds: string[]) => void;
   hidePagination?: boolean;
+  selectedIds?: string[];
 };
 
 export default function DataTable<T extends GridValidRowModel>({
@@ -69,10 +70,23 @@ export default function DataTable<T extends GridValidRowModel>({
   onRowClick,
   hidePagination = false,
   rowClickable = true,
+  selectedIds = [],
 }: DataTableProps<T>) {
   const [selectedRows, setSelectedRows] = React.useState<Set<string>>(
     new Set()
   );
+
+  React.useEffect(() => {
+    const next = new Set(selectedIds.map(String));
+
+    setSelectedRows((prev) => {
+      if (prev.size === next.size && [...prev].every((id) => next.has(id))) {
+        return prev;
+      }
+
+      return next;
+    });
+  }, [selectedIds]);
 
   const handleSelect = React.useCallback(
     (id: string) => {
@@ -267,7 +281,7 @@ export default function DataTable<T extends GridValidRowModel>({
         />
       </Box>
 
-      {enableSelection && selectedRows.size > 0 && (
+      {/* {enableSelection && selectedRows.size > 0 && (
         <Box
           mt={1.5}
           sx={{
@@ -290,7 +304,7 @@ export default function DataTable<T extends GridValidRowModel>({
             {selectionActions}
           </Box>
         </Box>
-      )}
+      )} */}
 
       {showViewMore && (
         <Box textAlign="center" mt={2}>

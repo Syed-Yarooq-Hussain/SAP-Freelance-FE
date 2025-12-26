@@ -32,6 +32,11 @@ export interface CandidateRow {
 
 export type TeamCreationProps = {
   onNext?: (projectId: string) => void;
+  projectId?: string | null;
+  rows: TeamBuilderRow[];
+  setRows: React.Dispatch<React.SetStateAction<TeamBuilderRow[]>>;
+  selectedIds: string[];
+  setSelectedIds: React.Dispatch<React.SetStateAction<string[]>>;
 };
 
 export interface TeamBuilderRow {
@@ -256,6 +261,7 @@ export type IUpdateConsultantStatusResponse = [number, IProjectConsultant[]];
 type TeamConfirmationProps = {
   onNext?: (projectId: string) => void;
   projectId?: string | null;
+  onDiscard: () => void;
 };
 
 type Weekday = NonNullable<
