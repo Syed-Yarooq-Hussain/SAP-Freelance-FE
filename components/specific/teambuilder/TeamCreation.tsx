@@ -3,11 +3,13 @@
 import { useClientConsultants } from "@/actions/consultants/useClientConsultants";
 import { useAddConsultants } from "@/actions/projects/useAddConsultants";
 import { useCreateProject } from "@/actions/projects/useCreateProject";
+import { useGetProjectConsultants } from "@/actions/projects/useGetProjectConsultants";
 import AppButton from "@/components/Button";
 import DataTable from "@/components/DataTable";
 import FilterDrawer from "@/components/FilterDrawer";
 import DynamicPopup from "@/components/Popup";
 import StatCard from "@/components/StatCard";
+import { CONSULTANT_STATUS } from "@/constants/status";
 import { teamBuilderColumns, teamBuilderStats } from "@/data/teamBuilder";
 import { useToast } from "@/providers/ToastProvider";
 import type {
@@ -24,6 +26,7 @@ import {
   calculatePerMonthCost,
 } from "@/utils/teamBuilderCalculations";
 import { useAnimatedCounter } from "@/utils/useAnimatedCounter";
+import { useProjectProgress } from "@/utils/useProjectProgress";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import {
   Alert,
@@ -65,6 +68,12 @@ export default function TeamCreation({
   const animatedHoursPerMonth = useAnimatedCounter(hoursPerMonth);
   const animatedPerMonthCost = useAnimatedCounter(perMonthCost);
   const [addedIds, setAddedIds] = useState<number[]>([]);
+  const getProjectConsultants = useGetProjectConsultants();
+  const [hydrationReady, setHydrationReady] = useState(false);
+  const { persistRequestedHours } = useProjectProgress();
+  const [shortlistedMap, setShortlistedMap] = useState<Record<string, number>>(
+    {}
+  );
   const [scheduleData, setScheduleData] = useState<
     TeamBuilderRow["working_schedule"] | null
   >(null);
@@ -79,6 +88,7 @@ export default function TeamCreation({
   }));
 
   useEffect(() => {
+    if (!hydrationReady) return;
     if (rows.length > 0) return;
 
     loadConsultants(undefined, {
@@ -91,7 +101,7 @@ export default function TeamCreation({
             experience: item.experience ? `${item.experience} Years` : "N/A",
             rate: item.rate ? `$${item.rate}/hour` : "N/A",
             avail: item.weekly_available_hours ?? 0,
-            request: 0,
+            request: shortlistedMap[String(item.id)] ?? 0,
             error: "",
             avatar: `/img/u${((index % 5) + 1).toString()}.png`,
             working_schedule: item.working_schedule || undefined,
@@ -105,7 +115,51 @@ export default function TeamCreation({
         toast(msg, "error");
       },
     });
-  }, [rows.length, loadConsultants, toast, setRows]);
+  }, [
+    hydrationReady,
+    rows.length,
+    shortlistedMap,
+    loadConsultants,
+    toast,
+    setRows,
+  ]);
+
+  useEffect(() => {
+    if (!projectId) {
+      setHydrationReady(true);
+      return;
+    }
+
+    const stored = localStorage.getItem(`tb_requested_hours_${projectId}`);
+
+    if (stored) {
+      const map = JSON.parse(stored);
+      setShortlistedMap(map);
+      setSelectedIds(Object.keys(map));
+      setHydrationReady(true);
+      return;
+    }
+
+    getProjectConsultants.mutate(
+      {
+        projectId,
+        statuses: [CONSULTANT_STATUS.SHORTLISTED],
+      },
+      {
+        onSuccess: (res) => {
+          const map: Record<string, number> = {};
+
+          (res.data ?? []).forEach((c) => {
+            map[String(c.consultant_id)] = c.requested_hours ?? 0;
+          });
+
+          setShortlistedMap(map);
+          setSelectedIds(Object.keys(map));
+          setHydrationReady(true);
+        },
+      }
+    );
+  }, [projectId]);
 
   const handleAddToShortlist = () => {
     createProject(undefined, {
@@ -117,6 +171,8 @@ export default function TeamCreation({
           toast("Invalid project response from server", "error");
           return;
         }
+
+        persistRequestedHours(projectId, rows, selectedIds);
 
         const newProject = {
           id: projectId,
@@ -172,6 +228,8 @@ export default function TeamCreation({
 
   const handleProceedNext = () => {
     if (!projectId) return;
+
+    persistRequestedHours(projectId, rows, selectedIds);
 
     const payload = buildConsultantPayload();
 
