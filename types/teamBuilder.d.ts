@@ -49,14 +49,7 @@ export interface TeamBuilderRow {
   request: number;
   error?: string;
   avatar?: string;
-  working_schedule?: {
-    weekdays: {
-      day: string;
-      start?: string;
-      end?: string;
-      active: boolean;
-    }[];
-  };
+  working_schedule?: any
 }
 
 export interface ITask {

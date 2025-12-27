@@ -1,42 +1,46 @@
 import type { TeamBuilderRow } from "@/types/teamBuilder";
 
-export function calculateHoursPerWeek(
-  rows: TeamBuilderRow[],
-  selectedIds: string[]
-): number {
-  if (!rows.length || !selectedIds.length) return 0;
-
-  return rows
-    .filter((row) => selectedIds.includes(row.id.toString()))
-    .reduce((sum, row) => sum + Number(row.request || 0), 0);
+interface TeamStats {
+  hoursPerWeek: number;
+  avgRatePerHour: number;
+  hoursPerMonth: number;
+  perMonthCost: number;
 }
 
-export function calculateAvgRatePerHour(hoursPerWeek: number): number {
-  return hoursPerWeek * 4;
-}
-
-function parseHourlyRate(rate: string | number): number {
-  if (typeof rate === "number") return rate;
+function parseHourlyRate(rate: string | number | undefined): number {
   if (!rate) return 0;
-  return Number(rate.replace(/[^0-9.]/g, ""));
+  if (typeof rate === "number") return rate;
+  const parsed = parseFloat(rate.replace(/[^0-9.]/g, ""));
+  return isNaN(parsed) ? 0 : parsed;
 }
 
-export function calculateHoursPerMonthFromRates(
+
+export function calculateTeamStats(
   rows: TeamBuilderRow[],
   selectedIds: string[]
-): number {
-  const selected = rows.filter((r) => selectedIds.includes(r.id.toString()));
+): TeamStats {
+  if (!rows.length || !selectedIds.length) {
+    return { hoursPerWeek: 0, avgRatePerHour: 0, hoursPerMonth: 0, perMonthCost: 0 };
+  }
 
-  if (!selected.length) return 0;
+  const selectedSet = new Set(selectedIds.map(Number));
 
-  const total = selected.reduce((sum, r) => sum + parseHourlyRate(r.rate), 0);
+  let totalHoursPerWeek = 0;
+  let totalRate = 0;
+  let count = 0;
 
-  return Math.round(total / selected.length);
-}
+  for (const row of rows) {
+    if (selectedSet.has(Number(row.id))) {
+      const hours = Number(row.request || 0);
+      totalHoursPerWeek += hours;
+      totalRate += parseHourlyRate(row.rate);
+      count++;
+    }
+  }
 
-export function calculatePerMonthCost(
-  hoursPerMonth: number,
-  avgRatePerHour: number
-): number {
-  return hoursPerMonth * avgRatePerHour;
+  const avgRatePerHour = totalHoursPerWeek * 4; // existing business logic
+  const hoursPerMonth = count > 0 ? Math.round(totalRate / count) : 0;
+  const perMonthCost = hoursPerMonth * avgRatePerHour;
+
+  return { hoursPerWeek: totalHoursPerWeek, avgRatePerHour, hoursPerMonth, perMonthCost };
 }

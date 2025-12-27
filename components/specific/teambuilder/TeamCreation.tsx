@@ -20,10 +20,7 @@ import type {
 } from "@/types/teamBuilder";
 import colors from "@/utils/styles/colors";
 import {
-  calculateAvgRatePerHour,
-  calculateHoursPerMonthFromRates,
-  calculateHoursPerWeek,
-  calculatePerMonthCost,
+  calculateTeamStats,
 } from "@/utils/teamBuilderCalculations";
 import { useAnimatedCounter } from "@/utils/useAnimatedCounter";
 import { useProjectProgress } from "@/utils/useProjectProgress";
@@ -58,15 +55,13 @@ export default function TeamCreation({
   const { toast } = useToast();
   const addConsultants = useAddConsultants();
   const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
-  const hoursPerWeek = calculateHoursPerWeek(rows, selectedIds);
-  const avgRatePerHour = calculateAvgRatePerHour(hoursPerWeek);
+  const stats = calculateTeamStats(rows, selectedIds);
   const isProjectAlreadyCreated = Boolean(projectId);
-  const hoursPerMonth = calculateHoursPerMonthFromRates(rows, selectedIds);
-  const perMonthCost = calculatePerMonthCost(hoursPerMonth, avgRatePerHour);
-  const animatedHoursPerWeek = useAnimatedCounter(hoursPerWeek);
-  const animatedAvgRatePerHour = useAnimatedCounter(avgRatePerHour);
-  const animatedHoursPerMonth = useAnimatedCounter(hoursPerMonth);
-  const animatedPerMonthCost = useAnimatedCounter(perMonthCost);
+
+  const animatedHoursPerWeek = useAnimatedCounter(stats.hoursPerWeek);
+  const animatedAvgRatePerHour = useAnimatedCounter(stats.avgRatePerHour);
+  const animatedHoursPerMonth = useAnimatedCounter(stats.hoursPerMonth);
+  const animatedPerMonthCost = useAnimatedCounter(stats.perMonthCost);
   const [addedIds, setAddedIds] = useState<number[]>([]);
   const getProjectConsultants = useGetProjectConsultants();
   const [hydrationReady, setHydrationReady] = useState(false);
@@ -79,6 +74,7 @@ export default function TeamCreation({
   >(null);
 
   const openSchedule = (row: TeamBuilderRow) => {
+    console.log(row.working_schedule)
     setScheduleData(row.working_schedule);
     setScheduleModalOpen(true);
   };
@@ -298,9 +294,6 @@ export default function TeamCreation({
           alignItems="center"
           mb={1.5}
         >
-          {/* <Typography variant="h6" sx={{ fontWeight: 600 }}>
-            Project Details
-          </Typography> */}
 
           <Button
             onClick={() => setFilterOpen(true)}
@@ -327,12 +320,6 @@ export default function TeamCreation({
             Filters
           </Button>
         </Box>
-
-        {/* <CreateForm
-          elements={getTeamBuilderFormFields()}
-          onSuccess={() => {}}
-          actionsContainerProps={{ sx: { display: "none" } }}
-        /> */}
 
         <FilterDrawer open={filterOpen} onClose={() => setFilterOpen(false)} />
 
@@ -390,7 +377,7 @@ export default function TeamCreation({
             description=""
           >
             <Box sx={{ mt: 2 }}>
-              {scheduleData?.weekdays?.map((day: Weekday, i: number) => (
+              {scheduleData?.weekly?.map((day: Weekday, i: number) => (
                 <Box
                   key={i}
                   sx={{
@@ -404,7 +391,7 @@ export default function TeamCreation({
 
                   {day.active ? (
                     <Typography>
-                      {day.start} - {day.end}
+                      {day.slot[0].start} - {day.slot[0].end}
                     </Typography>
                   ) : (
                     <Typography color="red">Not Active</Typography>
