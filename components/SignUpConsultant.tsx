@@ -4,7 +4,6 @@ import { useSignupConsultant } from "@/actions/auth/signupConsultant";
 import { CreateForm } from "@/components/CreateForm";
 import { getConsultantFormFields } from "@/forms/consultantForm";
 import { IConsultantSignupPayload } from "@/types/consultant";
-import { ISignUpConsultantForm } from "@/types/signup-form";
 import { Box, Paper } from "@mui/material";
 import { useSearchParams } from "next/navigation";
 import * as React from "react";
@@ -16,48 +15,64 @@ const SignUpConsultant: React.FC = () => {
   const { mutate, error, isPending } = useSignupConsultant();
   const searchParams = useSearchParams();
   const role = Number(searchParams.get("type"));
-
   const elements = getConsultantFormFields();
-  const [prefillData, setPrefillData] = React.useState<Partial<FieldValues>>(
-    {}
-  );
+  const [cvPayload, setCvPayload] = React.useState<any | null>(null);
 
-  const handleCVParsed = (parsed: Partial<FieldValues>) => {
-    setPrefillData((prev) => ({ ...prev, ...parsed }));
+  const handleCVParsed = ({ __cvPayload }: { __cvPayload: any }) => {
+    setCvPayload(__cvPayload);
   };
 
   const handleSuccess = (data: FieldValues) => {
-    const formData = { ...prefillData, ...data } as ISignUpConsultantForm;
+    if (cvPayload?.consultant && cvPayload?.user) {
+      const payload: IConsultantSignupPayload = {
+        consultant: {
+          ...cvPayload.consultant,
+
+          core_module: data.coreModule ?? [],
+          other_module: data.otherModule ?? [],
+
+          rate: cvPayload.consultant.rate ?? Number(data.rate) ?? 0,
+
+          weekly_available_hours:
+            cvPayload.consultant.weekly_available_hours ??
+            Number(data.availableHours) ??
+            15,
+        },
+
+        user: {
+          ...cvPayload.user,
+          role,
+          password: data.password,
+          confirmPassword: data.confirmPassword,
+          currency: cvPayload.user.currency ?? "PKR",
+          status: "active",
+        },
+      };
+
+      mutate(payload);
+      return;
+    }
 
     const payload: IConsultantSignupPayload = {
       consultant: {
-        core_module: [formData.coreModule],
-        other_module: [formData.otherModule],
-        experience: Number(formData.experience) || 0,
-        rate: formData.rate,
-        weekly_available_hours: 20,
-        schedule: {
-          monday: "9-5",
-          tuesday: "9-5",
-          wednesday: "off",
-          thursday: "9-5",
-          friday: "9-5",
-          saturday: "off",
-          sunday: "off",
-        },
-        cv_url: formData.cvUrl ?? "",
+        core_module: data.coreModule ?? [],
+        other_module: data.otherModule ?? [],
+        experience: Number(data.experience) || 0,
+        rate: Number(data.rate) || 0,
+        weekly_available_hours: data.availableHours ?? 15,
+        cv_url: "",
       },
       user: {
-        username: formData.fullName,
+        username: data.fullName,
         role,
-        email: formData.email,
-        phone: formData.phone,
-        password: formData.password,
-        confirmPassword: formData.confirmPassword,
-        currency: "EUR",
-        city: formData.city,
-        country: formData.country,
-        status: 1,
+        email: data.email,
+        phone: data.phone,
+        password: data.password,
+        confirmPassword: data.confirmPassword,
+        currency: "PKR",
+        city: data.city,
+        country: data.country,
+        status: "active",
       },
     };
 
@@ -98,7 +113,7 @@ const SignUpConsultant: React.FC = () => {
           onSuccess={handleSuccess}
           loading={isPending}
           error={error?.message}
-          showProgress={true}
+          showProgress
           mode="wizard"
           onCVParsed={handleCVParsed}
           submitButton={{
@@ -108,6 +123,7 @@ const SignUpConsultant: React.FC = () => {
             size: "large",
           }}
         />
+
         <LoginLink />
       </Paper>
     </Box>

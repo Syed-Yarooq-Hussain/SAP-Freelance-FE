@@ -37,4 +37,5 @@ export const API_ROUTES = {
   UPDATE_ADMIN_CONSULTANT_STATUS: "/admin/consultants",
   ADMIN_CLIENTS: "/admin/clients/all",
   UPDATE_ADMIN_CLIENT_STATUS: "/admin/clients",
+  PDF_READER: "/common/pdf-reader",
 };
