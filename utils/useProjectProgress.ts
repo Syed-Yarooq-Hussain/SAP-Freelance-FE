@@ -43,11 +43,6 @@ export function useProjectProgress() {
     saveProjects(trimmed);
   };
 
-  /**
-   * ✅ SAFE step persistence
-   * - Adds project if missing
-   * - Never rolls step backward
-   */
   const updateProjectStep = (projectId: string, step: number) => {
     const stored: StoredProject[] = JSON.parse(
       localStorage.getItem("tb_projects") || "[]"
@@ -66,7 +61,6 @@ export function useProjectProgress() {
       return p;
     });
 
-    // 🔥 Project not found → ADD IT
     if (!found) {
       updated.push({
         id: projectId,
@@ -97,6 +91,28 @@ export function useProjectProgress() {
     return () => window.removeEventListener("tb_projects_updated", handler);
   }, [loadProjects]);
 
+  const persistRequestedHours = (
+    projectId: string,
+    rows: { id: string | number; request?: number }[],
+    selectedIds: string[]
+  ) => {
+    if (!projectId) return;
+
+    const map: Record<string, number> = {};
+
+    rows.forEach((r) => {
+      const id = String(r.id);
+      if (selectedIds.includes(id)) {
+        map[id] = Number(r.request ?? 0);
+      }
+    });
+
+    localStorage.setItem(
+      `tb_requested_hours_${projectId}`,
+      JSON.stringify(map)
+    );
+  };
+
   return {
     projects,
     loading,
@@ -104,5 +120,6 @@ export function useProjectProgress() {
     updateProjectStep,
     removeProject,
     reload: loadProjects,
+    persistRequestedHours,
   };
 }

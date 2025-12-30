@@ -32,6 +32,11 @@ export interface CandidateRow {
 
 export type TeamCreationProps = {
   onNext?: (projectId: string) => void;
+  projectId?: string | null;
+  rows: TeamBuilderRow[];
+  setRows: React.Dispatch<React.SetStateAction<TeamBuilderRow[]>>;
+  selectedIds: string[];
+  setSelectedIds: React.Dispatch<React.SetStateAction<string[]>>;
 };
 
 export interface TeamBuilderRow {
@@ -44,14 +49,7 @@ export interface TeamBuilderRow {
   request: number;
   error?: string;
   avatar?: string;
-  working_schedule?: {
-    weekdays: {
-      day: string;
-      start?: string;
-      end?: string;
-      active: boolean;
-    }[];
-  };
+  working_schedule?: any
 }
 
 export interface ITask {
@@ -256,6 +254,7 @@ export type IUpdateConsultantStatusResponse = [number, IProjectConsultant[]];
 type TeamConfirmationProps = {
   onNext?: (projectId: string) => void;
   projectId?: string | null;
+  onDiscard: () => void;
 };
 
 type Weekday = NonNullable<

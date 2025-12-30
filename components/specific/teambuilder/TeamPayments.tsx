@@ -20,7 +20,13 @@ import { Box, Grid, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export default function TeamPayments({ projectId }: { projectId: string }) {
+export default function TeamPayments({
+  projectId,
+  onDiscard,
+}: {
+  projectId: string;
+  onDiscard: () => void;
+}) {
   const router = useRouter();
   const [isCustomRange, setIsCustomRange] = useState(false);
   const [openPopup, setOpenPopup] = useState(false);
@@ -142,7 +148,12 @@ export default function TeamPayments({ projectId }: { projectId: string }) {
       </Grid>
 
       <Box display="flex" justifyContent="flex-end" gap={2} mt={3}>
-        <AppButton label="Discard" colorKey="RED" width={180} />
+        <AppButton
+          label="Back"
+          colorKey="RED"
+          width={180}
+          onClick={onDiscard}
+        />
         <AppButton
           label="Start the Project"
           colorKey="BLUE"

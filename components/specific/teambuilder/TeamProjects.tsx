@@ -711,7 +711,7 @@ export default function TeamProjects({
         <Box />
         <Box sx={{ display: "flex", gap: 1.5 }}>
           <AppButton
-            label="Discard"
+            label="Back"
             colorKey="RED"
             onClick={onBack}
             width={180}
