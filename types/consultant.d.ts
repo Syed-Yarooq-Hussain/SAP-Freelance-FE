@@ -1,15 +1,5 @@
 import { IBaseUser, IUser } from "./common-auth";
 
-export interface IConsultantExtra {
-  core_module: string[];
-  other_module: string[];
-  experience: number;
-  rate: number;
-  weekly_available_hours: number;
-  schedule: Record<string, string>;
-  cv_url: string;
-}
-
 export interface IConsultantSignupPayload {
   user: IBaseUser;
   consultant: IConsultantExtra;

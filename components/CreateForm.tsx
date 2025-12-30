@@ -2,9 +2,9 @@
 
 import { useSapModules } from "@/actions/common/useSapModules";
 import AppButton from "@/components/Button";
+import { parseCVViaAPI } from "@/services/common/pdfReader";
 import { ICreateFormProps, IFieldConfig } from "@/types/create-form";
 import { IOption } from "@/types/options";
-import { parseCV } from "@/utils/cvParser";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import {
@@ -18,7 +18,8 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { FC, useEffect, useRef, useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import React, { FC, useEffect, useState } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 import FormProgress from "./FormProgress";
 
@@ -45,11 +46,16 @@ export const CreateForm: FC<ICreateFormProps> = ({
     mode: "onChange",
   });
 
+  const parseCVMutation = useMutation({
+    mutationFn: parseCVViaAPI,
+  });
+
   const [showPassword, setShowPassword] = useState<Record<string, boolean>>({});
   const [fileNames, setFileNames] = useState<Record<string, string>>({});
-  const autoFilledRef = useRef<Set<string>>(new Set());
   const [step, setStep] = useState<number>(0);
   const { data, isLoading } = useSapModules();
+  const cvParsing = parseCVMutation.isPending;
+  const cvParsed = parseCVMutation.isSuccess;
   const [dynamicOptions, setDynamicOptions] = useState<
     Record<string, IOption[]>
   >({});
@@ -81,39 +87,39 @@ export const CreateForm: FC<ICreateFormProps> = ({
     onChange(file);
     setFileNames((prev) => ({ ...prev, [fieldName]: file.name }));
 
-    if (fieldName === "cv") {
-      try {
-        const parsed = await parseCV(file);
-        if (onCVParsed) onCVParsed(parsed);
+    if (fieldName !== "cv") return;
 
-        const fillable = new Set(elements.map((e) => e.name));
-        const nextFilled = new Set<string>();
+    parseCVMutation.mutate(file, {
+      onSuccess: (parsedResponse) => {
+        const { user, consultant } = parsedResponse;
 
-        for (const [key, value] of Object.entries(parsed)) {
-          if (!fillable.has(key)) continue;
+        const formValues = {
+          fullName: user?.username ?? "",
+          email: user?.email ?? "",
+          phone: user?.phone ?? "",
+          city: user?.city ?? "",
+          country: user?.country ?? "",
+          experience: consultant?.experience ?? "",
+          rate: consultant?.rate ?? "",
+          coreModule: consultant?.core_module ?? [],
+          otherModule: consultant?.other_module ?? [],
+        };
 
-          const str = value == null ? "" : String(value);
-          setValue(key, str, { shouldDirty: true, shouldValidate: true });
+        Object.entries(formValues).forEach(([key, value]) => {
+          setValue(key, value, {
+            shouldDirty: true,
+            shouldValidate: true,
+          });
+        });
 
-          if (str.trim() !== "") nextFilled.add(key);
+        if (onCVParsed) {
+          onCVParsed({
+            __cvPayload: parsedResponse,
+            __formValues: formValues,
+          });
         }
-
-        for (const key of autoFilledRef.current) {
-          if (!nextFilled.has(key)) {
-            setValue(key, "", { shouldDirty: true, shouldValidate: true });
-          }
-        }
-
-        autoFilledRef.current = nextFilled;
-
-        const nextIndex = step + 1;
-        if (nextIndex < elements.length) {
-          setStep(nextIndex);
-        }
-      } catch (err) {
-        console.error("CV parsing failed:", err);
-      }
-    }
+      },
+    });
   };
 
   const handleFileDrop = async (
@@ -186,12 +192,34 @@ export const CreateForm: FC<ICreateFormProps> = ({
                     }
                     style={{ cursor: "pointer", display: "block" }}
                   >
-                    <Typography fontWeight="bold" color="#4680FF">
-                      {fileNames[element.name] || element.label || "Upload"}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Click or drag to choose a file (.pdf, .doc, .docx)
-                    </Typography>
+                    {cvParsing ? (
+                      <>
+                        <Typography fontWeight="bold" color="#4680FF">
+                          Parsing CV… Please wait
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          {fileNames[element.name]}
+                        </Typography>
+                      </>
+                    ) : cvParsed ? (
+                      <>
+                        <Typography fontWeight="bold" color="green">
+                          CV parsed successfully ✓
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          {fileNames[element.name]}
+                        </Typography>
+                      </>
+                    ) : (
+                      <>
+                        <Typography fontWeight="bold" color="#4680FF">
+                          {fileNames[element.name] || element.label || "Upload"}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          Click or drag to choose a file (.pdf, .doc, .docx)
+                        </Typography>
+                      </>
+                    )}
                   </label>
                 </Box>
               );
@@ -215,47 +243,52 @@ export const CreateForm: FC<ICreateFormProps> = ({
                 helperText={errors[element.name]?.message?.toString()}
                 disabled={loading || isLoading}
                 select={isSelect}
-                SelectProps={{
-                  multiple: element.multiple === true,
-                  displayEmpty: true,
-                  renderValue: (selected) => {
-                    if (
-                      !selected ||
-                      (Array.isArray(selected) && selected.length === 0)
-                    ) {
-                      return (
-                        <Typography color="gray">
-                          Select {element.label}
-                        </Typography>
-                      );
-                    }
+                slotProps={{
+                  select: {
+                    multiple: element.multiple === true,
+                    displayEmpty: true,
+                    renderValue: (selected: any) => {
+                      if (
+                        !selected ||
+                        (Array.isArray(selected) && selected.length === 0)
+                      ) {
+                        return (
+                          <Typography color="gray">
+                            Select {element.label}
+                          </Typography>
+                        );
+                      }
 
-                    if (Array.isArray(selected)) {
-                      return selected
-                        .map((val) => {
-                          const opt =
-                            element.options?.find((o) => o.value === val) ||
-                            dynamicOptions[element.name]?.find(
-                              (o) => o.value === val
-                            );
-                          return opt?.label ?? val;
-                        })
-                        .join(", ");
-                    }
+                      if (Array.isArray(selected)) {
+                        return selected
+                          .map((val) => {
+                            const opt =
+                              element.options?.find((o) => o.value === val) ||
+                              dynamicOptions[element.name]?.find(
+                                (o) => o.value === val
+                              );
+                            return opt?.label ?? val;
+                          })
+                          .join(", ");
+                      }
 
-                    const opt =
-                      element.options?.find((o) => o.value === selected) ||
-                      dynamicOptions[element.name]?.find(
-                        (o) => o.value === selected
-                      );
+                      const opt =
+                        element.options?.find((o) => o.value === selected) ||
+                        dynamicOptions[element.name]?.find(
+                          (o) => o.value === selected
+                        );
 
-                    return opt?.label ?? String(selected);
+                      return opt?.label ?? String(selected);
+                    },
                   },
-                }}
-                InputLabelProps={{ shrink: true }}
-                inputProps={element.inputProps}
-                InputProps={
-                  isPassword
+
+                  inputLabel: {
+                    shrink: true,
+                  },
+
+                  htmlInput: element.inputProps,
+
+                  input: isPassword
                     ? {
                         endAdornment: (
                           <InputAdornment position="end">
@@ -272,8 +305,8 @@ export const CreateForm: FC<ICreateFormProps> = ({
                           </InputAdornment>
                         ),
                       }
-                    : undefined
-                }
+                    : undefined,
+                }}
               >
                 {!element.multiple && (
                   <MenuItem value="">
@@ -380,10 +413,7 @@ export const CreateForm: FC<ICreateFormProps> = ({
     const valid = await trigger(currentField.name);
     if (!valid) return;
 
-    const next = step + 1;
-    if (next < elements.length) {
-      setStep(next);
-    }
+    setStep((s) => Math.min(s + 1, elements.length - 1));
   };
 
   const goPrev = () => setStep((s) => Math.max(0, s - 1));
@@ -435,15 +465,17 @@ export const CreateForm: FC<ICreateFormProps> = ({
               <AppButton
                 label="Next"
                 onClick={goNext}
+                disabled={cvParsing}
                 sx={{ width: "auto", minWidth: "160px" }}
               />
             )}
           </>
         ) : (
           <AppButton
-            label={submitButton?.children || "Submit"}
+            label={String(submitButton?.children || "Submit")}
+            loading={loading || cvParsing}
+            disabled={cvParsing}
             onClick={handleSubmit(submitHandler)}
-            loading={loading}
             sx={{ width: "auto", minWidth: "160px", ...submitButton?.sx }}
           />
         )}
