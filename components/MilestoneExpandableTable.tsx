@@ -55,13 +55,13 @@ export default function MilestoneExpandableTable({
               Name
             </TableCell>
             <TableCell sx={{ fontWeight: 600, fontSize: "0.875rem" }}>
-              Date
+              Start Date
+            </TableCell>
+            <TableCell sx={{ fontWeight: 600, fontSize: "0.875rem" }}>
+              End Date
             </TableCell>
             <TableCell sx={{ fontWeight: 600, fontSize: "0.875rem" }}>
               Description
-            </TableCell>
-            <TableCell sx={{ fontWeight: 600, fontSize: "0.875rem" }}>
-              Approval
             </TableCell>
             <TableCell sx={{ fontWeight: 600, fontSize: "0.875rem" }}>
               Tasks
@@ -80,9 +80,9 @@ export default function MilestoneExpandableTable({
               <React.Fragment key={m.id}>
                 <TableRow>
                   <TableCell>{m.name}</TableCell>
-                  <TableCell>{m.date}</TableCell>
+                  <TableCell>{m.start_date}</TableCell>
+                  <TableCell>{m.due_date}</TableCell>
                   <TableCell>{m.description}</TableCell>
-                  <TableCell>{m.approval}</TableCell>
 
                   <TableCell>
                     <Box

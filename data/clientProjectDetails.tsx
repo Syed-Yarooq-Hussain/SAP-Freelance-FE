@@ -119,7 +119,8 @@ export const milestoneColumns: GridColDef[] = [
   { field: "name", headerName: "Name", flex: 2 },
   { field: "dependencies", headerName: "Dependencies", flex: 2 },
   { field: "details", headerName: "Details", flex: 2 },
-  { field: "deadline", headerName: "Deadline", flex: 1 },
+  { field: "start_date", headerName: "Start Date", flex: 1 },
+  { field: "end_date", headerName: "End Date", flex: 1 },
   {
     field: "status",
     headerName: "Status",

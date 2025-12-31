@@ -83,6 +83,7 @@ export default function TeamProjects({
       name: data.milestoneName as string,
       description: (data.milestoneDescDoc as string) || "",
       due_date: (data.milestoneEnd as string) || "",
+      start_date: (data.milestoneStart as string) || "",
       status: "active",
       required_hours: 0,
       project_id: projectId!,
@@ -93,23 +94,11 @@ export default function TeamProjects({
       {
         onSuccess: () => {
           toast("Milestone updated!", "success");
-          getMilestoneTasks.mutate(editingMilestone.id, {
-            onSuccess: (res) => {
-              const m: IMilestone = res.data!;
 
-              setRows((prev) =>
-                prev.map((row) =>
-                  row.id === editingMilestone.id
-                    ? {
-                        ...row,
-                        name: m.name,
-                        description: m.description ?? "",
-                        date: m.due_date?.split("T")[0] ?? "",
-                        tasks: m.tasks?.length ?? 0,
-                      }
-                    : row
-                )
-              );
+          getProjectMilestones.mutate(projectId, {
+            onSuccess: (fresh) => {
+              const mapped = (fresh.data ?? []).map(mapMilestoneToRow);
+              setRows(mapped);
             },
           });
 
@@ -184,6 +173,15 @@ export default function TeamProjects({
     setEditingTask(row);
     setTaskFormKey((k) => k + 1);
   };
+
+  const mapMilestoneToRow = (m: IMilestone): MilestoneRow => ({
+    id: Number(m.id),
+    name: m.name,
+    start_date: m.start_date?.split("T")[0] ?? "",
+    due_date: m.due_date?.split("T")[0] ?? "",
+    description: m.description ?? "",
+    tasks: m.tasks?.length ?? 0,
+  });
 
   const handleSubmit = useCallback(
     (data: TeamProjectFormData) => {
@@ -287,6 +285,7 @@ export default function TeamProjects({
       name: data.milestoneName as string,
       description: (data.milestoneDescDoc as string) || "",
       due_date: (data.milestoneEnd as string) || "",
+      start_date: (data.milestoneStart as string) || "",
       status: "active",
       required_hours: 0,
       project_id: projectId!,
@@ -302,19 +301,7 @@ export default function TeamProjects({
             onSuccess: async (fresh) => {
               const updatedList = fresh.data ?? [];
 
-              const mapped: MilestoneRow[] = updatedList.map(
-                (m: IMilestone) => ({
-                  id: Number(m.id),
-                  name: m.name,
-                  date: m.due_date?.split("T")[0] ?? "",
-                  description: m.description ?? "",
-                  approval: (m.description ? "Required" : "Not required") as
-                    | "Required"
-                    | "Not required",
-                  tasks: m.tasks?.length ?? 0,
-                })
-              );
-
+              const mapped: MilestoneRow[] = updatedList.map(mapMilestoneToRow);
               setRows(mapped);
             },
             onError: (err: Error) => toast(err.message, "error"),
@@ -446,8 +433,12 @@ export default function TeamProjects({
         if (f.name === "milestoneName") {
           return { ...f, defaultValue: editingMilestone.name };
         }
+        if (f.name === "milestoneStart") {
+          return { ...f, defaultValue: editingMilestone.start_date };
+        }
+
         if (f.name === "milestoneEnd") {
-          return { ...f, defaultValue: editingMilestone.date };
+          return { ...f, defaultValue: editingMilestone.due_date };
         }
         if (f.name === "milestoneDescDoc") {
           return { ...f, defaultValue: editingMilestone.description };
@@ -532,63 +523,29 @@ export default function TeamProjects({
 
     getProjectMilestones.mutate(projectId, {
       onSuccess: async (fresh) => {
-        const milestones: IMilestone[] = fresh.data ?? [];
+        const milestones = (fresh.data ?? []) as IMilestone[];
 
-        const mapped: MilestoneRow[] = milestones.map((m) => ({
-          id: Number(m.id),
-          name: m.name,
-          date: m.due_date?.split("T")[0] ?? "",
-          description: m.description ?? "",
-          approval: m.description ? "Required" : "Not required",
-          tasks: 0,
-        }));
-
+        const mapped = milestones.map(mapMilestoneToRow);
         setRows(mapped);
 
-        const results = await Promise.all(
-          milestones.map(
-            (m) =>
-              new Promise<{ milestoneId: number; count: number }>((resolve) => {
-                if (dynamicTasks[Number(m.id)]) {
-                  resolve({
-                    milestoneId: Number(m.id),
-                    count: dynamicTasks[Number(m.id)].length,
-                  });
-                  return;
-                }
-                getMilestoneTasks.mutate(Number(m.id), {
-                  onSuccess: (res) => {
-                    const tasks: ITask[] = res.data?.tasks ?? [];
-
-                    const mappedTasks: TaskRow[] = tasks.map((t) => ({
-                      id: String(t.id),
-                      name: t.name,
-                      description: t.description,
-                      assignees: String(t.assignee_id ?? ""),
-                      date: STATIC_TASK_DATE,
-                    }));
-
-                    setDynamicTasks((prev) => ({
-                      ...prev,
-                      [Number(m.id)]: mappedTasks,
-                    }));
-
-                    resolve({
-                      milestoneId: Number(m.id),
-                      count: mappedTasks.length,
-                    });
-                  },
-                });
-              })
-          )
-        );
-
-        setRows((prev) =>
-          prev.map((row) => {
-            const match = results.find((r) => r.milestoneId === row.id);
-            return match ? { ...row, tasks: match.count } : row;
-          })
-        );
+        // load tasks separately (DO NOT touch rows again)
+        milestones.forEach((m) => {
+          getMilestoneTasks.mutate(Number(m.id), {
+            onSuccess: (res) => {
+              const tasks = res.data?.tasks ?? [];
+              setDynamicTasks((prev) => ({
+                ...prev,
+                [Number(m.id)]: tasks.map((t) => ({
+                  id: String(t.id),
+                  name: t.name,
+                  description: t.description,
+                  assignees: String(t.assignee_id ?? ""),
+                  date: STATIC_TASK_DATE,
+                })),
+              }));
+            },
+          });
+        });
       },
     });
   }, [projectId, getProjectMilestones, getMilestoneTasks]);
@@ -710,12 +667,7 @@ export default function TeamProjects({
       >
         <Box />
         <Box sx={{ display: "flex", gap: 1.5 }}>
-          <AppButton
-            label="Back"
-            colorKey="RED"
-            onClick={onBack}
-            width={180}
-          />
+          <AppButton label="Back" colorKey="RED" onClick={onBack} width={180} />
           <AppButton
             label="Proceed to next step"
             colorKey="BLUE"

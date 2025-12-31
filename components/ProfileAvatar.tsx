@@ -12,10 +12,17 @@ interface ProfileAvatarProps {
 
 const PLACEHOLDERS = ["/default.png", "/image.png", "", undefined];
 
-const getInitials = (name: string) => {
-  const words = name.trim().split(" ");
-  if (words.length === 1) return words[0][0].toUpperCase();
-  return `${words[0][0]}${words[1][0]}`.toUpperCase();
+const getInitials = (name?: string) => {
+  if (!name) return "?";
+
+  const words = name.trim().split(" ").filter(Boolean);
+
+  if (words.length === 0) return "?";
+  if (words.length === 1) return words[0][0]?.toUpperCase() ?? "?";
+
+  return `${words[0][0]?.toUpperCase() ?? ""}${
+    words[1][0]?.toUpperCase() ?? ""
+  }`;
 };
 
 const ProfileAvatar: FC<ProfileAvatarProps> = ({
@@ -35,12 +42,8 @@ const ProfileAvatar: FC<ProfileAvatarProps> = ({
         width: size,
         height: size,
         bgcolor: shouldShowInitial ? "rgba(0,0,0,0.12)" : "transparent",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
         fontSize: size * 0.35,
         fontWeight: 600,
-        overflow: "hidden",
       }}
       aria-label={initials}
     >
