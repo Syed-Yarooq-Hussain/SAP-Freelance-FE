@@ -56,13 +56,12 @@ const AppTitle: React.FC = () => {
   return (
     <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
       <Typography
-        variant="h6"
         noWrap
         component="div"
         sx={{
-          fontWeight: 700,
+          fontWeight: 1000,
           fontSize: "1.35rem",
-          color: "#1A1A1A",
+          color: "#fff",
           letterSpacing: "0.5px",
         }}
       >

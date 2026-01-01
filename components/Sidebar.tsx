@@ -54,29 +54,6 @@ const Sidebar: FC<ISidebarProps> = ({ children }) => {
           },
         }}
       >
-        {/* <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: open ? "center" : "center",
-            height: 64,
-            px: 1,
-          }}
-        >
-          <Image
-            src="/vx9-logo-02.png"
-            alt="Logo"
-            width={120}
-            height={40}
-            style={{
-              objectFit: "contain",
-              maxWidth: "100%",
-              height: "auto",
-            }}
-            priority
-          />
-        </Box> */}
-
         <Box
           sx={{
             height: 64,

@@ -48,12 +48,40 @@ const StatCard: FC<StatCardProps> = ({
   return (
     <Card
       sx={{
-        height: 110,
-        background: color,
+        height: 90,
+        background: "linear-gradient(#23618C, #4094CF, #3BB2F5)",
         color: "#fff",
+        borderRadius: "15px",
+        position: "relative",
+        overflow: "hidden",
+        transition: "all 0.5s ease",
         display: "flex",
         alignItems: "center",
         px: 2.5,
+        border: "2px solid transparent",
+        "&::before": {
+          content: '""',
+          position: "absolute",
+          top: "-50%",
+          left: "-30%",
+          width: "200%",
+          height: "200%",
+          background:
+          "linear-gradient(0deg, transparent, transparent 30%, rgba(7, 224, 237,0.6))",
+          transform: "rotate(-45deg)",
+          transition: "all 0.8s ease",
+          opacity: 0,
+          pointerEvents: "none",
+        },
+        "&:hover": {
+          transform: "scale(1.05)",
+          boxShadow: "1px 1px 5px rgba(0, 212, 212)",
+          borderColor: "rgba(7, 10, 140)",
+        },
+        "&:hover::before": {
+          opacity: 1,
+          transform: "rotate(-45deg) translateY(100%)",
+        },
       }}
     >
       <Box
@@ -69,34 +97,24 @@ const StatCard: FC<StatCardProps> = ({
             variant="body2"
             sx={{
               opacity: 0.9,
+              fontSize: 12,
               fontWeight: 500,
             }}
           >
             {title}
           </Typography>
 
-          {loading ? (
-            <Skeleton
-              variant="text"
-              width={80}
-              height={36}
-              sx={{
-                bgcolor: "rgba(255,255,255,0.35)",
-                mt: 0.5,
-              }}
-            />
-          ) : (
-            <Typography
-              sx={{
-                fontSize: 28,
-                fontWeight: 700,
-                lineHeight: 1.2,
-                mt: 0.5,
-              }}
-            >
-              {subtitle}
-            </Typography>
-          )}
+          <Typography
+            sx={{
+              fontSize: 28,
+              fontWeight: 1000,
+              fontFamily: "serif",
+              lineHeight: 1.2,
+              mt: 0.5,
+            }}
+          >
+            {subtitle}
+          </Typography>
 
           {description && (
             <Typography
@@ -114,8 +132,8 @@ const StatCard: FC<StatCardProps> = ({
 
         <Box
           sx={{
-            width: 44,
-            height: 44,
+            width: 35,
+            height: 35,
             borderRadius: "50%",
             background: "rgba(255,255,255,0.2)",
             display: "flex",

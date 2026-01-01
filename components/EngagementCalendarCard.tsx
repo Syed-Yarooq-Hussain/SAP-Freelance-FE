@@ -40,7 +40,32 @@ export default function EngagementCalendarCard({
           mb: 2,
         }}
       >
-        <Typography variant={titleVariant} sx={{ fontWeight: 700 }}>
+        <Typography
+           variant={titleVariant}
+            sx={{
+              fontWeight: 700,
+              position: "relative",
+              cursor: "pointer",
+              transition: "all 0.3s ease",
+              color: "#041C7A",
+              "&:hover": {
+                color: "#2563eb",
+                transform: "translateY(-1px)",
+              },
+              "&::after": {
+                content: '""',
+                position: "absolute",
+                left: 0,
+                bottom: -4,
+                width: "100%",
+                height: "2px",
+                background:"linear-gradient(90deg, #2563eb, #22d3ee)",
+                transform: "scaleX(0)",
+                transformOrigin: "right",
+                transition: "transform 0.35s ease",
+              },
+               "&:hover::after": {transform: "scaleX(1)",transformOrigin: "left",},  
+            }}>
           {title}
         </Typography>
 
@@ -52,12 +77,12 @@ export default function EngagementCalendarCard({
             flexWrap: "nowrap",
           }}
         >
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <Dot bg={colors.GREEN} />
+          <Box sx={{ display: "flex", alignItems: "center"}}>
+            🔥
             <Typography variant="caption">Project Work</Typography>
           </Box>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <Dot bg={colors.RED} />
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            🤞
             <Typography variant="caption">Interview</Typography>
           </Box>
         </Box>

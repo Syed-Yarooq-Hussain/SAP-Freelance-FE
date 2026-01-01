@@ -44,18 +44,56 @@ const Section: FC<{ title: string; children: ReactNode }> = ({
       bgcolor: "#ffffff",
     }}
   >
-    <CardContent>
+    <CardContent
+      sx={{
+        position: "relative",
+        overflow: "hidden",
+        borderRadius: 2,
+        cursor: "pointer",
+        bgcolor: "grey.100",
+      }}
+    >
       <Typography
-        variant="subtitle1"
-        fontWeight="bold"
-        gutterBottom
-        sx={{ color: "text.primary" }}
+        sx={{
+          fontWeight: 700,
+          position: "relative",
+          cursor: "pointer",
+          transition: "all 0.3s ease",
+          color: "#041C7A",
+
+          "&:hover": {
+            color: "#2563eb",
+            transform: "translateY(-1px)"
+          },
+
+          "&::after": {
+            content: '""',
+            position: "absolute",
+            left: 0,
+            bottom: -4,
+            width: "100%",
+            height: "2px",
+            background:
+              "linear-gradient(90deg, #2563eb, #22d3ee)",
+            transform: "scaleX(0)",
+            transformOrigin: "right",
+            transition: "transform 0.35s ease"
+          },
+
+          "&:hover::after": {
+            transform: "scaleX(1)",
+            transformOrigin: "left"
+          }
+        }}
       >
         {title}
       </Typography>
-      <Divider sx={{ mb: 1 }} />
-      {children}
+
+      <Divider sx={{ mb: 1, position: "relative", zIndex: 2 }} />
+
+     <Box sx={{ position: "relative", zIndex: 2 }}>{children}</Box>
     </CardContent>
+
   </Card>
 );
 
@@ -116,23 +154,61 @@ const SidebarInfo: FC<SidebarInfoProps> = ({ sections }) => {
                 )}
 
                 {item.type === "text" && (
-                  <>
+                 <Box
+                  sx={{
+                    p: 1.2,
+                    borderRadius: 2,
+                    cursor: "pointer",
+                    position: "relative",
+                    overflow: "hidden",
+                    transition: "all 0.4s cubic-bezier(.25,.8,.25,1)",
+                    bgcolor: "grey.100",
+
+                    "&:before": {
+                      content: '""',
+                      position: "absolute",
+                      width: "120%",
+                      height: "120%",
+                      left: "-100%",
+                      top: "-10%",
+                      background:
+                        "linear-gradient(120deg, #96BEFF, #EDFBFF)",
+                      transition: "all 0.5s ease",
+                      transform: "skewX(-20deg)",
+                    },
+
+                    "&:hover": {
+                      transform: "translateY(-3px) scale(1.03)",
+                      boxShadow: "0 10px 25px rgba(0,0,0,0.2)",
+                      color: "white",
+                    },
+
+                    "&:hover:before": {
+                      left: "0%",
+                    },
+                  }}
+                >
                     {item.label && (
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography variant="body2" color="#0F03FF"
+                       sx={{ position: "relative",  zIndex: 2 ,
+                     }}>
                         {item.label}
                       </Typography>
                     )}
                     {item.value && (
-                      <Typography variant="subtitle2" fontWeight="bold">
+                      <Typography
+                        variant="subtitle2"
+                        fontWeight="bold"
+                        sx={{ position: "relative",   zIndex: 2 }}>
                         {item.value}
                       </Typography>
                     )}
                     {item.subValue && (
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography variant="body2" color="#0F03FF" sx={{ position: "relative", zIndex: 2 }}>
                         {item.subValue}
                       </Typography>
                     )}
-                  </>
+                  </Box>
                 )}
 
                 {index < section.items.length - 1 && <Divider sx={{ my: 1 }} />}
