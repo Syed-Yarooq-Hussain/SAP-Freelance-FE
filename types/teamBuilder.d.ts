@@ -1,5 +1,6 @@
 export interface ShortlistedRow {
   id: string | number;
+  meetingId?: number | null;
   coremodules: string;
   othersmodules: string;
   experience: string;
@@ -178,6 +179,7 @@ export interface IProjectConsultant {
   role: string | null;
   decided_rate: number;
   interview_date?: string | null;
+  meeting_id?: number | null;
   booking_schedule?: {
     date_time: string;
     status: string;

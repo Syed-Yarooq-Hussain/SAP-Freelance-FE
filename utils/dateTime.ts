@@ -167,3 +167,4 @@ export function isWeekendDate(dateISO: string) {
   const day = d.getDay();
   return day === 0 || day === 6;
 }
+

@@ -1,8 +1,8 @@
+import { getCachedSession } from "@/services/sessionCache";
 import type { ApiResponse } from "@/types/api";
 import type { IClientMeetingDTO } from "@/types/client";
 import { API_ROUTES } from "@/utils/api_routes";
 import { request } from "@/utils/request";
-import { getCachedSession } from "@/services/sessionCache";
 
 export async function fetchClientMeetings(): Promise<
   ApiResponse<IClientMeetingDTO[]>
@@ -30,15 +30,21 @@ export async function fetchMeetingStatus(): Promise<ApiResponse<string[]>> {
 
 export async function updateMeetingStatusService(
   meetingId: number | string,
-  status: string
+  payload: {
+    status: string;
+    date_time?: string;
+  }
 ): Promise<ApiResponse<IClientMeetingDTO>> {
   const session = await getCachedSession();
   const token = session?.accessToken;
 
-  return await request<{ status: string }, IClientMeetingDTO>({
+  return await request<
+    { status: string; date_time?: string },
+    IClientMeetingDTO
+  >({
     url: `${API_ROUTES.CLIENT_MEETINGS}/${meetingId}/status`,
     method: "PATCH",
-    data: { status },
+    data: payload,
     headers: token ? { Authorization: `Bearer ${token}` } : undefined,
   });
 }

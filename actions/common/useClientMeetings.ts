@@ -5,7 +5,6 @@ import {
   fetchMeetingStatus,
   updateMeetingStatusService,
 } from "@/services/meetings";
-import { useQuery } from "@tanstack/react-query";
 import type { ApiResponse } from "@/types/api";
 import type { IClientMeetingDTO } from "@/types/client";
 import { useMutation } from "@tanstack/react-query";
@@ -26,9 +25,9 @@ export function useUpdateMeetingStatus() {
   return useMutation<
     ApiResponse<IClientMeetingDTO>,
     Error,
-    { meetingId: number | string; status: string }
+    { meetingId: number | string; status: string; date_time?: string }
   >({
-    mutationFn: ({ meetingId, status }) =>
-      updateMeetingStatusService(meetingId, status),
+    mutationFn: ({ meetingId, status, date_time }) =>
+      updateMeetingStatusService(meetingId, { status, date_time }),
   });
 }
