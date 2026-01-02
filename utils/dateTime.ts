@@ -146,3 +146,24 @@ export const formatDateTimeAmPm = (iso: string) => {
 
   return `${date} - ${hours}:${minutes} ${ampm}`;
 };
+
+export const timeToMinutes = (t: string): number => {
+  const [h, m] = t.split(":").map(Number);
+  if (Number.isNaN(h) || Number.isNaN(m)) return 0;
+  return h * 60 + m;
+};
+
+export const calculateDurationHours = (start: string, end: string): number => {
+  const startMin = timeToMinutes(start);
+  const endMin = timeToMinutes(end);
+
+  if (endMin <= startMin) return 0;
+
+  return Math.round((endMin - startMin) / 60);
+};
+
+export function isWeekendDate(dateISO: string) {
+  const d = new Date(dateISO);
+  const day = d.getDay();
+  return day === 0 || day === 6;
+}
