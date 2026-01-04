@@ -34,8 +34,7 @@ const SignUpConsultant: React.FC = () => {
           rate: cvPayload.consultant.rate ?? Number(data.rate) ?? 0,
 
           weekly_available_hours:
-            cvPayload.consultant.weekly_available_hours ??
-            Number(data.availableHours) ??
+            Number(data.weekly_available_hours) ??
             15,
         },
 
@@ -53,7 +52,7 @@ const SignUpConsultant: React.FC = () => {
           status: "active",
         },
       };
-
+      
       mutate(payload);
       return;
     }
@@ -64,7 +63,7 @@ const SignUpConsultant: React.FC = () => {
         other_module: data.otherModule ?? [],
         experience: Number(data.experience) || 0,
         rate: Number(data.rate) || 0,
-        weekly_available_hours: data.availableHours ?? 15,
+        weekly_available_hours: data.weekly_available_hours ?? 15,
         cv_url: "",
       },
       user: {

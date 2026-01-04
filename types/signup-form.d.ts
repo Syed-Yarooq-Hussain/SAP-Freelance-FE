@@ -21,7 +21,7 @@ export interface ISignUpConsultantForm {
   otherModule: any;
   experience: number;
   rate: number;
-  availableHours: number;
+  weekly_available_hours: number;
   availability: {
     day: string;
     enabled: boolean;
