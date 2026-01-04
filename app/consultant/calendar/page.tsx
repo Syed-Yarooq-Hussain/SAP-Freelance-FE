@@ -1,10 +1,12 @@
 "use client";
 
+import { useConsultantCalendar } from "@/actions/consultants/useConsultantCalendar";
 import MonthlyCalendar from "@/components/MonthlyCalendar";
 import DynamicPopup from "@/components/Popup";
 import SchedulerLauncher from "@/components/SchedulerPopup";
 import Sidebar from "@/components/Sidebar";
-import { buildSeedEvents } from "@/data/calendar";
+import SkeletonCalendar from "@/components/SkeletonCalendar";
+import { mapApiDaysToCalendarEvents } from "@/utils/mapConsultantCalendar";
 import { Box, Divider, TextField, Typography } from "@mui/material";
 import * as React from "react";
 
@@ -23,26 +25,32 @@ export default function CalendarScreen() {
     setAvailEnd("");
   };
 
-  const events = React.useMemo(
-    () => buildSeedEvents(handleOpenAvail),
-    [handleOpenAvail]
-  );
+  const { data, isLoading } = useConsultantCalendar(month, year);
+
+  const events = React.useMemo(() => {
+    if (!data?.days) return [];
+    return mapApiDaysToCalendarEvents(data.days, handleOpenAvail);
+  }, [data, handleOpenAvail]);
 
   return (
     <Sidebar>
       <Box>
-        <MonthlyCalendar
-          year={year}
-          month={month}
-          mode="full"
-          showLegend
-          events={events}
-          onMonthChange={(y, m) => {
-            setYear(y);
-            setMonth(m);
-          }}
-          actionNode={<SchedulerLauncher />}
-        />
+        {isLoading ? (
+          <SkeletonCalendar />
+        ) : (
+          <MonthlyCalendar
+            year={year}
+            month={month}
+            mode="full"
+            showLegend
+            events={events}
+            onMonthChange={(y, m) => {
+              setYear(y);
+              setMonth(m);
+            }}
+            actionNode={<SchedulerLauncher />}
+          />
+        )}
 
         <DynamicPopup
           open={availOpen}

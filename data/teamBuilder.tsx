@@ -161,8 +161,9 @@ export const teamBuilderColumns = (
 ];
 
 export const getShortlistedColumns = (
-  setSelectedCandidateId: (id: string) => void,
-  setInterviewOpen: (v: boolean) => void
+  onRequest: (consultantId: string | number) => void,
+  onReschedule: (meetingId: number) => void,
+  onCancel: (meetingId: number) => void
 ): GridColDef[] => [
   { field: "id", headerName: "ID" },
   { field: "coremodules", headerName: "Modules (Core)", flex: 1.5 },
@@ -207,10 +208,7 @@ export const getShortlistedColumns = (
                 fontWeight: 600,
                 "&:hover": { textDecoration: "underline" },
               }}
-              onClick={() => {
-                setSelectedCandidateId(params.row.id);
-                setInterviewOpen(true);
-              }}
+              onClick={() => onRequest(params.row.id)}
             >
               Request
             </Box>
@@ -223,10 +221,7 @@ export const getShortlistedColumns = (
                   fontWeight: 600,
                   "&:hover": { textDecoration: "underline" },
                 }}
-                onClick={() => {
-                  setSelectedCandidateId(params.row.id);
-                  setInterviewOpen(true);
-                }}
+                onClick={() => onReschedule(params.row.meetingId)}
               >
                 Reschedule
               </Box>
@@ -238,9 +233,7 @@ export const getShortlistedColumns = (
                   fontWeight: 600,
                   "&:hover": { textDecoration: "underline" },
                 }}
-                onClick={() => {
-                  console.log("Cancel interview for", params.row.id);
-                }}
+                onClick={() => onCancel(params.row.meetingId)}
               >
                 Cancel
               </Box>

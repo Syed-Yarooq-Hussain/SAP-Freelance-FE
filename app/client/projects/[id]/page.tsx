@@ -48,8 +48,8 @@ export default function ClientProjectDetailsPage() {
   });
   const [milestoneData, setMilestoneData] = useState({
     milestoneName: "",
+    milestoneStart: "",
     milestoneEnd: "",
-    milestoneDeps: "",
     milestoneDescDoc: "",
   });
 
@@ -64,7 +64,7 @@ export default function ClientProjectDetailsPage() {
 
     setMilestoneData({
       milestoneName: "",
-      milestoneDeps: "",
+      milestoneStart: "",
       milestoneEnd: "",
       milestoneDescDoc: "",
     });
@@ -77,9 +77,9 @@ export default function ClientProjectDetailsPage() {
   const handleEditMilestone = (m: IMilestone) => {
     setMilestoneData({
       milestoneName: m.name,
+      milestoneStart: m.start_date ? formatYMD(m.start_date) : "",
       milestoneEnd: m.due_date ? formatYMD(m.due_date) : "",
       milestoneDescDoc: m.description ?? "",
-      milestoneDeps: "",
     });
 
     setEditMilestoneId(m.id);
@@ -93,6 +93,7 @@ export default function ClientProjectDetailsPage() {
     const payload = {
       name: milestoneData.milestoneName,
       description: milestoneData.milestoneDescDoc,
+      start_date: milestoneData.milestoneStart,
       due_date: milestoneData.milestoneEnd,
       status: "active",
       required_hours: 0,
@@ -139,11 +140,11 @@ export default function ClientProjectDetailsPage() {
           name: m.name,
           dependencies: "N/A",
           details: m.description ?? "N/A",
-          deadline: formatYMD(m.due_date) || "N/A",
+          start_date: m.start_date ? formatYMD(m.start_date) : "N/A",
+          end_date: m.due_date ? formatYMD(m.due_date) : "N/A",
           status: m.status ?? "N/A",
 
           onEdit: () => handleEditMilestone(m),
-
           onDelete: () => console.log("Delete milestone", m.id),
         }));
 
@@ -168,8 +169,9 @@ export default function ClientProjectDetailsPage() {
 
         setProjectInfo({
           name: data?.name ?? "N/A",
-          clientIndustry: `${data?.client?.username ?? "N/A"} - ${data?.company_name ?? "N/A"
-            }`,
+          clientIndustry: `${data?.client?.username ?? "N/A"} - ${
+            data?.company_name ?? "N/A"
+          }`,
           module: "N/A",
           functionalScope: "N/A",
           technicalScope: "N/A",

@@ -1,8 +1,9 @@
-import {
+/* import { IFieldConfig } from "@/components/CreateForm";
+ */import {
   NOTIFICATION_TARGET_OPTIONS,
 } from "@/data/options";
 
-export function getSendNotificationFormFields(): any {
+export function getSendNotificationFormFields(): any[] {
   return [
     {
       name: "name",

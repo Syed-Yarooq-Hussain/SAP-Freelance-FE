@@ -46,3 +46,13 @@ export const WEEKLY_ROWS_INIT = [
   { dow: 6, label: "SAT", enabled: false, startTime: "", endTime: "" },
   { dow: 0, label: "SUN", enabled: false, startTime: "", endTime: "" },
 ];
+
+export const DAY_MAP = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];

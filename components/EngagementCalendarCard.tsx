@@ -54,11 +54,11 @@ export default function EngagementCalendarCard({
         >
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Dot bg={colors.GREEN} />
-            <Typography variant="caption">Project Work</Typography>
+            <Typography variant="caption">Availability</Typography>
           </Box>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <Dot bg={colors.RED} />
-            <Typography variant="caption">Interview</Typography>
+            <Dot bg={colors.DARK_BLUE} />
+            <Typography variant="caption">Events</Typography>
           </Box>
         </Box>
       </Box>

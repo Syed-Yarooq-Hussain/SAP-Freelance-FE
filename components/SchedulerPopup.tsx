@@ -1,7 +1,9 @@
 "use client";
 
+import { useSaveConsultantSchedule } from "@/actions/consultants/useSaveConsultantSchedule";
 import AppButton from "@/components/Button";
 import {
+  DAY_MAP,
   WEEKDAYS_MINI,
   WEEKDAY_TITLES,
   WEEKLY_ROWS_INIT,
@@ -10,8 +12,8 @@ import {
   buildMonthMatrix,
   clampToMonthStart,
   dayAfter,
-  getSelectedDays,
   inRange,
+  isWeekendDate,
   sameDay,
   toISO,
 } from "@/utils/dateTime";
@@ -122,16 +124,16 @@ function RangeCalendar({
             isStart || isEnd
               ? "#6E9EFF"
               : isInside
-                ? "rgba(110,158,255,0.25)"
-                : "transparent";
+              ? "rgba(110,158,255,0.25)"
+              : "transparent";
           const color =
             isStart || isEnd ? "#fff" : isThisMonth ? "#111827" : "#9ca3af";
           const border =
             isStart || isEnd
               ? "1px solid #6E9EFF"
               : isInside
-                ? "1px solid rgba(110,158,255,0.35)"
-                : "1px solid #e5e7eb";
+              ? "1px solid rgba(110,158,255,0.35)"
+              : "1px solid #e5e7eb";
 
           return (
             <Box
@@ -180,6 +182,9 @@ export default function SchedulerLauncher() {
   const [viewMonth, setViewMonth] = React.useState<Date>(new Date());
   const [rangeStart, setRangeStart] = React.useState<Date | null>(null);
   const [rangeEnd, setRangeEnd] = React.useState<Date | null>(null);
+  const { mutateAsync, isPending } = useSaveConsultantSchedule();
+  const [customDayPreset, setCustomDayPreset] =
+    React.useState<DayPreset>("All Day");
   const [weeklyRows, setWeeklyRows] =
     React.useState<WeeklyRow[]>(WEEKLY_ROWS_INIT);
 
@@ -230,8 +235,8 @@ export default function SchedulerLauncher() {
     active === "weekly"
       ? !weeklyValid
       : !startTime ||
-      !endTime ||
-      (active === "customDate" && customDates.length === 0);
+        !endTime ||
+        (active === "customDate" && customDates.length === 0);
 
   const resetForm = () => {
     setActive("default");
@@ -244,34 +249,124 @@ export default function SchedulerLauncher() {
     setWeeklyRows(WEEKLY_ROWS_INIT);
   };
 
-  const handleSubmit = () => {
-    const base = { tab: active as string };
+  function buildWeeklyFromPreset(
+    preset: DayPreset,
+    startTime: string,
+    endTime: string
+  ) {
+    return DAY_MAP.map((day) => {
+      const isWeekend = day === "Saturday" || day === "Sunday";
 
-    const payload =
-      active === "customDate"
-        ? { ...base, startTime, endTime, customDates }
-        : active === "weekly"
-          ? {
-            ...base,
-            weekly: weeklyRows
-              .filter((r) => r.enabled && r.startTime && r.endTime)
-              .map((r) => ({
-                dayOfWeek: r.dow,
-                startTime: r.startTime,
-                endTime: r.endTime,
-              })),
-          }
-          : {
-            ...base,
-            daysOfWeek: getSelectedDays(dayPreset),
-            startTime,
-            endTime,
-          };
+      let active = false;
 
-    void payload;
+      switch (preset) {
+        case "All Day":
+          active = true;
+          break;
+        case "Weekday":
+          active = !isWeekend;
+          break;
+        case "Weekends":
+          active = isWeekend;
+          break;
+      }
 
-    setOpen(false);
-    resetForm();
+      return {
+        day,
+        active,
+        ...(active && {
+          slot: [{ start: startTime, end: endTime }],
+        }),
+      };
+    });
+  }
+
+  function buildDefaultPayload(
+    dayPreset: DayPreset,
+    startTime: string,
+    endTime: string
+  ) {
+    return {
+      weekly: buildWeeklyFromPreset(dayPreset, startTime, endTime),
+    };
+  }
+
+  function buildCustomPayload(
+    dates: string[],
+    preset: DayPreset,
+    startTime: string,
+    endTime: string
+  ) {
+    return {
+      custom: dates.map((date) => {
+        const weekend = isWeekendDate(date);
+
+        let active = false;
+
+        switch (preset) {
+          case "All Day":
+            active = true;
+            break;
+          case "Weekday":
+            active = !weekend;
+            break;
+          case "Weekends":
+            active = weekend;
+            break;
+        }
+
+        return {
+          date,
+          active,
+          ...(active && {
+            slot: [{ start: startTime, end: endTime }],
+          }),
+        };
+      }),
+
+      weekly: buildWeeklyFromPreset(preset, startTime, endTime),
+    };
+  }
+
+  function buildWeeklyPayload(weeklyRows: WeeklyRow[]) {
+    return {
+      weekly: weeklyRows.map((row) => ({
+        day: DAY_MAP[row.dow],
+        active: row.enabled,
+        slot: row.enabled
+          ? [{ start: row.startTime, end: row.endTime }]
+          : undefined,
+      })),
+    };
+  }
+
+  const handleSubmit = async () => {
+    let payload: any = {};
+
+    if (active === "default") {
+      payload = buildDefaultPayload(dayPreset, startTime, endTime);
+    }
+
+    if (active === "customDate") {
+      payload = buildCustomPayload(
+        customDates,
+        customDayPreset,
+        startTime,
+        endTime
+      );
+    }
+
+    if (active === "weekly") {
+      payload = buildWeeklyPayload(weeklyRows);
+    }
+
+    try {
+      await mutateAsync(payload);
+      setOpen(false);
+      resetForm();
+    } catch (e) {
+      console.error("Failed to save schedule", e);
+    }
   };
 
   React.useEffect(() => {
@@ -312,7 +407,7 @@ export default function SchedulerLauncher() {
         buttonText="Set"
         buttonColor="BLUE"
         onSubmit={handleSubmit}
-        disableSubmit={disableSubmit}
+        disableSubmit={disableSubmit || isPending}
       >
         <Box
           sx={{
@@ -471,8 +566,13 @@ export default function SchedulerLauncher() {
                 select
                 size="small"
                 fullWidth
-                value={dayPreset}
-                onChange={(e) => setDayPreset(e.target.value as DayPreset)}
+                value={active === "default" ? dayPreset : customDayPreset}
+                onChange={(e) => {
+                  const value = e.target.value as DayPreset;
+                  active === "default"
+                    ? setDayPreset(value)
+                    : setCustomDayPreset(value);
+                }}
                 sx={{
                   "& .MuiInputBase-root": {
                     backgroundColor: "#f8f9fc",

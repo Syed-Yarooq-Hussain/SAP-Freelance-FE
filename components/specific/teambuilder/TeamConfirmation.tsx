@@ -1,5 +1,6 @@
 "use client";
 
+import { useUpdateMeetingStatus } from "@/actions/common/useClientMeetings";
 import { useMeetingInvite } from "@/actions/common/useMeetingInvite";
 import { useGetProjectConsultants } from "@/actions/projects/useGetProjectConsultants";
 import { useUpdateConsultantStatus } from "@/actions/projects/useUpdateConsultantStatus";
@@ -12,6 +13,7 @@ import { CONSULTANT_STATUS } from "@/constants/status";
 import { STATUS } from "@/constants/status_dropdown";
 import { getCandidateColumns, getShortlistedColumns } from "@/data/teamBuilder";
 import { getTeamInterviewFormFields } from "@/forms/teamInterviewForm";
+import { useToast } from "@/providers/ToastProvider";
 import type {
   CandidateRow,
   IProjectConsultant,
@@ -28,6 +30,7 @@ export default function TeamConfirmation({
   projectId,
   onDiscard,
 }: TeamConfirmationProps) {
+  type InterviewMode = "request" | "reschedule";
   const [shortlisted, setShortlisted] = useState<ShortlistedRow[]>([]);
   const [candidates, setCandidates] = useState<CandidateRow[]>([]);
   const getProjectConsultants = useGetProjectConsultants();
@@ -35,6 +38,7 @@ export default function TeamConfirmation({
   const [assignRoleOpen, setAssignRoleOpen] = useState(false);
   const [rejectConfirmOpen, setRejectConfirmOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState<CandidateRow | null>(null);
+  const [interviewMode, setInterviewMode] = useState<InterviewMode>("request");
   const meetingInvite = useMeetingInvite();
   const updateConsultantStatus = useUpdateConsultantStatus();
   const [selectedConsultantId, setSelectedConsultantId] = useState<
@@ -48,13 +52,40 @@ export default function TeamConfirmation({
     duration: "",
   });
 
+  const updateMeetingStatus = useUpdateMeetingStatus();
+  const { toast } = useToast();
+
+  const [rescheduleOpen, setRescheduleOpen] = useState(false);
+  const [cancelConfirmOpen, setCancelConfirmOpen] = useState(false);
+  const [selectedMeetingId, setSelectedMeetingId] = useState<number | null>(
+    null
+  );
+  const [rescheduleData, setRescheduleData] = useState({
+    date: "",
+    time: "",
+  });
+
   const shortlistedColumns = useMemo(
     () =>
       getShortlistedColumns(
-        (id: string | number) => setSelectedConsultantId(id),
-        setInterviewOpen
+        (consultantId) => {
+          setSelectedConsultantId(consultantId);
+          setInterviewMode("request");
+          setInterviewOpen(true);
+        },
+
+        (meetingId) => {
+          setSelectedMeetingId(meetingId);
+          setInterviewMode("reschedule");
+          setInterviewOpen(true);
+        },
+
+        (meetingId) => {
+          setSelectedMeetingId(meetingId);
+          setCancelConfirmOpen(true);
+        }
       ),
-    [setInterviewOpen]
+    []
   );
 
   const candidateColumns = useMemo(
@@ -116,6 +147,7 @@ export default function TeamConfirmation({
       ) {
         shortlisted.push({
           id: item.consultant_id,
+          meetingId: item.meeting_id ?? null,
           coremodules: core,
           othersmodules: others,
           experience,
@@ -230,6 +262,7 @@ export default function TeamConfirmation({
       ) {
         shortlisted.push({
           id: item.consultant_id,
+          meetingId: item.meeting_id ?? null,
           coremodules: core,
           othersmodules: others,
           experience,
@@ -285,6 +318,13 @@ export default function TeamConfirmation({
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId]);
+
+  useEffect(() => {
+    if (!interviewOpen) {
+      setInterviewMode("request");
+      setInterviewData({ date: "", time: "", link: "", duration: "" });
+    }
+  }, [interviewOpen]);
 
   return (
     <>
@@ -401,6 +441,82 @@ export default function TeamConfirmation({
       />
 
       <DynamicPopup
+        open={rescheduleOpen}
+        onClose={() => setRescheduleOpen(false)}
+        title="Reschedule Interview"
+        fields={[
+          {
+            id: "date",
+            label: "Date",
+            type: "date",
+            value: rescheduleData.date,
+            onChange: (v) =>
+              setRescheduleData((p) => ({ ...p, date: String(v) })),
+          },
+          {
+            id: "time",
+            label: "Time",
+            type: "time",
+            value: rescheduleData.time,
+            onChange: (v) =>
+              setRescheduleData((p) => ({ ...p, time: String(v) })),
+          },
+        ]}
+        buttonText="Reschedule"
+        buttonColor="BLUE"
+        disableSubmit={!rescheduleData.date || !rescheduleData.time}
+        onSubmit={() => {
+          if (!selectedMeetingId) return;
+
+          const dateTime = `${rescheduleData.date}T${rescheduleData.time}:00Z`;
+
+          updateMeetingStatus.mutate(
+            {
+              meetingId: selectedMeetingId,
+              status: "Rescheduled",
+              date_time: dateTime,
+            },
+            {
+              onSuccess: () => {
+                toast("Interview rescheduled successfully", "success");
+                setRescheduleOpen(false);
+                refreshEverything();
+              },
+              onError: (err) => toast(err.message, "error"),
+            }
+          );
+        }}
+      />
+
+      <DynamicPopup
+        open={cancelConfirmOpen}
+        onClose={() => setCancelConfirmOpen(false)}
+        title="Cancel Interview"
+        description="Are you sure you want to cancel this interview?"
+        buttonText="Yes, Cancel"
+        buttonColor="RED"
+        fields={[]}
+        onSubmit={() => {
+          if (!selectedMeetingId) return;
+
+          updateMeetingStatus.mutate(
+            {
+              meetingId: selectedMeetingId,
+              status: "Cancelled",
+            },
+            {
+              onSuccess: () => {
+                toast("Interview cancelled", "success");
+                setCancelConfirmOpen(false);
+                refreshEverything();
+              },
+              onError: (err) => toast(err.message, "error"),
+            }
+          );
+        }}
+      />
+
+      <DynamicPopup
         open={rejectConfirmOpen}
         onClose={() => setRejectConfirmOpen(false)}
         title="Confirm Rejection"
@@ -443,38 +559,74 @@ export default function TeamConfirmation({
       <DynamicPopup
         open={interviewOpen}
         onClose={() => setInterviewOpen(false)}
-        title="Request Interview"
+        title={
+          interviewMode === "request"
+            ? "Request Interview"
+            : "Reschedule Interview"
+        }
         fields={mapTaskFieldsToPopup(
           getTeamInterviewFormFields(),
           interviewData,
           (field, value) =>
             setInterviewData((prev) => ({ ...prev, [field]: value }))
         )}
-        buttonText="Assign Interview"
+        buttonText={
+          interviewMode === "request"
+            ? "Assign Interview"
+            : "Reassign Interview"
+        }
         buttonColor="BLUE"
         disableSubmit={
           !interviewData.date || !interviewData.time || !interviewData.duration
         }
         onSubmit={() => {
-          if (!selectedConsultantId) return;
+          const dateTime =
+            interviewMode === "request"
+              ? `${interviewData.date} ${interviewData.time}`
+              : `${interviewData.date}T${interviewData.time}:00Z`;
 
-          const dateTime = `${interviewData.date} ${interviewData.time}`;
+          if (interviewMode === "request") {
+            if (!selectedConsultantId) return;
 
-          meetingInvite.mutate(
-            {
-              date_time: dateTime,
-              invitees_id: [Number(selectedConsultantId)],
-              duration: Number(interviewData.duration),
-              event_type: "interview",
-              project_id: Number(projectId),
-            },
-            {
-              onSuccess: () => {
-                setInterviewOpen(false);
-                refreshEverything();
+            meetingInvite.mutate(
+              {
+                date_time: dateTime,
+                invitees_id: [Number(selectedConsultantId)],
+                duration: Number(interviewData.duration),
+                event_type: "interview",
+                project_id: Number(projectId),
               },
-            }
-          );
+              {
+                onSuccess: () => {
+                  toast("Interview assigned successfully", "success");
+                  setInterviewOpen(false);
+                  refreshEverything();
+                },
+                onError: (err) => toast(err.message, "error"),
+              }
+            );
+            return;
+          }
+
+          if (interviewMode === "reschedule") {
+            if (!selectedMeetingId) return;
+
+            updateMeetingStatus.mutate(
+              {
+                meetingId: selectedMeetingId,
+                status: "Rescheduled",
+                date_time: dateTime,
+              },
+              {
+                onSuccess: () => {
+                  toast("Interview rescheduled successfully", "success");
+                  setInterviewOpen(false);
+                  refreshEverything();
+                },
+                onError: (err) => toast(err.message, "error"),
+              }
+            );
+          }
         }}
       />
     </>

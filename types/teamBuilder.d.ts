@@ -1,5 +1,6 @@
 export interface ShortlistedRow {
   id: string | number;
+  meetingId?: number | null;
   coremodules: string;
   othersmodules: string;
   experience: string;
@@ -67,6 +68,7 @@ export interface IMilestone {
   id: string | number;
   name: string;
   description: string | null;
+  start_date: string;
   due_date: string;
   status: string;
   required_hours: number;
@@ -78,6 +80,7 @@ export interface ICreateMilestonePayload {
   name: string;
   description: string;
   due_date: string;
+  start_date: string;
   status: string;
   required_hours: number;
   project_id: string | number;
@@ -104,9 +107,9 @@ export interface IUpdateTaskPayload {
 export type MilestoneRow = {
   id: number;
   name: string;
-  date: string;
+  start_date: string;
+  due_date: string;
   description: string;
-  approval: string;
   tasks: number;
 };
 
@@ -136,6 +139,7 @@ export interface TeamProjectFormData {
   milestoneName?: string;
   milestoneDescDoc?: string;
   milestoneEnd?: string;
+  milestoneStart?: string;
   taskMilestone?: string | number;
   taskName?: string;
   taskEnd?: string;
@@ -175,6 +179,7 @@ export interface IProjectConsultant {
   role: string | null;
   decided_rate: number;
   interview_date?: string | null;
+  meeting_id?: number | null;
   booking_schedule?: {
     date_time: string;
     status: string;
@@ -288,6 +293,9 @@ type ClientMilestoneRow = {
   name: string;
   dependencies: string;
   details: string;
-  deadline: string;
+  start_date: string;
+  end_date: string;
   status: string;
+  onEdit?: () => void;
+  onDelete?: () => void;
 };
