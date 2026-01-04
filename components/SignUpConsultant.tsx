@@ -41,6 +41,11 @@ const SignUpConsultant: React.FC = () => {
 
         user: {
           ...cvPayload.user,
+          username : data.fullName,
+          email: data.email,
+          phone: data.phone,
+          city: data.city,
+          country: data.country,
           role,
           password: data.password,
           confirmPassword: data.confirmPassword,
