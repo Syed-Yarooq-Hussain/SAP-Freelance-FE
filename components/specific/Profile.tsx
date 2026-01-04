@@ -41,7 +41,7 @@ const emptyProfile: ProfileData = {
   title: "",
   email: "",
   location: "",
-  module: "",
+  module: { core: "N/A", others: "N/A" },
   projects: "",
   availability: "",
   rate: "",
@@ -333,7 +333,7 @@ const Profile: React.FC<ProfileProps> = ({
             <Grid container spacing={2}>
               <Grid size={{ xs: 6 }}>
                 <Typography variant="body2" sx={{ color: "grey" }}>
-                  Core Modules: <span style={{ color: "black" }}>N/A</span>
+                  Core Modules: <span style={{ color: "black" }}>{profile.module?.core}</span>
                 </Typography>
               </Grid>
 
@@ -346,7 +346,7 @@ const Profile: React.FC<ProfileProps> = ({
 
               <Grid size={{ xs: 6 }}>
                 <Typography variant="body2" sx={{ color: "grey" }}>
-                  Other Modules: <span style={{ color: "black" }}>N/A</span>
+                  Other Modules: <span style={{ color: "black" }}>{profile.module?.others}</span>
                 </Typography>
               </Grid>
 

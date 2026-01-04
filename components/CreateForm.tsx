@@ -101,6 +101,7 @@ export const CreateForm: FC<ICreateFormProps> = ({
           country: user?.country ?? "",
           experience: consultant?.experience ?? "",
           rate: consultant?.rate ?? "",
+          weekly_available_hours: consultant?.weekly_available_hours ?? "",
           coreModule: consultant?.core_module ?? [],
           otherModule: consultant?.other_module ?? [],
         };

@@ -31,6 +31,8 @@ export function getConsultantFormFields(): IFieldConfig[] {
       label: "Phone Number",
       placeholder: "Enter phone number",
       type: "tel",
+      rules: { required: "Phone Number is required" },
+
     },
     {
       name: "password",
@@ -45,18 +47,6 @@ export function getConsultantFormFields(): IFieldConfig[] {
       placeholder: "Confirm password",
       type: "password",
       rules: { required: "Confirm Password is required" },
-    },
-    {
-      name: "city",
-      label: "City",
-      placeholder: "Enter city",
-      type: "text",
-    },
-    {
-      name: "country",
-      label: "Country",
-      placeholder: "Enter country",
-      type: "text",
     },
     {
       name: "coreModule",
@@ -88,5 +78,24 @@ export function getConsultantFormFields(): IFieldConfig[] {
       type: "number",
       rules: { required: "Rate is required", min: 1 },
     },
+    {
+      name: "weekly_available_hours",
+      label: "Weekly Available Hours",
+      placeholder: "Enter hours",
+      type: "number",
+      rules: { required: "Availability is required", min: 5 },
+    },
+    {
+      name: "city",
+      label: "City",
+      placeholder: "Enter city",
+      type: "text",
+    },
+    {
+      name: "country",
+      label: "Country",
+      placeholder: "Enter country",
+      type: "text",
+    }
   ];
 }

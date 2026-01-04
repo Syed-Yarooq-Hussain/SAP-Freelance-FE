@@ -79,7 +79,7 @@ export default function ConsultantInterviewPage() {
   return (
     <Sidebar>
       <Interview
-        title="List of Interviews"
+        title="List of Meetings"
         stats={consultantInterviewStats}
         columns={ConsultantInterviewColumns}
         rows={consultantInterviewRows}

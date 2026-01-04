@@ -3,7 +3,7 @@ export interface ProfileData {
   title: string;
   email: string;
   location: string;
-  module: string;
+  module: any;
   projects: string | number;
   availability: string;
   rate: string;

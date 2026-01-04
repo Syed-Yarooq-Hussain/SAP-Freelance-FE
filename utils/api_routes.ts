@@ -8,6 +8,7 @@ export const API_ROUTES = {
   UPDATE_PROJECT: "/projects",
   MILESTONE_CREATE: "/projects",
   GET_PROJECT_MILESTONE: "/projects",
+  GET_PROJECT_PAYMENTS: "/projects",
   GET_MILESTONE_TASKS: "/projects/milestones",
   MILESTONE_TASKS_CREATE: "/projects/milestones",
   UPDATE_MILESTONE: "/projects/milestones",

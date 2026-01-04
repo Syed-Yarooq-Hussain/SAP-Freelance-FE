@@ -51,7 +51,7 @@ const DrawerList: FC<DrawerListProps> = ({ open }) => {
         { icon: <PeopleIcon />, label: "Consultants", link: r.CONSULTANTS },
         { icon: <PeopleIcon />, label: "Clients", link: r.CLIENT },
         { icon: <WorkIcon />, label: "Projects", link: r.PROJECTS },
-        { icon: <EventNoteIcon />, label: "Interviews", link: r.INTERVIEWS },
+        { icon: <EventNoteIcon />, label: "Meetings", link: r.INTERVIEWS },
         { icon: <PaymentIcon />, label: "Payments", link: r.PAYMENTS },
         {
           icon: <NotificationsIcon />,
@@ -69,7 +69,7 @@ const DrawerList: FC<DrawerListProps> = ({ open }) => {
         { icon: <ProfileIcon />, label: "Profile", link: r.PROFILE },
         { icon: <PeopleIcon />, label: "Consultant", link: r.CONSULTANT },
         { icon: <WorkIcon />, label: "Projects", link: r.PROJECTS },
-        { icon: <EventNoteIcon />, label: "Interviews", link: r.INTERVIEWS },
+        { icon: <EventNoteIcon />, label: "Meetings", link: r.INTERVIEWS },
         { icon: <DescriptionIcon />, label: "Documents", link: r.DOCUMENTS },
         { icon: <PaymentIcon />, label: "Payments", link: r.PAYMENTS },
       ];
@@ -82,7 +82,7 @@ const DrawerList: FC<DrawerListProps> = ({ open }) => {
       { icon: <ProfileIcon />, label: "Profile", link: r.PROFILE },
       { icon: <CalendarMonthIcon />, label: "Calendar", link: r.CALENDAR },
       { icon: <WorkIcon />, label: "Projects", link: r.PROJECTS },
-      { icon: <EventNoteIcon />, label: "Interviews", link: r.INTERVIEWS },
+      { icon: <EventNoteIcon />, label: "Meetings", link: r.INTERVIEWS },
       { icon: <DescriptionIcon />, label: "Documents", link: r.DOCUMENTS },
       { icon: <PaymentIcon />, label: "Payments", link: r.PAYMENTS },
     ];

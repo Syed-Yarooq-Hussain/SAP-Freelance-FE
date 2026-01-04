@@ -12,7 +12,7 @@ const AppTitle: React.FC = () => {
       if (pathname.startsWith(APP_ROUTES.CONSULTANT.PROJECTS))
         return "Projects";
       if (pathname.startsWith(APP_ROUTES.CONSULTANT.INTERVIEWS))
-        return "Interviews";
+        return "Meetings";
       if (pathname.startsWith(APP_ROUTES.CONSULTANT.DOCUMENTS))
         return "Documents";
       if (pathname.startsWith(APP_ROUTES.CONSULTANT.PAYMENTS))
@@ -26,7 +26,7 @@ const AppTitle: React.FC = () => {
     if (pathname.startsWith("/client")) {
       if (pathname.startsWith(APP_ROUTES.CLIENT.PROJECTS)) return "Projects";
       if (pathname.startsWith(APP_ROUTES.CLIENT.INTERVIEWS))
-        return "Interviews";
+        return "Meetings";
       if (pathname.startsWith(APP_ROUTES.CLIENT.DOCUMENTS)) return "Documents";
       if (pathname.startsWith(APP_ROUTES.CLIENT.PAYMENTS)) return "Payments";
       if (pathname.startsWith(APP_ROUTES.CLIENT.PROFILE)) return "Profile";
@@ -37,7 +37,7 @@ const AppTitle: React.FC = () => {
 
     if (pathname.startsWith("/admin")) {
       if (pathname.startsWith(APP_ROUTES.ADMIN.PROJECTS)) return "Projects";
-      if (pathname.startsWith(APP_ROUTES.ADMIN.INTERVIEWS)) return "Interviews";
+      if (pathname.startsWith(APP_ROUTES.ADMIN.INTERVIEWS)) return "Meetings";
       if (pathname.startsWith(APP_ROUTES.ADMIN.PAYMENTS)) return "Payments";
       if (pathname.startsWith(APP_ROUTES.ADMIN.PROFILE)) return "Profile";
       if (pathname.startsWith(APP_ROUTES.ADMIN.CONSULTANTS))

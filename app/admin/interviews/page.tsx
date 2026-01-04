@@ -11,7 +11,7 @@ export default function AdminInterviewPage() {
   return (
     <Sidebar>
       <Interview
-        title="List of Interviews"
+        title="List of Meetings"
         stats={[]}
         columns={adminInterviewColumns}
         rows={adminInterviewRows}

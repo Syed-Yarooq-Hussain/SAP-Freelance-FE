@@ -14,7 +14,7 @@ export const mapConsultantProfile = (apiData: any): ProfileData => {
       ""
     ),
 
-    module: "Core Modules",
+    module: consultant.user.module ?? {core: "N/A", others: "N/A"},
     projects: consultant.projects_count ?? 0,
     availability: consultant.weekly_available_hours
       ? `${consultant.weekly_available_hours} hrs/week`
