@@ -64,7 +64,8 @@ export default function ConsultantTaskDetails() {
           name: m.name ?? "N/A",
           dependencies: "N/A",
           details: m.description ?? "N/A",
-          deadline: formatYMD(m.due_date) || "N/A",
+          end_date: formatYMD(m.due_date) || "N/A",
+          start_date: formatYMD(m.start_date) || "N/A",
           status: m.status ?? "N/A",
         };
 

@@ -28,7 +28,8 @@ export interface MilestoneData {
   name: string;
   dependencies: string;
   details: string;
-  deadline: string;
+  start_date: string;
+  end_date: string;
   status: string;
 }
 

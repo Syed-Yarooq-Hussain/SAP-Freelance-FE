@@ -16,6 +16,7 @@ import { APP_ROUTES } from "@/utils/app_routes";
 import { formatYMD } from "@/utils/dateTime";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { start } from "repl";
 
 export default function ConsultantProjectDetails() {
   const router = useRouter();
@@ -48,7 +49,8 @@ export default function ConsultantProjectDetails() {
           name: m.name,
           dependencies: "N/A",
           details: m.description ?? "N/A",
-          deadline: formatYMD(m.due_date) || "N/A",
+          end_date: formatYMD(m.due_date) || "N/A",
+          start_date: formatYMD(m.start_date) || "N/A",
           status: m.status ?? "N/A",
         }));
 

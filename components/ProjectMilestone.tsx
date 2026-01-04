@@ -8,7 +8,8 @@ type MilestoneData = {
   name: string;
   dependencies: string;
   details: string;
-  deadline: string;
+  start_date: string;
+  end_date: string;
   status: string;
 };
 
@@ -55,9 +56,9 @@ const ProjectMilestone: React.FC<ProjectMilestoneProps> = ({
       <Grid container spacing={2} alignItems="center" sx={{ mt: 1 }}>
         <Grid size={{ xs: 12, md: 3 }}>
           <Typography variant="body2" color="text.secondary">
-            Deadline
+            End Date
           </Typography>
-          <Typography fontWeight={600}>{milestone.deadline}</Typography>
+          <Typography fontWeight={600}>{milestone.end_date}</Typography>
         </Grid>
 
         <Grid size={{ xs: 12, md: 3 }}>
