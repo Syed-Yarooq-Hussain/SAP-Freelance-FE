@@ -7,12 +7,13 @@ import { useUpdateConsultantStatus } from "@/actions/projects/useUpdateConsultan
 import { AssignedRolePopup } from "@/components/AssignedRolePopup";
 import AppButton from "@/components/Button";
 import DataTable from "@/components/DataTable";
+import InterviewDateTimePicker from "@/components/InterviewDateTimePicker";
 import DynamicPopup from "@/components/Popup";
 import RoleHierarchy from "@/components/RoleHierarchy";
 import { CONSULTANT_STATUS } from "@/constants/status";
 import { STATUS } from "@/constants/status_dropdown";
+import { INTERVIEW_DURATION_OPTIONS } from "@/data/options";
 import { getCandidateColumns, getShortlistedColumns } from "@/data/teamBuilder";
-import { getTeamInterviewFormFields } from "@/forms/teamInterviewForm";
 import { useToast } from "@/providers/ToastProvider";
 import type {
   CandidateRow,
@@ -20,9 +21,10 @@ import type {
   ShortlistedRow,
   TeamConfirmationProps,
 } from "@/types/teamBuilder";
-import { mapTaskFieldsToPopup } from "@/utils/mapFormToPopup";
+import dayjs from "@/utils/dayjs";
 import { normalizeStatus } from "@/utils/normalizeStatus";
-import { Box, Typography } from "@mui/material";
+import { normalizeWorkingSchedule } from "@/utils/workingSchedule";
+import { Box, MenuItem, TextField, Typography } from "@mui/material";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 export default function TeamConfirmation({
@@ -54,7 +56,6 @@ export default function TeamConfirmation({
 
   const updateMeetingStatus = useUpdateMeetingStatus();
   const { toast } = useToast();
-
   const [rescheduleOpen, setRescheduleOpen] = useState(false);
   const [cancelConfirmOpen, setCancelConfirmOpen] = useState(false);
   const [selectedMeetingId, setSelectedMeetingId] = useState<number | null>(
@@ -64,6 +65,9 @@ export default function TeamConfirmation({
     date: "",
     time: "",
   });
+  const [consultantScheduleMap, setConsultantScheduleMap] = useState<
+    Record<string | number, IProjectConsultant["working_schedule"]>
+  >({});
 
   const shortlistedColumns = useMemo(
     () =>
@@ -74,9 +78,22 @@ export default function TeamConfirmation({
           setInterviewOpen(true);
         },
 
-        (meetingId) => {
+        (meetingId, interviewDateTime, consultantId) => {
           setSelectedMeetingId(meetingId);
+          setSelectedConsultantId(consultantId);
           setInterviewMode("reschedule");
+
+          if (interviewDateTime) {
+            const dt = dayjs(interviewDateTime).local();
+
+            setInterviewData({
+              date: dt.format("YYYY-MM-DD"),
+              time: dt.format("HH:mm"),
+              duration: "",
+              link: "",
+            });
+          }
+
           setInterviewOpen(true);
         },
 
@@ -121,6 +138,17 @@ export default function TeamConfirmation({
       {
         onSuccess: (res) => {
           const all = res.data ?? [];
+
+          const scheduleMap: Record<
+            string | number,
+            IProjectConsultant["working_schedule"]
+          > = {};
+
+          all.forEach((item) => {
+            scheduleMap[item.consultant_id] = item.working_schedule;
+          });
+
+          setConsultantScheduleMap(scheduleMap);
 
           const { shortlisted, candidates } = fullMap(all);
 
@@ -296,9 +324,62 @@ export default function TeamConfirmation({
     return { shortlisted, candidates };
   };
 
+  const handleInterviewSubmit = () => {
+    const dateTime =
+      interviewMode === "request"
+        ? `${interviewData.date} ${interviewData.time}`
+        : `${interviewData.date}T${interviewData.time}:00Z`;
+
+    if (interviewMode === "request") {
+      if (!selectedConsultantId) return;
+
+      meetingInvite.mutate(
+        {
+          date_time: dateTime,
+          invitees_id: [Number(selectedConsultantId)],
+          duration: Number(interviewData.duration),
+          event_type: "interview",
+          project_id: Number(projectId),
+        },
+        {
+          onSuccess: () => {
+            toast("Interview assigned successfully", "success");
+            setInterviewOpen(false);
+            refreshEverything();
+          },
+          onError: (err) => toast(err.message, "error"),
+        }
+      );
+
+      return;
+    }
+
+    if (interviewMode === "reschedule") {
+      if (!selectedMeetingId) return;
+
+      updateMeetingStatus.mutate(
+        {
+          meetingId: selectedMeetingId,
+          status: "Rescheduled",
+          date_time: dateTime,
+        },
+        {
+          onSuccess: () => {
+            toast("Interview rescheduled successfully", "success");
+            setInterviewOpen(false);
+            refreshEverything();
+          },
+          onError: (err) => toast(err.message, "error"),
+        }
+      );
+    }
+  };
+
   useEffect(() => {
     if (!projectId) return;
+
     getCandidatesList();
+
     getProjectConsultants.mutate(
       {
         projectId,
@@ -309,7 +390,20 @@ export default function TeamConfirmation({
       },
       {
         onSuccess: (res) => {
-          const { shortlisted, candidates } = mapConsultants(res.data ?? []);
+          const list = res.data ?? [];
+
+          const scheduleMap: Record<
+            string | number,
+            IProjectConsultant["working_schedule"]
+          > = {};
+
+          list.forEach((item) => {
+            scheduleMap[item.consultant_id] = item.working_schedule;
+          });
+
+          setConsultantScheduleMap(scheduleMap);
+
+          const { shortlisted, candidates } = mapConsultants(list);
           setShortlisted(shortlisted);
           setCandidates(candidates);
         },
@@ -564,71 +658,69 @@ export default function TeamConfirmation({
             ? "Request Interview"
             : "Reschedule Interview"
         }
-        fields={mapTaskFieldsToPopup(
-          getTeamInterviewFormFields(),
-          interviewData,
-          (field, value) =>
-            setInterviewData((prev) => ({ ...prev, [field]: value }))
-        )}
+        disableSubmit={
+          !interviewData.date || !interviewData.time || !interviewData.duration
+        }
         buttonText={
           interviewMode === "request"
             ? "Assign Interview"
             : "Reassign Interview"
         }
         buttonColor="BLUE"
-        disableSubmit={
-          !interviewData.date || !interviewData.time || !interviewData.duration
-        }
-        onSubmit={() => {
-          const dateTime =
-            interviewMode === "request"
-              ? `${interviewData.date} ${interviewData.time}`
-              : `${interviewData.date}T${interviewData.time}:00Z`;
+        onSubmit={handleInterviewSubmit}
+      >
+        <InterviewDateTimePicker
+          value={{
+            date: interviewData.date,
+            time: interviewData.time,
+          }}
+          onChange={(v) => setInterviewData((p) => ({ ...p, ...v }))}
+          workingSchedule={normalizeWorkingSchedule(
+            consultantScheduleMap[selectedConsultantId ?? ""]
+          )}
+        />
 
-          if (interviewMode === "request") {
-            if (!selectedConsultantId) return;
+        <Box mt={2}>
+          <TextField
+            select
+            fullWidth
+            size="small"
+            label="Duration"
+            value={interviewData.duration}
+            slotProps={{
+              inputLabel: { shrink: true },
+              select: {
+                displayEmpty: true,
+                renderValue: (selected) => {
+                  if (!selected) {
+                    return "Select duration";
+                  }
 
-            meetingInvite.mutate(
-              {
-                date_time: dateTime,
-                invitees_id: [Number(selectedConsultantId)],
-                duration: Number(interviewData.duration),
-                event_type: "interview",
-                project_id: Number(projectId),
-              },
-              {
-                onSuccess: () => {
-                  toast("Interview assigned successfully", "success");
-                  setInterviewOpen(false);
-                  refreshEverything();
+                  return INTERVIEW_DURATION_OPTIONS.find(
+                    (opt) => opt.value === selected
+                  )?.label;
                 },
-                onError: (err) => toast(err.message, "error"),
-              }
-            );
-            return;
-          }
-
-          if (interviewMode === "reschedule") {
-            if (!selectedMeetingId) return;
-
-            updateMeetingStatus.mutate(
-              {
-                meetingId: selectedMeetingId,
-                status: "Rescheduled",
-                date_time: dateTime,
               },
-              {
-                onSuccess: () => {
-                  toast("Interview rescheduled successfully", "success");
-                  setInterviewOpen(false);
-                  refreshEverything();
-                },
-                onError: (err) => toast(err.message, "error"),
-              }
-            );
-          }
-        }}
-      />
+            }}
+            onChange={(e) =>
+              setInterviewData((p) => ({
+                ...p,
+                duration: e.target.value,
+              }))
+            }
+          >
+            <MenuItem value="" disabled>
+              Select duration
+            </MenuItem>
+
+            {INTERVIEW_DURATION_OPTIONS.map((opt) => (
+              <MenuItem key={opt.value} value={opt.value}>
+                {opt.label}
+              </MenuItem>
+            ))}
+          </TextField>
+        </Box>
+      </DynamicPopup>
     </>
   );
 }

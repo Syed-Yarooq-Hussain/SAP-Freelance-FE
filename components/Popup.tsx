@@ -119,7 +119,13 @@ const DynamicPopup: React.FC<DynamicPopupProps> = ({
         </Typography>
       )}
 
-      <DialogContent sx={{ pt: 1, pb: 0, overflowX: "hidden" }}>
+      <DialogContent
+        sx={{
+          pt: 2,
+          pb: 1,
+          overflow: "visible",
+        }}
+      >
         {children}
 
         {fileUpload && (

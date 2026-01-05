@@ -162,7 +162,11 @@ export const teamBuilderColumns = (
 
 export const getShortlistedColumns = (
   onRequest: (consultantId: string | number) => void,
-  onReschedule: (meetingId: number) => void,
+  onReschedule: (
+    meetingId: number,
+    interviewDateTime: string | null,
+    consultantId: string | number
+  ) => void,
   onCancel: (meetingId: number) => void
 ): GridColDef[] => [
   { field: "id", headerName: "ID" },
@@ -221,7 +225,13 @@ export const getShortlistedColumns = (
                   fontWeight: 600,
                   "&:hover": { textDecoration: "underline" },
                 }}
-                onClick={() => onReschedule(params.row.meetingId)}
+                onClick={() =>
+  onReschedule(
+    params.row.meetingId,
+    params.row.interviewDateTime,
+    params.row.id
+  )
+}
               >
                 Reschedule
               </Box>

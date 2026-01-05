@@ -184,6 +184,7 @@ export default function SchedulerLauncher() {
   const [rangeStart, setRangeStart] = React.useState<Date | null>(null);
   const [rangeEnd, setRangeEnd] = React.useState<Date | null>(null);
   const { mutateAsync, isPending } = useSaveConsultantSchedule();
+  const { data: meData } = useConsultantMe();
   const [customDayPreset, setCustomDayPreset] =
     React.useState<DayPreset>("All Day");
   const [weeklyRows, setWeeklyRows] =
@@ -250,11 +251,35 @@ export default function SchedulerLauncher() {
     setWeeklyRows(WEEKLY_ROWS_INIT);
   };
 
-  const { data: meData } = useConsultantMe();
+  React.useEffect(() => {
+    if (active === "weekly" && meData?.data?.working_schedule?.weekly) {
+      setWeeklyRows(mapWeeklyFromMe(meData.data.working_schedule.weekly));
+    }
+  }, [active, meData]);
 
   const existingWeekly = React.useMemo(() => {
     return meData?.data?.working_schedule?.weekly ?? [];
   }, [meData]);
+
+  function mapWeeklyFromMe(meWeekly: any[]): WeeklyRow[] {
+    return meWeekly.map((d) => ({
+      dow: DAY_MAP.indexOf(d.day),
+      label: d.day.slice(0, 3).toUpperCase(),
+      enabled: d.active,
+      startTime: d.slot?.[0]?.start ?? "",
+      endTime: d.slot?.[0]?.end ?? "",
+    }));
+  }
+
+  function buildWeeklyPayloadFromExisting(weeklyRows: WeeklyRow[]) {
+    return {
+      weekly: weeklyRows.map((row) => ({
+        day: DAY_MAP[row.dow],
+        active: row.enabled,
+        slot: row.enabled ? [{ start: row.startTime, end: row.endTime }] : [], // 🔥 IMPORTANT: clear slot when inactive
+      })),
+    };
+  }
 
   function buildWeeklyFromPreset(
     preset: DayPreset,
@@ -336,18 +361,6 @@ export default function SchedulerLauncher() {
     };
   }
 
-  function buildWeeklyPayload(weeklyRows: WeeklyRow[]) {
-    return {
-      weekly: weeklyRows.map((row) => ({
-        day: DAY_MAP[row.dow],
-        active: row.enabled,
-        slot: row.enabled
-          ? [{ start: row.startTime, end: row.endTime }]
-          : undefined,
-      })),
-    };
-  }
-
   const handleSubmit = async () => {
     let payload: any = {};
 
@@ -366,7 +379,7 @@ export default function SchedulerLauncher() {
     }
 
     if (active === "weekly") {
-      payload = buildWeeklyPayload(weeklyRows);
+      payload = buildWeeklyPayloadFromExisting(weeklyRows);
     }
 
     try {
