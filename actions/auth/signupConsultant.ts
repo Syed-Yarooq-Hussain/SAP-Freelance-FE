@@ -1,12 +1,12 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
-import { request } from "@/utils/request";
-import { IConsultantSignupPayload } from "@/types/consultant";
-import { useRouter } from "next/navigation";
 import { Roles } from "@/constants/roles";
-import { APP_ROUTES } from "@/utils/app_routes";
+import { IConsultantSignupPayload } from "@/types/consultant";
 import { API_ROUTES } from "@/utils/api_routes";
+import { APP_ROUTES } from "@/utils/app_routes";
+import { request } from "@/utils/request";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 
 export const useSignupConsultant = () => {
   const router = useRouter();
@@ -21,15 +21,14 @@ export const useSignupConsultant = () => {
         throw new Error("Passwords do not match");
       }
 
-      const response = await request<IConsultantSignupPayload, void>({
+      await request<IConsultantSignupPayload, void>({
         url: API_ROUTES.SIGNUP_CONSULTANT,
         method: "POST",
         data,
       });
-      return response;
     },
-    onSuccess(data) {
-      console.log("Consultant signup successful:", data);
+
+    onSuccess: () => {
       router.push(APP_ROUTES.LOGIN);
     },
   });

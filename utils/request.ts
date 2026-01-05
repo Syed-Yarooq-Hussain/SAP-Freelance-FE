@@ -46,28 +46,25 @@ export const request = async <P, R>(
 
     return result;
   } catch (err: unknown) {
-    const errorResponse: ApiResponse<R> = {
-      message: "Something went wrong",
-      code: 500,
-      status: API_STATUS.ERROR,
-      data: null,
-    };
-
     if (err instanceof AxiosError) {
       if (err.response?.status === 401) {
         throw err;
       }
 
-      errorResponse.message =
-        err.response?.data?.message || err.message || "Request failed";
-      errorResponse.code = err.response?.status ?? 500;
-    } else if (err instanceof CustomError) {
-      errorResponse.message = err.message;
-      errorResponse.code = err.statusCode;
-    } else if (err instanceof Error) {
-      errorResponse.message = err.message;
+      throw new CustomError(
+        err.response?.status ?? 500,
+        err.response?.data?.message || err.message
+      );
     }
 
-    return errorResponse;
+    if (err instanceof CustomError) {
+      throw err;
+    }
+
+    if (err instanceof Error) {
+      throw new CustomError(500, err.message);
+    }
+
+    throw new CustomError(500, "Something went wrong");
   }
 };

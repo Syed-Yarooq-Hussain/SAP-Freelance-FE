@@ -3,6 +3,7 @@
 import { useSignupConsultant } from "@/actions/auth/signupConsultant";
 import { CreateForm } from "@/components/CreateForm";
 import { getConsultantFormFields } from "@/forms/consultantForm";
+import { useToast } from "@/providers/ToastProvider";
 import { IConsultantSignupPayload } from "@/types/consultant";
 import { Box, Paper } from "@mui/material";
 import { useSearchParams } from "next/navigation";
@@ -12,7 +13,8 @@ import AuthHeader from "./AuthHeader";
 import LoginLink from "./LoginLink";
 
 const SignUpConsultant: React.FC = () => {
-  const { mutate, error, isPending } = useSignupConsultant();
+  const { toast } = useToast();
+  const { mutate, isPending } = useSignupConsultant();
   const searchParams = useSearchParams();
   const role = Number(searchParams.get("type"));
   const elements = getConsultantFormFields();
@@ -33,14 +35,12 @@ const SignUpConsultant: React.FC = () => {
 
           rate: cvPayload.consultant.rate ?? Number(data.rate) ?? 0,
 
-          weekly_available_hours:
-            Number(data.weekly_available_hours) ??
-            15,
+          weekly_available_hours: Number(data.weekly_available_hours) ?? 15,
         },
 
         user: {
           ...cvPayload.user,
-          username : data.fullName,
+          username: data.fullName,
           email: data.email,
           phone: data.phone,
           city: data.city,
@@ -52,7 +52,7 @@ const SignUpConsultant: React.FC = () => {
           status: "active",
         },
       };
-      
+
       mutate(payload);
       return;
     }
@@ -80,7 +80,11 @@ const SignUpConsultant: React.FC = () => {
       },
     };
 
-    mutate(payload);
+    mutate(payload, {
+      onError: (error: any) => {
+        toast(error?.message || "Signup failed", "error");
+      },
+    });
   };
 
   return (
@@ -116,7 +120,6 @@ const SignUpConsultant: React.FC = () => {
           elements={elements}
           onSuccess={handleSuccess}
           loading={isPending}
-          error={error?.message}
           showProgress
           mode="wizard"
           onCVParsed={handleCVParsed}

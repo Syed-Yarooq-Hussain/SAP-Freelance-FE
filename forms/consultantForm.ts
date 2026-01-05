@@ -32,7 +32,6 @@ export function getConsultantFormFields(): IFieldConfig[] {
       placeholder: "Enter phone number",
       type: "tel",
       rules: { required: "Phone Number is required" },
-
     },
     {
       name: "password",
@@ -69,21 +68,33 @@ export function getConsultantFormFields(): IFieldConfig[] {
       label: "Experience (Years)",
       placeholder: "Enter experience",
       type: "number",
-      rules: { required: "Experience is required", min: 0 },
+      rules: {
+        required: "Experience is required",
+        min: { value: 0, message: "Experience cannot be negative" },
+        max: { value: 40, message: "Experience cannot exceed 40 years" },
+      },
     },
     {
       name: "rate",
       label: "Rate (PKR/hr)",
       placeholder: "Enter rate",
       type: "number",
-      rules: { required: "Rate is required", min: 1 },
+      rules: {
+        required: "Rate is required",
+        min: { value: 1, message: "Rate must be at least 1" },
+        max: { value: 200, message: "Rate cannot exceed 200 per hour" },
+      },
     },
     {
       name: "weekly_available_hours",
       label: "Weekly Available Hours",
       placeholder: "Enter hours",
       type: "number",
-      rules: { required: "Availability is required", min: 5 },
+      rules: {
+        required: "Availability is required",
+        min: { value: 5, message: "Minimum 5 hours required" },
+        max: { value: 60, message: "Weekly hours cannot exceed 60" },
+      },
     },
     {
       name: "city",
@@ -96,6 +107,6 @@ export function getConsultantFormFields(): IFieldConfig[] {
       label: "Country",
       placeholder: "Enter country",
       type: "text",
-    }
+    },
   ];
 }

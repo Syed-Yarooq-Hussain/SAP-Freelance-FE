@@ -3,6 +3,7 @@
 import { useSignupClient } from "@/actions/auth/signupClient";
 import { CreateForm } from "@/components/CreateForm";
 import { getClientFormFields } from "@/forms/clientForm";
+import { useToast } from "@/providers/ToastProvider";
 import { IBaseSignupDTO } from "@/types/common-auth";
 import { ISignUpClientForm } from "@/types/signup-form";
 import { Box, Paper } from "@mui/material";
@@ -13,6 +14,7 @@ import AuthHeader from "./AuthHeader";
 import LoginLink from "./LoginLink";
 
 const SignUpClient: React.FC = () => {
+  const { toast } = useToast();
   const { mutate, error, isPending } = useSignupClient();
   const searchParams = useSearchParams();
   const role = Number(searchParams.get("type")) || 0;
@@ -35,7 +37,11 @@ const SignUpClient: React.FC = () => {
       status: 1,
     };
 
-    mutate(payload);
+    mutate(payload, {
+      onError: (error: any) => {
+        toast(error?.message || "Signup failed", "error");
+      },
+    });
   };
 
   return (
