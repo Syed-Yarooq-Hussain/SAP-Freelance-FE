@@ -4,7 +4,7 @@ import { toAmPm } from "@/utils/dateTime";
 
 export const mapApiDaysToCalendarEvents = (
   days: ApiDay[],
-  onChangeAvailability: () => void
+  onChangeAvailability: (date: string, start: string, end: string) => void
 ): CalendarEvent[] => {
   const events: CalendarEvent[] = [];
 
@@ -21,14 +21,15 @@ export const mapApiDaysToCalendarEvents = (
           time: `${toAmPm(slot.start_time)} – ${toAmPm(slot.end_time)}`,
           hours: `${hours} hrs`,
           changeAvailabilityLabel: "Change availability",
-          onChangeAvailability,
+          onChangeAvailability: () =>
+            onChangeAvailability(day.date, slot.start_time, slot.end_time),
         });
       });
     }
 
     day.events?.forEach((e) => {
-      const start = e.start_time?.split("T")[1];
-      const end = e.end_time?.split("T")[1];
+      const start = e.start_time;
+      const end = e.end_time;
 
       events.push({
         date: day.date,

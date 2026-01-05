@@ -1,5 +1,4 @@
 import { API_STATUS } from "@/constants/api_status";
-import type { ApiResponse } from "@/types/api";
 import { API_ROUTES } from "@/utils/api_routes";
 import { request } from "@/utils/request";
 import { getCachedSession } from "@/services/sessionCache";

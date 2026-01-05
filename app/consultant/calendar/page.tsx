@@ -1,6 +1,8 @@
 "use client";
 
 import { useConsultantCalendar } from "@/actions/consultants/useConsultantCalendar";
+import { useConsultantMe } from "@/actions/consultants/useConsultantMe";
+import { useSaveConsultantSchedule } from "@/actions/consultants/useSaveConsultantSchedule";
 import MonthlyCalendar from "@/components/MonthlyCalendar";
 import DynamicPopup from "@/components/Popup";
 import SchedulerLauncher from "@/components/SchedulerPopup";
@@ -8,6 +10,7 @@ import Sidebar from "@/components/Sidebar";
 import SkeletonCalendar from "@/components/SkeletonCalendar";
 import { mapApiDaysToCalendarEvents } from "@/utils/mapConsultantCalendar";
 import { Box, Divider, TextField, Typography } from "@mui/material";
+import { useQueryClient } from "@tanstack/react-query";
 import * as React from "react";
 
 export default function CalendarScreen() {
@@ -17,12 +20,57 @@ export default function CalendarScreen() {
   const [availOpen, setAvailOpen] = React.useState(false);
   const [availStart, setAvailStart] = React.useState<string>("");
   const [availEnd, setAvailEnd] = React.useState<string>("");
+  const [availDate, setAvailDate] = React.useState<string | null>(null);
+  const { data: meData } = useConsultantMe();
+  const weeklyFromMe = meData?.data?.working_schedule?.weekly ?? [];
 
-  const handleOpenAvail = React.useCallback(() => setAvailOpen(true), []);
-  const handleAvailSubmit = () => {
-    setAvailOpen(false);
-    setAvailStart("");
-    setAvailEnd("");
+  const { mutateAsync: saveSchedule, isPending } = useSaveConsultantSchedule();
+
+  const queryClient = useQueryClient();
+
+  const handleOpenAvail = React.useCallback(
+    (date: string, start: string, end: string) => {
+      setAvailDate(date);
+      setAvailStart(start);
+      setAvailEnd(end);
+      setAvailOpen(true);
+    },
+    []
+  );
+
+  const handleAvailSubmit = async () => {
+    if (!availDate || !availStart || !availEnd) return;
+
+    const payload: any = {
+      custom: [
+        {
+          date: availDate,
+          active: true,
+          slot: [{ start: availStart, end: availEnd }],
+        },
+      ],
+    };
+
+    if (weeklyFromMe?.length) {
+      payload.weekly = weeklyFromMe;
+    }
+
+    try {
+      await saveSchedule(payload);
+
+      await queryClient.invalidateQueries({
+        predicate: (query) =>
+          Array.isArray(query.queryKey) &&
+          query.queryKey[0] === "consultant-calendar",
+      });
+
+      setAvailOpen(false);
+      setAvailDate(null);
+      setAvailStart("");
+      setAvailEnd("");
+    } catch (e) {
+      console.error("Failed to update availability", e);
+    }
   };
 
   const { data, isLoading } = useConsultantCalendar(month, year);
@@ -59,7 +107,7 @@ export default function CalendarScreen() {
           buttonText="Set"
           buttonColor="BLUE"
           onSubmit={handleAvailSubmit}
-          disableSubmit={!availStart || !availEnd}
+          disableSubmit={!availStart || !availEnd || isPending}
         >
           <Divider sx={{ mb: 2 }} />
           <Box

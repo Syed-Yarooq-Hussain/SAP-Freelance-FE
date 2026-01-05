@@ -1,5 +1,6 @@
 "use client";
 
+import { useConsultantMe } from "@/actions/consultants/useConsultantMe";
 import { useSaveConsultantSchedule } from "@/actions/consultants/useSaveConsultantSchedule";
 import AppButton from "@/components/Button";
 import {
@@ -249,6 +250,12 @@ export default function SchedulerLauncher() {
     setWeeklyRows(WEEKLY_ROWS_INIT);
   };
 
+  const { data: meData } = useConsultantMe();
+
+  const existingWeekly = React.useMemo(() => {
+    return meData?.data?.working_schedule?.weekly ?? [];
+  }, [meData]);
+
   function buildWeeklyFromPreset(
     preset: DayPreset,
     startTime: string,
@@ -295,7 +302,8 @@ export default function SchedulerLauncher() {
     dates: string[],
     preset: DayPreset,
     startTime: string,
-    endTime: string
+    endTime: string,
+    existingWeekly: any[]
   ) {
     return {
       custom: dates.map((date) => {
@@ -324,7 +332,7 @@ export default function SchedulerLauncher() {
         };
       }),
 
-      weekly: buildWeeklyFromPreset(preset, startTime, endTime),
+      weekly: existingWeekly,
     };
   }
 
@@ -352,7 +360,8 @@ export default function SchedulerLauncher() {
         customDates,
         customDayPreset,
         startTime,
-        endTime
+        endTime,
+        existingWeekly
       );
     }
 
