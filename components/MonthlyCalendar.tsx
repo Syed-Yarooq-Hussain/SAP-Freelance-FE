@@ -109,9 +109,10 @@ export default function MonthlyCalendar({
   const map = React.useMemo(() => {
     const m = new Map<string, CalendarEvent[]>();
     events.forEach((e) => {
-      const arr = m.get(e.date) || [];
+      const key = e.date.slice(0, 10);
+      const arr = m.get(key) || [];
       arr.push(e);
-      m.set(e.date, arr);
+      m.set(key, arr);
     });
     return m;
   }, [events]);
@@ -130,6 +131,48 @@ export default function MonthlyCalendar({
     if (nm > 11) onMonthChange(year + 1, 0);
     else onMonthChange(year, nm);
   };
+
+  const buildDotTooltip = (events: CalendarEvent[]) => (
+    <Box>
+      {events.map((e, idx) => (
+        <Box key={idx} sx={{ mb: 0.75 }}>
+          <Typography
+            sx={{
+              fontWeight: 700,
+              mb: 0.25,
+              color: e.type === "project" ? colors.GREEN : colors.DARK_BLUE,
+            }}
+          >
+            {e.type === "project" ? "Availability" : e.title ?? "Interview"}
+          </Typography>
+
+          {e.time && (
+            <Typography variant="body2">
+              {e.type === "project" ? e.time : `Interview ${e.time}`}
+            </Typography>
+          )}
+
+          {e.hours && <Typography variant="body2">{e.hours}</Typography>}
+
+          {e.meetingUrl && (
+            <Typography
+              component="a"
+              href={e.meetingUrl}
+              target="_blank"
+              rel="noreferrer"
+              sx={{
+                color: "primary.main",
+                fontWeight: 600,
+                textDecoration: "underline",
+              }}
+            >
+              Join meeting
+            </Typography>
+          )}
+        </Box>
+      ))}
+    </Box>
+  );
 
   const hasHeader = showTitle || showNav || showLegend || Boolean(actionNode);
 
@@ -351,10 +394,40 @@ export default function MonthlyCalendar({
               >
                 {isFull
                   ? showGreenDot && <Box sx={dotStyle(colors.GREEN)} />
-                  : (["project", "interview"] as CalendarEventType[]).map((t) =>
-                      dayEvents.some((e) => e.type === t) ? (
-                        <Box key={t} sx={dotStyle(eventColor(t))} />
-                      ) : null
+                  : (["project", "interview"] as CalendarEventType[]).map(
+                      (t) => {
+                        const eventsOfType = dayEvents.filter(
+                          (e) => e.type === t
+                        );
+                        if (!eventsOfType.length) return null;
+
+                        return (
+                          <Tooltip
+                            key={t}
+                            title={buildDotTooltip(eventsOfType)}
+                            arrow
+                            placement="top"
+                            slotProps={{
+                              tooltip: {
+                                sx: {
+                                  bgcolor: "#fff",
+                                  color: "text.primary",
+                                  borderRadius: 1.5,
+                                  p: 1.25,
+                                  boxShadow: 3,
+                                  border: "1px solid",
+                                  borderColor: "grey.200",
+                                  maxWidth: 260,
+                                  pointerEvents: "auto",
+                                },
+                              },
+                              arrow: { sx: { color: "#fff" } },
+                            }}
+                          >
+                            <Box sx={dotStyle(eventColor(t))} />
+                          </Tooltip>
+                        );
+                      }
                     )}
               </Box>
 
@@ -421,6 +494,7 @@ export default function MonthlyCalendar({
                               fontSize: "0.75rem",
                               lineHeight: 1.2,
                               whiteSpace: "nowrap",
+                              mb: 0.5,
                             }}
                           />
                         )}
@@ -433,7 +507,11 @@ export default function MonthlyCalendar({
                       const tooltip = (
                         <Box>
                           <Typography
-                            sx={{ color: "#C62828", fontWeight: 700, mb: 0.25 }}
+                            sx={{
+                              color: colors.DARK_BLUE,
+                              fontWeight: 700,
+                              mb: 0.25,
+                            }}
                           >
                             {e.title ?? "Interview"}
                           </Typography>
@@ -491,31 +569,63 @@ export default function MonthlyCalendar({
                         >
                           <Box
                             sx={{
-                              display: "flex",
-                              flexDirection: "column",
-                              alignItems: "flex-start",
-                              gap: 0.25,
-                              px: 0.75,
-                              py: 0.5,
-                              borderRadius: 1,
-                              bgcolor: "#FFE7EC",
-                              color: "#C62828",
-                              maxWidth: "100%",
+                              position: "relative",
+                              px: 1,
+                              py: 0.75,
+                              borderRadius: 1.5,
+                              bgcolor: "#F3F7FC",
+                              border: "1px solid #E0E0E0",
                               cursor: "default",
+                              mb: 0.5,
                             }}
                           >
-                            <Typography
-                              variant="caption"
-                              sx={{ fontWeight: 700, lineHeight: 1.2 }}
-                            >
-                              {e.title ?? "Interview"}
-                            </Typography>
-                            <Typography
-                              variant="caption"
-                              sx={{ lineHeight: 1.2 }}
-                            >
-                              Interview {e.time ?? e.label ?? ""}
-                            </Typography>
+                            <Box
+                              sx={{
+                                position: "absolute",
+                                left: 0,
+                                top: 0,
+                                bottom: 0,
+                                width: 4,
+                                borderRadius: "4px 0 0 4px",
+                                bgcolor: colors.DARK_BLUE,
+                              }}
+                            />
+
+                            <Box sx={{ pl: 1 }}>
+                              <Typography
+                                variant="caption"
+                                sx={{
+                                  fontWeight: 700,
+                                  color: colors.DARK_BLUE,
+                                  lineHeight: 1.2,
+                                  display: "block",
+                                }}
+                              >
+                                {e.title ?? "Interview"}
+                              </Typography>
+
+                              <Typography
+                                variant="caption"
+                                sx={{
+                                  color: "text.secondary",
+                                  lineHeight: 1.2,
+                                  display: "block",
+                                }}
+                              >
+                                Interview
+                              </Typography>
+
+                              <Typography
+                                variant="caption"
+                                sx={{
+                                  color: "text.secondary",
+                                  lineHeight: 1.2,
+                                  display: "block",
+                                }}
+                              >
+                                {e.time ?? e.label ?? ""}
+                              </Typography>
+                            </Box>
                           </Box>
                         </Tooltip>
                       );

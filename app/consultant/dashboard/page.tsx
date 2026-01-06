@@ -1,5 +1,6 @@
 "use client";
 
+import { useConsultantCalendar } from "@/actions/consultants/useConsultantCalendar";
 import { useConsultantPayments } from "@/actions/payments/useConsultantPayments";
 import { useConsultantProjects } from "@/actions/projects/useConsultantProjects";
 import EngagementCalendarCard from "@/components/EngagementCalendarCard";
@@ -9,7 +10,6 @@ import {
   consultantAnnouncements,
   consultantSidebar,
   consultantStats,
-  events,
 } from "@/data/consultantDashboard";
 import { consultantPaymentColumns } from "@/data/consultantPayment";
 import { consultantProjectColumns } from "@/data/consultantProject";
@@ -21,8 +21,9 @@ import {
 } from "@/types/consultant";
 import { APP_ROUTES } from "@/utils/app_routes";
 import { currentMonth, currentYear, formatYMD } from "@/utils/dateTime";
+import { mapApiDaysToCalendarEvents } from "@/utils/mapConsultantCalendar";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 export default function ConsultantDashboardPage() {
   const router = useRouter();
@@ -30,6 +31,16 @@ export default function ConsultantDashboardPage() {
   const { mutate: loadProjects } = useConsultantProjects();
   const [paymentRows, setPaymentRows] = useState<ConsultantPaymentRow[]>([]);
   const { mutate: loadPayments } = useConsultantPayments();
+  const { data: calendarData } = useConsultantCalendar(
+    currentMonth,
+    currentYear
+  );
+
+  const calendarEvents = useMemo(() => {
+    if (!calendarData?.days) return [];
+    return mapApiDaysToCalendarEvents(calendarData.days);
+  }, [calendarData]);
+
   const fetchProjects = useCallback(() => {
     loadProjects(undefined, {
       onSuccess: (res) => {
@@ -81,7 +92,7 @@ export default function ConsultantDashboardPage() {
         stats={consultantStats}
         chart={
           <EngagementCalendarCard
-            events={events}
+            events={calendarEvents}
             year={currentYear}
             month={currentMonth}
           />

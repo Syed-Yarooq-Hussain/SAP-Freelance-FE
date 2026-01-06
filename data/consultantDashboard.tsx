@@ -143,26 +143,3 @@ export const consultantSidebar: SidebarSectionInfo[] = [
     ],
   },
 ];
-
-export const events: CalendarEvent[] = [
-    {
-      date: `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-02`,
-      type: "project",
-    },
-    {
-      date: `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-07`,
-      type: "interview",
-    },
-    {
-      date: `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-11`,
-      type: "project",
-    },
-    {
-      date: `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-18`,
-      type: "project",
-    },
-    {
-      date: `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-23`,
-      type: "interview",
-    },
-  ];
