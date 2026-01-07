@@ -1,22 +1,19 @@
 "use client";
 
+import { useConsultantStats } from "@/actions/consultants/useConsultantStats";
 import { useProjectDetails } from "@/actions/projects/useGetProjectDetails";
 import { useGetProjectMilestones } from "@/actions/projects/useGetProjectMilestones";
 import DataTable from "@/components/DataTable";
 import Sidebar from "@/components/Sidebar";
 import ProjectDetailsLayout from "@/components/specific/ProjectDetailsLayout";
-import {
-  milestoneColumns,
-  projectStats,
-  teamMembers,
-} from "@/data/consultantProjectDetails";
+import { consultantProjectStats } from "@/data/consultantProject";
+import { milestoneColumns, teamMembers } from "@/data/consultantProjectDetails";
 import { ProjectInfoData } from "@/types/projects";
 import { ClientMilestoneRow, IMilestone } from "@/types/teamBuilder";
 import { APP_ROUTES } from "@/utils/app_routes";
 import { formatYMD } from "@/utils/dateTime";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { start } from "repl";
 
 export default function ConsultantProjectDetails() {
   const router = useRouter();
@@ -36,6 +33,41 @@ export default function ConsultantProjectDetails() {
   });
 
   const { mutate: loadMilestones } = useGetProjectMilestones();
+  const { data: statsRes, isLoading: statsLoading } = useConsultantStats();
+  const projectStatsData = statsRes?.data?.projects_stats;
+
+  const projectStats = consultantProjectStats.map((stat, index) => {
+    if (index === 0) {
+      return {
+        ...stat,
+        subtitle: projectStatsData?.current?.project ?? "-",
+        extra: projectStatsData?.current?.employeer,
+        description: projectStatsData?.current?.project_info,
+        loading: statsLoading,
+      };
+    }
+
+    if (index === 1) {
+      return {
+        ...stat,
+        subtitle: projectStatsData?.upcoming?.project ?? "-",
+        extra: projectStatsData?.upcoming?.employeer,
+        description: projectStatsData?.upcoming?.project_info,
+        loading: statsLoading,
+      };
+    }
+
+    if (index === 2) {
+      return {
+        ...stat,
+        subtitle: projectStatsData?.task?.total ?? 0,
+        description: `${projectStatsData?.task?.pending ?? 0} pending`,
+        loading: statsLoading,
+      };
+    }
+
+    return stat;
+  });
 
   const fetchMilestones = useCallback(() => {
     if (!projectId) return;

@@ -4,6 +4,7 @@ import {
   useClientMeetings,
   useUpdateMeetingStatus,
 } from "@/actions/common/useClientMeetings";
+import { useConsultantStats } from "@/actions/consultants/useConsultantStats";
 import Sidebar from "@/components/Sidebar";
 import Interview from "@/components/specific/Interview";
 import StatusDropdown from "@/components/StatusDropdown";
@@ -20,6 +21,44 @@ export default function ConsultantInterviewPage() {
   const [consultantInterviewRows, setRows] = useState<ClientInterviewRow[]>([]);
   const { mutate: loadMeetings } = useClientMeetings();
   const { mutate: updateStatus } = useUpdateMeetingStatus();
+  const { data: statsRes, isLoading: statsLoading } = useConsultantStats();
+  const meetingsStats = statsRes?.data?.meetings_stats;
+
+  const interviewStats = consultantInterviewStats.map((stat, index) => {
+    if (index === 0) {
+      return {
+        ...stat,
+        subtitle: meetingsStats?.interview_requests ?? 0,
+        loading: statsLoading,
+      };
+    }
+
+    if (index === 1) {
+      return {
+        ...stat,
+        subtitle: meetingsStats?.upcoming_interviews ?? 0,
+        loading: statsLoading,
+      };
+    }
+
+    if (index === 2) {
+      return {
+        ...stat,
+        subtitle: meetingsStats?.rescheduled_interviews ?? 0,
+        loading: statsLoading,
+      };
+    }
+
+    if (index === 3) {
+      return {
+        ...stat,
+        subtitle: meetingsStats?.cancelled_interviews ?? 0,
+        loading: statsLoading,
+      };
+    }
+
+    return stat;
+  });
 
   useEffect(() => {
     loadMeetings(undefined, {
@@ -80,7 +119,7 @@ export default function ConsultantInterviewPage() {
     <Sidebar>
       <Interview
         title="List of Meetings"
-        stats={consultantInterviewStats}
+        stats={interviewStats}
         columns={ConsultantInterviewColumns}
         rows={consultantInterviewRows}
         rescheduleEnabled

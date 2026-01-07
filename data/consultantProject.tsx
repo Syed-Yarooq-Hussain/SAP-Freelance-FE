@@ -7,23 +7,17 @@ import { GridColDef } from "@mui/x-data-grid";
 
 export const consultantProjectStats: StatCardProps[] = [
   {
-    title: "Employer",
-    subtitle: "Global Rollout",
-    description: "18/6 month project – lead consultant",
+    title: "Current Employer",
     color: colors.BLUE,
     icon: "WorkOutlineIcon",
   },
   {
     title: "Upcoming Employer",
-    subtitle: "Rental Co.",
-    description: "12-5-2025 – for 6 months – SD Lead",
     color: colors.BLUE,
     icon: "GroupWorkIcon",
   },
   {
     title: "Tasks",
-    subtitle: "15",
-    description: "1 is delayed",
     color: colors.BLUE,
     icon: "AssignmentTurnedInIcon",
   },

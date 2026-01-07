@@ -1,3 +1,5 @@
+export type ProfileExperience = ProfileData["experienceList"][number];
+
 export interface ProfileData {
   name: string;
   title: string;

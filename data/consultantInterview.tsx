@@ -8,25 +8,21 @@ import { GridColDef } from "@mui/x-data-grid";
 export const consultantInterviewStats: StatCardProps[] = [
   {
     title: "Interview Requests",
-    subtitle: 5,
     color: colors.BLUE,
     icon: "MarkEmailUnreadIcon",
   },
   {
     title: "Interview Scheduled",
-    subtitle: 3,
     color: colors.BLUE,
     icon: "EventAvailableIcon",
   },
   {
     title: "Reschedule Requests",
-    subtitle: 4,
     color: colors.BLUE,
     icon: "UpdateIcon",
   },
   {
     title: "Rejected Interviews",
-    subtitle: 3,
     color: colors.BLUE,
     icon: "HighlightOffIcon",
   },

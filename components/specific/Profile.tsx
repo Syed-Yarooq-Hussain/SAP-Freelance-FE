@@ -4,29 +4,24 @@ import { useConsultantMe } from "@/actions/consultants/useConsultantMe";
 import AppButton from "@/components/Button";
 import { CreateForm } from "@/components/CreateForm";
 import ProfileAvatar from "@/components/ProfileAvatar";
-import { skillFormElements } from "@/data/clientProfile";
 import {
+  educationFormElements,
   getProfileBottomFields,
-  getProfileExtraFields,
-  getProfileMainFields,
+  getProfileCommercialFields,
+  getProfileHeaderFields,
+  getProfileModuleFields,
+  workExperienceFormElements,
 } from "@/forms/profileForm";
 import { ProfileData } from "@/types/profile";
 import { mapConsultantProfile } from "@/utils/mapConsultantProfile";
-import { colors } from "@/utils/styles/colors";
-import CloseIcon from "@mui/icons-material/Close";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
-import {
-  Box,
-  Divider,
-  Grid,
-  IconButton,
-  Stack,
-  Tooltip,
-  Typography,
-} from "@mui/material";
+import { mapProfileToForm } from "@/utils/mapProfileForm";
+import { Box, Divider, Grid, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { FieldValues } from "react-hook-form";
+import ProfileEducationSection from "../ProfileEducationSection";
+import ProfileExperienceSection from "../ProfileExperienceSection";
+import ProfileReviewsSection from "../ProfileReviewsSection";
+import ProfileSkillsSection from "../ProfileSkillsSection";
 
 type ProfileMode = "view" | "edit";
 
@@ -58,155 +53,10 @@ const emptyProfile: ProfileData = {
   reviewsList: [],
 };
 
-const mainFields = getProfileMainFields();
+const headerFields = getProfileHeaderFields();
+const moduleFields = getProfileModuleFields();
+const commercialFields = getProfileCommercialFields();
 const bottomFields = getProfileBottomFields();
-const extraFields = getProfileExtraFields();
-
-const ExperienceSection: React.FC<{
-  experiences: ProfileData["experienceList"];
-  editable: boolean;
-}> = ({ experiences, editable }) => (
-  <Box>
-    <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
-      Work Experience
-    </Typography>
-
-    <Grid container spacing={2} sx={{ mb: 3 }}>
-      {experiences.map((exp, i) => (
-        <Grid key={`exp-${i}`} size={{ xs: 12, md: 4 }}>
-          <Box sx={{ borderLeft: "3px solid #005C8A", p: 2 }}>
-            <Typography sx={{ fontWeight: 600, fontSize: 16 }}>
-              {exp.title}
-            </Typography>
-            <Typography variant="body2" sx={{ color: "grey", mt: 1 }}>
-              Role: <span style={{ color: "black" }}>{exp.role}</span>
-            </Typography>
-            <Typography variant="body2" sx={{ color: "grey", mt: 1 }}>
-              Duration: <span style={{ color: "black" }}>{exp.duration}</span>
-            </Typography>
-            {exp.technologies && exp.technologies !== "—" && (
-              <Typography variant="body2" sx={{ color: "grey", mt: 1 }}>
-                Responsibilities:{" "}
-                <span style={{ color: "black" }}>{exp.technologies}</span>
-              </Typography>
-            )}
-            {editable && (
-              <Stack direction="row" mt={1}>
-                <Tooltip title="Edit">
-                  <IconButton
-                    size="small"
-                    sx={{
-                      color: colors.BLUE,
-                      "&:hover": { bgcolor: `${colors.BLUE}15` },
-                    }}
-                  >
-                    <EditIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Delete">
-                  <IconButton
-                    size="small"
-                    sx={{
-                      color: colors.RED,
-                      "&:hover": { bgcolor: `${colors.RED}15` },
-                    }}
-                  >
-                    <DeleteIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-              </Stack>
-            )}
-          </Box>
-        </Grid>
-      ))}
-    </Grid>
-  </Box>
-);
-
-const EducationSection: React.FC<{
-  education: string[];
-  editable: boolean;
-}> = ({ education, editable }) => (
-  <Box>
-    <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
-      Education &amp; Certifications
-    </Typography>
-    <ul style={{ listStyleType: "disc", paddingLeft: 40, margin: 0 }}>
-      {education.map((edu, index) => (
-        <li key={`edu-${index}`} style={{ marginBottom: "6px" }}>
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            <Typography component="span" sx={{ color: "black" }}>
-              {edu}
-            </Typography>
-            {editable && (
-              <Stack direction="row">
-                <Tooltip title="Edit">
-                  <IconButton
-                    size="small"
-                    sx={{
-                      color: colors.BLUE,
-                      "&:hover": { bgcolor: `${colors.BLUE}15` },
-                    }}
-                  >
-                    <EditIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Delete">
-                  <IconButton
-                    size="small"
-                    sx={{
-                      color: colors.RED,
-                      "&:hover": { bgcolor: `${colors.RED}15` },
-                    }}
-                  >
-                    <DeleteIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-              </Stack>
-            )}
-          </Stack>
-        </li>
-      ))}
-    </ul>
-  </Box>
-);
-
-const ReviewsSection: React.FC<{
-  reviews: ProfileData["reviews"];
-}> = ({ reviews }) => (
-  <Box>
-    <Typography variant="h6" sx={{ fontWeight: 700, mt: 4, mb: 3 }}>
-      Reviews &amp; Ratings
-    </Typography>
-    <Grid container spacing={4}>
-      {reviews.map((rev, index) => (
-        <Grid
-          key={`rev-${index}`}
-          size={{ xs: 12, md: 4 }}
-          sx={{
-            borderLeft: "3px solid #4985eeff",
-            height: "6.5rem",
-            pl: 2,
-          }}
-        >
-          <Typography variant="body2" sx={{ color: "grey", mt: 1 }}>
-            Client: <span style={{ color: "black" }}>{rev.client}</span>
-          </Typography>
-          <Typography variant="body2" sx={{ color: "grey", mt: 1 }}>
-            Rating: <span style={{ color: "black" }}>{rev.rating}</span>
-          </Typography>
-          <Typography variant="body2" sx={{ color: "grey", mt: 1 }}>
-            <span style={{ color: "black" }}>{rev.comment}</span>
-          </Typography>
-        </Grid>
-      ))}
-    </Grid>
-  </Box>
-);
 
 const Profile: React.FC<ProfileProps> = ({
   mode,
@@ -218,6 +68,7 @@ const Profile: React.FC<ProfileProps> = ({
   const viewImageUrl = profile.image;
   const editImageUrl = formData.image;
   const { data, isLoading } = useConsultantMe();
+  const formDefaults = mapProfileToForm(formData);
 
   useEffect(() => {
     if (!data?.data) return;
@@ -267,21 +118,30 @@ const Profile: React.FC<ProfileProps> = ({
     onRequestView?.();
   };
 
-  const handleSkillSubmit = (data: FieldValues) => {
-    const skill = (data.skill as string) || "";
-    if (!skill) return;
-
-    setFormData((prev) => {
-      const current = prev.skills || [];
-      if (current.includes(skill)) return prev;
-      return { ...prev, skills: [...current, skill] };
-    });
-  };
-
-  const handleRemoveSkill = (skillToRemove: string) => {
+  const handleAddExperience = (data: FieldValues) => {
     setFormData((prev) => ({
       ...prev,
-      skills: (prev.skills || []).filter((s) => s !== skillToRemove),
+      experienceList: [
+        ...(prev.experienceList || []),
+        {
+          title: data.company,
+          client: data.company,
+          role: data.role,
+          duration: `${data.startDate} - ${data.endDate || "Present"}`,
+          technologies: data.technologies,
+        },
+      ],
+    }));
+  };
+
+  const handleAddEducation = (data: FieldValues) => {
+    const entry = `${data.degree} — ${data.institution} (${data.startDate} - ${
+      data.endDate || "Present"
+    })`;
+
+    setFormData((prev) => ({
+      ...prev,
+      education: [...(prev.education || []), entry],
     }));
   };
 
@@ -333,7 +193,8 @@ const Profile: React.FC<ProfileProps> = ({
             <Grid container spacing={2}>
               <Grid size={{ xs: 6 }}>
                 <Typography variant="body2" sx={{ color: "grey" }}>
-                  Core Modules: <span style={{ color: "black" }}>{profile.module?.core}</span>
+                  Core Modules:{" "}
+                  <span style={{ color: "black" }}>{profile.module?.core}</span>
                 </Typography>
               </Grid>
 
@@ -346,21 +207,28 @@ const Profile: React.FC<ProfileProps> = ({
 
               <Grid size={{ xs: 6 }}>
                 <Typography variant="body2" sx={{ color: "grey" }}>
-                  Other Modules: <span style={{ color: "black" }}>{profile.module?.others}</span>
+                  Other Modules:{" "}
+                  <span style={{ color: "black" }}>
+                    {profile.module?.others}
+                  </span>
                 </Typography>
               </Grid>
 
               <Grid size={{ xs: 6 }}>
                 <Typography variant="body2" sx={{ color: "grey" }}>
                   Availability:{" "}
-                  <span style={{ color: "black" }}>{profile.availability}</span>
+                  <span style={{ color: "black" }}>
+                    {profile.availability || "—"} hrs/week
+                  </span>
                 </Typography>
               </Grid>
 
               <Grid size={{ xs: 6 }}>
                 <Typography variant="body2" sx={{ color: "grey" }}>
                   Experience:{" "}
-                  <span style={{ color: "black" }}>{profile.experience}</span>
+                  <span style={{ color: "black" }}>
+                    {profile.experience} Years
+                  </span>
                 </Typography>
               </Grid>
 
@@ -373,7 +241,8 @@ const Profile: React.FC<ProfileProps> = ({
 
               <Grid size={{ xs: 6 }}>
                 <Typography variant="body2" sx={{ color: "grey" }}>
-                  Rate: <span style={{ color: "black" }}>{profile.rate}</span>
+                  Rate:{" "}
+                  <span style={{ color: "black" }}>${profile.rate}/hour</span>
                 </Typography>
               </Grid>
 
@@ -405,54 +274,33 @@ const Profile: React.FC<ProfileProps> = ({
         </Box>
 
         <Divider sx={{ my: 4, borderBottomWidth: 2 }} />
-        <Typography variant="h6" sx={{ fontWeight: 700 }}>
-          Skills &amp; Expertise
-        </Typography>
-        <Box display="flex" flexWrap="wrap" gap={2} mt={2}>
-          {(profile.skills || []).map((skill, index) => (
-            <Box
-              key={index}
-              sx={{
-                border: "1.5px solid #1069f9ff",
-                color: colors.BLUE,
-                px: 2,
-                py: 0.5,
-                fontWeight: 500,
-                fontSize: "0.9rem",
-              }}
-            >
-              <Typography variant="body2">{skill}</Typography>
-            </Box>
-          ))}
-        </Box>
+
+        <ProfileSkillsSection
+          skills={profile.skills}
+          editable={false}
+          onAdd={() => {}}
+          onRemove={() => {}}
+        />
 
         <Divider sx={{ my: 4, borderBottomWidth: 2 }} />
-        <ExperienceSection
+
+        <ProfileExperienceSection
           experiences={profile.experienceList || []}
           editable={false}
+          onChange={() => {}}
         />
 
         <Divider sx={{ my: 4, borderBottomWidth: 2 }} />
-        <EducationSection
+
+        <ProfileEducationSection
           education={profile.education || []}
           editable={false}
+          onChange={() => {}}
         />
 
         <Divider sx={{ my: 4, borderBottomWidth: 2 }} />
 
-        <Box>
-          <Typography variant="h6" sx={{ fontWeight: 700, mt: 4, mb: 3 }}>
-            Reviews &amp; Ratings
-          </Typography>
-
-          {profile.reviews.length === 0 ? (
-            <Typography color="text.secondary" align="center">
-              No reviews &amp; ratings available
-            </Typography>
-          ) : (
-            <ReviewsSection reviews={profile.reviews} />
-          )}
-        </Box>
+        <ProfileReviewsSection reviews={profile.reviews} />
       </Box>
     );
   }
@@ -469,119 +317,117 @@ const Profile: React.FC<ProfileProps> = ({
         Edit profile
       </Typography>
 
-      <CreateForm
-        elements={mainFields}
-        onSuccess={handleCreateFormSuccess}
-        actionsContainerProps={{ sx: { display: "none" } }}
-        leadingContent={
-          <label htmlFor="upload-photo">
-            <Box
-              sx={{
-                position: "relative",
-                display: "inline-block",
-                cursor: "pointer",
-              }}
-            >
-              <ProfileAvatar
-                name={profile.name}
-                imageUrl={editImageUrl}
-                size={140}
-              />
-            </Box>
-            <input
-              id="upload-photo"
-              type="file"
-              accept="image/*"
-              style={{ display: "none" }}
-              onChange={handleImageUpload}
-            />
-          </label>
-        }
-      />
+      <Grid container spacing={2} alignItems="flex-start">
+        <Grid size={{ xs: 12, md: 2 }}>
+          <ProfileAvatar
+            name={profile.name}
+            imageUrl={editImageUrl}
+            size={140}
+          />
+        </Grid>
 
-      <Grid container spacing={3}>
-        <Grid size={{ xs: 12, md: 12 }}>
+        <Grid size={{ xs: 12, md: 10 }}>
           <CreateForm
-            elements={bottomFields}
+            elements={headerFields}
+            defaultValues={formDefaults}
             onSuccess={handleCreateFormSuccess}
             actionsContainerProps={{ sx: { display: "none" } }}
           />
         </Grid>
       </Grid>
+      <CreateForm
+        elements={moduleFields}
+        defaultValues={formDefaults}
+        onSuccess={handleCreateFormSuccess}
+        actionsContainerProps={{ sx: { display: "none" } }}
+      />
+      <CreateForm
+        elements={commercialFields}
+        defaultValues={formDefaults}
+        onSuccess={handleCreateFormSuccess}
+        actionsContainerProps={{ sx: { display: "none" } }}
+      />
+      <CreateForm
+        elements={bottomFields}
+        defaultValues={formDefaults}
+        onSuccess={handleCreateFormSuccess}
+        actionsContainerProps={{ sx: { display: "none" } }}
+      />
+      <Divider sx={{ my: 4, borderBottomWidth: 2 }} />
+
+      <ProfileSkillsSection
+        skills={formData.skills}
+        editable
+        onAdd={(skill) =>
+          setFormData((prev) =>
+            prev.skills.some((s) => s.toLowerCase() === skill.toLowerCase())
+              ? prev
+              : { ...prev, skills: [...prev.skills, skill] }
+          )
+        }
+        onRemove={(skill) =>
+          setFormData((prev) => ({
+            ...prev,
+            skills: prev.skills.filter((s) => s !== skill),
+          }))
+        }
+      />
 
       <Divider sx={{ my: 4, borderBottomWidth: 2 }} />
-      <Box mt={3}>
-        <Typography variant="h6" sx={{ fontWeight: 700 }}>
-          Skills &amp; Expertise
-        </Typography>
-
-        <CreateForm
-          elements={skillFormElements}
-          onSuccess={handleSkillSubmit}
-          inlineActions
-          submitButton={{
-            children: "Add",
-            sx: { minWidth: 180 },
-          }}
-        />
-
-        <Box display="flex" flexWrap="wrap" gap={1.5} mt={3}>
-          {(formData.skills || []).length === 0 ? (
-            <Typography variant="body2" color="text.secondary">
-              No skills selected yet.
-            </Typography>
-          ) : (
-            (formData.skills || []).map((skill, index) => (
-              <Box
-                key={index}
-                sx={{
-                  border: "1.5px solid #1069f9ff",
-                  color: colors.BLUE,
-                  px: 2,
-                  py: 0.5,
-                  borderRadius: 1,
-                  fontSize: "0.9rem",
-                  fontWeight: 500,
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 0.5,
-                }}
-              >
-                <Typography variant="body2">{skill}</Typography>
-                <IconButton
-                  size="small"
-                  onClick={() => handleRemoveSkill(skill)}
-                  sx={{ color: colors.BLUE, p: 0.25 }}
-                >
-                  <CloseIcon fontSize="small" />
-                </IconButton>
-              </Box>
-            ))
-          )}
-        </Box>
-      </Box>
-
-      <Divider sx={{ my: 4, borderBottomWidth: 2 }} />
-      <ExperienceSection
+      <ProfileExperienceSection
         experiences={formData.experienceList || []}
         editable={true}
+        onChange={(updated) =>
+          setFormData((p) => ({ ...p, experienceList: updated }))
+        }
       />
 
       <Grid container spacing={2}>
         <Grid size={{ xs: 12, md: 12 }}>
-          <CreateForm
-            elements={extraFields}
-            onSuccess={handleCreateFormSuccess}
-            actionsContainerProps={{ sx: { display: "none" } }}
-          />
+          {mode === "edit" && (
+            <>
+              <CreateForm
+                elements={workExperienceFormElements}
+                onSuccess={handleAddExperience}
+                inlineActions
+                submitButton={{
+                  children: "Add Experience",
+                  sx: { minWidth: 200 },
+                }}
+              />
+            </>
+          )}
         </Grid>
       </Grid>
 
       <Divider sx={{ my: 4, borderBottomWidth: 2 }} />
-      <EducationSection education={formData.education || []} editable={true} />
+      <ProfileEducationSection
+        education={formData.education || []}
+        editable={true}
+        onChange={(updated) =>
+          setFormData((p) => ({ ...p, education: updated }))
+        }
+      />
+      <Grid container spacing={2}>
+        <Grid size={{ xs: 12, md: 12 }}>
+          {mode === "edit" && (
+            <>
+              <CreateForm
+                elements={educationFormElements}
+                onSuccess={handleAddEducation}
+                inlineActions
+                submitButton={{
+                  children: "Add Education",
+                  sx: { minWidth: 200 },
+                }}
+              />
+            </>
+          )}
+        </Grid>
+      </Grid>
 
       <Divider sx={{ my: 4, borderBottomWidth: 2 }} />
-      <ReviewsSection reviews={formData.reviews || []} />
+      <ProfileReviewsSection reviews={profile.reviews} />
 
       <Box sx={{ mt: 5, display: "flex", gap: 2 }}>
         <AppButton

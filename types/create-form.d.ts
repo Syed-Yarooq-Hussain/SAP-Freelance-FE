@@ -15,6 +15,8 @@ export interface IFieldConfig {
   hidden?: boolean;
   column?: IGridSpan;
   row?: IGridSpan;
+  disabled?: boolean;
+  readOnly?: boolean;
 }
 
 export interface IGridSpan {
@@ -28,6 +30,7 @@ export interface IGridSpan {
 interface ICreateFormProps {
   elements: IFieldConfig[];
   onSuccess: (data: FieldValues) => void;
+  defaultValues?: Record<string, any>;
   onCancel?: () => void;
   loading?: boolean;
   error?: string;

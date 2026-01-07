@@ -1,5 +1,6 @@
 "use client";
 
+import { useConsultantStats } from "@/actions/consultants/useConsultantStats";
 import { useConsultantProjects } from "@/actions/projects/useConsultantProjects";
 import Sidebar from "@/components/Sidebar";
 import Project from "@/components/specific/Project";
@@ -12,8 +13,45 @@ import { formatYMD } from "@/utils/dateTime";
 import { useCallback, useEffect, useState } from "react";
 
 export default function ConsultantProjectPage() {
-  const [consultantProjectRows, setProjectRows] = useState<IConsultantProjectRow[]>([]);
+  const [consultantProjectRows, setProjectRows] = useState<
+    IConsultantProjectRow[]
+  >([]);
   const { mutate: loadProjects } = useConsultantProjects();
+  const { data: statsRes, isLoading: statsLoading } = useConsultantStats();
+  const projectStatsData = statsRes?.data?.projects_stats;
+
+  const projectStats = consultantProjectStats.map((stat, index) => {
+    if (index === 0) {
+      return {
+        ...stat,
+        subtitle: projectStatsData?.current?.project ?? "-",
+        extra: projectStatsData?.current?.employeer,
+        description: projectStatsData?.current?.project_info,
+        loading: statsLoading,
+      };
+    }
+
+    if (index === 1) {
+      return {
+        ...stat,
+        subtitle: projectStatsData?.upcoming?.project ?? "-",
+        extra: projectStatsData?.upcoming?.employeer,
+        description: projectStatsData?.upcoming?.project_info,
+        loading: statsLoading,
+      };
+    }
+
+    if (index === 2) {
+      return {
+        ...stat,
+        subtitle: projectStatsData?.task?.total ?? 0,
+        description: `${projectStatsData?.task?.pending ?? 0} pending`,
+        loading: statsLoading,
+      };
+    }
+
+    return stat;
+  });
 
   const fetchProjects = useCallback(() => {
     loadProjects(undefined, {
@@ -32,7 +70,7 @@ export default function ConsultantProjectPage() {
 
         setProjectRows(mapped);
       },
-     onError: (err) => console.error(err),
+      onError: (err) => console.error(err),
     });
   }, [loadProjects]);
 
@@ -44,7 +82,7 @@ export default function ConsultantProjectPage() {
     <Sidebar>
       <Project
         title=""
-        stats={consultantProjectStats}
+        stats={projectStats}
         columns={consultantProjectColumns}
         rows={consultantProjectRows}
       />

@@ -74,3 +74,17 @@ export interface ConsultantPaymentRow {
   status: string;
   invoice: string;
 }
+
+export interface IConsultantDashboardStats {
+  appeared_in_search: number;
+  interview_schedule: number;
+  projected_monthly_revenue: number;
+  total_earnings: number;
+}
+
+export interface IConsultantMeetingsStats {
+  interview_requests: number;
+  upcoming_interviews: number;
+  rescheduled_interviews: number;
+  cancelled_interviews: number;
+}

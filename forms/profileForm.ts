@@ -1,62 +1,103 @@
-import {
-  LOCATION_OPTIONS,
-  VISIBILITY_OPTIONS,
-  ROLE_OPTIONS,
-  DURATION_OPTIONS,
-} from "@/data/options";
+import { LOCATION_OPTIONS, VISIBILITY_OPTIONS } from "@/data/options";
 import { IFieldConfig } from "@/types/create-form";
 
-export function getProfileMainFields(): IFieldConfig[] {
+export function getProfileHeaderFields(): IFieldConfig[] {
   return [
     {
       name: "name",
       label: "Name",
       type: "text",
-      placeholder: "Your Name",
-      column: { xs: 12, md: 4 },
-      rules: { required: "Name is required" },
+      column: { xs: 12, md: 6 },
+    },
+    {
+      name: "email",
+      label: "Contact",
+      type: "email",
+      column: { xs: 12, md: 6 },
+      disabled: true,
     },
     {
       name: "location",
       label: "Location",
-      placeholder: "Select location",
-      column: { xs: 12, md: 4 },
-      rules: { required: "Location is required" },
       select: true,
-      defaultValue: "",
       options: LOCATION_OPTIONS,
-    },
-    {
-      name: "module",
-      label: "Module",
-      type: "text",
-      placeholder: "Your Module",
-      column: { xs: 12, md: 4 },
-      rules: { required: "Module is required" },
-    },
-    {
-      name: "email",
-      label: "Email",
-      type: "text",
-      placeholder: "Your Email",
-      column: { xs: 12, md: 4 },
-      rules: { required: "Email is required" },
-    },
-    {
-      name: "rate",
-      label: "Hourly Rate",
-      type: "text",
-      placeholder: "Your Hourly Rate",
-      column: { xs: 12, md: 4 },
-      rules: { required: "Hourly rate is required" },
+      column: { xs: 12, md: 6 },
     },
     {
       name: "experience",
       label: "Experience (Years)",
       type: "number",
-      placeholder: "Your Experience",
+      placeholder: "e.g. 7",
+      column: { xs: 12, md: 6 },
+      rules: {
+        required: "Experience is required",
+        min: { value: 0, message: "Experience cannot be negative" },
+        max: { value: 40, message: "Experience cannot exceed 40 years" },
+      },
+    },
+    {
+      name: "description",
+      label: "Bio",
+      type: "textarea",
+      column: { xs: 12 },
+    },
+  ];
+}
+
+export function getProfileModuleFields(): IFieldConfig[] {
+  return [
+    {
+      name: "module.core",
+      label: "Core Modules",
+      select: true,
+      multiple: true,
+      rules: { required: "At least one Core Module is required" },
+      defaultValue: [],
+      column: { xs: 12, md: 6 },
+    },
+    {
+      name: "module.others",
+      label: "Other Modules",
+      select: true,
+      multiple: true,
+      rules: { required: "At least one Core Module is required" },
+      defaultValue: [],
+      column: { xs: 12, md: 6 },
+    },
+  ];
+}
+
+export function getProfileCommercialFields(): IFieldConfig[] {
+  return [
+    {
+      name: "projects",
+      label: "Projects",
+      type: "number",
       column: { xs: 12, md: 4 },
-      rules: { required: "Experience is required" },
+      disabled: true,
+    },
+    {
+      name: "rate",
+      label: "Hourly Rate",
+      type: "number",
+      placeholder: "e.g. 600000",
+      column: { xs: 12, md: 4 },
+      rules: {
+        required: "Rate is required",
+        min: { value: 1, message: "Rate must be at least 1" },
+        max: { value: 200, message: "Rate cannot exceed 200 per hour" },
+      },
+    },
+    {
+      name: "availability",
+      label: "Weekly Availability",
+      type: "text",
+      column: { xs: 12, md: 4 },
+      rules: {
+        required: "Availability is required",
+        min: { value: 5, message: "Minimum 5 hours required" },
+        max: { value: 60, message: "Weekly hours cannot exceed 60" },
+      },
     },
   ];
 }
@@ -64,82 +105,106 @@ export function getProfileMainFields(): IFieldConfig[] {
 export function getProfileBottomFields(): IFieldConfig[] {
   return [
     {
+      name: "rating",
+      label: "Rating",
+      type: "number",
+      placeholder: "0 – 5",
+      column: { xs: 12, md: 6 },
+      rules: {
+        min: { value: 0, message: "Min rating is 0" },
+        max: { value: 5, message: "Max rating is 5" },
+      },
+      disabled: true,
+    },
+    {
       name: "visibility",
       label: "Visibility",
       placeholder: "Select visibility",
       column: { xs: 12, md: 6 },
-      rules: { required: "Visibility is required" },
       select: true,
-      defaultValue: "",
       options: VISIBILITY_OPTIONS,
-    },
-    {
-      name: "weeklyHours",
-      label: "Weekly Hours",
-      placeholder: "Your Weekly Hours",
-      column: { xs: 12, md: 6 },
-      rules: { required: "Weekly hours are required" },
-    },
-    {
-      name: "description",
-      label: "Bio",
-      placeholder: "Your Bio Description",
-      type: "textarea",
+      rules: { required: "Visibility is required" },
     },
   ];
 }
 
-export function getProfileExtraFields(): IFieldConfig[] {
-  return [
-    {
-      name: "projectName",
-      label: "Project name",
-      type: "text",
-      placeholder: "Project Name",
-      column: { xs: 12, md: 4 },
-      rules: { required: "Project name is required" },
+export const skillFormElements: IFieldConfig[] = [
+  {
+    name: "skill",
+    label: "Add Skill",
+    placeholder: "e.g. Next.js",
+    type: "text",
+    column: { xs: 12, md: 8 },
+    rules: {
+      required: "Skill is required",
+      minLength: { value: 2, message: "Too short" },
     },
-    {
-      name: "role",
-      label: "Role",
-      placeholder: "Select role",
-      column: { xs: 12, md: 4 },
-      rules: { required: "Role is required" },
-      select: true,
-      defaultValue: "",
-      options: ROLE_OPTIONS,
-    },
-    {
-      name: "modules",
-      label: "Modules",
-      type: "text",
-      placeholder: "Your Modules",
-      column: { xs: 12, md: 4 },
-    },
-    {
-      name: "client",
-      label: "Client",
-      type: "text",
-      placeholder: "Your Client",
-      column: { xs: 12, md: 4 },
-    },
-    {
-      name: "duration",
-      label: "Duration",
-      placeholder: "Select duration",
-      column: { xs: 12, md: 4 },
-      rules: { required: "Duration is required" },
-      select: true,
-      defaultValue: "",
-      options: DURATION_OPTIONS,
-    },
-    {
-      name: "startDate",
-      label: "Start date",
-      type: "date",
-      placeholder: "Your Start Date",
-      column: { xs: 12, md: 4 },
-      rules: { required: "Start date is required" },
-    },
-  ];
-}
+  },
+];
+
+export const workExperienceFormElements: IFieldConfig[] = [
+  {
+    name: "company",
+    label: "Company Name",
+    type: "text",
+    column: { xs: 12, md: 6 },
+    rules: { required: "Company name is required" },
+  },
+  {
+    name: "role",
+    label: "Role",
+    type: "text",
+    column: { xs: 12, md: 6 },
+    rules: { required: "Role is required" },
+  },
+  {
+    name: "startDate",
+    label: "Start Date",
+    type: "date",
+    column: { xs: 12, md: 6 },
+    rules: { required: "Start date is required" },
+  },
+  {
+    name: "endDate",
+    label: "End Date",
+    type: "date",
+    column: { xs: 12, md: 6 },
+  },
+  {
+    name: "technologies",
+    label: "Responsibilities",
+    type: "textarea",
+    column: { xs: 12 },
+    rules: { required: "Responsibilities are required" },
+  },
+];
+
+export const educationFormElements: IFieldConfig[] = [
+  {
+    name: "degree",
+    label: "Degree",
+    type: "text",
+    column: { xs: 12, md: 6 },
+    rules: { required: "Degree is required" },
+  },
+  {
+    name: "institution",
+    label: "Institution Name",
+    type: "text",
+    column: { xs: 12, md: 6 },
+    rules: { required: "Institution is required" },
+  },
+  {
+    name: "startDate",
+    label: "Start Date",
+    type: "date",
+    column: { xs: 12, md: 6 },
+    rules: { required: "Start date is required" },
+  },
+  {
+    name: "endDate",
+    label: "End Date",
+    type: "date",
+    column: { xs: 12, md: 6 },
+  },
+];

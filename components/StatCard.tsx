@@ -32,6 +32,7 @@ export interface StatCardProps {
   title: string;
   subtitle?: string | number;
   description?: string;
+  extra?: string;
   color: string;
   icon: keyof typeof icons;
   loading?: boolean;
@@ -41,6 +42,7 @@ const StatCard: FC<StatCardProps> = ({
   title,
   subtitle,
   description,
+  extra,
   color,
   icon,
   loading = false,
@@ -74,6 +76,20 @@ const StatCard: FC<StatCardProps> = ({
           >
             {title}
           </Typography>
+
+          {extra && (
+            <Typography
+              variant="caption"
+              sx={{
+                opacity: 0.85,
+                fontWeight: 600,
+                display: "block",
+                mt: 0.25,
+              }}
+            >
+              {extra}
+            </Typography>
+          )}
 
           {loading ? (
             <Skeleton

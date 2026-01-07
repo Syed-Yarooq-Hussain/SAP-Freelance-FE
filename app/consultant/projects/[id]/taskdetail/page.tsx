@@ -1,16 +1,14 @@
 "use client";
 
+import { useConsultantStats } from "@/actions/consultants/useConsultantStats";
 import { useGetMilestoneTasks } from "@/actions/projects/useGetMilestoneTasks";
 import { useProjectDetails } from "@/actions/projects/useGetProjectDetails";
 import { useGetProjectMilestones } from "@/actions/projects/useGetProjectMilestones";
 import DataTable from "@/components/DataTable";
 import Sidebar from "@/components/Sidebar";
 import ProjectDetailsLayout from "@/components/specific/ProjectDetailsLayout";
-import {
-  projectStats,
-  taskColumns,
-  teamMembers,
-} from "@/data/consultantProjectDetails";
+import { consultantProjectStats } from "@/data/consultantProject";
+import { taskColumns, teamMembers } from "@/data/consultantProjectDetails";
 import type { ProjectInfoData } from "@/types/projects";
 import { ClientMilestoneRow, ClientTaskRow } from "@/types/teamBuilder";
 import { formatYMD } from "@/utils/dateTime";
@@ -46,6 +44,41 @@ export default function ConsultantTaskDetails() {
   const { mutate: loadMilestone } = useGetMilestoneTasks();
   const { mutate: loadProjectDetails } = useProjectDetails();
   const { mutate: loadMilestones } = useGetProjectMilestones();
+  const { data: statsRes, isLoading: statsLoading } = useConsultantStats();
+  const projectStatsData = statsRes?.data?.projects_stats;
+
+  const projectStats = consultantProjectStats.map((stat, index) => {
+    if (index === 0) {
+      return {
+        ...stat,
+        subtitle: projectStatsData?.current?.project ?? "-",
+        extra: projectStatsData?.current?.employeer,
+        description: projectStatsData?.current?.project_info,
+        loading: statsLoading,
+      };
+    }
+
+    if (index === 1) {
+      return {
+        ...stat,
+        subtitle: projectStatsData?.upcoming?.project ?? "-",
+        extra: projectStatsData?.upcoming?.employeer,
+        description: projectStatsData?.upcoming?.project_info,
+        loading: statsLoading,
+      };
+    }
+
+    if (index === 2) {
+      return {
+        ...stat,
+        subtitle: projectStatsData?.task?.total ?? 0,
+        description: `${projectStatsData?.task?.pending ?? 0} pending`,
+        loading: statsLoading,
+      };
+    }
+
+    return stat;
+  });
 
   useEffect(() => {
     if (!projectId || !milestoneId) return;

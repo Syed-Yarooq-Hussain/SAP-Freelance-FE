@@ -1,8 +1,11 @@
 "use client";
 
 import { useConsultantCalendar } from "@/actions/consultants/useConsultantCalendar";
+import { useConsultantRightSidebar } from "@/actions/consultants/useConsultantRightSidebar";
+import { useConsultantStats } from "@/actions/consultants/useConsultantStats";
 import { useConsultantPayments } from "@/actions/payments/useConsultantPayments";
 import { useConsultantProjects } from "@/actions/projects/useConsultantProjects";
+import { SidebarSectionInfo } from "@/components/DashboardSidebarInfo";
 import EngagementCalendarCard from "@/components/EngagementCalendarCard";
 import Sidebar from "@/components/Sidebar";
 import Dashboard from "@/components/specific/Dashboard";
@@ -22,6 +25,7 @@ import {
 import { APP_ROUTES } from "@/utils/app_routes";
 import { currentMonth, currentYear, formatYMD } from "@/utils/dateTime";
 import { mapApiDaysToCalendarEvents } from "@/utils/mapConsultantCalendar";
+import { useAnimatedCounter } from "@/utils/useAnimatedCounter";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -34,6 +38,88 @@ export default function ConsultantDashboardPage() {
   const { data: calendarData } = useConsultantCalendar(
     currentMonth,
     currentYear
+  );
+
+  const { data: statsResponse, isLoading: statsLoading } = useConsultantStats();
+  const dashboardStats = statsResponse?.data?.dashboard;
+  const animatedStats = [
+    useAnimatedCounter(dashboardStats?.appeared_in_search ?? 0),
+    useAnimatedCounter(dashboardStats?.interview_schedule ?? 0),
+    useAnimatedCounter(dashboardStats?.projected_monthly_revenue ?? 0),
+    useAnimatedCounter(dashboardStats?.total_earnings ?? 0),
+  ];
+
+  const stats = consultantStats.map((config, index) => ({
+    ...config,
+    subtitle:
+      index === 2 || index === 3
+        ? `$${animatedStats[index].toLocaleString()}`
+        : animatedStats[index],
+    loading: statsLoading,
+  }));
+
+  const { data: sidebarRes } = useConsultantRightSidebar();
+
+  const sidebarData = sidebarRes?.data;
+  const primarySkill = sidebarData?.skills?.find((s) => s.primary_modules);
+  const otherSkill = sidebarData?.skills?.find((s) => s.other_modules);
+
+  const sidebarSections: SidebarSectionInfo[] = consultantSidebar.map(
+    (section) => {
+      if (section.title === "Skills & Certifications") {
+        return {
+          ...section,
+          items: section.items.map((item) => {
+            if (item.label === "Primary Modules") {
+              return {
+                ...item,
+                value: primarySkill?.primary_modules ?? "-",
+                subValue: `${primarySkill?.exp ?? 0} year experience`,
+              };
+            }
+
+            if (item.label === "Other Modules") {
+              return {
+                ...item,
+                value: otherSkill?.other_modules ?? "-",
+                subValue: `${otherSkill?.rate ?? 0}/hour`,
+              };
+            }
+
+            return item;
+          }),
+        };
+      }
+
+      if (section.title === "Engagement") {
+        return {
+          ...section,
+          items: section.items.map((item) => {
+            if (item.label === "Current Employer") {
+              return {
+                ...item,
+                value: sidebarData?.engagements?.current?.employeer ?? "-",
+                subValue:
+                  sidebarData?.engagements?.current?.project_info ?? "-",
+              };
+            }
+
+            if (item.label === "Upcoming Employer") {
+              return {
+                ...item,
+                value: sidebarData?.engagements?.upcoming?.employeer ?? "-",
+                subValue:
+                  sidebarData?.engagements?.upcoming?.project_info ?? "-",
+              };
+            }
+
+            return item;
+          }),
+        };
+      }
+
+      return section;
+    }
   );
 
   const calendarEvents = useMemo(() => {
@@ -89,7 +175,7 @@ export default function ConsultantDashboardPage() {
     <Sidebar>
       <Dashboard
         announcements={consultantAnnouncements}
-        stats={consultantStats}
+        stats={stats}
         chart={
           <EngagementCalendarCard
             events={calendarEvents}
@@ -113,7 +199,7 @@ export default function ConsultantDashboardPage() {
           hidePagination: true,
           onViewMoreClick: () => router.push(APP_ROUTES.CONSULTANT.PAYMENTS),
         }}
-        sidebarSections={consultantSidebar}
+        sidebarSections={sidebarSections}
       />
     </Sidebar>
   );

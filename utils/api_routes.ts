@@ -42,4 +42,6 @@ export const API_ROUTES = {
   CONSULTANT_ME: "/consultants/me",
   GET_CONSULTANT_SCHEDULE: "/consultants/schedule",
   POST_CONSULTANT_SCHEDULE: "/consultants/schedule",
+  CONSULTANT_STATS: "/consultants/stats",
+  CONSULTANT_RIGHT_SIDEBAR: "/consultants/left-sidebar",
 };

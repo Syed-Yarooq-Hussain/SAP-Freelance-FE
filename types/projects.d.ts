@@ -86,3 +86,20 @@ export interface IAdminProject {
     others: string;
   };
 }
+
+export interface IConsultantProjectStatItem {
+  project: string;
+  employeer: string;
+  project_info: string;
+}
+
+export interface IConsultantProjectTaskStats {
+  total: number;
+  pending: number;
+}
+
+export interface IConsultantProjectsStats {
+  current: IConsultantProjectStatItem;
+  upcoming: IConsultantProjectStatItem;
+  task: IConsultantProjectTaskStats;
+}

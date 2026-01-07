@@ -26,6 +26,7 @@ import FormProgress from "./FormProgress";
 export const CreateForm: FC<ICreateFormProps> = ({
   elements,
   onSuccess,
+  defaultValues,
   loading = false,
   error,
   submitButton,
@@ -40,10 +41,12 @@ export const CreateForm: FC<ICreateFormProps> = ({
     handleSubmit,
     setValue,
     trigger,
+    reset,
     formState: { errors },
   } = useForm({
     shouldUnregister: false,
     mode: "onChange",
+    defaultValues,
   });
 
   const parseCVMutation = useMutation({
@@ -63,6 +66,12 @@ export const CreateForm: FC<ICreateFormProps> = ({
   const handleTogglePassword = (name: string) => {
     setShowPassword((prev) => ({ ...prev, [name]: !prev[name] }));
   };
+
+  useEffect(() => {
+    if (defaultValues) {
+      reset(defaultValues);
+    }
+  }, [defaultValues, reset]);
 
   useEffect(() => {
     if (!data?.data) return;
@@ -242,7 +251,7 @@ export const CreateForm: FC<ICreateFormProps> = ({
                 }
                 error={!!errors[element.name]}
                 helperText={errors[element.name]?.message?.toString()}
-                disabled={loading || isLoading}
+                disabled={element.disabled || loading || isLoading}
                 select={isSelect}
                 slotProps={{
                   select: {

@@ -2,7 +2,7 @@ import { ProfileData } from "@/types/profile";
 
 export const mapConsultantProfile = (apiData: any): ProfileData => {
   const user = apiData?.user ?? {};
-  const consultant = apiData?.consultant ?? apiData ?? {};
+  const consultant = apiData ?? {};
 
   return {
     name: user.username?.replace(/([a-z])([A-Z])/g, "$1 $2") ?? "",
@@ -14,15 +14,31 @@ export const mapConsultantProfile = (apiData: any): ProfileData => {
       ""
     ),
 
-    module: consultant.user.module ?? {core: "N/A", others: "N/A"},
-    projects: consultant.projects_count ?? 0,
-    availability: consultant.weekly_available_hours
-      ? `${consultant.weekly_available_hours} hrs/week`
-      : "N/A",
-    rate: consultant.rate ? `$${consultant.rate}/hour` : "N/A",
-    experience: consultant.experience
-      ? `${consultant.experience} Years`
-      : "N/A",
+    module: user.module ?? { core: "", others: "" },
+
+    // ✅ NUMBERS AS STRINGS (safe for RHF number inputs)
+    experience:
+      consultant.experience !== null && consultant.experience !== undefined
+        ? String(consultant.experience)
+        : "",
+
+    rate:
+      consultant.rate !== null && consultant.rate !== undefined
+        ? String(consultant.rate)
+        : "",
+
+    availability:
+      consultant.weekly_available_hours !== null &&
+      consultant.weekly_available_hours !== undefined
+        ? String(consultant.weekly_available_hours)
+        : "",
+
+    projects:
+      consultant.projects_count !== null &&
+      consultant.projects_count !== undefined
+        ? String(consultant.projects_count)
+        : "0",
+
     rating: "0",
     visibility: "All clients",
     image: "/default.png",

@@ -2,11 +2,10 @@
 
 import AppButton from "@/components/Button";
 import { SidebarSectionInfo } from "@/components/DashboardSidebarInfo";
-import { CalendarEvent } from "@/components/MonthlyCalendar";
 import { StatCardProps } from "@/components/StatCard";
 import StatusChip from "@/components/StatusChip";
 import StatusDropdown from "@/components/StatusDropdown";
-import { currentMonth, currentYear, getCurrentMonth } from "@/utils/dateTime";
+import { getCurrentMonth } from "@/utils/dateTime";
 import colors, { buttonColors, statusColors } from "@/utils/styles/colors";
 import { Box } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
@@ -14,25 +13,21 @@ import { GridColDef } from "@mui/x-data-grid";
 export const consultantStats: StatCardProps[] = [
   {
     title: "Appeared in Search",
-    subtitle: 360,
     color: colors.BLUE,
     icon: "QueryStatsIcon",
   },
   {
     title: "Interview Scheduled",
-    subtitle: 10,
     color: colors.BLUE,
     icon: "PeopleAltIcon",
   },
   {
     title: "Projected Monthly Revenue",
-    subtitle: "$3000",
     color: colors.BLUE,
     icon: "CurrencyExchangeIcon",
   },
   {
     title: `Invoices Values (${getCurrentMonth()})`,
-    subtitle: "$12,000",
     color: colors.BLUE,
     icon: "BallotIcon",
   },
@@ -106,15 +101,11 @@ export const consultantSidebar: SidebarSectionInfo[] = [
     items: [
       {
         type: "text",
-        label: "Primary SAP modules",
-        value: "SAP FI, SAP S/4HANA",
-        subValue: "4 year experience",
+        label: "Primary Modules",
       },
       {
         type: "text",
-        label: "Technical skills",
-        value: "ABAP, Fiori",
-        subValue: "4 year experience",
+        label: "Other Modules",
       },
     ],
   },
@@ -124,14 +115,10 @@ export const consultantSidebar: SidebarSectionInfo[] = [
       {
         type: "text",
         label: "Current Employer",
-        value: "Global Rollout",
-        subValue: "14 months – Lead Consultant\nSAP SD, S/4HANA",
       },
       {
         type: "text",
         label: "Upcoming Employer",
-        value: "Rental Co.",
-        subValue: "6 months – SD Team Lead\nSAP SD, Fiori",
       },
     ],
   },
