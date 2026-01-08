@@ -50,7 +50,8 @@ const StatCard: FC<StatCardProps> = ({
   return (
     <Card
       sx={{
-        height: 110,
+        minHeight: 110,
+        height: "auto",
         background: color,
         color: "#fff",
         display: "flex",
@@ -61,7 +62,7 @@ const StatCard: FC<StatCardProps> = ({
       <Box
         sx={{
           display: "flex",
-          alignItems: "center",
+          alignItems: "flex",
           width: "100%",
           justifyContent: "space-between",
         }}
@@ -137,7 +138,12 @@ const StatCard: FC<StatCardProps> = ({
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            fontSize: 26,
+            alignSelf: "center",
+            lineHeight: 0,
+            "& svg": {
+              fontSize: 22,
+              display: "block",
+            },
           }}
         >
           {icons[icon]}

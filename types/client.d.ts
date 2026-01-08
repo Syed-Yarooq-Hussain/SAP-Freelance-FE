@@ -125,3 +125,17 @@ export interface ClientInterviewRow {
   duration: string | number;
   status: string;
 }
+
+export interface IClientDashboardStats {
+  number_of_project: number;
+  interview_schedule: number;
+  total_spend_on_project: number;
+  pending_invoices: number;
+}
+
+export interface IClientMeetingsStats {
+  interview_requests: number;
+  upcoming_interviews: number;
+  rescheduled_interviews: number;
+  cancelled_interviews: number;
+}

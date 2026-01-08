@@ -34,7 +34,7 @@ export interface MilestoneData {
 }
 
 export interface ProjectDetailsLayoutProps {
-  stats: StatCardProps[];
+  stats?: StatCardProps[];
   projectInfo: ProjectInfoData;
   teamMembers: TeamMember[];
   children?: React.ReactNode;

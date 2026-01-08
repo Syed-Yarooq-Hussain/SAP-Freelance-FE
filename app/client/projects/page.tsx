@@ -3,7 +3,7 @@
 import { useClientProjects } from "@/actions/projects/useClientProjects";
 import Sidebar from "@/components/Sidebar";
 import Project from "@/components/specific/Project";
-import { clientProjectColumns, clientProjectStats } from "@/data/clientProject";
+import { clientProjectColumns } from "@/data/clientProject";
 import type { ClientProjectRow, IClientProjectDTO } from "@/types/client";
 import { useCallback, useEffect, useState } from "react";
 
@@ -45,7 +45,7 @@ export default function ClientProjectPage() {
     <Sidebar>
       <Project
         title="Projects"
-        stats={clientProjectStats}
+        //stats={clientProjectStats}
         columns={clientProjectColumns}
         rows={projectRows}
       />

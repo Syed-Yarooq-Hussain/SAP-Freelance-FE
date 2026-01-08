@@ -9,11 +9,7 @@ import DataTable from "@/components/DataTable";
 import DynamicPopup from "@/components/Popup";
 import Sidebar from "@/components/Sidebar";
 import ProjectDetailsLayout from "@/components/specific/ProjectDetailsLayout";
-import {
-  milestoneColumns,
-  projectStats,
-  teamMembers,
-} from "@/data/clientProjectDetails";
+import { milestoneColumns, teamMembers } from "@/data/clientProjectDetails";
 import { getMilestoneFormFields } from "@/forms/milestoneForm";
 import { ProjectInfoData } from "@/types/projects";
 import type { ClientMilestoneRow, IMilestone } from "@/types/teamBuilder";
@@ -190,7 +186,7 @@ export default function ClientProjectDetailsPage() {
   return (
     <Sidebar>
       <ProjectDetailsLayout
-        stats={projectStats}
+        //stats={projectStats}
         projectInfo={projectInfo}
         teamMembers={teamMembers}
       >

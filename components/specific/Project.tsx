@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 
 interface ProjectProps<T extends GridValidRowModel = GridValidRowModel> {
   title: string;
-  stats: StatCardProps[];
+  stats?: StatCardProps[];
   columns: GridColDef<T>[];
   rows: T[];
 }
@@ -32,7 +32,12 @@ export default function Project<
 
   return (
     <Box>
-      <DashboardStats stats={stats} containerProps={{ marginBottom: "30px" }} />
+      {stats?.length ? (
+        <DashboardStats
+          stats={stats}
+          containerProps={{ marginBottom: "30px" }}
+        />
+      ) : null}
 
       <Box
         sx={{

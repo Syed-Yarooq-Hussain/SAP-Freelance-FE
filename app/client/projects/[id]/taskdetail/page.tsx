@@ -10,11 +10,7 @@ import DataTable from "@/components/DataTable";
 import DynamicPopup from "@/components/Popup";
 import Sidebar from "@/components/Sidebar";
 import ProjectDetailsLayout from "@/components/specific/ProjectDetailsLayout";
-import {
-  projectStats,
-  taskColumns,
-  teamMembers,
-} from "@/data/clientProjectDetails";
+import { taskColumns, teamMembers } from "@/data/clientProjectDetails";
 import { getTaskFormFields } from "@/forms/taskForm";
 import type { ProjectInfoData } from "@/types/projects";
 import { ClientMilestoneRow, ClientTaskRow, ITask } from "@/types/teamBuilder";
@@ -153,8 +149,9 @@ export default function ClientTaskDetails() {
       onSuccess: (res) => {
         const data = res.data;
 
-        const clientIndustry = `${data?.client?.username ?? "N/A"} - ${data?.company_name ?? "N/A"
-          }`;
+        const clientIndustry = `${data?.client?.username ?? "N/A"} - ${
+          data?.company_name ?? "N/A"
+        }`;
 
         setProjectInfo({
           name: data?.name ?? "N/A",
@@ -236,7 +233,7 @@ export default function ClientTaskDetails() {
   return (
     <Sidebar>
       <ProjectDetailsLayout
-        stats={projectStats}
+        //stats={projectStats}
         projectInfo={projectInfo}
         teamMembers={teamMembers}
         milestoneData={milestoneData}

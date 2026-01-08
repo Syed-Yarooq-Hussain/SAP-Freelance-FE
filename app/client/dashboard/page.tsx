@@ -1,5 +1,6 @@
 "use client";
 
+import { useClientStats } from "@/actions/clients/useClientStats";
 import { useClientPayments } from "@/actions/payments/useClientPayments";
 import { useClientProjects } from "@/actions/projects/useClientProjects";
 import EngagementCalendarCard from "@/components/EngagementCalendarCard";
@@ -20,6 +21,7 @@ import {
 } from "@/types/client";
 import { APP_ROUTES } from "@/utils/app_routes";
 import { currentMonth, currentYear, formatYMD } from "@/utils/dateTime";
+import { useAnimatedCounter } from "@/utils/useAnimatedCounter";
 import { useProjectProgress } from "@/utils/useProjectProgress";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -34,6 +36,25 @@ export default function ClientDashboardPage() {
   const { mutate: loadProjects } = useClientProjects();
   const [paymentRows, setPaymentRows] = useState<ClientPaymentRow[]>([]);
   const { mutate: loadPayments } = useClientPayments();
+  const { data: statsResponse, isLoading: statsLoading } = useClientStats();
+  const dashboardStats = statsResponse?.data?.dashboard;
+
+  const animatedStats = [
+    useAnimatedCounter(dashboardStats?.number_of_project ?? 0),
+    useAnimatedCounter(dashboardStats?.interview_schedule ?? 0),
+    useAnimatedCounter(dashboardStats?.total_spend_on_project ?? 0),
+    useAnimatedCounter(dashboardStats?.pending_invoices ?? 0),
+  ];
+
+  const stats = clientStats.map((config, index) => ({
+    ...config,
+    subtitle:
+      index === 2 || index === 3
+        ? `$${animatedStats[index].toLocaleString()}`
+        : animatedStats[index],
+    loading: statsLoading,
+  }));
+
   const fetchProjects = useCallback(() => {
     loadProjects(undefined, {
       onSuccess: (res) => {
@@ -111,7 +132,7 @@ export default function ClientDashboardPage() {
     <Sidebar>
       <Dashboard
         announcements={clientAnnouncements}
-        stats={clientStats}
+        stats={stats}
         chart={
           <EngagementCalendarCard
             events={[]}

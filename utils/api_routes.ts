@@ -44,4 +44,5 @@ export const API_ROUTES = {
   POST_CONSULTANT_SCHEDULE: "/consultants/schedule",
   CONSULTANT_STATS: "/consultants/stats",
   CONSULTANT_RIGHT_SIDEBAR: "/consultants/left-sidebar",
+  CLIENT_STATS: "/clients/stats",
 };

@@ -17,7 +17,12 @@ export default function ProjectDetailsLayout({
 }: ProjectDetailsLayoutProps) {
   return (
     <Box>
-      <DashboardStats stats={stats} containerProps={{ marginBottom: "30px" }} />
+      {stats?.length ? (
+        <DashboardStats
+          stats={stats}
+          containerProps={{ marginBottom: "30px" }}
+        />
+      ) : null}
 
       <Box
         sx={{

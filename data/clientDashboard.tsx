@@ -18,25 +18,21 @@ export type OngoingProject = { id: string; name: string; step: number };
 export const clientStats: StatCardProps[] = [
   {
     title: "Number of Projects",
-    subtitle: 360,
     color: colors.BLUE,
     icon: "QueryStatsIcon",
   },
   {
     title: "Interviews Scheduled",
-    subtitle: 10,
     color: colors.BLUE,
     icon: "PeopleAltIcon",
   },
   {
     title: "Total Spend on Projects",
-    subtitle: "$3000",
     color: colors.BLUE,
     icon: "CurrencyExchangeIcon",
   },
   {
     title: "Pending Invoices",
-    subtitle: "$12,000",
     color: colors.BLUE,
     icon: "BallotIcon",
   },

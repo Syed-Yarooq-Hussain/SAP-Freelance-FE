@@ -1,5 +1,6 @@
 "use client";
 
+import { useClientStats } from "@/actions/clients/useClientStats";
 import {
   useClientMeetings,
   useUpdateMeetingStatus,
@@ -13,6 +14,7 @@ import {
 } from "@/data/clientInterview";
 import type { ClientInterviewRow, IClientMeetingDTO } from "@/types/client";
 import { formatDateTimeAmPm, formatYMD } from "@/utils/dateTime";
+import { useAnimatedCounter } from "@/utils/useAnimatedCounter";
 import { GridRenderCellParams } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 
@@ -20,6 +22,21 @@ export default function ClientInterviewPage() {
   const [rows, setRows] = useState<ClientInterviewRow[]>([]);
   const { mutate: loadMeetings } = useClientMeetings();
   const { mutate: updateStatus } = useUpdateMeetingStatus();
+  const { data: statsRes, isLoading: statsLoading } = useClientStats();
+  const meetingStats = statsRes?.data?.meetings_stats;
+
+  const animatedStats = [
+    useAnimatedCounter(meetingStats?.interview_requests ?? 0),
+    useAnimatedCounter(meetingStats?.upcoming_interviews ?? 0),
+    useAnimatedCounter(meetingStats?.rescheduled_interviews ?? 0),
+    useAnimatedCounter(meetingStats?.cancelled_interviews ?? 0),
+  ];
+
+  const stats = clientInterviewStats.map((stat, index) => ({
+    ...stat,
+    subtitle: animatedStats[index],
+    loading: statsLoading,
+  }));
 
   useEffect(() => {
     loadMeetings(undefined, {
@@ -77,7 +94,7 @@ export default function ClientInterviewPage() {
     <Sidebar>
       <Interview
         title="Meetings"
-        stats={clientInterviewStats}
+        stats={stats}
         columns={enhancedColumns}
         rows={rows}
         rescheduleEnabled
