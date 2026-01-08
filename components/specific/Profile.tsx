@@ -15,6 +15,7 @@ import {
 import { ProfileData } from "@/types/profile";
 import { mapConsultantProfile } from "@/utils/mapConsultantProfile";
 import { mapProfileToForm } from "@/utils/mapProfileForm";
+import colors from "@/utils/styles/colors";
 import { Box, Divider, Grid, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { FieldValues } from "react-hook-form";
@@ -164,6 +165,12 @@ const Profile: React.FC<ProfileProps> = ({
                 name={profile.name}
                 imageUrl={viewImageUrl}
                 size={140}
+                sx={{
+                  border: "2px solid #000",
+                  bgcolor: "rgba(25,118,210,0.12)",
+                  color: colors.BLUE,
+                  fontWeight: 700,
+                }}
               />
             </Box>
             <Box>
@@ -323,6 +330,12 @@ const Profile: React.FC<ProfileProps> = ({
             name={profile.name}
             imageUrl={editImageUrl}
             size={140}
+            sx={{
+              border: "2px solid #000",
+              bgcolor: "rgba(25,118,210,0.12)",
+              color: colors.BLUE,
+              fontWeight: 700,
+            }}
           />
         </Grid>
 

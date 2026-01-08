@@ -19,6 +19,7 @@ export interface ILoginForm {
 export interface IUser {
   id: number;
   username: string;
+  avatar?: string;
   role: number;
   email: string;
   phone: string;

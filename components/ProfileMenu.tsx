@@ -1,10 +1,10 @@
 "use client";
 
+import colors from "@/utils/styles/colors";
 import LogoutIcon from "@mui/icons-material/Logout";
 import PersonIcon from "@mui/icons-material/Person";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import {
-  Avatar,
   Box,
   Divider,
   ListItemIcon,
@@ -13,6 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 import * as React from "react";
+import ProfileAvatar from "./ProfileAvatar";
 
 interface ProfileMenuProps {
   anchorEl: HTMLElement | null;
@@ -25,6 +26,7 @@ interface ProfileMenuProps {
     name: string;
     avatar?: string;
   };
+  selectedPath?: string;
 }
 
 const ProfileMenu: React.FC<ProfileMenuProps> = ({
@@ -34,7 +36,8 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({
   onProfileClick,
   onChangePasswordClick,
   onLogoutClick,
-  user = { name: "Moni Roy" },
+  selectedPath,
+  user = { name: "User" },
 }) => {
   return (
     <Menu
@@ -47,9 +50,9 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({
         paper: {
           elevation: 4,
           sx: {
-            mt: 0,
-            minWidth: 200,
+            minWidth: 220,
             overflow: "hidden",
+            p: 0,
             boxShadow:
               "0px 2px 8px rgba(0,0,0,0.1), 0px 4px 20px rgba(0,0,0,0.08)",
           },
@@ -61,13 +64,15 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({
           display: "flex",
           alignItems: "center",
           gap: 1.5,
-          px: 1,
-          py: 1,
-          bgcolor: "#4285f4",
+          px: 2,
+          py: 1.5,
+          bgcolor: colors.BLUE,
           color: "white",
+          width: "100%",
+          boxSizing: "border-box",
         }}
       >
-        <Avatar src={user.avatar} alt={user.name} />
+        <ProfileAvatar name={user.name} imageUrl={user.avatar} size={36} />
         <Typography variant="subtitle1" fontWeight={600}>
           {user.name}
         </Typography>
@@ -76,20 +81,38 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({
       <Divider />
 
       <MenuItem
+        selected={selectedPath === "profile"}
         onClick={() => {
           onProfileClick?.();
           onClose();
         }}
-        sx={{ py: 0.75 }}
+        sx={{
+          width: "100%",
+          boxSizing: "border-box",
+          px: 2,
+          "&.Mui-selected": {
+            bgcolor: "rgba(25, 118, 210, 0.12)",
+          },
+          "&.Mui-selected:hover": {
+            bgcolor: "rgba(25, 118, 210, 0.18)",
+          },
+          "&.Mui-selected::before": {
+            content: '""',
+            position: "absolute",
+            left: 0,
+            top: 0,
+            height: "100%",
+            width: 4,
+            bgcolor: "primary.main",
+          },
+        }}
       >
         <ListItemIcon>
           <PersonIcon fontSize="small" />
         </ListItemIcon>
         <Typography variant="body2">Profile</Typography>
       </MenuItem>
-
       <Divider />
-
       <MenuItem
         onClick={() => {
           onChangePasswordClick?.();

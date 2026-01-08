@@ -2,7 +2,8 @@
 
 import { useLogout } from "@/actions/auth/logout";
 import { DESKTOP_DRAWER_WIDTH } from "@/constants/dimensions";
-import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
+import { getProfileRouteByRole } from "@/utils/roleRoutes";
+import colors from "@/utils/styles/colors";
 import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
 import MenuIcon from "@mui/icons-material/Menu";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -15,19 +16,25 @@ import {
   Menu,
   MenuItem,
   Toolbar,
+  Tooltip,
 } from "@mui/material";
+import { useSession } from "next-auth/react";
+import { usePathname, useRouter } from "next/navigation";
 import * as React from "react";
 import AppTitle from "./AppTitle";
-import ProfileMenu from "./ProfileMenu";
 import ChatSection from "./ChatSection";
+import ProfileAvatar from "./ProfileAvatar";
+import ProfileMenu from "./ProfileMenu";
 
 interface AppNavbarProps {
   showSidebar?: boolean;
 }
 
 const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
+  const router = useRouter();
+  const pathname = usePathname();
   const { mutate: logout } = useLogout();
-
+  const { data: session } = useSession();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
     React.useState<null | HTMLElement>(null);
@@ -51,6 +58,15 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
     setMobileMoreAnchorEl(event.currentTarget);
   const handleMobileMenuClose = () => setMobileMoreAnchorEl(null);
   const handleLogout = () => logout();
+  const handleProfileClick = () => {
+    const role = session?.user?.role;
+    const route = getProfileRouteByRole(role);
+    router.push(route);
+  };
+
+  const profileRoute = getProfileRouteByRole(session?.user?.role);
+
+  const selectedMenu = pathname === profileRoute ? "profile" : undefined;
 
   return (
     <>
@@ -89,36 +105,60 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
               display: { xs: "none", md: "flex" },
               alignItems: "center",
               gap: 2,
+              mr: 1.5,
             }}
           >
-            <IconButton
-              size="large"
-              color="inherit"
-              onClick={() => openDrawer("notification")}
-            >
-              <Badge badgeContent={17} color="error">
-                <NotificationsNoneIcon />
-              </Badge>
-            </IconButton>
+            <Tooltip title="Notifications" arrow>
+              <IconButton
+                size="large"
+                color="inherit"
+                onClick={() => openDrawer("notification")}
+              >
+                <Badge badgeContent={17} color="error">
+                  <NotificationsNoneIcon />
+                </Badge>
+              </IconButton>
+            </Tooltip>
 
-            <IconButton
-              size="large"
-              color="inherit"
-              onClick={() => openDrawer("chat")}
-            >
-              <Badge badgeContent={4} color="error">
-                <ChatOutlinedIcon />
-              </Badge>
-            </IconButton>
+            <Tooltip title="Messages" arrow>
+              <IconButton
+                size="large"
+                color="inherit"
+                onClick={() => openDrawer("chat")}
+              >
+                <Badge badgeContent={4} color="error">
+                  <ChatOutlinedIcon />
+                </Badge>
+              </IconButton>
+            </Tooltip>
 
-            <IconButton
-              size="large"
-              edge="end"
-              color="inherit"
-              onClick={handleProfileMenuOpen}
-            >
-              <AccountCircleOutlinedIcon />
-            </IconButton>
+            <Tooltip title="Profile" arrow>
+              <IconButton
+                size="large"
+                edge="end"
+                color="inherit"
+                onClick={handleProfileMenuOpen}
+                sx={{ p: 0.5 }}
+              >
+                <ProfileAvatar
+                  name={
+                    session?.user?.username?.replace(
+                      /([a-z])([A-Z])/g,
+                      "$1 $2"
+                    ) ?? "User"
+                  }
+                  imageUrl={session?.user?.avatar}
+                  size={34}
+                  sx={{
+                    border: "2px solid #000",
+                    bgcolor: "rgba(25,118,210,0.12)",
+                    color: colors.BLUE,
+                    fontSize: 18,
+                    fontWeight: 700,
+                  }}
+                />
+              </IconButton>
+            </Tooltip>
           </Box>
 
           <Box sx={{ display: { xs: "flex", md: "none" } }}>
@@ -156,8 +196,21 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
             <p>Notifications</p>
           </MenuItem>
           <MenuItem onClick={handleProfileMenuOpen}>
-            <IconButton size="large" color="inherit">
-              <AccountCircleOutlinedIcon />
+            <IconButton
+              size="large"
+              onClick={handleProfileMenuOpen}
+              sx={{ p: 0 }}
+            >
+              <ProfileAvatar
+                name={
+                  session?.user?.username?.replace(
+                    /([a-z])([A-Z])/g,
+                    "$1 $2"
+                  ) ?? "User"
+                }
+                imageUrl={session?.user?.avatar}
+                size={32}
+              />
             </IconButton>
             <p>Account</p>
           </MenuItem>
@@ -169,9 +222,13 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
         open={isMenuOpen}
         onClose={handleMenuClose}
         onLogoutClick={handleLogout}
+        onProfileClick={handleProfileClick}
+        selectedPath={selectedMenu}
         user={{
-          name: "Moni Roy",
-          avatar: "https://randomuser.me/api/portraits/women/44.jpg",
+          name:
+            session?.user?.username.replace(/([a-z])([A-Z])/g, "$1 $2") ??
+            "User",
+          avatar: session?.user?.avatar,
         }}
       />
 

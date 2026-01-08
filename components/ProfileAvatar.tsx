@@ -1,6 +1,7 @@
 "use client";
 
 import { Avatar } from "@mui/material";
+import type { SxProps, Theme } from "@mui/material/styles";
 import Image from "next/image";
 import { FC, useState } from "react";
 
@@ -8,6 +9,7 @@ interface ProfileAvatarProps {
   name?: string;
   imageUrl?: string;
   size?: number;
+  sx?: SxProps<Theme>;
 }
 
 const PLACEHOLDERS = ["/default.png", "/image.png", "", undefined];
@@ -15,20 +17,19 @@ const PLACEHOLDERS = ["/default.png", "/image.png", "", undefined];
 const getInitials = (name?: string) => {
   if (!name) return "?";
 
-  const words = name.trim().split(" ").filter(Boolean);
-
-  if (words.length === 0) return "?";
-  if (words.length === 1) return words[0][0]?.toUpperCase() ?? "?";
-
-  return `${words[0][0]?.toUpperCase() ?? ""}${
-    words[1][0]?.toUpperCase() ?? ""
-  }`;
+  return name
+    .trim()
+    .split(/\s+/)
+    .map((word) => word[0])
+    .join("")
+    .toUpperCase();
 };
 
 const ProfileAvatar: FC<ProfileAvatarProps> = ({
   name = "",
   imageUrl,
   size = 80,
+  sx,
 }) => {
   const [imageError, setImageError] = useState(false);
 
@@ -42,10 +43,15 @@ const ProfileAvatar: FC<ProfileAvatarProps> = ({
         width: size,
         height: size,
         bgcolor: shouldShowInitial ? "rgba(0,0,0,0.12)" : "transparent",
+        color: "inherit",
         fontSize: size * 0.35,
         fontWeight: 600,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        letterSpacing: 1,
+        ...sx,
       }}
-      aria-label={initials}
     >
       {shouldShowInitial ? (
         initials
