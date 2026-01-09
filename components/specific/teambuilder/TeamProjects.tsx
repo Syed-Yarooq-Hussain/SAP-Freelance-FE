@@ -5,6 +5,7 @@ import { useCreateMilestone } from "@/actions/projects/useCreateMilestone";
 import { useCreateTask } from "@/actions/projects/useCreateTask";
 import { useGetMilestoneTasks } from "@/actions/projects/useGetMilestoneTasks";
 import { useGetProject } from "@/actions/projects/useGetProject";
+import { useGetProjectConsultants } from "@/actions/projects/useGetProjectConsultants";
 import { useGetProjectMilestones } from "@/actions/projects/useGetProjectMilestones";
 import { useUpdateMilestone } from "@/actions/projects/useUpdateMilestone";
 import { useUpdateTask } from "@/actions/projects/useUpdateTask";
@@ -12,11 +13,13 @@ import AppButton from "@/components/Button";
 import { CreateForm } from "@/components/CreateForm";
 import MilestoneExpandableTable from "@/components/MilestoneExpandableTable";
 import DynamicPopup from "@/components/Popup";
+import { CONSULTANT_STATUS } from "@/constants/status";
 import { getMilestoneFormFields } from "@/forms/milestoneForm";
 import { getProjectFormFields } from "@/forms/projectForm";
 import { getTaskFormFields } from "@/forms/taskForm";
 import { useToast } from "@/providers/ToastProvider";
 import { IFieldConfig } from "@/types/create-form";
+import { IOption } from "@/types/options";
 import type { TeamProjectFormData } from "@/types/teamBuilder";
 import {
   ICreateMilestonePayload,
@@ -54,6 +57,8 @@ export default function TeamProjects({
   const [rows, setRows] = useState<MilestoneRow[]>([]);
   const [dynamicTasks, setDynamicTasks] = useState<TasksByMilestone>({});
   const [projectData, setProjectData] = useState<any>(null);
+  const getProjectConsultants = useGetProjectConsultants();
+  const [assigneeOptions, setAssigneeOptions] = useState<IOption[]>([]);
   const [expandedMilestoneId, setExpandedMilestoneId] = useState<number | null>(
     null
   );
@@ -68,6 +73,41 @@ export default function TeamProjects({
   >(null);
   const [scopeText, setScopeText] = useState("");
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+
+  const loadAssignees = useCallback(() => {
+    if (!projectId) return;
+
+    getProjectConsultants.mutate(
+      {
+        projectId,
+        statuses: [
+          CONSULTANT_STATUS.OFFERED,
+          CONSULTANT_STATUS.HIRED,
+          CONSULTANT_STATUS.REJECTED,
+          CONSULTANT_STATUS.INTERVIEWED,
+          CONSULTANT_STATUS.INTERVIEW_SCHEDULE,
+        ],
+      },
+      {
+        onSuccess: (res) => {
+          const list = res.data ?? [];
+
+          const assignees = list.filter(
+            (item) =>
+              item.status === CONSULTANT_STATUS.OFFERED ||
+              item.status === CONSULTANT_STATUS.HIRED
+          );
+
+          const options: IOption[] = assignees.map((item) => ({
+            label: item.name,
+            value: String(item.consultant_id),
+          }));
+
+          setAssigneeOptions(options);
+        },
+      }
+    );
+  }, [projectId, getProjectConsultants]);
 
   const handleUpdateMilestone = (data: TeamProjectFormData) => {
     if (!projectId) {
@@ -268,7 +308,13 @@ export default function TeamProjects({
   const handleExpandMilestone = (id: number | null) => {
     setExpandedMilestoneId(id);
 
-    if (id !== null && !dynamicTasks[id]) {
+    if (id === null) return;
+
+    if (assigneeOptions.length === 0) {
+      loadAssignees();
+    }
+
+    if (!dynamicTasks[id]) {
       fetchTasksForMilestone(id);
     }
   };
@@ -451,30 +497,32 @@ export default function TeamProjects({
   const taskFormElements = useMemo(() => {
     const selectedMilestone = rows.find((m) => m.id === expandedMilestoneId);
 
-    return getTaskFormFields([]).flatMap<IFieldConfig>((el) => {
-      if (el.name === "taskMilestone") {
-        return [
-          {
-            name: "taskMilestoneLabel",
-            label: "Milestone",
-            type: "text",
-            defaultValue: selectedMilestone?.name ?? "",
-            disabled: true,
-            column: { xs: 12, md: 6 },
-          },
-          {
-            name: "taskMilestone",
-            label: "Milestone Id",
-            type: "hidden",
-            hidden: true,
-            defaultValue: String(expandedMilestoneId ?? ""),
-          },
-        ];
-      }
+    return getTaskFormFields([], assigneeOptions).flatMap(
+      (el): IFieldConfig[] => {
+        if (el.name === "taskMilestone") {
+          return [
+            {
+              name: "taskMilestoneLabel",
+              label: "Milestone",
+              type: "text",
+              defaultValue: selectedMilestone?.name ?? "",
+              disabled: true,
+              column: { xs: 12, md: 6 },
+            },
+            {
+              name: "taskMilestone",
+              label: "Milestone",
+              type: "hidden",
+              hidden: true,
+              defaultValue: String(expandedMilestoneId ?? ""),
+            },
+          ];
+        }
 
-      return [el];
-    });
-  }, [expandedMilestoneId, rows]);
+        return [el];
+      }
+    );
+  }, [expandedMilestoneId, rows, assigneeOptions]);
 
   const mappedProjectFormFields = useMemo(() => {
     if (!projectData) return getProjectFormFields();

@@ -23,7 +23,7 @@ import type {
 } from "@/types/teamBuilder";
 import dayjs from "@/utils/dayjs";
 import { normalizeStatus } from "@/utils/normalizeStatus";
-import { normalizeWorkingSchedule } from "@/utils/workingSchedule";
+import { normalizeWorkingSchedule } from "@/utils/normalizeWorkingSchedule";
 import { Box, MenuItem, TextField, Typography } from "@mui/material";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -74,6 +74,7 @@ export default function TeamConfirmation({
       getShortlistedColumns(
         (consultantId) => {
           setSelectedConsultantId(consultantId);
+          refreshEverything(); 
           setInterviewMode("request");
           setInterviewOpen(true);
         },

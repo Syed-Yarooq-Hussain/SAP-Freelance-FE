@@ -1,4 +1,4 @@
-import { getConsultantMeService } from "@/services/getConsultantMe";
+import { getConsultantMeService } from "@/services/getConsultantProfile";
 import { useQuery } from "@tanstack/react-query";
 
 export const useConsultantMe = () => {

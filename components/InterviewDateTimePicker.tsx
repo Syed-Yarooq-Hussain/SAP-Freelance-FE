@@ -39,7 +39,9 @@ export default function InterviewDateTimePicker({
   const schedule =
     activeDays && selectedDate ? getScheduleForDate(selectedDate) : null;
   const safeSchedule =
-    schedule && schedule.start && schedule.end ? schedule : null;
+    schedule && schedule.active && schedule.start && schedule.end
+      ? schedule
+      : null;
 
   return (
     <Box display="flex" gap={2}>
@@ -49,7 +51,7 @@ export default function InterviewDateTimePicker({
         shouldDisableDate={(date) => {
           if (date.isBefore(dayjs(), "day")) return true;
 
-          if (!activeDays) return false;
+          if (!activeDays || activeDays.length === 0) return true;
 
           return !activeDays.includes(date.format("dddd").toLowerCase());
         }}

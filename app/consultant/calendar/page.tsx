@@ -1,7 +1,7 @@
 "use client";
 
 import { useConsultantCalendar } from "@/actions/consultants/useConsultantCalendar";
-import { useConsultantMe } from "@/actions/consultants/useConsultantMe";
+import { useConsultantMe } from "@/actions/consultants/useConsultantProfile";
 import { useSaveConsultantSchedule } from "@/actions/consultants/useSaveConsultantSchedule";
 import MonthlyCalendar from "@/components/MonthlyCalendar";
 import DynamicPopup from "@/components/Popup";

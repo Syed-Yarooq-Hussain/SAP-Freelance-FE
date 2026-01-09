@@ -1,11 +1,11 @@
 "use client";
 
-import { ProfileData } from "@/types/profile";
+import { ConsultantProfileData } from "@/types/profile";
 import { Box, Grid, Typography } from "@mui/material";
 import EmptyState from "./EmptyStats";
 
 interface Props {
-  reviews: ProfileData["reviews"];
+  reviews: ConsultantProfileData["reviews"];
 }
 
 const ProfileReviewsSection = ({ reviews }: Props) => {
@@ -29,11 +29,11 @@ const ProfileReviewsSection = ({ reviews }: Props) => {
                 pl: 2,
               }}
             >
-              <Typography variant="body2" color="grey">
-                Client: <b>{rev.client}</b>
+              <Typography variant="body2">
+                Client: <strong>{rev.client}</strong>
               </Typography>
-              <Typography variant="body2" color="grey">
-                Rating: <b>{rev.rating}</b>
+              <Typography variant="body2">
+                Rating: <strong>{rev.rating}</strong>
               </Typography>
               <Typography variant="body2">{rev.comment}</Typography>
             </Grid>

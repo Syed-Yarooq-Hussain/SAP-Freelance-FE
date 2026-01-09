@@ -1,6 +1,6 @@
-import { ProfileData } from "@/types/profile";
+import { ClientProfileData, ConsultantProfileData } from "@/types/profile";
 
-export function mapProfileToForm(profile: ProfileData) {
+export function mapConsultantProfileToForm(profile: ConsultantProfileData) {
   return {
     name: profile.name,
     email: profile.email,
@@ -19,5 +19,15 @@ export function mapProfileToForm(profile: ProfileData) {
     rating: profile.rating,
     visibility: profile.visibility,
     description: profile.description,
+  };
+}
+
+export function mapClientProfileToForm(profile: ClientProfileData) {
+  return {
+    name: profile.name,
+    email: profile.email,
+    phone: profile.phone,
+    city: profile.city,
+    country: profile.country,
   };
 }

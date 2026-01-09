@@ -146,7 +146,9 @@ export const CreateForm: FC<ICreateFormProps> = ({
     const isPassword = element.type === "password";
     const isFile = element.type === "file";
     const isSelect =
-      !!element.options?.length || !!dynamicOptions[element.name]?.length;
+      element.select === true ||
+      !!element.options?.length ||
+      !!dynamicOptions[element.name]?.length;
 
     if (element.hidden) {
       return (

@@ -1,7 +1,7 @@
 "use client";
 
 import { CreateForm } from "@/components/CreateForm";
-import { skillFormElements } from "@/forms/profileForm";
+import { skillFormElements } from "@/forms/consultantProfileForm";
 import { colors } from "@/utils/styles/colors";
 import CloseIcon from "@mui/icons-material/Close";
 import { Box, Grid, IconButton, Typography } from "@mui/material";

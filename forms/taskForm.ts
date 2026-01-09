@@ -1,8 +1,10 @@
-import { ASSIGNEE_OPTIONS } from "@/data/options";
 import { IFieldConfig } from "@/types/create-form";
 import { IOption } from "@/types/options";
 
-export function getTaskFormFields(milestones: IOption[]): IFieldConfig[] {
+export function getTaskFormFields(
+  milestones: IOption[],
+  assignees: IOption[]
+): IFieldConfig[] {
   return [
     {
       name: "taskName",
@@ -22,7 +24,7 @@ export function getTaskFormFields(milestones: IOption[]): IFieldConfig[] {
       name: "taskAssignee",
       label: "Assignee",
       select: true,
-      options: ASSIGNEE_OPTIONS,
+      options: assignees,
       placeholder: "Select Assignee",
       rules: { required: "Assignee is required" },
       column: { xs: 12, md: 4 },

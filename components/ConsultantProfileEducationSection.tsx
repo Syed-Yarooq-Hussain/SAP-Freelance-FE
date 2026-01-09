@@ -75,7 +75,7 @@ const ProfileEducationSection = ({ education, editable, onChange }: Props) => {
                     onChange={(e) => setDraft(e.target.value)}
                   />
                 ) : (
-                  <Typography>{edu}</Typography>
+                  <Typography variant="body2">{edu}</Typography>
                 )}
 
                 {editable && (

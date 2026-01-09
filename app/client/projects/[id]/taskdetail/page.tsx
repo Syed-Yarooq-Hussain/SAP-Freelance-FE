@@ -2,6 +2,7 @@
 
 import { useCreateTask } from "@/actions/projects/useCreateTask";
 import { useGetMilestoneTasks } from "@/actions/projects/useGetMilestoneTasks";
+import { useGetProjectConsultants } from "@/actions/projects/useGetProjectConsultants";
 import { useProjectDetails } from "@/actions/projects/useGetProjectDetails";
 import { useGetProjectMilestones } from "@/actions/projects/useGetProjectMilestones";
 import { useUpdateTask } from "@/actions/projects/useUpdateTask";
@@ -10,8 +11,10 @@ import DataTable from "@/components/DataTable";
 import DynamicPopup from "@/components/Popup";
 import Sidebar from "@/components/Sidebar";
 import ProjectDetailsLayout from "@/components/specific/ProjectDetailsLayout";
+import { CONSULTANT_STATUS } from "@/constants/status";
 import { taskColumns, teamMembers } from "@/data/clientProjectDetails";
 import { getTaskFormFields } from "@/forms/taskForm";
+import { IOption } from "@/types/options";
 import type { ProjectInfoData } from "@/types/projects";
 import { ClientMilestoneRow, ClientTaskRow, ITask } from "@/types/teamBuilder";
 import { formatYMD } from "@/utils/dateTime";
@@ -29,7 +32,10 @@ export default function ClientTaskDetails() {
     ? milestoneParam[0]
     : milestoneParam;
   const [tasks, setTasks] = useState<ClientTaskRow[]>([]);
+  const getProjectConsultants = useGetProjectConsultants();
+  const [assigneeOptions, setAssigneeOptions] = useState<IOption[]>([]);
   const { mutate: createTask } = useCreateTask();
+  const [assigneesLoaded, setAssigneesLoaded] = useState(false);
   const [milestoneData, setMilestoneData] = useState<
     ClientMilestoneRow | undefined
   >();
@@ -54,6 +60,40 @@ export default function ClientTaskDetails() {
     duration: "",
     status: "",
   });
+
+  const loadAssignees = useCallback(() => {
+    if (!projectId || assigneesLoaded) return;
+
+    getProjectConsultants.mutate(
+      {
+        projectId,
+        statuses: [
+          CONSULTANT_STATUS.OFFERED,
+          CONSULTANT_STATUS.HIRED,
+          CONSULTANT_STATUS.REJECTED,
+          CONSULTANT_STATUS.INTERVIEWED,
+          CONSULTANT_STATUS.INTERVIEW_SCHEDULE,
+        ],
+      },
+      {
+        onSuccess: (res) => {
+          const options: IOption[] = (res.data ?? [])
+            .filter(
+              (c) =>
+                c.status === CONSULTANT_STATUS.OFFERED ||
+                c.status === CONSULTANT_STATUS.HIRED
+            )
+            .map((c) => ({
+              label: c.name,
+              value: String(c.consultant_id),
+            }));
+
+          setAssigneeOptions(options);
+          setAssigneesLoaded(true);
+        },
+      }
+    );
+  }, [projectId, assigneesLoaded, getProjectConsultants]);
 
   const { mutate: loadMilestone } = useGetMilestoneTasks();
   const { mutate: loadProjectDetails } = useProjectDetails();
@@ -94,6 +134,10 @@ export default function ClientTaskDetails() {
 
   const handleEditTask = useCallback(
     (task: ITask) => {
+      if (assigneeOptions.length === 0) {
+        loadAssignees();
+      }
+
       setIsEditing(true);
       setEditTaskId(task.id);
 
@@ -101,15 +145,15 @@ export default function ClientTaskDetails() {
         taskName: task.name || "",
         taskDoc: task.description || "",
         taskEnd: "",
-        taskAssignee: "",
+        taskAssignee: String(task.assignee_id ?? ""),
         taskMilestone: milestoneId || "",
       });
 
       setOpenPopup(true);
     },
-    [milestoneId]
+    [milestoneId, loadAssignees, assigneeOptions.length]
   );
-  const fetchTasks = useCallback(() => {
+  const fetchTasks = () => {
     if (!milestoneId) return;
 
     loadMilestone(milestoneId, {
@@ -120,27 +164,27 @@ export default function ClientTaskDetails() {
           return;
         }
 
-        const formatted: ClientTaskRow[] = m.tasks.map((task) => ({
-          id: task.id,
-          name: task.name,
-          dependencies: "N/A",
-          details: task.description ?? "N/A",
-          deadline: "-",
-          status: m.status ?? "N/A",
-
-          onEdit: () => handleEditTask(task),
-          onDelete: () => console.log("DELETE TASK SOON", task.id),
-        }));
-
-        setTasks(formatted);
+        setTasks(
+          m.tasks.map((task) => ({
+            id: task.id,
+            name: task.name,
+            dependencies: "N/A",
+            details: task.description ?? "N/A",
+            deadline: "-",
+            status: m.status ?? "N/A",
+            onEdit: () => handleEditTask(task),
+            onDelete: () => console.log("DELETE TASK SOON", task.id),
+          }))
+        );
       },
-      onError: (err) => console.error("TASK API ERROR:", err),
     });
-  }, [milestoneId, loadMilestone, handleEditTask]);
+  };
 
   useEffect(() => {
+    if (!milestoneId) return;
     fetchTasks();
-  }, [fetchTasks]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [milestoneId]);
 
   useEffect(() => {
     if (!projectId) return;
@@ -185,9 +229,8 @@ export default function ClientTaskDetails() {
     });
   };
 
-  const isFormValid = Object.values(taskData).every(
-    (val) => (val ?? "").toString().trim() !== ""
-  );
+  const isFormValid =
+    !!taskData.taskName && !!taskData.taskAssignee && !!taskData.taskMilestone;
 
   const handleSubmitTask = () => {
     if (!milestoneId || !projectId) return;
@@ -195,7 +238,7 @@ export default function ClientTaskDetails() {
     const payload = {
       name: taskData.taskName,
       description: taskData.taskDoc,
-      assignee_id: 3,
+      assignee_id: Number(taskData.taskAssignee),
       required_hours: 40,
       project_milestone_id: Number(milestoneId),
       project_id: Number(projectId),
@@ -251,7 +294,10 @@ export default function ClientTaskDetails() {
               label="Add Task"
               colorKey="BLUE"
               width={150}
-              onClick={() => setOpenPopup(true)}
+              onClick={() => {
+                loadAssignees();
+                setOpenPopup(true);
+              }}
             />
           }
         />
@@ -264,7 +310,7 @@ export default function ClientTaskDetails() {
           onSubmit={handleSubmitTask}
           disableSubmit={!isFormValid}
           fields={mapTaskFieldsToPopup(
-            getTaskFormFields(milestoneOption),
+            getTaskFormFields(milestoneOption, assigneeOptions),
             taskData,
             handleFieldChange
           )}

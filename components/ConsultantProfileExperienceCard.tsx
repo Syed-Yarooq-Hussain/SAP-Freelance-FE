@@ -1,7 +1,7 @@
 "use client";
 
 import AppButton from "@/components/Button";
-import { ProfileData } from "@/types/profile";
+import { ConsultantProfileData } from "@/types/profile";
 import { colors } from "@/utils/styles/colors";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 
-type Experience = ProfileData["experienceList"][number];
+type Experience = ConsultantProfileData["experienceList"][number];
 
 interface Props {
   experience: Experience;
@@ -90,19 +90,17 @@ const ExperienceCard = ({ experience, editable, onSave, onDelete }: Props) => {
         <>
           <Typography fontWeight={600}>{experience.title}</Typography>
 
-          <Typography variant="body2" sx={{ color: "grey", mt: 1 }}>
-            Role: <span style={{ color: "black" }}>{experience.role}</span>
+          <Typography variant="body2" sx={{ mt: 1 }}>
+            Role: <strong>{experience.role}</strong>
           </Typography>
 
-          <Typography variant="body2" sx={{ color: "grey", mt: 1 }}>
-            Duration:{" "}
-            <span style={{ color: "black" }}>{experience.duration}</span>
+          <Typography variant="body2" sx={{ mt: 1 }}>
+            Duration: <strong>{experience.duration}</strong>
           </Typography>
 
           {experience.technologies && (
-            <Typography variant="body2" sx={{ color: "grey", mt: 1 }}>
-              Responsibilities:{" "}
-              <span style={{ color: "black" }}>{experience.technologies}</span>
+            <Typography variant="body2" sx={{ mt: 1 }}>
+              Responsibilities: <strong>{experience.technologies}</strong>
             </Typography>
           )}
 

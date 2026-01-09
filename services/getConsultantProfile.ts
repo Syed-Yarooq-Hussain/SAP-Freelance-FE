@@ -1,7 +1,7 @@
 import { API_STATUS } from "@/constants/api_status";
+import { getCachedSession } from "@/services/sessionCache";
 import { API_ROUTES } from "@/utils/api_routes";
 import { request } from "@/utils/request";
-import { getCachedSession } from "@/services/sessionCache";
 
 export async function getConsultantMeService() {
   const session = await getCachedSession();
@@ -12,7 +12,7 @@ export async function getConsultantMeService() {
   }
 
   const res = await request<null, any>({
-    url: API_ROUTES.CONSULTANT_ME,
+    url: API_ROUTES.CONSULTANT_PROFILE,
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useConsultantMe } from "@/actions/consultants/useConsultantMe";
+import { useConsultantMe } from "@/actions/consultants/useConsultantProfile";
 import AppButton from "@/components/Button";
 import { CreateForm } from "@/components/CreateForm";
 import ProfileAvatar from "@/components/ProfileAvatar";
@@ -11,18 +11,18 @@ import {
   getProfileHeaderFields,
   getProfileModuleFields,
   workExperienceFormElements,
-} from "@/forms/profileForm";
-import { ProfileData } from "@/types/profile";
-import { mapConsultantProfile } from "@/utils/mapConsultantProfile";
-import { mapProfileToForm } from "@/utils/mapProfileForm";
+} from "@/forms/consultantProfileForm";
+import { ConsultantProfileData } from "@/types/profile";
+import { mapConsultantProfile } from "@/utils/mapProfile";
+import { mapConsultantProfileToForm } from "@/utils/mapProfileForm";
 import colors from "@/utils/styles/colors";
 import { Box, Divider, Grid, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { FieldValues } from "react-hook-form";
-import ProfileEducationSection from "../ProfileEducationSection";
-import ProfileExperienceSection from "../ProfileExperienceSection";
-import ProfileReviewsSection from "../ProfileReviewsSection";
-import ProfileSkillsSection from "../ProfileSkillsSection";
+import ProfileEducationSection from "../ConsultantProfileEducationSection";
+import ProfileExperienceSection from "../ConsultantProfileExperienceSection";
+import ProfileReviewsSection from "../ConsultantProfileReviewsSection";
+import ProfileSkillsSection from "../ConsultantProfileSkillsSection";
 
 type ProfileMode = "view" | "edit";
 
@@ -32,7 +32,7 @@ interface ProfileProps {
   onRequestView?: () => void;
 }
 
-const emptyProfile: ProfileData = {
+const emptyProfile: ConsultantProfileData = {
   name: "",
   title: "",
   email: "",
@@ -64,12 +64,12 @@ const Profile: React.FC<ProfileProps> = ({
   onRequestEdit,
   onRequestView,
 }) => {
-  const [profile, setProfile] = useState<ProfileData>(emptyProfile);
-  const [formData, setFormData] = useState<ProfileData>(emptyProfile);
+  const [profile, setProfile] = useState<ConsultantProfileData>(emptyProfile);
+  const [formData, setFormData] = useState<ConsultantProfileData>(emptyProfile);
   const viewImageUrl = profile.image;
   const editImageUrl = formData.image;
-  const { data, isLoading } = useConsultantMe();
-  const formDefaults = mapProfileToForm(formData);
+  const { data } = useConsultantMe();
+  const formDefaults = mapConsultantProfileToForm(formData);
 
   useEffect(() => {
     if (!data?.data) return;
@@ -83,14 +83,6 @@ const Profile: React.FC<ProfileProps> = ({
       setFormData(profile);
     }
   }, [mode, profile]);
-
-  if (isLoading) {
-    return (
-      <Box p={4}>
-        <Typography>Loading profile...</Typography>
-      </Box>
-    );
-  }
 
   const handleCreateFormSuccess = (data: FieldValues) => {
     setFormData((prev) => ({
@@ -109,7 +101,7 @@ const Profile: React.FC<ProfileProps> = ({
   const handleSave = () => {
     setProfile(formData);
     if (typeof window !== "undefined") {
-      localStorage.setItem("profileData", JSON.stringify(formData));
+      localStorage.setItem("ConsultantProfileData", JSON.stringify(formData));
     }
     onRequestView?.();
   };
@@ -174,7 +166,9 @@ const Profile: React.FC<ProfileProps> = ({
               />
             </Box>
             <Box>
-              <Typography variant="h6">{profile.name}</Typography>
+              <Typography variant="h5">
+                <strong>{profile.name}</strong>
+              </Typography>
               <Typography
                 variant="body2"
                 sx={{
@@ -186,12 +180,11 @@ const Profile: React.FC<ProfileProps> = ({
                   overflow: "hidden",
                 }}
               >
-                {profile.title}
+                <strong>{profile.title}</strong>
               </Typography>
 
-              <Typography variant="body2" sx={{ color: "grey", mt: 2 }}>
-                Visibility:{" "}
-                <span style={{ color: "black" }}>{profile.visibility}</span>
+              <Typography variant="body2" sx={{ mt: 2 }}>
+                Visibility: <strong>{profile.visibility}</strong>
               </Typography>
             </Box>
           </Grid>
@@ -199,71 +192,61 @@ const Profile: React.FC<ProfileProps> = ({
           <Grid size={{ xs: 12, md: 6 }}>
             <Grid container spacing={2}>
               <Grid size={{ xs: 6 }}>
-                <Typography variant="body2" sx={{ color: "grey" }}>
-                  Core Modules:{" "}
-                  <span style={{ color: "black" }}>{profile.module?.core}</span>
+                <Typography variant="body2">
+                  Core Modules: <strong>{profile.module?.core}</strong>
                 </Typography>
               </Grid>
 
               <Grid size={{ xs: 6 }}>
-                <Typography variant="body2" sx={{ color: "grey" }}>
-                  Projects:{" "}
-                  <span style={{ color: "black" }}>{profile.projects}</span>
+                <Typography variant="body2">
+                  Other Modules: <strong>{profile.module?.others}</strong>
                 </Typography>
               </Grid>
 
               <Grid size={{ xs: 6 }}>
-                <Typography variant="body2" sx={{ color: "grey" }}>
-                  Other Modules:{" "}
-                  <span style={{ color: "black" }}>
-                    {profile.module?.others}
-                  </span>
+                <Typography variant="body2">
+                  Experience: <strong>{profile.experience} Years</strong>
                 </Typography>
               </Grid>
 
               <Grid size={{ xs: 6 }}>
-                <Typography variant="body2" sx={{ color: "grey" }}>
-                  Availability:{" "}
-                  <span style={{ color: "black" }}>
-                    {profile.availability || "—"} hrs/week
-                  </span>
+                <Typography variant="body2">
+                  Projects: <strong>{profile.projects}</strong>
                 </Typography>
               </Grid>
 
               <Grid size={{ xs: 6 }}>
-                <Typography variant="body2" sx={{ color: "grey" }}>
-                  Experience:{" "}
-                  <span style={{ color: "black" }}>
-                    {profile.experience} Years
-                  </span>
+                <Typography variant="body2">
+                  Availability:
+                  <strong>{profile.availability || "—"} hrs/week</strong>
                 </Typography>
               </Grid>
 
               <Grid size={{ xs: 6 }}>
-                <Typography variant="body2" sx={{ color: "grey" }}>
-                  Location:{" "}
-                  <span style={{ color: "black" }}>{profile.location}</span>
-                </Typography>
-              </Grid>
-
-              <Grid size={{ xs: 6 }}>
-                <Typography variant="body2" sx={{ color: "grey" }}>
+                <Typography variant="body2">
                   Rate:{" "}
-                  <span style={{ color: "black" }}>${profile.rate}/hour</span>
+                  <strong style={{ color: "black" }}>
+                    ${profile.rate}/hour
+                  </strong>
                 </Typography>
               </Grid>
 
               <Grid size={{ xs: 6 }}>
-                <Typography variant="body2" sx={{ color: "grey" }}>
-                  Contact:{" "}
-                  <span style={{ color: "black" }}>{profile.email}</span>
+                <Typography variant="body2">
+                  Location: <strong>{profile.location}</strong>
                 </Typography>
               </Grid>
 
               <Grid size={{ xs: 6 }}>
-                <Typography variant="body2" sx={{ color: "grey" }}>
+                <Typography variant="body2">
+                  Email: <strong>{profile.email}</strong>
+                </Typography>
+              </Grid>
+
+              <Grid size={{ xs: 6 }}>
+                <Typography variant="body2">
                   Rating:{" "}
-                  <span style={{ color: "black" }}>{profile.rating}</span>
+                  <strong style={{ color: "black" }}>{profile.rating}</strong>
                 </Typography>
               </Grid>
             </Grid>
@@ -321,7 +304,7 @@ const Profile: React.FC<ProfileProps> = ({
       }}
     >
       <Typography variant="h6" sx={{ mb: 3, fontWeight: 700 }}>
-        Edit profile
+        Edit Profile
       </Typography>
 
       <Grid container spacing={2} alignItems="flex-start">

@@ -1,11 +1,11 @@
 "use client";
 
-import { ProfileData } from "@/types/profile";
+import { ConsultantProfileData } from "@/types/profile";
 import { Grid, Typography } from "@mui/material";
+import ExperienceCard from "./ConsultantProfileExperienceCard";
 import EmptyState from "./EmptyStats";
-import ExperienceCard from "./ProfileExperienceCard";
 
-type Experience = ProfileData["experienceList"][number];
+type Experience = ConsultantProfileData["experienceList"][number];
 
 interface Props {
   experiences: Experience[];

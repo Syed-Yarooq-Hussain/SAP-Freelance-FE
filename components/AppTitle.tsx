@@ -2,10 +2,13 @@
 
 import { APP_ROUTES } from "@/utils/app_routes";
 import { Box, Typography } from "@mui/material";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 
 const AppTitle: React.FC = () => {
   const pathname = usePathname();
+
+  const isTeamBuilder = pathname.startsWith(APP_ROUTES.TEAMBUILDER);
 
   const getTitle = () => {
     if (pathname.startsWith("/consultant")) {
@@ -25,8 +28,7 @@ const AppTitle: React.FC = () => {
 
     if (pathname.startsWith("/client")) {
       if (pathname.startsWith(APP_ROUTES.CLIENT.PROJECTS)) return "Projects";
-      if (pathname.startsWith(APP_ROUTES.CLIENT.INTERVIEWS))
-        return "Meetings";
+      if (pathname.startsWith(APP_ROUTES.CLIENT.INTERVIEWS)) return "Meetings";
       if (pathname.startsWith(APP_ROUTES.CLIENT.DOCUMENTS)) return "Documents";
       if (pathname.startsWith(APP_ROUTES.CLIENT.PAYMENTS)) return "Payments";
       if (pathname.startsWith(APP_ROUTES.CLIENT.PROFILE)) return "Profile";
@@ -45,16 +47,27 @@ const AppTitle: React.FC = () => {
       if (pathname.startsWith(APP_ROUTES.ADMIN.CLIENT)) return "Clients";
       if (pathname.startsWith(APP_ROUTES.ADMIN.NOTIFICATIONS))
         return "Notifications";
-
       return "Dashboard";
     }
-    if (pathname.startsWith(APP_ROUTES.TEAMBUILDER)) return "Team Builder";
+
+    if (isTeamBuilder) return "Team Builder";
 
     return "SAP Portal";
   };
 
   return (
     <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+      {isTeamBuilder && (
+        <Image
+          src="/vx9-logo-02.png"
+          alt="Vertex9 Systems"
+          width={100}
+          height={50}
+          style={{ objectFit: "contain" }}
+          priority
+        />
+      )}
+
       <Typography
         variant="h6"
         noWrap

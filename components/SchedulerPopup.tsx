@@ -1,6 +1,6 @@
 "use client";
 
-import { useConsultantMe } from "@/actions/consultants/useConsultantMe";
+import { useConsultantMe } from "@/actions/consultants/useConsultantProfile";
 import { useSaveConsultantSchedule } from "@/actions/consultants/useSaveConsultantSchedule";
 import AppButton from "@/components/Button";
 import {

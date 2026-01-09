@@ -39,10 +39,12 @@ export const API_ROUTES = {
   ADMIN_CLIENTS: "/admin/clients/all",
   UPDATE_ADMIN_CLIENT_STATUS: "/admin/clients",
   PDF_READER: "/common/pdf-reader",
-  CONSULTANT_ME: "/consultants/me",
+  CONSULTANT_PROFILE: "/consultants/me",
   GET_CONSULTANT_SCHEDULE: "/consultants/schedule",
   POST_CONSULTANT_SCHEDULE: "/consultants/schedule",
   CONSULTANT_STATS: "/consultants/stats",
   CONSULTANT_RIGHT_SIDEBAR: "/consultants/left-sidebar",
   CLIENT_STATS: "/clients/stats",
+  CLIENT_PROFILE: "/clients/me",
+  UPDATE_CLIENT_PROFILE: "/clients",
 };

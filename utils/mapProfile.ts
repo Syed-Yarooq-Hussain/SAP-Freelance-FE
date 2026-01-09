@@ -1,6 +1,6 @@
-import { ProfileData } from "@/types/profile";
+import { ClientProfileData, ConsultantProfileData } from "@/types/profile";
 
-export const mapConsultantProfile = (apiData: any): ProfileData => {
+export const mapConsultantProfile = (apiData: any): ConsultantProfileData => {
   const user = apiData?.user ?? {};
   const consultant = apiData ?? {};
 
@@ -16,7 +16,6 @@ export const mapConsultantProfile = (apiData: any): ProfileData => {
 
     module: user.module ?? { core: "", others: "" },
 
-    // ✅ NUMBERS AS STRINGS (safe for RHF number inputs)
     experience:
       consultant.experience !== null && consultant.experience !== undefined
         ? String(consultant.experience)
@@ -73,5 +72,18 @@ export const mapConsultantProfile = (apiData: any): ProfileData => {
 
     reviews: [],
     reviewsList: [],
+  };
+};
+
+export const mapClientProfile = (apiData: any): ClientProfileData => {
+  const user = apiData?.user ?? apiData ?? {};
+
+  return {
+    name: user.username?.replace(/([a-z])([A-Z])/g, "$1 $2") ?? "",
+    email: user.email ?? "",
+    phone: user.phone ?? "",
+    city: user.city ?? "",
+    country: user.country ?? "",
+    image: user.image || "/default.png",
   };
 };

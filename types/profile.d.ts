@@ -1,6 +1,6 @@
 export type ProfileExperience = ProfileData["experienceList"][number];
 
-export interface ProfileData {
+export interface ConsultantProfileData {
   name: string;
   title: string;
   email: string;
@@ -37,4 +37,13 @@ export interface ProfileData {
     rating: number;
     comment: string;
   }>;
+}
+
+export interface ClientProfileData {
+  name: string;
+  email: string;
+  city: string;
+  country: string;
+  phone: string;
+  image: string;
 }

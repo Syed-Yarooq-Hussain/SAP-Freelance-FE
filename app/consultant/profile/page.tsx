@@ -1,7 +1,7 @@
 "use client";
 
 import Sidebar from "@/components/Sidebar";
-import Profile from "@/components/specific/Profile";
+import Profile from "@/components/specific/ConsultantProfile";
 import { APP_ROUTES } from "@/utils/app_routes";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
