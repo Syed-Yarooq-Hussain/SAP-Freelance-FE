@@ -113,6 +113,29 @@ export function useProjectProgress() {
     );
   };
 
+  const getCompletedSteps = (projectId: string): number[] => {
+    if (typeof window === "undefined") return [];
+    return JSON.parse(
+      localStorage.getItem(`tb_step_completed_${projectId}`) || "[]"
+    );
+  };
+
+  const isStepCompleted = (projectId: string, step: number): boolean => {
+    return getCompletedSteps(projectId).includes(step);
+  };
+
+  const markStepCompleted = (projectId: string, step: number) => {
+    if (typeof window === "undefined") return;
+
+    const key = `tb_step_completed_${projectId}`;
+    const completed = getCompletedSteps(projectId);
+
+    if (!completed.includes(step)) {
+      completed.push(step);
+      localStorage.setItem(key, JSON.stringify(completed));
+    }
+  };
+
   return {
     projects,
     loading,
@@ -121,5 +144,7 @@ export function useProjectProgress() {
     removeProject,
     reload: loadProjects,
     persistRequestedHours,
+    markStepCompleted,
+    isStepCompleted,
   };
 }

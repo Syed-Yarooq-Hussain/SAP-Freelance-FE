@@ -24,6 +24,7 @@ import type {
 import dayjs from "@/utils/dayjs";
 import { normalizeStatus } from "@/utils/normalizeStatus";
 import { normalizeWorkingSchedule } from "@/utils/normalizeWorkingSchedule";
+import { useProjectProgress } from "@/utils/useProjectProgress";
 import { Box, MenuItem, TextField, Typography } from "@mui/material";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -43,6 +44,8 @@ export default function TeamConfirmation({
   const [interviewMode, setInterviewMode] = useState<InterviewMode>("request");
   const meetingInvite = useMeetingInvite();
   const updateConsultantStatus = useUpdateConsultantStatus();
+  const { markStepCompleted, isStepCompleted } = useProjectProgress();
+  const [step2Completed, setStep2Completed] = useState(false);
   const [selectedConsultantId, setSelectedConsultantId] = useState<
     string | number | null
   >(null);
@@ -74,7 +77,7 @@ export default function TeamConfirmation({
       getShortlistedColumns(
         (consultantId) => {
           setSelectedConsultantId(consultantId);
-          refreshEverything(); 
+          refreshEverything();
           setInterviewMode("request");
           setInterviewOpen(true);
         },
@@ -120,6 +123,29 @@ export default function TeamConfirmation({
       ),
     []
   );
+
+  const hasHired = useMemo(() => {
+    return candidates.some((c) => c.status === CONSULTANT_STATUS.OFFERED);
+  }, [candidates]);
+
+  const hiredCount = useMemo(() => {
+    return candidates.filter((c) => c.status === CONSULTANT_STATUS.OFFERED)
+      .length;
+  }, [candidates]);
+
+  useEffect(() => {
+    if (!projectId) return;
+    setStep2Completed(isStepCompleted(projectId, 2));
+  }, [projectId]);
+
+  useEffect(() => {
+    if (projectId && hasHired) {
+      markStepCompleted(projectId, 2);
+      setStep2Completed(true);
+    }
+  }, [hasHired, projectId]);
+
+  const canProceed = hasHired || step2Completed;
 
   const refreshEverything = () => {
     if (!projectId) return;
@@ -474,9 +500,13 @@ export default function TeamConfirmation({
       >
         <Typography
           variant="body1"
-          sx={{ fontWeight: 600, color: "text.primary", fontSize: "0.95rem" }}
+          sx={{
+            fontWeight: 600,
+            color: hiredCount > 0 ? "success.main" : "text.secondary",
+            fontSize: "0.95rem",
+          }}
         >
-          2 hired
+          {hiredCount} hired
         </Typography>
 
         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
@@ -490,6 +520,7 @@ export default function TeamConfirmation({
             label="Proceed to next step"
             colorKey="BLUE"
             width={180}
+            disabled={!canProceed}
             onClick={() => onNext?.(projectId!)}
           />
         </Box>

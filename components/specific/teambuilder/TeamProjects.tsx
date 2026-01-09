@@ -31,6 +31,7 @@ import {
   TasksByMilestone,
   TeamProjectsProps,
 } from "@/types/teamBuilder";
+import { useProjectProgress } from "@/utils/useProjectProgress";
 import { Box, Typography } from "@mui/material";
 import { useSession } from "next-auth/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -59,6 +60,8 @@ export default function TeamProjects({
   const [projectData, setProjectData] = useState<any>(null);
   const getProjectConsultants = useGetProjectConsultants();
   const [assigneeOptions, setAssigneeOptions] = useState<IOption[]>([]);
+  const { markStepCompleted, isStepCompleted } = useProjectProgress();
+  const [step3Completed, setStep3Completed] = useState(false);
   const [expandedMilestoneId, setExpandedMilestoneId] = useState<number | null>(
     null
   );
@@ -566,6 +569,41 @@ export default function TeamProjects({
     });
   }, [projectData]);
 
+  const hasAtLeastOneCompleteMilestone = useMemo(() => {
+    return rows.some((m) => {
+      return (
+        Boolean(m.name?.trim()) &&
+        Boolean(m.start_date) &&
+        Boolean(m.due_date) &&
+        Boolean(m.description?.trim())
+      );
+    });
+  }, [rows]);
+
+  const hasCompleteMilestone = useMemo(() => {
+    return rows.some(
+      (m) =>
+        Boolean(m.name?.trim()) &&
+        Boolean(m.start_date) &&
+        Boolean(m.due_date) &&
+        Boolean(m.description?.trim())
+    );
+  }, [rows]);
+
+  useEffect(() => {
+    if (!projectId) return;
+    setStep3Completed(isStepCompleted(projectId, 3));
+  }, [projectId]);
+
+  useEffect(() => {
+    if (projectId && hasCompleteMilestone) {
+      markStepCompleted(projectId, 3);
+      setStep3Completed(true);
+    }
+  }, [hasCompleteMilestone, projectId]);
+
+  const canProceed = hasCompleteMilestone || step3Completed;
+
   const loadAllMilestones = useCallback(() => {
     if (!projectId) return;
 
@@ -713,6 +751,13 @@ export default function TeamProjects({
           gap: 2,
         }}
       >
+        <Typography
+          variant="body2"
+          sx={{ color: "text.secondary", fontWeight: 500 }}
+        >
+          Complete at least one milestone to continue
+        </Typography>
+
         <Box />
         <Box sx={{ display: "flex", gap: 1.5 }}>
           <AppButton label="Back" colorKey="RED" onClick={onBack} width={180} />
@@ -720,6 +765,7 @@ export default function TeamProjects({
             label="Proceed to next step"
             colorKey="BLUE"
             width={180}
+            disabled={!canProceed}
             onClick={() => onNext?.(projectId!)}
           />
         </Box>
