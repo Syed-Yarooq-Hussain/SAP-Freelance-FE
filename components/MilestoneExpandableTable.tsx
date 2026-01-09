@@ -19,6 +19,7 @@ import {
   TableCell,
   TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
   Tooltip,
   Typography,
@@ -46,34 +47,30 @@ export default function MilestoneExpandableTable({
   onDeleteMilestone,
   taskForm,
 }: Props) {
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage] = React.useState(10);
+
+  const paginatedMilestones = milestones.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
+
   return (
     <TableContainer component={Paper}>
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell sx={{ fontWeight: 600, fontSize: "0.875rem" }}>
-              Name
-            </TableCell>
-            <TableCell sx={{ fontWeight: 600, fontSize: "0.875rem" }}>
-              Start Date
-            </TableCell>
-            <TableCell sx={{ fontWeight: 600, fontSize: "0.875rem" }}>
-              End Date
-            </TableCell>
-            <TableCell sx={{ fontWeight: 600, fontSize: "0.875rem" }}>
-              Description
-            </TableCell>
-            <TableCell sx={{ fontWeight: 600, fontSize: "0.875rem" }}>
-              Tasks
-            </TableCell>
-            <TableCell sx={{ fontWeight: 600, fontSize: "0.875rem" }}>
-              Actions
-            </TableCell>
+            <TableCell sx={{ fontWeight: 600 }}>Name</TableCell>
+            <TableCell sx={{ fontWeight: 600 }}>Start Date</TableCell>
+            <TableCell sx={{ fontWeight: 600 }}>End Date</TableCell>
+            <TableCell sx={{ fontWeight: 600 }}>Description</TableCell>
+            <TableCell sx={{ fontWeight: 600 }}>Tasks</TableCell>
+            <TableCell sx={{ fontWeight: 600 }}>Actions</TableCell>
           </TableRow>
         </TableHead>
 
         <TableBody>
-          {milestones.map((m) => {
+          {paginatedMilestones.map((m) => {
             const isOpen = expandedMilestoneId === m.id;
 
             return (
@@ -151,7 +148,7 @@ export default function MilestoneExpandableTable({
                           rows={tasksByMilestone[m.id] || []}
                           columns={taskColumns(onEditTask)}
                           pageSize={5}
-                          hidePagination
+                          hidePagination={false}
                         />
 
                         <Box mt={2}>{taskForm}</Box>
@@ -164,6 +161,19 @@ export default function MilestoneExpandableTable({
           })}
         </TableBody>
       </Table>
+
+      <TablePagination
+        component="div"
+        count={milestones.length}
+        page={page}
+        onPageChange={(_, newPage) => {
+          setPage(newPage);
+          onExpand(null);
+        }}
+        rowsPerPage={rowsPerPage}
+        rowsPerPageOptions={[]}
+        labelRowsPerPage=""
+      />
     </TableContainer>
   );
 }

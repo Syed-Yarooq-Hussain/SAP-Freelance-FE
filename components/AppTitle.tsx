@@ -3,6 +3,7 @@
 import { APP_ROUTES } from "@/utils/app_routes";
 import { Box, Typography } from "@mui/material";
 import Image from "next/image";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const AppTitle: React.FC = () => {
@@ -58,14 +59,22 @@ const AppTitle: React.FC = () => {
   return (
     <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
       {isTeamBuilder && (
-        <Image
-          src="/vx9-logo-02.png"
-          alt="Vertex9 Systems"
-          width={100}
-          height={50}
-          style={{ objectFit: "contain" }}
-          priority
-        />
+        <Link
+          href={APP_ROUTES.CLIENT.DASHBOARD}
+          style={{ display: "flex", alignItems: "center" }}
+        >
+          <Image
+            src="/vx9-logo-02.png"
+            alt="Vertex9 Systems"
+            width={100}
+            height={50}
+            style={{
+              objectFit: "contain",
+              cursor: "pointer",
+            }}
+            priority
+          />
+        </Link>
       )}
 
       <Typography
