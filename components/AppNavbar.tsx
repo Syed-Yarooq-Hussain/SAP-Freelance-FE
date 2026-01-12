@@ -104,31 +104,22 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
             sx={{
               display: { xs: "none", md: "flex" },
               alignItems: "center",
-              gap: 2,
+              gap: 1.5,
               mr: 1.5,
             }}
           >
             <Tooltip title="Notifications" arrow>
               <IconButton
-                size="large"
-                color="inherit"
+                sx={{ p: 1 }}
                 onClick={() => openDrawer("notification")}
               >
-                <Badge badgeContent={17} color="error">
-                  <NotificationsNoneIcon />
-                </Badge>
+                <NotificationsNoneIcon />
               </IconButton>
             </Tooltip>
 
             <Tooltip title="Messages" arrow>
-              <IconButton
-                size="large"
-                color="inherit"
-                onClick={() => openDrawer("chat")}
-              >
-                <Badge badgeContent={4} color="error">
-                  <ChatOutlinedIcon />
-                </Badge>
+              <IconButton sx={{ p: 1 }} onClick={() => openDrawer("chat")}>
+                <ChatOutlinedIcon />
               </IconButton>
             </Tooltip>
 
@@ -148,13 +139,13 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
                     ) ?? "User"
                   }
                   imageUrl={session?.user?.avatar}
-                  size={34}
+                  size={24}
                   sx={{
-                    border: "2px solid #000",
+                    border: "1.8px solid rgba(0,0,0,0.8)",
                     bgcolor: "rgba(25,118,210,0.12)",
                     color: colors.BLUE,
                     fontSize: 18,
-                    fontWeight: 700,
+                    fontWeight: 600,
                   }}
                 />
               </IconButton>
