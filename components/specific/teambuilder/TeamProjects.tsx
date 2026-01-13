@@ -16,6 +16,7 @@ import DynamicPopup from "@/components/Popup";
 import { CONSULTANT_STATUS } from "@/constants/status";
 import { getMilestoneFormFields } from "@/forms/milestoneForm";
 import { getProjectFormFields } from "@/forms/projectForm";
+import { getScopeFormFields } from "@/forms/scopeForm";
 import { getTaskFormFields } from "@/forms/taskForm";
 import { useToast } from "@/providers/ToastProvider";
 import { IFieldConfig } from "@/types/create-form";
@@ -31,6 +32,7 @@ import {
   TasksByMilestone,
   TeamProjectsProps,
 } from "@/types/teamBuilder";
+import { mapInterviewFieldsToPopup } from "@/utils/mapFormToPopup";
 import { useProjectProgress } from "@/utils/useProjectProgress";
 import { Box, Typography } from "@mui/material";
 import { useSession } from "next-auth/react";
@@ -74,7 +76,9 @@ export default function TeamProjects({
   const [popupKind, setPopupKind] = useState<
     "functional" | "technical" | "out" | null
   >(null);
-  const [scopeText, setScopeText] = useState("");
+  const [scopeData, setScopeData] = useState<Record<string, string>>({
+    scopeText: "",
+  });
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
 
   const loadAssignees = useCallback(() => {
@@ -225,6 +229,18 @@ export default function TeamProjects({
     description: m.description ?? "",
     tasks: m.tasks?.length ?? 0,
   });
+
+  const handleScopeFieldChange = (field: string, value: string) => {
+    setScopeData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const scopePopupFields = useMemo(() => {
+    return mapInterviewFieldsToPopup(
+      getScopeFormFields(),
+      scopeData,
+      handleScopeFieldChange
+    );
+  }, [scopeData]);
 
   const handleSubmit = useCallback(
     (data: TeamProjectFormData) => {
@@ -438,19 +454,19 @@ export default function TeamProjects({
 
   const openPopup = (kind: "functional" | "technical" | "out") => {
     setPopupKind(kind);
-    setScopeText("");
+    setScopeData({ scopeText: "" });
     setUploadedFile(null);
   };
 
   const closePopup = () => {
     setPopupKind(null);
-    setScopeText("");
+    setScopeData({ scopeText: "" });
     setUploadedFile(null);
   };
 
   const saveScope = () => {
     console.log(`Saved ${popupKind} scope:`, {
-      description: scopeText.trim(),
+      description: scopeData.scopeText.trim(),
       file: uploadedFile,
     });
     closePopup();
@@ -776,24 +792,14 @@ export default function TeamProjects({
         onClose={closePopup}
         title={popupTitle}
         description={popupDescription}
-        fields={[
-          {
-            id: "scope",
-            label: "",
-            type: "text",
-            value: scopeText,
-            onChange: (val: string | File) =>
-              typeof val === "string" && setScopeText(val),
-            placeholder: "Description",
-          },
-        ]}
+        fields={scopePopupFields}
         fileUpload
         fileValue={uploadedFile}
         onFileChange={(f) => setUploadedFile(f)}
         buttonText="Save"
         buttonColor="BLUE"
         onSubmit={saveScope}
-        disableSubmit={!scopeText.trim()}
+        disableSubmit={!scopeData.scopeText?.trim()}
       />
     </Box>
   );

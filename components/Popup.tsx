@@ -17,6 +17,7 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
+import RichTextField from "./RichTextField";
 
 interface FieldConfig {
   id: string;
@@ -159,14 +160,14 @@ const DynamicPopup: React.FC<DynamicPopupProps> = ({
         )}
 
         {fields.map((field, index) => (
-          <Box
-            key={field.id}
-            mb={2}
-            sx={{
-              mt: index === 0 ? 1 : 0,
-            }}
-          >
-            {field.options ? (
+          <Box key={field.id} mb={2} sx={{ mt: index === 0 ? 1 : 0 }}>
+            {field.type === "richtext" ? (
+              <RichTextField
+                label={field.label}
+                value={field.value || ""}
+                onChange={(val) => field.onChange?.(val)}
+              />
+            ) : field.options ? (
               <TextField
                 select
                 fullWidth
@@ -179,18 +180,10 @@ const DynamicPopup: React.FC<DynamicPopupProps> = ({
                   select: {
                     displayEmpty: true,
                     renderValue: (selected) => {
-                      if (field.forceDisplayValue) {
-                        return field.forceDisplayValue;
-                      }
-
-                      if (!selected) {
-                        return field.placeholder || "Select";
-                      }
-
+                      if (!selected) return field.placeholder || "Select";
                       const match = field.options?.find(
                         (opt) => String(opt.value) === String(selected)
                       );
-
                       return match?.label || String(selected);
                     },
                   },
@@ -210,7 +203,7 @@ const DynamicPopup: React.FC<DynamicPopupProps> = ({
                   },
                 }}
               >
-                {field.options?.map((opt) => (
+                {field.options.map((opt) => (
                   <MenuItem key={opt.value} value={opt.value}>
                     {opt.label}
                   </MenuItem>
@@ -220,25 +213,15 @@ const DynamicPopup: React.FC<DynamicPopupProps> = ({
               <TextField
                 fullWidth
                 label={field.label}
-                type={field.type || "text"}
-                placeholder={field.placeholder || ""}
+                placeholder={field.placeholder}
                 value={field.value || ""}
                 onChange={(e) => field.onChange?.(e.target.value)}
                 size="small"
-                multiline={field.type !== "date" && field.type !== "time"}
-                minRows={field.type === "text" ? 3 : undefined}
+                multiline
+                minRows={3}
                 slotProps={{
-                  inputLabel: {
-                    shrink: true,
-                  },
+                  inputLabel: { shrink: true },
                 }}
-                sx={{
-                  "& .MuiInputBase-root": {
-                    backgroundColor: "#f8f9fc",
-                    borderRadius: 1,
-                  },
-                }}
-                helperText={field.helperText}
               />
             )}
           </Box>

@@ -99,3 +99,18 @@ body {
   --sidebar-border: oklch(0.269 0 0);
   --sidebar-ring: oklch(0.439 0 0);
 }
+
+.ProseMirror span[style*="font-size"] {
+  line-height: 1.6;
+}
+
+.ProseMirror table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.ProseMirror td,
+.ProseMirror th {
+  border: 1px solid #ccc;
+  padding: 8px;
+}
