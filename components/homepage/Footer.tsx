@@ -50,7 +50,7 @@ export function Footer({ onNavigate }: FooterProps) {
           {/* Quick Links */}
           <div>
             <h4 className="text-white mb-6 flex items-center gap-2">
-              <div className="w-1 h-6 bg-gradient-to-b from-blue-600 to-indigo-600 rounded-full" />
+              {/* <div className="w-1 h-6 bg-gradient-to-b from-blue-600 to-indigo-600 rounded-full" /> */}
               Quick Links
             </h4>
             <ul className="space-y-3 text-sm">
@@ -84,7 +84,7 @@ export function Footer({ onNavigate }: FooterProps) {
           {/* Contact */}
           <div>
             <h4 className="text-white mb-6 flex items-center gap-2">
-              <div className="w-1 h-6 bg-gradient-to-b from-blue-600 to-indigo-600 rounded-full" />
+              {/* <div className="w-1 h-6 bg-gradient-to-b from-blue-600 to-indigo-600 rounded-full" /> */}
               Contact
             </h4>
             <ul className="space-y-4 text-sm">
