@@ -183,7 +183,6 @@ export default function ClientTaskDetails() {
   useEffect(() => {
     if (!milestoneId) return;
     fetchTasks();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [milestoneId]);
 
   useEffect(() => {

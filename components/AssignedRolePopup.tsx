@@ -42,8 +42,6 @@ export function AssignedRolePopup({
       setRole("");
       setContracts([]);
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   return (

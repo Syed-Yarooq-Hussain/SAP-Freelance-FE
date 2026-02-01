@@ -436,8 +436,6 @@ export default function TeamConfirmation({
         },
       }
     );
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId]);
 
   useEffect(() => {
