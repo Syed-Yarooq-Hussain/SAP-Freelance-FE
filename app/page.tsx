@@ -20,6 +20,14 @@ import { LoginModal } from "@/components/homepage/LoginModal";
 import { ConsultantDetailModal } from "@/components/homepage/ConsultantDetailModal";
 import { SignUpModal } from "@/components/homepage/SignUpModal";
 import { Navigation } from "@/components/homepage/Navigation";
+import Banner from "@/components/homepageNew/Banner";
+import Careers from "@/components/homepageNew/Careers";
+import Consultants from "@/components/homepageNew/Consultants";
+import Features from "@/components/homepageNew/Features";
+import HireSap from "@/components/homepageNew/HireSap";
+import Reviews from "@/components/homepageNew/Reviews";
+import Teambuilder from "@/components/homepageNew/Teambuilder";
+import { Header } from "@/components/Header";
 
 type Page = "landing" | "consultants" | "contact";
 
@@ -91,16 +99,27 @@ export default function Home() {
   return (
     <div className="tailwind min-h-screen bg-white">
       {/* NAVIGATION */}
-      <Navigation
+      {/* <Navigation
         onLoginClick={() => setShowLoginModal(true)}
         onNavigate={setCurrentPage}
         isAuthenticated={isAuthenticated}
+      /> */}
+      <Header 
+        onLoginClick={() => setShowLoginModal(true)}
+        isAuthenticated={isAuthenticated}
       />
-
+      <div className="mt-20"/>
       {/* LANDING PAGE */}
       {currentPage === "landing" && (
         <>
-          <HeroSection
+          <Banner />
+          <Careers />
+          <Consultants />
+          <Features />
+          <Teambuilder />
+          <Reviews />
+          <HireSap />
+          {/* < 
             onFindConsultants={() => setCurrentPage("consultants")}
           />
 
@@ -116,7 +135,7 @@ export default function Home() {
             onRegister={() => handleOpenSignUp("consultant")}
           />
 
-          <ClientSignUpFlow />
+          <ClientSignUpFlow /> */}
         </>
       )}
 

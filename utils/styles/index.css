@@ -3316,6 +3316,16 @@
   --sidebar-ring: oklch(.439 0 0);
 }
 
+@layer components {
+  .btn-gradient-blue {
+    background: linear-gradient(to right, #0891B2, #1EAAC8);
+  }
+
+  .bg-container-gradient {
+    background: linear-gradient(135deg, #F8FAFC 0%, #FFFFFF 50%, #EFF6FF 100%);
+  }
+}
+
 html {
   font-size: var(--font-size);
 }
