@@ -26,7 +26,7 @@ const steps = [
 
 export default function Teambuilder() {
   return (
-    <section className="relative py-16 md:py-24 overflow-hidden">
+    <section id="team-builder" className="relative py-16 md:py-24 overflow-hidden scroll-mt-24">
       {/* Background with bottom gradient */}
       <div 
         className="absolute inset-0" 

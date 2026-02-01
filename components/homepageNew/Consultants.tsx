@@ -177,7 +177,7 @@ export default function Consultants() {
   }, [api])
 
   return (
-    <section className="py-16 md:py-24 bg-hero-gradient">
+    <section id="elite-talent" className="py-16 md:py-24 bg-hero-gradient scroll-mt-24">
       <div className="container mx-auto px-4 md:px-6">
         {/* Header */}
         <div className="flex flex-col items-center text-center mb-12">

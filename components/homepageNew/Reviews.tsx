@@ -44,8 +44,9 @@ const stats = [
 export default function Reviews() {
   return (
     <section 
-    style={{background: "linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 50%, #EFF6FF 100%)"}}
-      className="relative border-b py-16 md:py-24 bg-gradient-to-b from-cyan-50/50 to-white overflow-hidden">
+      id="why-choose"
+      style={{background: "linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 50%, #EFF6FF 100%)"}}
+      className="relative border-b py-16 md:py-24 bg-gradient-to-b from-cyan-50/50 to-white overflow-hidden scroll-mt-24">
       {/* Small decorative plus signs */}
       <CornerPlusSigns size="lg" opacity={30} />
 

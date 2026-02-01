@@ -97,7 +97,8 @@ export default function Careers() {
 
   return (
     <section 
-      className="py-16 md:py-12 bg-hero-gradient relative">
+      id="join-consultant"
+      className="py-16 md:py-12 bg-hero-gradient relative scroll-mt-24">
       <div className="absolute top-0 left-[-10%] w-1/2 h-full z-0">
         <Image
           src="/images/homepage/shade-blue.png"

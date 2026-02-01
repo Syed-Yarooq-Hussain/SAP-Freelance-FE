@@ -164,8 +164,9 @@ export default function Features() {
 
   return (
     <section 
+      id="how-different"
       style={{background: "linear-gradient(180deg, #E0F4F8 0%, #FFFFFF 50%, #F0F9FA 100%)"}}
-      className="relative py-16 md:py-24 overflow-hidden bg-hero-gradient">
+      className="relative py-16 md:py-24 overflow-hidden bg-hero-gradient scroll-mt-24">
       {/* Background decorative elements */}
       <div className="absolute top-[-40%] left-[-10%] z-0">
         <GradientCircle 

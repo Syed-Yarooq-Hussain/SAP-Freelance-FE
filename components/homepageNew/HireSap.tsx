@@ -2,7 +2,7 @@ import { Video, Calendar, ArrowRight } from "lucide-react"
 
 export default function HireSap() {
   return (
-    <section className="py-20 md:py-28 bg-gradient-to-b from-white to-cyan-50/50">
+    <section id="book-demo" className="py-20 md:py-28 bg-gradient-to-b from-white to-cyan-50/50 scroll-mt-24">
       <div className="container mx-auto px-4">
         <div className="flex flex-col items-center text-center max-w-full md:max-w-[90%] mx-auto">
           {/* Badge */}
