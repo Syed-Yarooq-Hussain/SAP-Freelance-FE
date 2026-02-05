@@ -1,7 +1,16 @@
 export const API_ROUTES = {
+  //auth routes
   SIGNUP_CLIENT: "/auth/signup/user",
   LOGIN: "/auth/login",
   SIGNUP_CONSULTANT: "/auth/signup/consultant",
+  SEND_VERIFICATION_EMAIL: "/auth/send-verification-email",
+  VERIFY_EMAIL: (token:string) => `/auth/verify-email?token=${token}`,
+  FORGOT_PASSWORD: "auth/forgot-password",
+  RESET_PASSWORD: "auth/reset-password",
+
+  //user:
+  GET_ME: "/users/me",
+
   CLIENT_CONSULTANTS: "/clients/consultants",
   PROJECT_CREATE: "/projects/create",
   ADD_PROJECT_DETAILS: "/projects",

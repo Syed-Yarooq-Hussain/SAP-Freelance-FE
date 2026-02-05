@@ -9,6 +9,10 @@ import QueryProvider from "@/providers/QueryProvider";
 import ToastProvider from "@/providers/ToastProvider";
 import GlobalLoader from "@/components/GlobalLoader";
 import getTheme from "@/theme";
+import { Providers } from "@/lib/store/provider";
+import { PersistGate } from "redux-persist/integration/react";
+import { persistor } from "@/lib/store/store";
+import { Toaster } from "@/components/homepage/ui/sonner";
 
 export default function ClientProviders({
   children,
@@ -36,8 +40,13 @@ export default function ClientProviders({
               <Box component="main" sx={{ p: 1 }}>
                 <ToastProvider>
                   <GlobalLoader />
-                  {children}
+                  <Providers>
+                    <PersistGate persistor={persistor} loading={null}>
+                      {children}
+                    </PersistGate>
+                  </Providers>
                 </ToastProvider>
+                <Toaster />
               </Box>
             </Container>
           </SessionProvider>

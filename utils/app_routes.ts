@@ -1,5 +1,7 @@
 export const APP_ROUTES = {
   HOME: "/",
+  VERIFY_EMAIL: "/verify-email",
+  RESET_PASSWORD: "/reset-password",
   LOGIN: "/auth/login",
   SIGNUP_SELECT: "/auth/signup-select",
   SIGNUP: "/auth/signup",

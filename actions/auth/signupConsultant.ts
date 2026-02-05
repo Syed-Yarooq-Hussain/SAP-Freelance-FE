@@ -7,21 +7,15 @@ import { useRouter } from "next/navigation";
 import { Roles } from "@/constants/roles";
 import { APP_ROUTES } from "@/utils/app_routes";
 import { API_ROUTES } from "@/utils/api_routes";
+import { ISignupDTO } from "@/types/common-auth";
 
 export const useSignupConsultant = () => {
   const router = useRouter();
 
   return useMutation({
-    mutationFn: async (data: IConsultantSignupPayload) => {
-      if (data.user.role !== Roles.CONSULTANT) {
-        throw new Error("Invalid role for consultant signup");
-      }
+    mutationFn: async (data: ISignupDTO) => {
 
-      if (data.user.password !== data.user.confirmPassword) {
-        throw new Error("Passwords do not match");
-      }
-
-      const response = await request<IConsultantSignupPayload, void>({
+      const response = await request<ISignupDTO, any>({
         url: API_ROUTES.SIGNUP_CONSULTANT,
         method: "POST",
         data,
@@ -30,7 +24,7 @@ export const useSignupConsultant = () => {
     },
     onSuccess(data) {
       console.log("Consultant signup successful:", data);
-      router.push(APP_ROUTES.LOGIN);
+      return data;
     },
   });
 };
