@@ -73,7 +73,7 @@ export function Header({ onLoginClick, onSignUpClick, isAuthenticated = false }:
                     onClick={onSignUpClick}
                     className="px-5 py-2.5 text-sm font-medium text-white btn-gradient-blue rounded-2xl transition-all duration-300 hover:scale-105 active:scale-95"
                   >
-                    Join as a Consultant
+                    Sign Up
                   </button>
                 </>
               )}
@@ -134,7 +134,7 @@ export function Header({ onLoginClick, onSignUpClick, isAuthenticated = false }:
                         }}
                         className="px-5 py-2.5 text-sm font-medium text-white btn-gradient-blue rounded-full transition-all duration-300 hover:scale-105 active:scale-95 text-center"
                       >
-                        Join as a Consultant
+                        Sign Up
                       </button>
                     </>
                   )}
