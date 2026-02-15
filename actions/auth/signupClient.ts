@@ -27,8 +27,7 @@ export const useSignupClient = () => {
         data,
       });
     },
-
-    onSuccess: () => {
+    onSuccess() {
       router.push(APP_ROUTES.LOGIN);
     },
   });

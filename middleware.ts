@@ -4,6 +4,9 @@ import { APP_ROUTES } from "./utils/app_routes";
 
 const PUBLIC_ROUTES = [
   APP_ROUTES.HOME,
+  APP_ROUTES.VERIFY_EMAIL,
+  '/auth/linkedin',
+  APP_ROUTES.RESET_PASSWORD,
   APP_ROUTES.LOGIN,
   APP_ROUTES.SIGNUP_SELECT,
   APP_ROUTES.SIGNUP,

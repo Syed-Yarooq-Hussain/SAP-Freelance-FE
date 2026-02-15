@@ -25,7 +25,6 @@ export const useLogin = () => {
     async onSuccess() {
       const session = await getCachedSession();
       const role = session?.user?.role;
-
       if (!role) {
         router.push(APP_ROUTES.LOGIN);
         return;

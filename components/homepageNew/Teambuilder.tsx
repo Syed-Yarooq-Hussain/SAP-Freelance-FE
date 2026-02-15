@@ -39,10 +39,6 @@ export default function Teambuilder() {
       <div className="relative z-10 container mx-auto px-4 md:px-6">
         {/* Header */}
         <div className="text-center mb-12 md:mb-16">
-          <div className="inline-flex items-center gap-2 px-5 py-2.5 btn-gradient-blue text-white text-sm font-medium rounded-full mb-6">
-            <Zap className="w-4 h-4" />
-            Expert Team Builder
-          </div>
           
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4 text-balance">
             Hire SAP Consultants in 3 Simple Steps

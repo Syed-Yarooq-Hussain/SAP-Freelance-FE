@@ -74,7 +74,6 @@ export default function TeamCreation({
   >(null);
 
   const openSchedule = (row: TeamBuilderRow) => {
-    console.log(row.working_schedule)
     setScheduleData(row.working_schedule);
     setScheduleModalOpen(true);
   };

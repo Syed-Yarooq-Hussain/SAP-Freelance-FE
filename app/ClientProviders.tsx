@@ -11,6 +11,10 @@ import ToastProvider from "@/providers/ToastProvider";
 import getTheme from "@/theme";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { Providers } from "@/lib/store/provider";
+import { PersistGate } from "redux-persist/integration/react";
+import { persistor } from "@/lib/store/store";
+import { Toaster } from "@/components/homepage/ui/sonner";
 
 export default function ClientProviders({
   children,
@@ -24,27 +28,32 @@ export default function ClientProviders({
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <QueryProvider>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <SessionProvider refetchInterval={0} refetchWhenOffline={false}>
-              <Container
-                maxWidth={false}
-                disableGutters
-                sx={{
-                  minHeight: "100vh",
-                  display: "flex",
-                  flexDirection: "column",
-                  pb: 4,
-                }}
-              >
-                <Box component="main" sx={{ p: 1 }}>
-                  <ToastProvider>
-                    <GlobalLoader />
-                    {children}
-                  </ToastProvider>
-                </Box>
-              </Container>
-            </SessionProvider>
-          </LocalizationProvider>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <SessionProvider refetchInterval={0} refetchWhenOffline={false}>
+            <Container
+              maxWidth={false}
+              disableGutters
+              sx={{
+                minHeight: "100vh",
+                display: "flex",
+                flexDirection: "column",
+                pb: 4,
+              }}
+            >
+              <Box component="main" sx={{ p: 1 }}>
+                <ToastProvider>
+                  <GlobalLoader />
+                  <Providers>
+                    <PersistGate persistor={persistor} loading={null}>
+                      {children}
+                    </PersistGate>
+                  </Providers>
+                </ToastProvider>
+                <Toaster />
+              </Box>
+            </Container>
+          </SessionProvider>
+        </LocalizationProvider>
         </QueryProvider>
       </ThemeProvider>
     </AppRouterCacheProvider>

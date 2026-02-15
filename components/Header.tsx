@@ -7,19 +7,20 @@ import { Menu, X, LogIn } from "lucide-react"
 
 interface HeaderProps {
   onLoginClick?: () => void;
+  onSignUpClick?: () => void;
   isAuthenticated?: boolean;
 }
 
 const navLinks = [
+  { label: "Join as consultant", href: "#join-consultant" },
   { label: "Elite Talent Pool", href: "#elite-talent" },
   { label: "How We're different", href: "#how-different" },
-  { label: "Join as consultant", href: "#join-consultant" },
   { label: "Expert Team Builder", href: "#team-builder" },
   { label: "Why Choose Us", href: "#why-choose" },
   { label: "Book a Demo", href: "#book-demo" },
 ]
 
-export function Header({ onLoginClick, isAuthenticated = false }: HeaderProps) {
+export function Header({ onLoginClick, onSignUpClick, isAuthenticated = false }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   return (
@@ -68,12 +69,12 @@ export function Header({ onLoginClick, isAuthenticated = false }: HeaderProps) {
                   >
                     Login
                   </button>
-                  <Link
-                    href="/join"
+                  <button
+                    onClick={onSignUpClick}
                     className="px-5 py-2.5 text-sm font-medium text-white btn-gradient-blue rounded-2xl transition-all duration-300 hover:scale-105 active:scale-95"
                   >
-                    Join as a Consultant
-                  </Link>
+                    Sign Up
+                  </button>
                 </>
               )}
             </div>
@@ -126,12 +127,15 @@ export function Header({ onLoginClick, isAuthenticated = false }: HeaderProps) {
                       >
                         Login
                       </button>
-                      <Link
-                        href="/join"
+                      <button
+                        onClick={() => {
+                          onSignUpClick?.();
+                          setIsMobileMenuOpen(false);
+                        }}
                         className="px-5 py-2.5 text-sm font-medium text-white btn-gradient-blue rounded-full transition-all duration-300 hover:scale-105 active:scale-95 text-center"
                       >
-                        Join as a Consultant
-                      </Link>
+                        Sign Up
+                      </button>
                     </>
                   )}
                 </div>

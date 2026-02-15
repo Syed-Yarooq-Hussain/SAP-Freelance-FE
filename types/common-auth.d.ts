@@ -11,6 +11,12 @@ export interface IBaseSignupDTO {
   status: number;
 }
 
+export interface ISignupDTO {
+  username: string;
+  email:string;
+  password: string
+}
+
 export interface ILoginForm {
   email: string;
   password: string;

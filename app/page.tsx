@@ -16,9 +16,7 @@ import { Footer } from "@/components/homepage/Footer";
 // SHARED COMPONENTS
 import { ConsultantListingPage } from "@/components/homepage/ConsultantListingPage";
 import { ContactPage } from "@/components/homepage/ContactPage";
-import { LoginModal } from "@/components/homepage/LoginModal";
 import { ConsultantDetailModal } from "@/components/homepage/ConsultantDetailModal";
-import { SignUpModal } from "@/components/homepage/SignUpModal";
 import { Navigation } from "@/components/homepage/Navigation";
 import Banner from "@/components/homepageNew/Banner";
 import Careers from "@/components/homepageNew/Careers";
@@ -28,6 +26,16 @@ import HireSap from "@/components/homepageNew/HireSap";
 import Reviews from "@/components/homepageNew/Reviews";
 import Teambuilder from "@/components/homepageNew/Teambuilder";
 import { Header } from "@/components/Header";
+
+// AUTH COMPONENTS
+import { LoginModal } from "@/components/auth/LoginModal";
+import { SignUpModal } from "@/components/auth/SignUpModal";
+import { EmailVerificationScreen } from "@/components/auth/EmailVerificationScreen";
+import { ForgotPasswordModal } from "@/components/auth/ForgotPasswordModal";
+import { ResetPasswordScreen } from "@/components/auth/ResetPasswordScreen";
+
+// HOOKS
+import { useAuthModals } from "@/hooks/useAuthModals";
 
 type Page = "landing" | "consultants" | "contact";
 
@@ -45,17 +53,31 @@ export interface Consultant {
 
 export default function Home() {
   const [currentPage, setCurrentPage] = useState<Page>("landing");
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showSignUpModal, setShowSignUpModal] = useState(false);
-  const [signUpUserType, setSignUpUserType] = useState<
-    "client" | "consultant" | undefined
-  >(undefined);
-
   const [showConsultantDetail, setShowConsultantDetail] = useState(false);
   const [selectedConsultant, setSelectedConsultant] =
     useState<Consultant | null>(null);
-
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Auth modals hook
+  const {
+    showLogin,
+    showSignUp,
+    showEmailVerification,
+    showForgotPassword,
+    showResetPassword,
+    signUpEmail,
+    signUpUserType,
+    userDetails,
+    openLogin,
+    openSignUp,
+    openForgotPassword,
+    closeAll,
+    handleLogin,
+    handleSignUp,
+    handleBackToLogin,
+    handlePasswordReset,
+    // handleResetLinkClick,
+  } = useAuthModals();
 
   const handleConsultantClick = (consultant: Consultant) => {
     setSelectedConsultant(consultant);
@@ -67,29 +89,10 @@ export default function Home() {
     }
   };
 
-  const handleLogin = () => {
-    setIsAuthenticated(true);
-    setShowLoginModal(false);
-    setShowConsultantDetail(false);
-  };
-
-  const handleSignUp = () => {
-    setIsAuthenticated(true);
-    setShowSignUpModal(false);
-    setShowConsultantDetail(false);
-  };
-
-  const handleCloseModals = () => {
-    setShowLoginModal(false);
-    setShowSignUpModal(false);
-    setShowConsultantDetail(false);
-    setSignUpUserType(undefined);
-  };
-
-  const handleOpenSignUp = (userType?: "client" | "consultant") => {
-    setSignUpUserType(userType);
-    setShowSignUpModal(true);
-    setShowLoginModal(false);
+  const onLogin = (data: {email: string, password: string}) => {
+    // setIsAuthenticated(true);
+    handleLogin(data);
+    // setShowConsultantDetail(false);
   };
 
   const handleFooterNavigate = (page: Page) => {
@@ -105,15 +108,19 @@ export default function Home() {
         isAuthenticated={isAuthenticated}
       /> */}
       <Header 
-        onLoginClick={() => setShowLoginModal(true)}
+        onLoginClick={openLogin}
+        onSignUpClick={() => openSignUp('consultant')}
         isAuthenticated={isAuthenticated}
       />
       <div className="mt-20"/>
       {/* LANDING PAGE */}
       {currentPage === "landing" && (
         <>
-          <Banner />
-          <Careers />
+          <Banner 
+            onLoginClick={openLogin}
+            onSignUpClick={() => openSignUp('consultant')}
+          />
+          <Careers onSignUpClick={() => openSignUp('consultant')} />
           <Consultants />
           <Features />
           <Teambuilder />
@@ -144,24 +151,48 @@ export default function Home() {
         <ConsultantListingPage onConsultantClick={handleConsultantClick} />
       )}
 
+      
       {/* CONTACT PAGE */}
       {currentPage === "contact" && <ContactPage onNavigate={setCurrentPage} />}
 
-      {/* LOGIN MODAL */}
-      {showLoginModal && (
+      {/* AUTH MODALS */}
+      {showLogin && (
         <LoginModal
-          onClose={handleCloseModals}
-          onLogin={handleLogin}
-          onSwitchToSignUp={() => handleOpenSignUp()}
+          onClose={closeAll}
+          onLogin={onLogin}
+          onSwitchToSignUp={() => openSignUp()}
+          onForgotPassword={openForgotPassword}
         />
       )}
 
-      {/* SIGNUP MODAL */}
-      {showSignUpModal && (
+      {showSignUp && (
         <SignUpModal
-          onClose={handleCloseModals}
+          onClose={closeAll}
           onSignUp={handleSignUp}
           defaultUserType={signUpUserType}
+        />
+      )}
+
+      {showEmailVerification && (
+        <EmailVerificationScreen
+          onClose={closeAll}
+          email={signUpEmail}
+          userDetails={userDetails}
+        />
+      )}
+
+      {showForgotPassword && (
+        <ForgotPasswordModal
+          onClose={closeAll}
+          onBackToLogin={handleBackToLogin}
+          // onResetLinkClick={handleResetLinkClick}
+        />
+      )}
+
+      {showResetPassword && (
+        <ResetPasswordScreen
+          onClose={closeAll}
+          onPasswordReset={handlePasswordReset}
         />
       )}
 
@@ -169,7 +200,7 @@ export default function Home() {
       {showConsultantDetail && selectedConsultant && (
         <ConsultantDetailModal
           consultant={selectedConsultant}
-          onClose={handleCloseModals}
+          onClose={() => setShowConsultantDetail(false)}
         />
       )}
 
