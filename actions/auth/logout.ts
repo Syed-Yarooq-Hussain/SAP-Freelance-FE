@@ -13,7 +13,6 @@ export const useLogout = () => {
       clearCachedSession();
     },
     onSuccess: () => {
-      console.log("Logout successful");
       router.push(APP_ROUTES.HOME);
     },
     onError: (error) => {

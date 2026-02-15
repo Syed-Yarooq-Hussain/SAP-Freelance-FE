@@ -16,8 +16,12 @@ export const getMe = async (token:string): Promise<any> => {
       headers: token ? { Authorization: `Bearer ${token}` } : undefined,
     });
   
-    if (!response.data) {
-      throw new Error("User Not found");
+    
+  
+    if (response.status === API_STATUS.ERROR || !response.data) {
+      const errorMessage = response.message || "User Not found";
+      console.error("getMe error:", errorMessage, response);
+      throw new Error(errorMessage);
     }
   
     return response.data;

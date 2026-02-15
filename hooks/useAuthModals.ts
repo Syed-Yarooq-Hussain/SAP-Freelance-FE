@@ -95,7 +95,6 @@ export function useAuthModals() {
   const handleSignUp = async (payload: ISignupDTO) => {
     try {
       const response:any = await mutateSignUp(payload);
-      console.log('Signup response:', response);
       if(response?.data?.id){
         setUserDetails(response?.data)
         setSignUpEmail(payload.email);

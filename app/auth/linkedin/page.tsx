@@ -29,9 +29,8 @@ export default function LinkedInCallback() {
         // The authorize function will fetch user data using getMe
         const result = await signIn('credentials', {
           redirect: false,
-          token: token, // Pass token for LinkedIn authentication
+          token: token,
         });
-
         if (result?.error) {
           throw new Error(result.error);
         }

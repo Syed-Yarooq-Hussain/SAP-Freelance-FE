@@ -43,7 +43,6 @@ export function EmailVerificationScreen({ onClose, email, userDetails }: EmailVe
   }, [countdown, canResend]);
 
   const handleSendVerificationEmail = async () => {
-    console.log('User details:', {userDetails});
     if(!userDetails?.id) {
       toast.error('User details not found');
       return;

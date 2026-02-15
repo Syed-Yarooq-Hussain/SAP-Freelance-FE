@@ -28,7 +28,6 @@ export const useSignupClient = () => {
       return response;
     },
     onSuccess(data) {
-      console.log("Client signup successful:", data);
       router.push(APP_ROUTES.LOGIN);
     },
   });
