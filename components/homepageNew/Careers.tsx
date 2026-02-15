@@ -79,7 +79,11 @@ const slides = [
   },
 ]
 
-export default function Careers() {
+interface CareersProps {
+  onSignUpClick?: () => void;
+}
+
+export default function Careers({ onSignUpClick }: CareersProps) {
   const [api, setApi] = React.useState<CarouselApi>()
   const [current, setCurrent] = React.useState(0)
   const [count, setCount] = React.useState(0)
@@ -109,7 +113,7 @@ export default function Careers() {
       </div>
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         {/* Header */}
-        <div className="flex flex-col items-center text-center mb-12 relative z-10">
+        {/* <div className="flex flex-col items-center text-center mb-12 relative z-10">
           <button className="inline-flex items-center gap-2 px-4 py-2 btn-gradient-blue text-white text-sm font-medium rounded-full mb-4 transition-all duration-300 hover:scale-105 active:scale-95">
             <Sparkles className="w-4 h-4" />
             Join Our Network
@@ -118,7 +122,7 @@ export default function Careers() {
           <h2 className="text-xl mt-4 md:text-3xl lg:text-4xl font-bold text-foreground w-full text-balance">
             Build your independent SAP career, on your terms. Work with global clients, choose your projects, and get paid securely.
           </h2>
-        </div>
+        </div> */}
 
         {/* Carousel */}
         <div className="max-w-5xl mt-10 md:mt-20 mx-auto ">
@@ -196,7 +200,10 @@ export default function Careers() {
 
         {/* CTA Button */}
         <div className="flex flex-col items-center mt-12 relative z-10">
-          <button className="group inline-flex text-sm md:text-lg items-center justify-center gap-1 md:gap-2 px-8 py-4 btn-gradient-blue text-white font-semibold rounded-full shadow-lg shadow-brand-blue/25 transition-all duration-300 ease-out hover:shadow-xl hover:shadow-brand-blue/30 hover:scale-105 active:scale-95">
+          <button 
+            onClick={onSignUpClick}
+            className="group inline-flex text-sm md:text-lg items-center justify-center gap-1 md:gap-2 px-8 py-4 btn-gradient-blue text-white font-semibold rounded-full shadow-lg shadow-brand-blue/25 transition-all duration-300 ease-out hover:shadow-xl hover:shadow-brand-blue/30 hover:scale-105 active:scale-95"
+          >
             <Sparkles className="w-5 h-5" />
             Register as a Consultant
             <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />

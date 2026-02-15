@@ -5,10 +5,10 @@ import { APP_ROUTES } from "@/utils/app_routes";
 import { useMutation } from "@tanstack/react-query";
 import { signIn, SignInResponse } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export const useLogin = () => {
   const router = useRouter();
-  const { toast } = useToast();
 
   return useMutation({
     mutationFn: async (data: ILoginForm) => {
@@ -25,7 +25,6 @@ export const useLogin = () => {
     async onSuccess() {
       const session = await getCachedSession();
       const role = session?.user?.role;
-
       if (!role) {
         router.push(APP_ROUTES.LOGIN);
         return;
@@ -40,7 +39,7 @@ export const useLogin = () => {
           ? "Admin"
           : "User";
 
-      toast(`Logged in successfully as ${roleLabel}`, "success");
+      toast.success(`Logged in successfully as ${roleLabel}`);
 
       switch (role) {
         case 1:
