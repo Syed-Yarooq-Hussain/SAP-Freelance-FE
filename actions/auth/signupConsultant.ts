@@ -14,16 +14,18 @@ export const useSignupConsultant = () => {
 
   return useMutation({
     mutationFn: async (data: ISignupDTO) => {
-
       const response = await request<ISignupDTO, any>({
         url: API_ROUTES.SIGNUP_CONSULTANT,
         method: "POST",
         data,
       });
+
+      return response; // 👈 IMPORTANT
     },
-    onSuccess(data) {
-      console.log("Consultant signup successful:", data);
-      return data;
+
+    onSuccess(response) {
+      console.log("Consultant signup successful:", response);
+      console.log("Actual data:", response.data);
     },
   });
 };
