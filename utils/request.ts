@@ -40,31 +40,42 @@ export const request = async <P, R>(
     const response = await instance(props);
     const result: ApiResponse<R> = response.data;
 
+    // Validate result exists and has expected structure
+    if (!result) {
+      throw new CustomError(500, "Invalid response from server");
+    }
+
+    // Check if API returned an error status
     if (result.status === API_STATUS.ERROR) {
-      throw new CustomError(result.code ?? 400, result.message);
+      const errorMessage = result.message || "An error occurred";
+      const errorCode = result.code ?? 400;
+      throw new CustomError(errorCode, errorMessage);
     }
 
     return result;
   } catch (err: unknown) {
+    // If it's already a CustomError, re-throw it
+    if (err instanceof CustomError) {
+      throw err;
+    }
+
+    // Handle Axios errors
     if (err instanceof AxiosError) {
       if (err.response?.status === 401) {
         throw err;
       }
 
-      throw new CustomError(
-        err.response?.status ?? 500,
-        err.response?.data?.message || err.message
-      );
+      const errorMessage = err.response?.data?.message || err.message || "Request failed";
+      const errorCode = err.response?.status ?? 500;
+      throw new CustomError(errorCode, errorMessage);
     }
 
-    if (err instanceof CustomError) {
-      throw err;
-    }
-
+    // Handle generic Error instances
     if (err instanceof Error) {
-      throw new CustomError(500, err.message);
+      throw new CustomError(500, err.message || "An unexpected error occurred");
     }
 
+    // Fallback for unknown error types
     throw new CustomError(500, "Something went wrong");
   }
 };

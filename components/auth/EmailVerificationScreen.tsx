@@ -9,6 +9,7 @@ interface EmailVerificationScreenProps {
   onClose: () => void;
   email: string;
   userDetails?: IUser | null
+  onVerificationComplete?: () => void;
 }
 
 export function EmailVerificationScreen({ onClose, email, userDetails }: EmailVerificationScreenProps) {
@@ -49,8 +50,7 @@ export function EmailVerificationScreen({ onClose, email, userDetails }: EmailVe
     }
 
     try {
-      const response = await mutateSendVerificationEmail({ userId: userDetails?.id!! });
-      console.log('Send verification email response:', response);
+      const response = await mutateSendVerificationEmail({ userId: userDetails.id });
       if(response?.status == 'success'){
         handleSendEmail()
       }else{
@@ -153,7 +153,7 @@ export function EmailVerificationScreen({ onClose, email, userDetails }: EmailVe
                 <ol className="text-xs text-blue-800 space-y-2 list-decimal list-inside">
                   <li>Check your email inbox</li>
                   <li>Click the verification link in the email</li>
-                  <li>You'll be redirected to the login page</li>
+                  <li>You will be redirected to the login page</li>
                   <li>Sign in with your credentials</li>
                 </ol>
               </div>
@@ -178,7 +178,7 @@ export function EmailVerificationScreen({ onClose, email, userDetails }: EmailVe
               {/* Expiry Notice */}
               <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
                 <p className="text-xs text-amber-800">
-                  <strong>Note:</strong> The verification link expires in 15 minutes. If you don't verify within this time, you'll need to sign up again.
+                  <strong>Note:</strong> The verification link expires in 15 minutes. If you do not verify within this time, you will need to sign up again.
                 </p>
               </div>
             </>

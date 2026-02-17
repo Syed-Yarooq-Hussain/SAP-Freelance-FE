@@ -37,7 +37,6 @@ export function LoginModal({ onClose, onLogin, onSwitchToSignUp, onForgotPasswor
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success('Welcome back!');
     onLogin({email, password});
   };
 
@@ -149,7 +148,7 @@ export function LoginModal({ onClose, onLogin, onSwitchToSignUp, onForgotPasswor
           {/* Sign Up Link */}
           <div className="text-center mt-6">
             <p className="text-sm text-gray-600">
-              Don't have an account?{' '}
+              Do not have an account?{' '}
               <button
                 onClick={onSwitchToSignUp}
                 className="text-blue-600 hover:text-blue-700 font-medium hover:underline"

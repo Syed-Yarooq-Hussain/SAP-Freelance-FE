@@ -10,7 +10,7 @@ import { useForgetPassword } from '@/actions/auth/useForgetPassword';
 interface ForgotPasswordModalProps {
   onClose: () => void;
   onBackToLogin: () => void;
-  // onResetLinkClick?: () => void;
+  onResetLinkClick?: () => void;
 }
 
 export function ForgotPasswordModal({ onClose, onBackToLogin }: ForgotPasswordModalProps) {
@@ -89,7 +89,7 @@ export function ForgotPasswordModal({ onClose, onBackToLogin }: ForgotPasswordMo
               <div className="text-center mb-6">
                 <h3 id="forgot-password-modal-title" className="mb-2 text-gray-900">Reset Your Password</h3>
                 <p className="text-sm text-gray-600">
-                  Enter your email address and we'll send you a link to reset your password
+                  Enter your email address and we will send you a link to reset your password
                 </p>
               </div>
 
@@ -140,7 +140,7 @@ export function ForgotPasswordModal({ onClose, onBackToLogin }: ForgotPasswordMo
               <div className="text-center mb-6">
                 <h3 className="mb-2 text-gray-900">Check Your Email</h3>
                 <p className="text-sm text-gray-600">
-                  We've sent a password reset link to
+                  We have sent a password reset link to
                 </p>
                 <p className="font-medium text-gray-900 mt-2">{email}</p>
               </div>
@@ -159,7 +159,7 @@ export function ForgotPasswordModal({ onClose, onBackToLogin }: ForgotPasswordMo
               {/* Expiry Notice */}
               <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
                 <p className="text-xs text-amber-800">
-                  <strong>Note:</strong> The reset link expires in 15 minutes. If you don't reset within this time, you'll need to request a new link.
+                  <strong>Note:</strong> The reset link expires in 15 minutes. If you do not reset within this time, you will need to request a new link.
                 </p>
               </div>
 
@@ -180,7 +180,7 @@ export function ForgotPasswordModal({ onClose, onBackToLogin }: ForgotPasswordMo
                   onClick={() => setEmailSent(false)}
                   className="w-full text-sm text-blue-600 hover:text-blue-700 hover:underline font-medium"
                 >
-                  Didn't receive the email? Resend
+                  Did not receive the email? Resend
                 </button>
               </div>
             </>
