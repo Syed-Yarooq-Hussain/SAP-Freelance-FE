@@ -4,6 +4,7 @@ import { SignUpModal } from './SignUpModal';
 import { EmailVerificationScreen } from './EmailVerificationScreen';
 import { ForgotPasswordModal } from './ForgotPasswordModal';
 import { ResetPasswordScreen } from './ResetPasswordScreen';
+import { ISignupDTO } from '@/types/common-auth';
 
 
 export default function App() {
@@ -21,8 +22,8 @@ export default function App() {
     // setShowConsultantDetail(false);
   };
 
-  const handleSignUp = (email: string) => {
-    setSignUpEmail(email);
+  const handleSignUp = (payload: ISignupDTO) => {
+    setSignUpEmail(payload.email);  // 👈 email yahan se lo
     setShowSignUpModal(false);
     setShowEmailVerification(true);
   };
@@ -103,7 +104,7 @@ export default function App() {
           onClose={handleCloseModals}
           onBackToLogin={handleBackToLogin}
           onResetLinkClick={handleResetLinkClick}
-        />
+        /> 
       )}
 
       {showResetPassword && (

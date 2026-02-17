@@ -26,7 +26,7 @@ const SignUpConsultant: React.FC = () => {
 
   const handleSuccess = (data: FieldValues) => {
     if (cvPayload?.consultant && cvPayload?.user) {
-      const payload: IConsultantSignupPayload = {
+      const payload = {
         consultant: {
           ...cvPayload.consultant,
 
@@ -38,26 +38,22 @@ const SignUpConsultant: React.FC = () => {
           weekly_available_hours: Number(data.weekly_available_hours) ?? 15,
         },
 
-        user: {
-          ...cvPayload.user,
-          username: data.fullName,
-          email: data.email,
-          phone: data.phone,
-          city: data.city,
-          country: data.country,
-          role,
-          password: data.password,
-          confirmPassword: data.confirmPassword,
-          currency: cvPayload.user.currency ?? "PKR",
-          status: "active",
-        },
+        username: data.fullName,
+        email: data.email,
+        phone: data.phone,
+        city: data.city,
+        country: data.country,
+        password: data.password,
+        confirmPassword: data.confirmPassword,
+        currency: cvPayload.user.currency ?? "PKR",
+        status: "active",
       };
 
       mutate(payload);
       return;
     }
 
-    const payload: IConsultantSignupPayload = {
+    const payload = {
       consultant: {
         core_module: data.coreModule ?? [],
         other_module: data.otherModule ?? [],
@@ -66,18 +62,16 @@ const SignUpConsultant: React.FC = () => {
         weekly_available_hours: data.weekly_available_hours ?? 15,
         cv_url: "",
       },
-      user: {
-        username: data.fullName,
-        role,
-        email: data.email,
-        phone: data.phone,
-        password: data.password,
-        confirmPassword: data.confirmPassword,
-        currency: "PKR",
-        city: data.city,
-        country: data.country,
-        status: "active",
-      },
+      username: data.fullName,
+      email: data.email,
+      phone: data.phone,
+      password: data.password,
+      confirmPassword: data.confirmPassword,
+      currency: "PKR",
+      city: data.city,
+      country: data.country,
+      role,
+      status: "active",
     };
 
     mutate(payload, {
