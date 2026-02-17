@@ -31,13 +31,9 @@ export const useLogin = () => {
       }
 
       const roleLabel =
-        role === 1
-          ? "Client"
-          : role === 2
-          ? "Consultant"
-          : role === 3
-          ? "Admin"
-          : "User";
+        role === 1 ? "Client": role === 2
+          ? "Consultant" : role === 3
+          ? "Admin" : "User";
 
       toast.success(`Logged in successfully as ${roleLabel}`);
 
