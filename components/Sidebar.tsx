@@ -34,8 +34,6 @@ const Sidebar: FC<ISidebarProps> = ({ children }) => {
     return () => window.removeEventListener("resize", handleResize);
   }, [theme.breakpoints.values.md]);
 
-  if (!mounted) return null;
-
   const appBarHeight = theme.mixins.toolbar.minHeight;
 
   return (

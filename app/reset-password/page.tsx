@@ -60,7 +60,6 @@ export default function ResetPasswordPage() {
         newPassword,
         confirmPassword,
       });   
-      console.log('Reset password response:', response)
 
       if (response?.status === 'success') {
         setIsSuccess(true);

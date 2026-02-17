@@ -18,7 +18,22 @@ export const useLogin = () => {
         redirect: false,
       })) as SignInResponse;
 
-      if (response?.error) throw new Error(response.error);
+      // NextAuth returns generic error codes like "CredentialsSignin" or "Configuration"
+      // Map them to a clear, user-friendly message (e.g. backend "Invalid credentials")
+      if (response?.error) {
+        let message = response.error;
+
+        // These are the common generic codes we see from Credentials provider
+        if (
+          response.error === "CredentialsSignin" ||
+          response.error === "Configuration"
+        ) {
+          message = "Invalid credentials";
+        }
+
+        throw new Error(message);
+      }
+
       return response;
     },
 

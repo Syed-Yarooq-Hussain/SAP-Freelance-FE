@@ -14,7 +14,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       credentials: {
         email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
-        token: { label: "Token", type: "text" }, // LinkedIn token
+        token: { label: "Token", type: "text", required:false },
       },
       authorize: async (credentials:any) => {
         try {
@@ -44,28 +44,62 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           if (credentials?.email && credentials?.password) {
             const data = credentials as ILoginForm;
 
-            const response = await request<ILoginForm, any>({
-              url: API_ROUTES.LOGIN,
-              method: "POST",
-              data,
-            });
+            try {
+              const response = await request<ILoginForm, any>({
+                url: API_ROUTES.LOGIN,
+                method: "POST",
+                data,
+              });
+              
 
-            if (response.status === API_STATUS.ERROR || !response.data?.token) {
-              console.error("Email/password login failed:", response.message);
-              return null;
+              if (response.status === API_STATUS.ERROR || !response.data?.token) {
+                const errorMessage = response.message || "Login failed";
+                console.error("Email/password login failed - Backend Error:", {
+                  status: response.status,
+                  code: response.code,
+                  message: errorMessage,
+                  fullResponse: response
+                });
+                // Throw error with backend message so NextAuth can show it
+                throw new Error(errorMessage);
+              }
+
+              return {
+                ...response.data,
+                accessToken: response.data.token,
+              };
+            } catch (error: any) {
+              // Catch errors thrown by request utility (CustomError, AxiosError, etc.)
+              const backendResponse = error?.response?.data || error?.response;
+              const errorMessage = backendResponse?.message || error?.message || "Login failed";
+              
+              console.error("Email/password login failed - Request Error:", {
+                error,
+                message: errorMessage,
+                code: error?.statusCode || error?.code || backendResponse?.code,
+                response: backendResponse,
+                stack: error?.stack
+              });
+              
+              // Throw error with backend message so NextAuth can show it
+              throw new Error(errorMessage);
             }
-
-            return {
-              ...response.data,
-              accessToken: response.data.token,
-            };
           }
 
           // If neither token nor email/password is provided
           console.warn("No valid credentials provided");
           return null;
         } catch (error) {
-          console.error("Authorize error:", error);
+          // If it's an Error with a message (backend error), re-throw it so NextAuth can show it
+          if (error instanceof Error && error.message) {
+            throw error;
+          }
+          
+          console.error("Authorize error - Unexpected error:", {
+            error,
+            message: error instanceof Error ? error.message : String(error),
+            stack: error instanceof Error ? error.stack : undefined
+          });
           return null;
         }
       },

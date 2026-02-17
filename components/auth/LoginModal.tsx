@@ -37,7 +37,6 @@ export function LoginModal({ onClose, onLogin, onSwitchToSignUp, onForgotPasswor
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success('Welcome back!');
     onLogin({email, password});
   };
 

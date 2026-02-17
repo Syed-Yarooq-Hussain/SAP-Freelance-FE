@@ -51,7 +51,6 @@ export function EmailVerificationScreen({ onClose, email, userDetails }: EmailVe
 
     try {
       const response = await mutateSendVerificationEmail({ userId: userDetails.id });
-      console.log('Send verification email response:', response);
       if(response?.status == 'success'){
         handleSendEmail()
       }else{

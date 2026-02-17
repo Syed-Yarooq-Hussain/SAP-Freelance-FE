@@ -87,8 +87,17 @@ export function useAuthModals() {
       const response = await mutateLogin(data);
       return response;
     } catch (error: any) {
-      console.error('Login error:', error);
-      throw error;
+      // Extract backend error message
+      const errorMessage = error?.message || error?.response?.data?.message || 'Login failed';
+      
+      console.log('Login error:', {
+        error,
+        message: errorMessage,
+        fullError: error
+      });
+      
+      // Show backend error message to user
+      toast.error(errorMessage);      
     }
   };
 
@@ -119,7 +128,6 @@ export function useAuthModals() {
       }
       toast.error(errorMessage);
       console.error('Signup error:', error);
-      throw error;
     }
   };
 

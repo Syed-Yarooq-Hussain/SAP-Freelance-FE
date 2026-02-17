@@ -22,10 +22,5 @@ export const useSignupConsultant = () => {
 
       return response; // 👈 IMPORTANT
     },
-
-    onSuccess(response) {
-      console.log("Consultant signup successful:", response);
-      console.log("Actual data:", response.data);
-    },
   });
 };

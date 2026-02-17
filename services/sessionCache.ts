@@ -24,7 +24,8 @@ export async function getCachedSession() {
 
 export function clearCachedSession() {
   sessionCache = null;
-  localStorage.removeItem(SESSION_KEY);
+  if (typeof window !== "undefined") 
+    localStorage?.removeItem(SESSION_KEY);
 }
 
 let sessionCache: any = null;

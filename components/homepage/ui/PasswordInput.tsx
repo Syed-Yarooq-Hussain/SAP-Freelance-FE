@@ -122,7 +122,7 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
         {error && (
           <p 
             id={`${inputId}-error`}
-            className="mt-2 text-sm text-red-600 flex items-center gap-2"
+            className="mt-2 text-xs text-red-600 flex items-center gap-2"
           >
             <AlertCircle className="w-4 h-4 flex-shrink-0" />
             {error}
@@ -132,7 +132,7 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
         {helperText && !error && (
           <p 
             id={`${inputId}-helper`}
-            className="mt-2 text-sm text-gray-500"
+            className="mt-2 text-xs text-gray-500"
           >
             {helperText}
           </p>

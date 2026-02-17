@@ -20,7 +20,6 @@ export const useSendVerificationEmail = () => {
       return response;
     },
     onSuccess(data) {
-      console.log("Consultant send email success:", data);
       return data;
     },
   });
