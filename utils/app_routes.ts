@@ -14,6 +14,7 @@ export const APP_ROUTES = {
     PAYMENTS: "/consultant/payments",
     DOCUMENTS: "/consultant/documents",
     PROFILE: "/consultant/profile",
+    ACCOUNT: "/consultant/account",
     CALENDAR: "/consultant/calendar",
   },
   CLIENT: {

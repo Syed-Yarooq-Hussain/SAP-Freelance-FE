@@ -38,7 +38,6 @@ export function ForgotPasswordModal({ onClose, onBackToLogin }: ForgotPasswordMo
     e.preventDefault();
     try {
       const response = await mutateForgetPassword({ email })
-      console.log('Forgot password response:', response)
       if(response?.status == 'success'){
         toast.success(response?.message ||'Password reset email sent successfully!');
         setEmailSent(true);
