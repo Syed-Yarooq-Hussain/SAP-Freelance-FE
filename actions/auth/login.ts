@@ -5,10 +5,15 @@ import { APP_ROUTES } from "@/utils/app_routes";
 import { useMutation } from "@tanstack/react-query";
 import { signIn, SignInResponse } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+// import { toast } from "sonner";
+import { useAppDispatch } from "@/lib/store/hook";
+import { updateUser } from "@/lib/store/features/user/userSlice";
+import { getConsultantMeService } from "@/services/getConsultantProfile";
 
 export const useLogin = () => {
+  const { toast } = useToast();
   const router = useRouter();
+  const dispatch = useAppDispatch();
 
   return useMutation({
     mutationFn: async (data: ILoginForm) => {
@@ -50,7 +55,19 @@ export const useLogin = () => {
           ? "Consultant" : role === 3
           ? "Admin" : "User";
 
-      toast.success(`Logged in successfully as ${roleLabel}`);
+      toast(`Logged in successfully as ${roleLabel}`, 'success');
+
+      // Fetch and store user data in Redux for consultants
+      if (role === 2) {
+        try {
+          const consultantData = await getConsultantMeService();
+          if (consultantData?.data) {
+            dispatch(updateUser({ user: consultantData.data }));
+          }
+        } catch (error) {
+          console.error('Failed to fetch consultant profile:', error);
+        }
+      }
 
       switch (role) {
         case 1:
