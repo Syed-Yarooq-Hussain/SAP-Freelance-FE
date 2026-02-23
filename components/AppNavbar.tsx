@@ -217,7 +217,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
         selectedPath={selectedMenu}
         user={{
           name:
-            session?.user?.username.replace(/([a-z])([A-Z])/g, "$1 $2") ??
+            session?.user?.username?.replace(/([a-z])([A-Z])/g, "$1 $2") ??
             "User",
           avatar: session?.user?.avatar,
         }}
