@@ -1,3 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .btn-gradient-blue {
+    background: linear-gradient(180deg, #0891B2 0%, #1EAAC8 100%);
+  }
+}
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {

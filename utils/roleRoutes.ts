@@ -6,7 +6,7 @@ export const getProfileRouteByRole = (role?: number) => {
     case Roles.CLIENT:
       return APP_ROUTES.CLIENT.PROFILE;
     case Roles.CONSULTANT:
-      return APP_ROUTES.CONSULTANT.PROFILE;
+      return APP_ROUTES.CONSULTANT.ACCOUNT;
     case Roles.ADMIN:
       return APP_ROUTES.ADMIN.PROFILE;
     default:

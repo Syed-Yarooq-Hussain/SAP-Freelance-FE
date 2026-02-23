@@ -12,7 +12,7 @@ export interface IBaseSignupDTO {
 }
 
 export interface ISignupDTO {
-  username: string;
+  // username: string;
   email:string;
   password: string
 }

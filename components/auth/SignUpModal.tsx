@@ -4,8 +4,9 @@ import Image from 'next/image';
 import { CustomInput } from '../homepage/ui/CustomInput';
 import { PasswordInput } from '../homepage/ui/PasswordInput';
 import { CustomButton } from '../homepage/ui/CustomButton';
-import { toast } from 'sonner';
+// import { toast } from 'sonner';
 import { ISignupDTO } from '@/types/common-auth';
+import { useToast } from '@/providers/ToastProvider';
 
 interface SignUpModalProps {
   onClose: () => void;
@@ -14,7 +15,9 @@ interface SignUpModalProps {
 }
 
 export function SignUpModal({ onClose, onSignUp }: SignUpModalProps) {
-  const [username, setUsername] = useState('');
+  const { toast } = useToast();
+
+  // const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -40,12 +43,12 @@ export function SignUpModal({ onClose, onSignUp }: SignUpModalProps) {
     
     // Validate passwords match
     if (password !== confirmPassword) {
-      toast.error('Passwords do not match');
+      toast('Passwords do not match','error');
       return;
     }
     
     const payload = {
-      username,
+      // username,
       email,
       password,
     }
@@ -98,7 +101,7 @@ export function SignUpModal({ onClose, onSignUp }: SignUpModalProps) {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
-            <CustomInput
+            {/* <CustomInput
               label="Username"
               type="text"
               value={username}
@@ -106,7 +109,7 @@ export function SignUpModal({ onClose, onSignUp }: SignUpModalProps) {
               placeholder="Alex"
               icon={<Mail className="w-5 h-5" />}
               required
-            />
+            /> */}
 
             <CustomInput
               label="Email"
