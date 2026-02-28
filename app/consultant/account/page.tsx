@@ -9,6 +9,7 @@ import { updateConsultantProfile } from '@/services/consultants'
 import { useAppDispatch, useAppSelector } from '@/lib/store/hook'
 import { getConsultantMeService } from '@/services/getConsultantProfile'
 import { updateUser } from '@/lib/store/features/user/userSlice'
+import AccountSettings from '@/components/account-settings/account-settings'
 
 const mockBadges = [
   { id: '1', label: 'Verified', color: 'green' as const, icon: '/images/green-tick-badge.svg' },
@@ -57,7 +58,7 @@ export default function AccountPage() {
 
           <div className='bg-white rounded-xl p-2 border border-slate-200 shadow-lg'>
             {/* Content */}
-            {isEditing ? (
+            {/* {isEditing ? (
               <ProfileEdit
                 onSubmit={handleSave}
                 isLoading={isLoading}
@@ -68,7 +69,8 @@ export default function AccountPage() {
                 badges={mockBadges}
                 onEdit={() => setIsEditing(true)}
               />
-            )}
+            )} */}
+            <AccountSettings onSubmit={handleSave} isLoading={isLoading} />
           </div>
         </div>
       </main>

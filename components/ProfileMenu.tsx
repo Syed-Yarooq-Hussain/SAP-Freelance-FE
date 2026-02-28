@@ -50,6 +50,7 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({
         paper: {
           elevation: 4,
           sx: {
+            borderRadius: 2.5,
             minWidth: 220,
             overflow: "hidden",
             p: 0,
@@ -110,7 +111,7 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({
         <ListItemIcon>
           <PersonIcon fontSize="small" />
         </ListItemIcon>
-        <Typography variant="body2">Profile</Typography>
+        <Typography variant="body2">Account Settings</Typography>
       </MenuItem>
       <Divider />
       <MenuItem

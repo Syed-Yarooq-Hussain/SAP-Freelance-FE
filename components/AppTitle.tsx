@@ -24,6 +24,12 @@ const AppTitle: React.FC = () => {
       if (pathname.startsWith(APP_ROUTES.CONSULTANT.PROFILE)) return "Profile";
       if (pathname.startsWith(APP_ROUTES.CONSULTANT.CALENDAR))
         return "Calendar";
+      if (pathname.startsWith(APP_ROUTES.CONSULTANT.ACCOUNT))
+        return "Account Settings";
+      if (pathname.startsWith(APP_ROUTES.CONSULTANT.PROFILE))
+        return "Profile";
+      if (pathname.startsWith(APP_ROUTES.CONSULTANT.CHANGE_PASSWORD))
+        return "Change Password";
       return "Dashboard";
     }
 

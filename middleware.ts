@@ -10,6 +10,7 @@ const PUBLIC_ROUTES = [
   APP_ROUTES.LOGIN,
   APP_ROUTES.SIGNUP_SELECT,
   APP_ROUTES.SIGNUP,
+  APP_ROUTES.CONTACT_US,
 ];
 
 export default auth((req) => {

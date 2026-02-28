@@ -4,18 +4,20 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { Download, HelpCircle } from 'lucide-react'
+import { Download, HelpCircle, X } from 'lucide-react'
 import { accountSchema, type AccountFormData } from '@/lib/schemas/account'
 import { PhotoGuidelinesModal } from './photo-guidelines-modal'
 import { MultiSelect, type MultiSelectOption } from '@/components/homepage/ui/multi-select'
 import { useSapModules } from '@/actions/common/useSapModules'
 import { useConsultantMe } from '@/actions/consultants/useConsultantProfile'
 import { useAppSelector } from '@/lib/store/hook'
+import { LocationAutocomplete } from './LocationAutocomplete'
 
 interface ProfileEditProps {
   onSubmit: (data: AccountFormData, apiPayload?: any) => void
   isLoading?: boolean
   initialData?: Partial<AccountFormData>
+  onCancel?: () => void
 }
 
 const coreModuleOptions: MultiSelectOption[] = [
@@ -92,6 +94,7 @@ export function ProfileEdit({
   onSubmit,
   isLoading = false,
   initialData,
+  onCancel,
 }: ProfileEditProps) {
   const user = useAppSelector(state => state?.user?.user)
   const [showPhotoModal, setShowPhotoModal] = useState(false)
@@ -101,7 +104,6 @@ export function ProfileEdit({
 
   const { data, isLoading:loadingSapModules } = useSapModules();
   const modules:any = data?.data
-  console.log(user,'spa modules')
 
   // Parse module strings to arrays
   const parseModuleString = (moduleStr: string | undefined): string[] => {
@@ -406,12 +408,17 @@ export function ProfileEdit({
               <label className="block text-sm font-semibold text-slate-900 mb-2">
                 Location <span className="text-red-500">*</span>
               </label>
-              <input
+              <LocationAutocomplete
+                value={watch('city')}
+                onChange={(value) => setValue('city', value)}
+                placeholder="e.g., Berlin"
+              />
+              {/* <input
                 {...register('city')}
                 type="text"
                 placeholder="e.g., Berlin"
                 className="w-full px-4 py-2 border border-slate-300 rounded-input focus:outline-none focus:border-brand-blue"
-              />
+              /> */}
               {errors.city && (
                 <p className="text-xs text-red-500 mt-1">
                   {errors.city?.message}
@@ -482,6 +489,13 @@ export function ProfileEdit({
 
           {/* Action Buttons */}
           <div className="flex flex-col md:flex-row justify-center md:justify-start gap-3 border-t border-slate-100 pt-6">
+           {onCancel && <button
+              type="button"
+              onClick={onCancel}
+              className="flex items-center gap-2 px-6 py-2.5 border-2 border-slate-300 text-slate-900 font-semibold rounded-full hover:bg-slate-50 transition-all duration-300"
+            >
+              Cancel
+            </button>}
             <button
               type="submit"
               disabled={isLoading}
