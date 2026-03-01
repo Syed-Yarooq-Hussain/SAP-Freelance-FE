@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { Trash2 } from 'lucide-react'
+import { Pencil, Trash2 } from 'lucide-react'
 import { useAppSelector } from '@/lib/store/hook'
 import { useSapModules } from '@/actions/common/useSapModules'
 
@@ -48,41 +48,61 @@ export function ProfileView({
   return (
     <div className="bg-white rounded-2xl border border-slate-100/50 p-6 md:p-8 space-y-6">
       {/* Profile Header */}
-      <div className="flex gap-6">
-        <div className="flex-shrink-0">
-          {profileImage ? (
-            <Image
-              src={profileImage}
-              alt={name}
-              width={80}
-              height={80}
-              className="w-20 h-20 rounded-full object-cover"
-            />
-          ) : (
-            <div className="w-20 h-20 rounded-full bg-slate-200 flex items-center justify-center">
-              <span className="text-lg font-medium text-slate-600">{initials}</span>
-            </div>
-          )}
+      <div className="flex flex-col md:flex-row gap-4 md:items-start">
+        <div className="flex gap-6 flex-1">
+          <div className="flex-shrink-0">
+            {profileImage ? (
+              <Image
+                src={profileImage}
+                alt={name}
+                width={80}
+                height={80}
+                className="w-20 h-20 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-20 h-20 rounded-full bg-slate-200 flex items-center justify-center">
+                <span className="text-lg font-medium text-slate-600">{initials}</span>
+              </div>
+            )}
+          </div>
+
+          <div className="flex-1">
+            <h2 className="text-xl md:text-2xl font-bold text-slate-900 mb-1">
+              {name}
+            </h2>
+            <p className="text-sm text-slate-600 mb-2">{email}</p>
+            <p className="text-sm text-slate-500">
+              {headline || 'No headline added'}
+            </p>
+
+            {/* Badges */}
+            {badges.length > 0 && (
+              <div className="flex gap-2 mt-3">
+                {badges.map((badge, i) => (
+                  <Image
+                    key={i}
+                    className="hover:scale-125 transition-all duration-300"
+                    src={badge.icon}
+                    alt={badge.label}
+                    width={20}
+                    height={20}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
-        <div className="flex-1">
-          <h2 className="text-xl md:text-2xl font-bold text-slate-900 mb-1">
-            {name}
-          </h2>
-          <p className="text-sm text-slate-600 mb-2">{email}</p>
-          <p className="text-sm text-slate-500">
-            {headline || 'No headline added'}
-          </p>
-
-          {/* Badges */}
-          {badges.length > 0 && (
-            <div className="flex gap-2 mt-3">
-              {badges.map((badge, i) => (
-                <Image key={i} className='hover:scale-125 transition-all duration-300' src={badge.icon} alt={badge.label} width={20} height={20} />
-              ))}
-            </div>
-          )}
-        </div>
+        {canEdit && (
+          <div className="mt-4 md:mt-0 md:ml-auto w-full md:w-auto">
+            <button
+              onClick={onEdit}
+              className="w-fit inline-flex items-center justify-center gap-2 font-medium p-4 rounded-full transition-all duration-300 ease-out hover:shadow-lg hover:shadow-brand-blue/30 hover:scale-105 active:scale-95"
+            >
+              <Pencil className="w-4 h-4" />
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Details Grid */}
@@ -142,22 +162,7 @@ export function ProfileView({
         </div>
       </div>
 
-      {/* Action Buttons */}
-      {canEdit &&<div className="flex gap-3 border-t border-slate-100 pt-6">
-        <button
-          onClick={onEdit}
-          className="btn-gradient-blue text-white font-medium px-12 py-2.5 rounded-xl transition-all duration-300 ease-out hover:shadow-lg hover:shadow-brand-blue/30 hover:scale-105 active:scale-95"
-        >
-          Edit
-        </button>
-        {/* <button
-          onClick={onDelete}
-          className="flex items-center gap-2 px-6 py-2.5 border-2 border-slate-300 text-slate-900 font-medium rounded-full hover:border-red-300 hover:bg-red-50 transition-all duration-300"
-        >
-          <Trash2 className="w-4 h-4" />
-          Delete
-        </button> */}
-      </div>}
+      {/* Action Buttons (moved into header for desktop, bottom on mobile via stacking) */}
     </div>
   )
 }

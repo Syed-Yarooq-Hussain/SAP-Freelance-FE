@@ -6,8 +6,9 @@ export const APP_ROUTES = {
   SIGNUP_SELECT: "/auth/signup-select",
   SIGNUP: "/auth/signup",
   TEAMBUILDER: "/teambuilder",
-  
+  CONTACT_US: "/contact-us",
   CONSULTANT: {
+    CHANGE_PASSWORD: "/consultant/change-password",
     DASHBOARD: "/consultant/dashboard",
     PROJECTS: "/consultant/projects",
     INTERVIEWS: "/consultant/interviews",

@@ -55,7 +55,7 @@ export const useLogin = () => {
           ? "Consultant" : role === 3
           ? "Admin" : "User";
 
-      toast(`Logged in successfully as ${roleLabel}`, 'success');
+      toast(`Logged in successfully`, 'success');
 
       // Fetch and store user data in Redux for consultants
       if (role === 2) {

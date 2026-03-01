@@ -160,7 +160,7 @@ function ConsultantCard({ consultant }: { consultant: (typeof consultants)[0] })
   )
 }
 
-export default function Consultants() {
+export default function Consultants({ onSignUpClick }: { onSignUpClick: () => void }) {
   const [api, setApi] = React.useState<CarouselApi>()
   const [current, setCurrent] = React.useState(0)
   const [count, setCount] = React.useState(0)
@@ -181,10 +181,6 @@ export default function Consultants() {
       <div className="container mx-auto px-4 md:px-6">
         {/* Header */}
         <div className="flex flex-col items-center text-center mb-12">
-          <span className="inline-flex items-center gap-2 px-4 py-2 bg-white text-foreground text-sm font-medium rounded-full border border-slate-200 shadow-sm mb-6">
-            <Trophy className="w-4 h-4 text-brand-blue" />
-            Elite Talent Pool
-          </span>
           <h2 className="text-xl md:text-3xl lg:text-4xl font-bold text-foreground text-balance">
             Meet our highest-rated SAP experts, ready to accelerate your projects with proven expertise and exceptional delivery.
           </h2>
@@ -233,14 +229,14 @@ export default function Consultants() {
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-12">
-          <button className="group inline-flex items-center justify-center gap-2 px-6 py-3.5 btn-gradient-blue text-white font-semibold rounded-lg shadow-lg shadow-brand-blue/25 transition-all duration-300 ease-out hover:shadow-xl hover:shadow-brand-blue/30 hover:scale-105 active:scale-95">
+          <button onClick={onSignUpClick} className="group inline-flex items-center justify-center gap-2 px-6 py-3.5 btn-gradient-blue text-white font-semibold rounded-lg shadow-lg shadow-brand-blue/25 transition-all duration-300 ease-out hover:shadow-xl hover:shadow-brand-blue/30 hover:scale-105 active:scale-95">
             <Briefcase className="w-5 h-5" />
             Join as a Consultant
           </button>
-          <button className="group inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-white text-foreground font-semibold rounded-lg border border-slate-200 shadow-sm transition-all duration-300 ease-out hover:border-brand-blue hover:text-brand-blue hover:scale-105 active:scale-95">
+          {/* <button className="group inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-white text-foreground font-semibold rounded-lg border border-slate-200 shadow-sm transition-all duration-300 ease-out hover:border-brand-blue hover:text-brand-blue hover:scale-105 active:scale-95">
             <Search className="w-5 h-5" />
             Hire SAP Consultants
-          </button>
+          </button> */}
         </div>
       </div>
     </section>
