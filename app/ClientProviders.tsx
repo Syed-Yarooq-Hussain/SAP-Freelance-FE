@@ -39,10 +39,9 @@ export default function ClientProviders({
                   minHeight: "100vh",
                   display: "flex",
                   flexDirection: "column",
-                  pb: 4,
                 }}
               >
-                <Box component="main" sx={{ p: 1 }}>
+                <Box component="main">
                   <ToastProvider>
                     <GlobalLoader />
                     <Providers>

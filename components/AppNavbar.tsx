@@ -25,6 +25,7 @@ import AppTitle from "./AppTitle";
 import ChatSection from "./ChatSection";
 import ProfileAvatar from "./ProfileAvatar";
 import ProfileMenu from "./ProfileMenu";
+import { APP_ROUTES } from "@/utils/app_routes";
 
 interface AppNavbarProps {
   showSidebar?: boolean;
@@ -74,10 +75,13 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
         position="fixed"
         elevation={0}
         sx={{
+          //width: showSidebar
+//             ? { md: `calc(100% - ${240}px)` }
+//             :  {md: "96%", sm: "85%"},
+//        ml: showSidebar ? { md: `${DESKTOP_DRAWER_WIDTH}px` } : 0,
           width: showSidebar
-            ? { md: `calc(100% - ${DESKTOP_DRAWER_WIDTH}px)` }
-            : "100%",
-          ml: showSidebar ? { md: `${DESKTOP_DRAWER_WIDTH}px` } : 0,
+            ? { xs: "85%", md: `calc(100% - 240px)` }
+            : { xs: "85%", sm: "90%", md: "96%" },
           backgroundColor: "#E6EEF9",
           transition: "all 0.3s ease",
         }}
@@ -108,20 +112,20 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
               mr: 1.5,
             }}
           >
-            <Tooltip title="Notifications" arrow>
+            {/* <Tooltip title="Notifications" arrow>
               <IconButton
                 sx={{ p: 1 }}
                 onClick={() => openDrawer("notification")}
               >
                 <NotificationsNoneIcon />
               </IconButton>
-            </Tooltip>
+            </Tooltip> */}
 
-            <Tooltip title="Messages" arrow>
+            {/* <Tooltip title="Messages" arrow>
               <IconButton sx={{ p: 1 }} onClick={() => openDrawer("chat")}>
                 <ChatOutlinedIcon />
               </IconButton>
-            </Tooltip>
+            </Tooltip> */}
 
             <Tooltip title="Profile" arrow>
               <IconButton
@@ -214,6 +218,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
         onClose={handleMenuClose}
         onLogoutClick={handleLogout}
         onProfileClick={handleProfileClick}
+        onChangePasswordClick={() => router.push(APP_ROUTES.CONSULTANT.CHANGE_PASSWORD)}
         selectedPath={selectedMenu}
         user={{
           name:

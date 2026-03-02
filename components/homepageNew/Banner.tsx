@@ -38,13 +38,13 @@ const Banner = ({ onLoginClick, onSignUpClick }: BannerProps) => {
                         <span>Join as a Consultant</span>
                     </button>
                   
-                  <button 
+                  {/* <button 
                     onClick={onLoginClick}
                     className="group inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-white text-slate-700 font-semibold rounded-full border-2 border-slate-200 shadow-sm transition-all duration-300 ease-out hover:border-brand-blue hover:text-brand-blue hover:shadow-md hover:scale-105 active:scale-95"
                   >
                     <Search className="w-5 h-5" />
                     <span>Hire SAP Consultants</span>
-                  </button>
+                  </button> */}
                 </div>
               </div>
               

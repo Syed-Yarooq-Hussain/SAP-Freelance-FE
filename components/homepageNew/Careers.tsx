@@ -112,6 +112,11 @@ export default function Careers({ onSignUpClick }: CareersProps) {
         />
       </div>
       <div className="container mx-auto px-4 md:px-6 relative z-10">
+        <div className="flex flex-col items-center text-center mb-12">
+          <h2 className="text-xl md:text-3xl lg:text-4xl font-bold text-foreground text-balance">
+            Why Consultants Love the SAP Freelance Portal
+          </h2>
+        </div>
         {/* Header */}
         {/* <div className="flex flex-col items-center text-center mb-12 relative z-10">
           <button className="inline-flex items-center gap-2 px-4 py-2 btn-gradient-blue text-white text-sm font-medium rounded-full mb-4 transition-all duration-300 hover:scale-105 active:scale-95">
@@ -134,9 +139,9 @@ export default function Careers({ onSignUpClick }: CareersProps) {
                     <div className="grid md:grid-cols-2 gap-0">
                       {/* Left Content */}
                       <div className="p-6 md:p-8 lg:p-10 flex flex-col justify-center">
-                        <span className=" text-center inline-block px-3 py-1.5 btn-gradient-blue text-white text-xs font-medium rounded-full border border-cyan-100 mb-4 w-fit">
+                        {/* <span className=" text-center inline-block px-3 py-1.5 btn-gradient-blue text-white text-xs font-medium rounded-full border border-cyan-100 mb-4 w-fit">
                           {slide.tag}
-                        </span>
+                        </span> */}
                         <h3 className="text-xl md:text-start text-center md:text-xl font-semibold text-foreground mb-6">
                           {slide.title}
                         </h3>

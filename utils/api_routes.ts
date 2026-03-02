@@ -10,6 +10,7 @@ export const API_ROUTES = {
 
   //user:
   GET_ME: "/users/me",
+  UPDATE_PASSWORD: "/users/change-password",
 
   CLIENT_CONSULTANTS: "/clients/consultants",
   PROJECT_CREATE: "/projects/create",
