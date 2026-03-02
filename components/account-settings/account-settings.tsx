@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { CheckCircle, Upload, Info } from 'lucide-react'
+import { CheckCircle, Upload, Info, Badge, Award, Star, Sparkles } from 'lucide-react'
 import { useAppSelector } from '@/lib/store/hook'
 import { accountSettingsSchema, type AccountSettingsFormData } from '@/lib/schemas/account-settings'
 import { PhotoGuidelinesModal } from './photo-guidelines-modal'
@@ -90,17 +90,56 @@ export default function AccountSettings({ onSubmit, isLoading = false }: Account
     <>
       <div className="bg-white rounded-2xl border border-slate-100/50 p-6 md:p-8">
         {/* Page header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-slate-900">
-            Account Settings
-          </h1>
-          <div className="flex items-center gap-2 text-emerald-600 bg-emerald-100 rounded-full p-2">
-            <div className="flex items-center justify-center w-6 h-6 rounded-full ">
-              <CheckCircle className="w-4 h-4" />
-            </div>
-            <span className="text-sm font-medium">Verified</span>
-          </div>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-8">
+        {/* Badges Left */}
+        <div className="flex flex-wrap gap-2">
+          {user?.badges?.map((badge: string) => {
+            const normalized = badge.toUpperCase();
+
+            const badgeConfig = {
+              VERIFIED: {
+                label: 'Verified',
+                color: 'bg-emerald-100 text-emerald-700',
+                icon: CheckCircle,
+              },
+              CERTIFIED: {
+                label: 'Certified',
+                color: 'bg-blue-100 text-blue-700',
+                icon: Badge,
+              },
+              EXPERT: {
+                label: 'Expert',
+                color: 'bg-purple-100 text-purple-700',
+                icon: Award,
+              },
+              SENIOR_EXPERT: {
+                label: 'Senior Expert',
+                color: 'bg-amber-100 text-amber-700',
+                icon: Star,
+              },
+              SOLUTION_ARCHITECT: {
+                label: 'Solution Architect',
+                color: 'bg-red-100 text-red-700',
+                icon: Sparkles,
+              },
+            }[normalized];
+
+            if (!badgeConfig) return null;
+
+            const Icon = badgeConfig.icon;
+
+            return (
+              <span
+                key={badge}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${badgeConfig.color}`}
+              >
+                <Icon className="w-3.5 h-3.5" />
+                {badgeConfig.label}
+              </span>
+            );
+          })}
         </div>
+      </div>
 
         <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-8">
           {/* Profile Picture */}

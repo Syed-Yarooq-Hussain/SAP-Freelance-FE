@@ -12,6 +12,7 @@ import { useSapModules } from '@/actions/common/useSapModules'
 import { useConsultantMe } from '@/actions/consultants/useConsultantProfile'
 import { useAppSelector } from '@/lib/store/hook'
 import { LocationAutocomplete } from './LocationAutocomplete'
+import { request } from '@/utils/request'
 
 interface ProfileEditProps {
   onSubmit: (data: AccountFormData, apiPayload?: any) => void
@@ -19,41 +20,6 @@ interface ProfileEditProps {
   initialData?: Partial<AccountFormData>
   onCancel?: () => void
 }
-
-const coreModuleOptions: MultiSelectOption[] = [
-  { label: 'SAP B1-HANA', value: 'SAP B1-HANA' },
-  { label: 'SAP FI/CO', value: 'SAP FI/CO' },
-  { label: 'SAP MM', value: 'SAP MM' },
-  { label: 'SAP SD', value: 'SAP SD' },
-  { label: 'SAP HR', value: 'SAP HR' },
-  { label: 'SAP CRM', value: 'SAP CRM' },
-]
-
-const otherModuleOptions: MultiSelectOption[] = [
-  { label: 'SAP MM', value: 'SAP MM' },
-  { label: 'SAP SD', value: 'SAP SD' },
-  { label: 'SAP HR', value: 'SAP HR' },
-  { label: 'SAP CRM', value: 'SAP CRM' },
-  { label: 'SAP Fiori', value: 'SAP Fiori' },
-  { label: 'SAP Cloud', value: 'SAP Cloud' },
-]
-
-const locationOptions = [
-  'New York, USA',
-  'San Francisco, USA',
-  'London, UK',
-  'Toronto, Canada',
-  'Sydney, Australia',
-  'Singapore',
-  'Dubai, UAE',
-  'Remote',
-]
-
-const availabilityOptions = [
-  { value: 'ASAP', label: 'ASAP' },
-  { value: 'Week', label: 'This Week' },
-  { value: 'Month', label: 'This Month' },
-]
 
 // Transform form data to API payload format
 const transformToApiPayload = (formData: AccountFormData, userData?: any) => {
@@ -67,18 +33,6 @@ const transformToApiPayload = (formData: AccountFormData, userData?: any) => {
       clients_summary: formData.clients_summary || '',
       experience: Number(formData.experience),
       weekly_available_hours: Number(formData.weekly_available_hours),
-      // working_schedule: formData.working_schedule || {
-      //   weekly: userData?.working_schedule?.weekly || [
-      //     { day: 'Monday', slot: [], active: false },
-      //     { day: 'Tuesday', slot: [], active: false },
-      //     { day: 'Wednesday', slot: [], active: false },
-      //     { day: 'Thursday', slot: [], active: false },
-      //     { day: 'Friday', slot: [], active: false },
-      //     { day: 'Saturday', active: false },
-      //     { day: 'Sunday', active: false },
-      //   ],
-      //   custom: [],
-      // },
       skills: userData?.skills || [],
       core_module: Array.isArray(formData.core) 
         ? formData.core.map((id: string) => Number(id))
@@ -159,18 +113,7 @@ export function ProfileEdit({
       rate: user?.rate || 0,
       weekly_available_hours: user?.weekly_available_hours || 0,
       experience: user?.experience || 0,
-      // working_schedule: user?.working_schedule || {
-      //   weekly: [
-      //     { day: 'Monday', slot: [], active: false },
-      //     { day: 'Tuesday', slot: [], active: false },
-      //     { day: 'Wednesday', slot: [], active: false },
-      //     { day: 'Thursday', slot: [], active: false },
-      //     { day: 'Friday', slot: [], active: false },
-      //     { day: 'Saturday', active: false },
-      //     { day: 'Sunday', active: false },
-      //   ],
-      //   custom: [],
-      // },
+      
       core: userModules.core,
       others: userModules.others,
       profileImage: initialData?.profileImage || user?.cv_url || '',
@@ -188,56 +131,43 @@ export function ProfileEdit({
       setValue('rate', user?.rate || 0)
       setValue('weekly_available_hours', user?.weekly_available_hours || 0)
       setValue('experience', user?.experience || 0)
-      // setValue('working_schedule', user?.working_schedule || {
-      //   weekly: [
-      //     { day: 'Monday', slot: [], active: false },
-      //     { day: 'Tuesday', slot: [], active: false },
-      //     { day: 'Wednesday', slot: [], active: false },
-      //     { day: 'Thursday', slot: [], active: false },
-      //     { day: 'Friday', slot: [], active: false },
-      //     { day: 'Saturday', active: false },
-      //     { day: 'Sunday', active: false },
-      //   ],
-      //   custom: [],
-      // })
+      
       const coreModules = user?.user?.modules?.length > 0 ? user?.user?.modules.filter((module:any) => module?.is_primary) : []
       const otherModules = user?.user?.modules?.length > 0 ? user?.user?.modules.filter((module:any) => !module?.is_primary) : []
       setValue('core', coreModules.map((module:any) => module?.module?.id))
       setValue('others', otherModules.map((module:any) => module?.module?.id))
-      if (user?.cv_url) {
-        setProfileImage(user.cv_url)
-        setValue('profileImage', user.cv_url)
+      if (user?.user?.avatar) {
+        setProfileImage(user.user.avatar)
+        setValue('profileImage', user.user.avatar)
       }
     }
   }, [user, setValue])
 
   const coreModules = watch('core')
   const otherModules = watch('others')
-  // const workingSchedule = watch('working_schedule') || user?.working_schedule || {
-  //   weekly: [
-  //     { day: 'Monday', slot: [], active: false },
-  //     { day: 'Tuesday', slot: [], active: false },
-  //     { day: 'Wednesday', slot: [], active: false },
-  //     { day: 'Thursday', slot: [], active: false },
-  //     { day: 'Friday', slot: [], active: false },
-  //     { day: 'Saturday', active: false },
-  //     { day: 'Sunday', active: false },
-  //   ],
-  //   custom: [],
-  // }
+  
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        const result = reader.result as string
-        setProfileImage(result)
-        setValue('profileImage', result)
-      }
-      reader.readAsDataURL(file)
-    }
-  }
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const result = await request<FormData, { url: string }>({
+    url: `/consultants/upload-profile/${user?.user?.id}`,
+    method: "POST",
+    data: formData,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  const url = result?.data?.url;
+
+  setProfileImage(url);
+  setValue("profileImage", url);
+};
 
   const initials = watch('username')
     ?.split(' ')

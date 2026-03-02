@@ -112,20 +112,20 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
               mr: 1.5,
             }}
           >
-            <Tooltip title="Notifications" arrow>
+            {/* <Tooltip title="Notifications" arrow>
               <IconButton
                 sx={{ p: 1 }}
                 onClick={() => openDrawer("notification")}
               >
                 <NotificationsNoneIcon />
               </IconButton>
-            </Tooltip>
+            </Tooltip> */}
 
-            <Tooltip title="Messages" arrow>
+            {/* <Tooltip title="Messages" arrow>
               <IconButton sx={{ p: 1 }} onClick={() => openDrawer("chat")}>
                 <ChatOutlinedIcon />
               </IconButton>
-            </Tooltip>
+            </Tooltip> */}
 
             <Tooltip title="Profile" arrow>
               <IconButton

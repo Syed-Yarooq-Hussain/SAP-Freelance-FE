@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { Pencil, Trash2 } from 'lucide-react'
+import { Award, Badge, CheckCircle, Pencil, Sparkles, Star, Trash2 } from 'lucide-react'
 import { useAppSelector } from '@/lib/store/hook'
 import { useSapModules } from '@/actions/common/useSapModules'
 
@@ -30,7 +30,8 @@ export function ProfileView({
   onEdit,
 }: ProfileViewProps) {
   const user = useAppSelector(state => state?.user?.user)  
-  const name = user?.username || '-'
+
+  const name = user?.user?.username || '-'
   const email = user?.user?.email || '-'
   const headline = user?.clients_summary || 'No headline added'
   const profileImage = user?.user?.avatar || ''
@@ -75,21 +76,7 @@ export function ProfileView({
               {headline || 'No headline added'}
             </p>
 
-            {/* Badges */}
-            {badges.length > 0 && (
-              <div className="flex gap-2 mt-3">
-                {badges.map((badge, i) => (
-                  <Image
-                    key={i}
-                    className="hover:scale-125 transition-all duration-300"
-                    src={badge.icon}
-                    alt={badge.label}
-                    width={20}
-                    height={20}
-                  />
-                ))}
-              </div>
-            )}
+            
           </div>
         </div>
 
@@ -105,6 +92,57 @@ export function ProfileView({
         )}
       </div>
 
+      {/* Badges */}
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-8">
+              {/* Badges Left */}
+              <div className="flex flex-wrap gap-2">
+                {user?.badges?.map((badge: string) => {
+                  const normalized = badge.toUpperCase();
+    
+                  const badgeConfig = {
+                    VERIFIED: {
+                      label: 'Verified',
+                      color: 'bg-emerald-100 text-emerald-700',
+                      icon: CheckCircle,
+                    },
+                    CERTIFIED: {
+                      label: 'Certified',
+                      color: 'bg-blue-100 text-blue-700',
+                      icon: Badge,
+                    },
+                    EXPERT: {
+                      label: 'Expert',
+                      color: 'bg-purple-100 text-purple-700',
+                      icon: Award,
+                    },
+                    SENIOR_EXPERT: {
+                      label: 'Senior Expert',
+                      color: 'bg-amber-100 text-amber-700',
+                      icon: Star,
+                    },
+                    SOLUTION_ARCHITECT: {
+                      label: 'Solution Architect',
+                      color: 'bg-red-100 text-red-700',
+                      icon: Sparkles,
+                    },
+                  }[normalized];
+    
+                  if (!badgeConfig) return null;
+    
+                  const Icon = badgeConfig.icon;
+    
+                  return (
+                    <span
+                      key={badge}
+                      className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${badgeConfig.color}`}
+                    >
+                      <Icon className="w-3.5 h-3.5" />
+                      {badgeConfig.label}
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
       {/* Details Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Core Modules */}
