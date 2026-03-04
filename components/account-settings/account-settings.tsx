@@ -1,13 +1,19 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import Image from 'next/image'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { CheckCircle, Upload, Info, Badge, Award, Star, Sparkles } from 'lucide-react'
-import { useAppSelector } from '@/lib/store/hook'
+import { useAppDispatch, useAppSelector } from '@/lib/store/hook'
+import { updateUser } from '@/lib/store/features/user/userSlice'
+import { getConsultantMeService } from '@/services/getConsultantProfile'
+import { request } from '@/utils/request'
 import { accountSettingsSchema, type AccountSettingsFormData } from '@/lib/schemas/account-settings'
 import { PhotoGuidelinesModal } from './photo-guidelines-modal'
+import { toast } from 'sonner'
+
+const sanitizeUrl = (url?: string | null) =>
+  url ? encodeURI(url.trim()) : undefined
 
 const PROFILE_PHOTO_GUIDELINES = [
   'Choose a plain background',
@@ -23,11 +29,13 @@ interface AccountSettingsProps {
 }
 
 export default function AccountSettings({ onSubmit, isLoading = false }: AccountSettingsProps) {
+  const dispatch = useAppDispatch()
   const user = useAppSelector((state) => state?.user?.user)
   const [showPhotoModal, setShowPhotoModal] = useState(false)
   const [profileImage, setProfileImage] = useState<string | undefined>(
-    user?.user?.avatar || ''
+    sanitizeUrl(user?.user?.avatar) || ''
   )
+  const [isUploadingImage, setIsUploadingImage] = useState(false)
 
   const {
     register,
@@ -54,7 +62,7 @@ export default function AccountSettings({ onSubmit, isLoading = false }: Account
         'linkedin_profile_url',
         (user as any)?.user?.linkedin_url ?? (user as any)?.linkedin_url ?? ''
       )
-      if (user?.user?.avatar) setProfileImage(user.user.avatar)
+      if (user?.user?.avatar) setProfileImage(sanitizeUrl(user.user.avatar) || '')
     }
   }, [user, setValue])
 
@@ -66,14 +74,37 @@ export default function AccountSettings({ onSubmit, isLoading = false }: Account
     .toUpperCase()
     .slice(0, 2)
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setProfileImage(reader.result as string)
+    if (!file) return
+
+    setIsUploadingImage(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+
+      const result = await request<FormData, { url: string }>({
+        url: `/consultants/upload-profile/${user?.user?.id}`,
+        method: 'POST',
+        data: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+
+      const url = sanitizeUrl(result?.data?.url)
+      if (url) {
+        setProfileImage(url)
+        const consultantData = await getConsultantMeService()
+        if (consultantData?.data) {
+          dispatch(updateUser({ user: consultantData.data }))
+        }
+        toast.success('Profile photo updated')
       }
-      reader.readAsDataURL(file)
+    } catch (err: any) {
+      toast.error(err?.message ?? 'Failed to upload photo')
+    } finally {
+      setIsUploadingImage(false)
     }
   }
 
@@ -150,21 +181,11 @@ export default function AccountSettings({ onSubmit, isLoading = false }: Account
             <div className="flex flex-col sm:flex-row sm:items-start gap-6">
               <div className="flex-shrink-0">
                 {profileImage ? (
-                  profileImage.startsWith('data:') ? (
-                    <img
-                      src={profileImage}
-                      alt="Profile"
-                      className="w-28 h-28 rounded-full object-cover border-2 border-slate-200"
-                    />
-                  ) : (
-                    <Image
-                      src={profileImage}
-                      alt="Profile"
-                      width={120}
-                      height={120}
-                      className="w-28 h-28 rounded-full object-cover border-2 border-slate-200"
-                    />
-                  )
+                  <img
+                    src={profileImage}
+                    alt="Profile"
+                    className="w-28 h-28 rounded-full object-cover border-2 border-slate-200"
+                  />
                 ) : (
                   <div className="w-28 h-28 rounded-full bg-slate-200 flex items-center justify-center border-2 border-slate-200">
                     <span className="text-2xl font-semibold text-slate-600">
@@ -174,13 +195,20 @@ export default function AccountSettings({ onSubmit, isLoading = false }: Account
                 )}
               </div>
               <div className="flex-1 space-y-4">
-                <label className="inline-flex items-center gap-2 px-4 py-2.5 border border-slate-300 rounded-xl bg-slate-50 text-slate-700 text-sm font-medium cursor-pointer hover:bg-slate-100 transition-colors">
+                <label
+                  className={`inline-flex items-center gap-2 px-4 py-2.5 border border-slate-300 rounded-xl text-sm font-medium transition-colors ${
+                    isUploadingImage
+                      ? 'bg-slate-100 text-slate-500 cursor-not-allowed'
+                      : 'bg-slate-50 text-slate-700 cursor-pointer hover:bg-slate-100'
+                  }`}
+                >
                   <Upload className="w-4 h-4" />
-                  Browse and Upload
+                  {isUploadingImage ? 'Uploading...' : 'Browse and Upload'}
                   <input
                     type="file"
                     accept="image/*"
                     onChange={handleImageUpload}
+                    disabled={isUploadingImage}
                     className="hidden"
                     aria-label="Upload profile photo"
                   />

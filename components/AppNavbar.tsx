@@ -26,6 +26,7 @@ import ChatSection from "./ChatSection";
 import ProfileAvatar from "./ProfileAvatar";
 import ProfileMenu from "./ProfileMenu";
 import { APP_ROUTES } from "@/utils/app_routes";
+import { useAppSelector } from "@/lib/store/hook";
 
 interface AppNavbarProps {
   showSidebar?: boolean;
@@ -43,7 +44,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
   const [drawerType, setDrawerType] = React.useState<
     "chat" | "notification" | null
   >(null);
-
+  const {user} = useAppSelector(state => state.user)
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
@@ -222,9 +223,9 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
         selectedPath={selectedMenu}
         user={{
           name:
-            session?.user?.username.replace(/([a-z])([A-Z])/g, "$1 $2") ??
+            user?.user?.username.replace(/([a-z])([A-Z])/g, "$1 $2") ??
             "User",
-          avatar: session?.user?.avatar,
+          avatar: user?.user?.avatar,
         }}
       />
 

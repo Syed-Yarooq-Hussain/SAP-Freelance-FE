@@ -31,15 +31,19 @@ export function ProfileView({
 }: ProfileViewProps) {
   const user = useAppSelector(state => state?.user?.user)  
 
+
+  const sanitizeUrl = (url?: string | null) =>
+    url ? encodeURI(url.trim()) : undefined
   const name = user?.user?.username || '-'
   const email = user?.user?.email || '-'
   const headline = user?.clients_summary || 'No headline added'
-  const profileImage = user?.user?.avatar || ''
+    const profileImage = sanitizeUrl(user?.user?.avatar || '')
   const coreModules = user?.user?.modules?.length > 0 ? user?.user?.modules.filter((module:any) => module?.is_primary) : []
   const otherModules = user?.user?.modules?.length > 0 ? user?.user?.modules.filter((module:any) => !module?.is_primary) : []
   const experience = user?.experience || 0
   const rate = user?.rate || 0
   const location = user?.user?.city || 'N/A'
+
 
   const initials = name
     .split(' ')

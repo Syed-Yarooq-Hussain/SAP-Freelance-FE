@@ -10,9 +10,11 @@ import { PhotoGuidelinesModal } from './photo-guidelines-modal'
 import { MultiSelect, type MultiSelectOption } from '@/components/homepage/ui/multi-select'
 import { useSapModules } from '@/actions/common/useSapModules'
 import { useConsultantMe } from '@/actions/consultants/useConsultantProfile'
-import { useAppSelector } from '@/lib/store/hook'
+import { useAppDispatch, useAppSelector } from '@/lib/store/hook'
 import { LocationAutocomplete } from './LocationAutocomplete'
 import { request } from '@/utils/request'
+import { getConsultantMeService } from '@/services/getConsultantProfile'
+import { updateUser } from '@/lib/store/features/user/userSlice'
 
 interface ProfileEditProps {
   onSubmit: (data: AccountFormData, apiPayload?: any) => void
@@ -50,6 +52,7 @@ export function ProfileEdit({
   initialData,
   onCancel,
 }: ProfileEditProps) {
+  const dispatch = useAppDispatch()
   const user = useAppSelector(state => state?.user?.user)
   const [showPhotoModal, setShowPhotoModal] = useState(false)
   const [profileImage, setProfileImage] = useState<string | undefined>(
@@ -97,6 +100,9 @@ export function ProfileEdit({
 
   const userModules = getModulesFromUser()
 
+  const sanitizeUrl = (url?: string | null) =>
+    url ? encodeURI(url.trim()) : undefined
+
   const {
     register,
     handleSubmit,
@@ -116,7 +122,7 @@ export function ProfileEdit({
       
       core: userModules.core,
       others: userModules.others,
-      profileImage: initialData?.profileImage || user?.cv_url || '',
+      profileImage: sanitizeUrl(initialData?.profileImage || user?.cv_url || ''),
     },
   })
 
@@ -137,8 +143,9 @@ export function ProfileEdit({
       setValue('core', coreModules.map((module:any) => module?.module?.id))
       setValue('others', otherModules.map((module:any) => module?.module?.id))
       if (user?.user?.avatar) {
-        setProfileImage(user.user.avatar)
-        setValue('profileImage', user.user.avatar)
+        const url = sanitizeUrl(user.user.avatar)
+        setProfileImage(url)
+        setValue('profileImage', url || '')
       }
     }
   }, [user, setValue])
@@ -163,10 +170,16 @@ export function ProfileEdit({
     },
   });
 
-  const url = result?.data?.url;
-
+  const url = sanitizeUrl(result?.data?.url);
   setProfileImage(url);
-  setValue("profileImage", url);
+  if(url){
+    const consultantData = await getConsultantMeService();
+        
+    if (consultantData?.data) {
+      dispatch(updateUser({ user: consultantData.data }));
+    }      
+  }
+  setValue("profileImage", url || '');
 };
 
   const initials = watch('username')
@@ -174,7 +187,6 @@ export function ProfileEdit({
     .map((n) => n[0])
     .join('')
     .toUpperCase() || 'JD'
-
   return (
     <>
       <div className="bg-white rounded-2xl border border-slate-100/50 p-6 md:p-8">
@@ -186,7 +198,7 @@ export function ProfileEdit({
           <div className="flex flex-col md:flex-row items-center md:items-start text-center md:text-left gap-6 pb-6 border-b border-slate-100">
             <div className="relative flex-shrink-0 group w-20 h-20">
               {profileImage ? (
-                <Image
+                <img
                   src={profileImage}
                   alt="Profile"
                   width={80}
