@@ -1,6 +1,6 @@
 import { Video, Calendar, ArrowRight } from "lucide-react"
 
-export default function HireSap() {
+export default function HireSap({ onSignUpClick }: { onSignUpClick: () => void }) {
   return (
     <section id="book-demo" className="py-20 md:py-28 bg-gradient-to-b from-white to-cyan-50/50 scroll-mt-24">
       <div className="container mx-auto px-4">
@@ -27,7 +27,7 @@ export default function HireSap() {
           </p>
 
           {/* Button */}
-          <button className="inline-flex items-center justify-center gap-3 px-8 py-4 btn-gradient-blue text-white font-semibold rounded-xl shadow-lg shadow-brand-blue/25 transition-all duration-300 ease-out hover:shadow-xl hover:shadow-brand-blue/30 hover:scale-105 active:scale-95 text-lg">
+          <button onClick={onSignUpClick} className="inline-flex items-center justify-center gap-3 px-8 py-4 btn-gradient-blue text-white font-semibold rounded-xl shadow-lg shadow-brand-blue/25 transition-all duration-300 ease-out hover:shadow-xl hover:shadow-brand-blue/30 hover:scale-105 active:scale-95 text-lg">
             <Calendar className="w-5 h-5" />
             <span>Schedule Now!</span>
             <ArrowRight className="w-5 h-5" />

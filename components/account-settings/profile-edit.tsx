@@ -4,54 +4,24 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { Download, HelpCircle } from 'lucide-react'
+import { Download, HelpCircle, X } from 'lucide-react'
 import { accountSchema, type AccountFormData } from '@/lib/schemas/account'
 import { PhotoGuidelinesModal } from './photo-guidelines-modal'
 import { MultiSelect, type MultiSelectOption } from '@/components/homepage/ui/multi-select'
 import { useSapModules } from '@/actions/common/useSapModules'
 import { useConsultantMe } from '@/actions/consultants/useConsultantProfile'
-import { useAppSelector } from '@/lib/store/hook'
+import { useAppDispatch, useAppSelector } from '@/lib/store/hook'
+import { LocationAutocomplete } from './LocationAutocomplete'
+import { request } from '@/utils/request'
+import { getConsultantMeService } from '@/services/getConsultantProfile'
+import { updateUser } from '@/lib/store/features/user/userSlice'
 
 interface ProfileEditProps {
   onSubmit: (data: AccountFormData, apiPayload?: any) => void
   isLoading?: boolean
   initialData?: Partial<AccountFormData>
+  onCancel?: () => void
 }
-
-const coreModuleOptions: MultiSelectOption[] = [
-  { label: 'SAP B1-HANA', value: 'SAP B1-HANA' },
-  { label: 'SAP FI/CO', value: 'SAP FI/CO' },
-  { label: 'SAP MM', value: 'SAP MM' },
-  { label: 'SAP SD', value: 'SAP SD' },
-  { label: 'SAP HR', value: 'SAP HR' },
-  { label: 'SAP CRM', value: 'SAP CRM' },
-]
-
-const otherModuleOptions: MultiSelectOption[] = [
-  { label: 'SAP MM', value: 'SAP MM' },
-  { label: 'SAP SD', value: 'SAP SD' },
-  { label: 'SAP HR', value: 'SAP HR' },
-  { label: 'SAP CRM', value: 'SAP CRM' },
-  { label: 'SAP Fiori', value: 'SAP Fiori' },
-  { label: 'SAP Cloud', value: 'SAP Cloud' },
-]
-
-const locationOptions = [
-  'New York, USA',
-  'San Francisco, USA',
-  'London, UK',
-  'Toronto, Canada',
-  'Sydney, Australia',
-  'Singapore',
-  'Dubai, UAE',
-  'Remote',
-]
-
-const availabilityOptions = [
-  { value: 'ASAP', label: 'ASAP' },
-  { value: 'Week', label: 'This Week' },
-  { value: 'Month', label: 'This Month' },
-]
 
 // Transform form data to API payload format
 const transformToApiPayload = (formData: AccountFormData, userData?: any) => {
@@ -65,18 +35,6 @@ const transformToApiPayload = (formData: AccountFormData, userData?: any) => {
       clients_summary: formData.clients_summary || '',
       experience: Number(formData.experience),
       weekly_available_hours: Number(formData.weekly_available_hours),
-      // working_schedule: formData.working_schedule || {
-      //   weekly: userData?.working_schedule?.weekly || [
-      //     { day: 'Monday', slot: [], active: false },
-      //     { day: 'Tuesday', slot: [], active: false },
-      //     { day: 'Wednesday', slot: [], active: false },
-      //     { day: 'Thursday', slot: [], active: false },
-      //     { day: 'Friday', slot: [], active: false },
-      //     { day: 'Saturday', active: false },
-      //     { day: 'Sunday', active: false },
-      //   ],
-      //   custom: [],
-      // },
       skills: userData?.skills || [],
       core_module: Array.isArray(formData.core) 
         ? formData.core.map((id: string) => Number(id))
@@ -92,7 +50,9 @@ export function ProfileEdit({
   onSubmit,
   isLoading = false,
   initialData,
+  onCancel,
 }: ProfileEditProps) {
+  const dispatch = useAppDispatch()
   const user = useAppSelector(state => state?.user?.user)
   const [showPhotoModal, setShowPhotoModal] = useState(false)
   const [profileImage, setProfileImage] = useState<string | undefined>(
@@ -101,7 +61,6 @@ export function ProfileEdit({
 
   const { data, isLoading:loadingSapModules } = useSapModules();
   const modules:any = data?.data
-  console.log(user,'spa modules')
 
   // Parse module strings to arrays
   const parseModuleString = (moduleStr: string | undefined): string[] => {
@@ -141,6 +100,9 @@ export function ProfileEdit({
 
   const userModules = getModulesFromUser()
 
+  const sanitizeUrl = (url?: string | null) =>
+    url ? encodeURI(url.trim()) : undefined
+
   const {
     register,
     handleSubmit,
@@ -157,21 +119,10 @@ export function ProfileEdit({
       rate: user?.rate || 0,
       weekly_available_hours: user?.weekly_available_hours || 0,
       experience: user?.experience || 0,
-      // working_schedule: user?.working_schedule || {
-      //   weekly: [
-      //     { day: 'Monday', slot: [], active: false },
-      //     { day: 'Tuesday', slot: [], active: false },
-      //     { day: 'Wednesday', slot: [], active: false },
-      //     { day: 'Thursday', slot: [], active: false },
-      //     { day: 'Friday', slot: [], active: false },
-      //     { day: 'Saturday', active: false },
-      //     { day: 'Sunday', active: false },
-      //   ],
-      //   custom: [],
-      // },
+      
       core: userModules.core,
       others: userModules.others,
-      profileImage: initialData?.profileImage || user?.cv_url || '',
+      profileImage: sanitizeUrl(initialData?.profileImage || user?.cv_url || ''),
     },
   })
 
@@ -186,63 +137,56 @@ export function ProfileEdit({
       setValue('rate', user?.rate || 0)
       setValue('weekly_available_hours', user?.weekly_available_hours || 0)
       setValue('experience', user?.experience || 0)
-      // setValue('working_schedule', user?.working_schedule || {
-      //   weekly: [
-      //     { day: 'Monday', slot: [], active: false },
-      //     { day: 'Tuesday', slot: [], active: false },
-      //     { day: 'Wednesday', slot: [], active: false },
-      //     { day: 'Thursday', slot: [], active: false },
-      //     { day: 'Friday', slot: [], active: false },
-      //     { day: 'Saturday', active: false },
-      //     { day: 'Sunday', active: false },
-      //   ],
-      //   custom: [],
-      // })
+      
       const coreModules = user?.user?.modules?.length > 0 ? user?.user?.modules.filter((module:any) => module?.is_primary) : []
       const otherModules = user?.user?.modules?.length > 0 ? user?.user?.modules.filter((module:any) => !module?.is_primary) : []
       setValue('core', coreModules.map((module:any) => module?.module?.id))
       setValue('others', otherModules.map((module:any) => module?.module?.id))
-      if (user?.cv_url) {
-        setProfileImage(user.cv_url)
-        setValue('profileImage', user.cv_url)
+      if (user?.user?.avatar) {
+        const url = sanitizeUrl(user.user.avatar)
+        setProfileImage(url)
+        setValue('profileImage', url || '')
       }
     }
   }, [user, setValue])
 
   const coreModules = watch('core')
   const otherModules = watch('others')
-  // const workingSchedule = watch('working_schedule') || user?.working_schedule || {
-  //   weekly: [
-  //     { day: 'Monday', slot: [], active: false },
-  //     { day: 'Tuesday', slot: [], active: false },
-  //     { day: 'Wednesday', slot: [], active: false },
-  //     { day: 'Thursday', slot: [], active: false },
-  //     { day: 'Friday', slot: [], active: false },
-  //     { day: 'Saturday', active: false },
-  //     { day: 'Sunday', active: false },
-  //   ],
-  //   custom: [],
-  // }
+  
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        const result = reader.result as string
-        setProfileImage(result)
-        setValue('profileImage', result)
-      }
-      reader.readAsDataURL(file)
-    }
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const result = await request<FormData, { url: string }>({
+    url: `/consultants/upload-profile/${user?.user?.id}`,
+    method: "POST",
+    data: formData,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  const url = sanitizeUrl(result?.data?.url);
+  setProfileImage(url);
+  if(url){
+    const consultantData = await getConsultantMeService();
+        
+    if (consultantData?.data) {
+      dispatch(updateUser({ user: consultantData.data }));
+    }      
   }
+  setValue("profileImage", url || '');
+};
 
   const initials = watch('username')
     ?.split(' ')
     .map((n) => n[0])
     .join('')
     .toUpperCase() || 'JD'
-
   return (
     <>
       <div className="bg-white rounded-2xl border border-slate-100/50 p-6 md:p-8">
@@ -254,7 +198,7 @@ export function ProfileEdit({
           <div className="flex flex-col md:flex-row items-center md:items-start text-center md:text-left gap-6 pb-6 border-b border-slate-100">
             <div className="relative flex-shrink-0 group w-20 h-20">
               {profileImage ? (
-                <Image
+                <img
                   src={profileImage}
                   alt="Profile"
                   width={80}
@@ -306,8 +250,8 @@ export function ProfileEdit({
               <textarea
                 {...register('clients_summary')}
                 placeholder="Profile headline"
-                rows={2}
-                className="w-full md:w-1/2 max-w-full text-xs text-slate-500 bg-transparent border rounded-xl border-slate-300 mt-2 px-2 py-3 focus:outline-none focus:border-brand-blue placeholder-slate-400 resize-none"
+                rows={4}
+                className="w-full max-w-full text-xs text-slate-500 bg-transparent border rounded-xl border-slate-300 mt-2 px-2 py-3 focus:outline-none focus:border-brand-blue placeholder-slate-400 resize-none"
               />
               {errors.clients_summary && (
                 <p className="text-xs text-red-500 mt-1">{errors.clients_summary.message}</p>
@@ -406,12 +350,17 @@ export function ProfileEdit({
               <label className="block text-sm font-semibold text-slate-900 mb-2">
                 Location <span className="text-red-500">*</span>
               </label>
-              <input
+              <LocationAutocomplete
+                value={watch('city')}
+                onChange={(value) => setValue('city', value)}
+                placeholder="e.g., Berlin"
+              />
+              {/* <input
                 {...register('city')}
                 type="text"
                 placeholder="e.g., Berlin"
                 className="w-full px-4 py-2 border border-slate-300 rounded-input focus:outline-none focus:border-brand-blue"
-              />
+              /> */}
               {errors.city && (
                 <p className="text-xs text-red-500 mt-1">
                   {errors.city?.message}
@@ -482,6 +431,13 @@ export function ProfileEdit({
 
           {/* Action Buttons */}
           <div className="flex flex-col md:flex-row justify-center md:justify-start gap-3 border-t border-slate-100 pt-6">
+           {onCancel && <button
+              type="button"
+              onClick={onCancel}
+              className="flex items-center gap-2 px-6 py-2.5 border-2 border-slate-300 text-slate-900 font-semibold rounded-full hover:bg-slate-50 transition-all duration-300"
+            >
+              Cancel
+            </button>}
             <button
               type="submit"
               disabled={isLoading}

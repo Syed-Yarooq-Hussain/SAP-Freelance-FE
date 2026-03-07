@@ -4,52 +4,97 @@ import {
   DESKTOP_DRAWER_WIDTH,
   MOBILE_DRAWER_WIDTH,
 } from "@/constants/dimensions";
-import { Box, CssBaseline, Drawer } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
+import { Box, CssBaseline, IconButton, Drawer as MuiDrawer, Tooltip } from "@mui/material";
+import { CSSObject, styled, Theme, useTheme } from "@mui/material/styles";
 import Image from "next/image";
 import React, { FC, useEffect, useState } from "react";
 import AppNavbar from "./AppNavbar";
 import DrawerList from "./DrawerList";
 import DrawerListSkeleton from "./DrawerListSkeleton";
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 
 type ISidebarProps = {
   children: React.ReactNode;
 };
+const drawerWidth = 240;
+const openedMixin = (theme: Theme): CSSObject => ({
+  width: drawerWidth,
+  transition: theme.transitions.create('width', {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.enteringScreen,
+  }),
+  overflowX: 'hidden',
+});
+
+const closedMixin = (theme: Theme): CSSObject => ({
+  transition: theme.transitions.create('width', {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  overflowX: 'hidden',
+  width: `calc(${theme.spacing(7)} + 1px)`,
+  [theme.breakpoints.up('sm')]: {
+    width: `calc(${theme.spacing(8)} + 1px)`,
+  },
+});
+
+const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
+  ({ theme }) => ({
+    width: drawerWidth,
+    flexShrink: 0,
+    whiteSpace: 'nowrap',
+    boxSizing: 'border-box',
+    variants: [
+      {
+        props: ({ open }) => open,
+        style: {
+          ...openedMixin(theme),
+          '& .MuiDrawer-paper': openedMixin(theme),
+        },
+      },
+      {
+        props: ({ open }) => !open,
+        style: {
+          ...closedMixin(theme),
+          '& .MuiDrawer-paper': closedMixin(theme),
+        },
+      },
+    ],
+  }),
+);
+
+const DrawerHeader = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'flex-end',
+  padding: theme.spacing(0, 1),
+  // necessary for content to be below app bar
+  ...theme.mixins.toolbar,
+}));
+
+
 
 const Sidebar: FC<ISidebarProps> = ({ children }) => {
   const theme = useTheme();
-  const [mounted, setMounted] = useState(false);
-  const [open, setOpen] = useState(true);
+  const [mounted, setMounted] = useState(true);
+  const [open, setOpen] = useState(false);
+  const [hoverOpen, setHoverOpen] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-
-    const handleResize = () => {
-      setOpen(window.innerWidth >= theme.breakpoints.values.md);
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize);
-
-    return () => window.removeEventListener("resize", handleResize);
-  }, [theme.breakpoints.values.md]);
+  const expanded = open || hoverOpen;
 
   const appBarHeight = theme.mixins.toolbar.minHeight;
 
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
-      <AppNavbar />
+      <AppNavbar showSidebar={expanded} />
 
       <Drawer
         variant="permanent"
-        sx={{
-          width: open ? DESKTOP_DRAWER_WIDTH : MOBILE_DRAWER_WIDTH,
-          flexShrink: 0,
-          "& .MuiDrawer-paper": {
-            width: open ? DESKTOP_DRAWER_WIDTH : MOBILE_DRAWER_WIDTH,
-            boxSizing: "border-box",
-          },
+        open={expanded}
+        PaperProps={{
+          onMouseEnter: () => setHoverOpen(true),
+          onMouseLeave: () => setHoverOpen(false),
         }}
       >
         {/* <Box
@@ -74,7 +119,6 @@ const Sidebar: FC<ISidebarProps> = ({ children }) => {
             priority
           />
         </Box> */}
-
         <Box
           sx={{
             height: 64,
@@ -95,7 +139,44 @@ const Sidebar: FC<ISidebarProps> = ({ children }) => {
           </Box>
         </Box>
 
-        {mounted ? <DrawerList open={open} /> : <DrawerListSkeleton />}
+        {mounted ? <DrawerList open={expanded} /> : <DrawerListSkeleton />}
+        {/* <DrawerHeader>
+          <Tooltip title={expanded ? "Collapse sidebar" : "Expand sidebar"} placement="right" arrow>
+            <IconButton
+              onClick={() => setOpen(!open)}
+              aria-label={expanded ? "Collapse sidebar" : "Expand sidebar"}
+              sx={{
+                width: 28,
+                height: 28,
+                borderRadius: "10px",
+                bgcolor: "action.hover",
+                transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
+                "&:hover": {
+                  bgcolor: "primary.main",
+                  color: "white",
+                  transform: "scale(1.1)",
+                  boxShadow: 1,
+                },
+                "&:active": {
+                  transform: "scale(0.92)",
+                  transitionDuration: "0.1s",
+                },
+                "& svg": {
+                  width: 16,
+                  height: 16,
+                  transition: "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                  transform: expanded ? "rotate(0deg)" : "rotate(180deg)",
+                },
+              }}
+            >
+              {theme.direction === "rtl" ? (
+                <ChevronRightIcon />
+              ) : (
+                <ChevronLeftIcon />
+              )}
+            </IconButton>
+          </Tooltip>
+        </DrawerHeader> */}
       </Drawer>
 
       <Box

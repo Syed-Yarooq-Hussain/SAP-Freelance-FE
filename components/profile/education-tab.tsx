@@ -1,9 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { Plus, Trash2, Edit } from 'lucide-react'
+import { Plus, Trash2, Edit, ArchiveX } from 'lucide-react'
 import { EducationModal } from './education-modal'
 import { type EducationFormData } from '@/lib/schemas/education'
+import { ConfirmDeleteModal } from '@/components/common/ConfirmDeleteModal'
 
 interface EducationTabProps {
   data: EducationFormData[]
@@ -21,6 +22,8 @@ export function EducationTab({
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
   const [editingData, setEditingData] = useState<EducationFormData | undefined>()
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false)
+  const [deleteIndex, setDeleteIndex] = useState<number | null>(null)
 
   const handleAddClick = () => {
     setEditingIndex(null)
@@ -42,10 +45,16 @@ export function EducationTab({
     }
   }
 
-  const handleDelete = async (index: number) => {
-    if (confirm('Are you sure you want to delete this education?')) {
-      await onDelete(index)
-    }
+  const handleDelete = (index: number) => {
+    setDeleteIndex(index)
+    setIsDeleteOpen(true)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (deleteIndex === null) return
+    await onDelete(deleteIndex)
+    setIsDeleteOpen(false)
+    setDeleteIndex(null)
   }
 
   return (
@@ -62,8 +71,9 @@ export function EducationTab({
       </div>
 
       {data.length === 0 ? (
-        <div className="text-center py-12 bg-slate-50 rounded-lg border border-dashed border-slate-300">
-          <p className="text-slate-500">No education added yet</p>
+        <div className="w-full flex flex-col items-center justify-center py-12 bg-slate-50 rounded-lg border border-dashed border-slate-300">
+          <ArchiveX className="w-10 h-10 text-slate-300 mb-3" aria-hidden />
+          <p className="text-slate-500 text-center">No education added yet</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -128,6 +138,16 @@ export function EducationTab({
         onClose={() => setIsModalOpen(false)}
         onSave={handleSave}
         initialData={editingData}
+      />
+
+      <ConfirmDeleteModal
+        isOpen={isDeleteOpen}
+        message="Are you sure you want to delete this education?"
+        onCancel={() => {
+          setIsDeleteOpen(false)
+          setDeleteIndex(null)
+        }}
+        onConfirm={handleConfirmDelete}
       />
     </div>
   )

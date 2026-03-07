@@ -25,6 +25,10 @@ import AppTitle from "./AppTitle";
 import ChatSection from "./ChatSection";
 import ProfileAvatar from "./ProfileAvatar";
 import ProfileMenu from "./ProfileMenu";
+import { APP_ROUTES } from "@/utils/app_routes";
+import { useAppSelector } from "@/lib/store/hook";
+import { LayoutDashboard, User, Settings } from "lucide-react";
+import { Roles } from "@/constants/roles";
 
 interface AppNavbarProps {
   showSidebar?: boolean;
@@ -42,7 +46,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
   const [drawerType, setDrawerType] = React.useState<
     "chat" | "notification" | null
   >(null);
-
+  const {user} = useAppSelector(state => state.user)
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
@@ -65,8 +69,45 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
   };
 
   const profileRoute = getProfileRouteByRole(session?.user?.role);
-
   const selectedMenu = pathname === profileRoute ? "profile" : undefined;
+
+  const role = session?.user?.role as number | undefined;
+  const getNavRoutes = () => {
+    if (role === Roles.CONSULTANT)
+      return {
+        dashboard: APP_ROUTES.CONSULTANT.DASHBOARD,
+        profile: APP_ROUTES.CONSULTANT.PROFILE,
+        account: APP_ROUTES.CONSULTANT.ACCOUNT,
+      };
+    if (role === Roles.CLIENT)
+      return {
+        dashboard: APP_ROUTES.CLIENT.DASHBOARD,
+        profile: APP_ROUTES.CLIENT.PROFILE,
+        account: APP_ROUTES.CLIENT.PROFILE,
+      };
+    if (role === Roles.ADMIN)
+      return {
+        dashboard: APP_ROUTES.ADMIN.DASHBOARD,
+        profile: APP_ROUTES.ADMIN.PROFILE,
+        account: APP_ROUTES.ADMIN.PROFILE,
+      };
+    return {
+      dashboard: "/",
+      profile: "/",
+      account: "/",
+    };
+  };
+  const navRoutes = getNavRoutes();
+  const navItems = [
+    { label: "Dashboard", path: navRoutes.dashboard, icon: LayoutDashboard },
+    { label: "Profile Detail", path: navRoutes.profile, icon: User },
+    { label: "Account Settings", path: navRoutes.account, icon: Settings },
+  ] as const;
+
+  const handleNavClick = (path: string) => {
+    router.push(path);
+    handleMobileMenuClose();
+  };
 
   return (
     <>
@@ -74,11 +115,15 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
         position="fixed"
         elevation={0}
         sx={{
+          //width: showSidebar
+//             ? { md: `calc(100% - ${240}px)` }
+//             :  {md: "96%", sm: "85%"},
+//        ml: showSidebar ? { md: `${DESKTOP_DRAWER_WIDTH}px` } : 0,
           width: showSidebar
-            ? { md: `calc(100% - ${DESKTOP_DRAWER_WIDTH}px)` }
-            : "100%",
-          ml: showSidebar ? { md: `${DESKTOP_DRAWER_WIDTH}px` } : 0,
-          backgroundColor: "#E6EEF9",
+            ? { xs: "85%", md: `calc(100% - 240px)` }
+            : { xs: "85%", sm: "90%", md: "96%" },
+          backgroundColor: "white",
+          paddingY:1,
           transition: "all 0.3s ease",
         }}
       >
@@ -98,6 +143,26 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
               </Box>
             )}
             <AppTitle />
+            <div className="hidden md:flex items-center gap-1 ml-2">
+              {navItems.map(({ label, path, icon: Icon }) => {
+                const isActive = pathname === path;
+                return (
+                  <button
+                    key={path}
+                    type="button"
+                    onClick={() => router.push(path)}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                      isActive
+                        ? "bg-blue-50 text-blue-600"
+                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" />
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
           </Box>
 
           <Box
@@ -108,20 +173,20 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
               mr: 1.5,
             }}
           >
-            <Tooltip title="Notifications" arrow>
+            {/* <Tooltip title="Notifications" arrow>
               <IconButton
                 sx={{ p: 1 }}
                 onClick={() => openDrawer("notification")}
               >
                 <NotificationsNoneIcon />
               </IconButton>
-            </Tooltip>
+            </Tooltip> */}
 
-            <Tooltip title="Messages" arrow>
+            {/* <Tooltip title="Messages" arrow>
               <IconButton sx={{ p: 1 }} onClick={() => openDrawer("chat")}>
                 <ChatOutlinedIcon />
               </IconButton>
-            </Tooltip>
+            </Tooltip> */}
 
             <Tooltip title="Profile" arrow>
               <IconButton
@@ -133,12 +198,12 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
               >
                 <ProfileAvatar
                   name={
-                    session?.user?.username?.replace(
+                    user?.user?.username?.replace(
                       /([a-z])([A-Z])/g,
                       "$1 $2"
                     ) ?? "User"
                   }
-                  imageUrl={session?.user?.avatar}
+                  imageUrl={user?.user?.avatar}
                   size={24}
                   sx={{
                     border: "1.8px solid rgba(0,0,0,0.8)",
@@ -169,59 +234,44 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
           onClose={handleMobileMenuClose}
           anchorOrigin={{ vertical: "top", horizontal: "right" }}
           transformOrigin={{ vertical: "top", horizontal: "right" }}
+          slotProps={{ paper: { sx: { minWidth: 200 } } }}
         >
-          <MenuItem onClick={() => openDrawer("chat")}>
-            <IconButton size="large" color="inherit">
-              <Badge badgeContent={4} color="error">
-                <ChatOutlinedIcon />
-              </Badge>
-            </IconButton>
-            <p>Messages</p>
-          </MenuItem>
-          <MenuItem onClick={() => openDrawer("notification")}>
-            <IconButton size="large" color="inherit">
-              <Badge badgeContent={17} color="error">
-                <NotificationsNoneIcon />
-              </Badge>
-            </IconButton>
-            <p>Notifications</p>
-          </MenuItem>
-          <MenuItem onClick={handleProfileMenuOpen}>
-            <IconButton
-              size="large"
-              onClick={handleProfileMenuOpen}
-              sx={{ p: 0 }}
-            >
-              <ProfileAvatar
-                name={
-                  session?.user?.username?.replace(
-                    /([a-z])([A-Z])/g,
-                    "$1 $2"
-                  ) ?? "User"
-                }
-                imageUrl={session?.user?.avatar}
-                size={32}
-              />
-            </IconButton>
-            <p>Account</p>
-          </MenuItem>
+          {navItems.map(({ label, path, icon: Icon }) => {
+            const isActive = pathname === path;
+            return (
+              <MenuItem
+                key={path}
+                onClick={() => handleNavClick(path)}
+                selected={isActive}
+                sx={{
+                  gap: 1.5,
+                  bgcolor: isActive ? "rgba(25, 118, 210, 0.08)" : undefined,
+                  color: isActive ? "#1976d2" : "text.primary",
+                }}
+              >
+                <Icon size={18} />
+                <span>{label}</span>
+              </MenuItem>
+            );
+          })}
         </Menu>
       </AppBar>
 
-      <ProfileMenu
+      {<ProfileMenu
         anchorEl={anchorEl}
         open={isMenuOpen}
         onClose={handleMenuClose}
         onLogoutClick={handleLogout}
         onProfileClick={handleProfileClick}
+        onChangePasswordClick={() => router.push(APP_ROUTES.CONSULTANT.CHANGE_PASSWORD)}
         selectedPath={selectedMenu}
         user={{
           name:
-            session?.user?.username?.replace(/([a-z])([A-Z])/g, "$1 $2") ??
+            user?.user?.username.replace(/([a-z])([A-Z])/g, "$1 $2") ??
             "User",
-          avatar: session?.user?.avatar,
+          avatar: user?.user?.avatar,
         }}
-      />
+      /> }
 
       <ChatSection
         open={drawerOpen}

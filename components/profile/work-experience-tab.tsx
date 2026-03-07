@@ -1,9 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { Plus, Trash2, Edit } from 'lucide-react'
+import { Plus, Trash2, Edit, Briefcase, ArchiveX } from 'lucide-react'
 import { WorkExperienceModal } from './work-experience-modal'
 import { type WorkExperienceFormData } from '@/lib/schemas/experience'
+import { ConfirmDeleteModal } from '@/components/common/ConfirmDeleteModal'
 
 interface WorkExperienceTabProps {
   data: WorkExperienceFormData[]
@@ -21,6 +22,8 @@ export function WorkExperienceTab({
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
   const [editingData, setEditingData] = useState<WorkExperienceFormData | undefined>()
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false)
+  const [deleteIndex, setDeleteIndex] = useState<number | null>(null)
 
   const handleAddClick = () => {
     setEditingIndex(null)
@@ -42,10 +45,16 @@ export function WorkExperienceTab({
     }
   }
 
-  const handleDelete = async (index: number) => {
-    if (confirm('Are you sure you want to delete this experience?')) {
-      await onDelete(index)
-    }
+  const handleDelete = (index: number) => {
+    setDeleteIndex(index)
+    setIsDeleteOpen(true)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (deleteIndex === null) return
+    await onDelete(deleteIndex)
+    setIsDeleteOpen(false)
+    setDeleteIndex(null)
   }
 
   return (
@@ -62,7 +71,8 @@ export function WorkExperienceTab({
       </div>
 
       {data.length === 0 ? (
-        <div className="text-center py-12 bg-slate-50 rounded-lg border border-dashed border-slate-300">
+       <div className="w-full flex flex-col items-center justify-center py-12 bg-slate-50 rounded-lg border border-dashed border-slate-300">
+          <ArchiveX className="w-10 h-10 text-slate-300 mb-3" aria-hidden />
           <p className="text-slate-500">No work experience added yet</p>
         </div>
       ) : (
@@ -138,6 +148,16 @@ export function WorkExperienceTab({
         onClose={() => setIsModalOpen(false)}
         onSave={handleSave}
         initialData={editingData}
+      />
+
+      <ConfirmDeleteModal
+        isOpen={isDeleteOpen}
+        message="Are you sure you want to delete this experience?"
+        onCancel={() => {
+          setIsDeleteOpen(false)
+          setDeleteIndex(null)
+        }}
+        onConfirm={handleConfirmDelete}
       />
     </div>
   )

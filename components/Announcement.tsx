@@ -2,6 +2,7 @@
 
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import CampaignIcon from "@mui/icons-material/Campaign";
 import { Box, IconButton, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 
@@ -15,76 +16,178 @@ export default function Announcement({
   autoScrollInterval = 8000,
 }: AnnouncementProps) {
   const [index, setIndex] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  const goTo = (nextIndex: number) => {
+    if (nextIndex === index) return;
+    setIsAnimating(true);
+    setIndex(nextIndex);
+    setTimeout(() => setIsAnimating(false), 300);
+  };
 
   const handlePrev = () => {
-    setIndex((prev) => (prev === 0 ? items.length - 1 : prev - 1));
+    goTo(index === 0 ? items.length - 1 : index - 1);
   };
 
   const handleNext = () => {
-    setIndex((prev) => (prev === items.length - 1 ? 0 : prev + 1));
+    goTo(index === items.length - 1 ? 0 : index + 1);
   };
 
   useEffect(() => {
     const interval = setInterval(() => {
       setIndex((prev) => (prev === items.length - 1 ? 0 : prev + 1));
     }, autoScrollInterval);
-
     return () => clearInterval(interval);
   }, [items.length, autoScrollInterval]);
+
+  if (!items.length) return null;
 
   return (
     <Box
       sx={{
         display: "flex",
         alignItems: "center",
-        bgcolor: "#F2F3F7",
+        gap: 1.5,
         px: 2,
-        py: 1,
-        mb: 1,
+        py: 1.5,
+        mb: 1.5,
+        borderRadius: 2,
+        background: "linear-gradient(135deg, #E8F4FC 0%, #F0F7FF 50%, #E3EEF9 100%)",
+        border: "1px solid",
+        borderColor: "primary.light",
+        boxShadow: "0 2px 8px rgba(48, 136, 183, 0.12)",
+        transition: "box-shadow 0.2s ease, transform 0.2s ease",
+        "&:hover": {
+          boxShadow: "0 4px 14px rgba(48, 136, 183, 0.18)",
+        },
       }}
     >
-      <Typography
-        variant="subtitle1"
-        fontWeight="bold"
+      {/* Label with icon */}
+      <Box
         sx={{
           display: "flex",
           alignItems: "center",
-          gap: 1,
-          minWidth: "130px",
+          gap: 0.75,
+          px: 1.5,
+          py: 0.75,
+          borderRadius: 1.5,
+          bgcolor: "primary.main",
+          color: "white",
+          minWidth: "140px",
+          justifyContent: "center",
         }}
       >
-        Announcement
-        <IconButton
-          size="small"
-          onClick={handlePrev}
-          sx={{ p: 0.5, color: "text.secondary" }}
+        <CampaignIcon sx={{ fontSize: 18, opacity: 0.95 }} />
+        <Typography
+          variant="subtitle2"
+          fontWeight="700"
+          sx={{ letterSpacing: "0.02em", textTransform: "uppercase" }}
         >
-          <ArrowBackIosNewIcon sx={{ fontSize: 16 }} />
-        </IconButton>
-      </Typography>
+          Announcement
+        </Typography>
+      </Box>
 
-      <Typography
-        variant="body2"
+      {/* Prev button */}
+      <IconButton
+        size="small"
+        onClick={handlePrev}
+        sx={{
+          p: 0.75,
+          color: "primary.main",
+          bgcolor: "rgba(48, 136, 183, 0.08)",
+          "&:hover": {
+            color: "white",
+            bgcolor: "primary.main",
+            transform: "scale(1.05)",
+          },
+          transition: "all 0.2s ease",
+        }}
+      >
+        <ArrowBackIosNewIcon sx={{ fontSize: 18 }} />
+      </IconButton>
+
+      {/* Content with animation */}
+      <Box
         sx={{
           flex: 1,
-          color: "text.secondary",
-          textAlign: "center",
-          whiteSpace: "nowrap",
+          minWidth: 0,
+          position: "relative",
           overflow: "hidden",
-          textOverflow: "ellipsis",
-          px: 1,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          py: 0.5,
         }}
       >
-        {items[index]}
-      </Typography>
+        <Typography
+          key={index}
+          variant="body2"
+          sx={{
+            color: "text.primary",
+            fontWeight: 500,
+            textAlign: "center",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            px: 1,
+            animation: isAnimating ? "announcementSlide 0.3s ease-out" : "none",
+            "@keyframes announcementSlide": {
+              "0%": { opacity: 0, transform: "translateY(6px)" },
+              "100%": { opacity: 1, transform: "translateY(0)" },
+            },
+          }}
+        >
+          {items[index]}
+        </Typography>
+      </Box>
 
+      {/* Next button */}
       <IconButton
         size="small"
         onClick={handleNext}
-        sx={{ color: "text.secondary" }}
+        sx={{
+          p: 0.75,
+          color: "primary.main",
+          bgcolor: "rgba(48, 136, 183, 0.08)",
+          "&:hover": {
+            color: "white",
+            bgcolor: "primary.main",
+            transform: "scale(1.05)",
+          },
+          transition: "all 0.2s ease",
+        }}
       >
-        <ArrowForwardIosIcon sx={{ fontSize: 16 }} />
+        <ArrowForwardIosIcon sx={{ fontSize: 18 }} />
       </IconButton>
+
+      {/* Dot indicators */}
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 0.5,
+          minWidth: "60px",
+          justifyContent: "center",
+        }}
+      >
+        {items.map((_, i) => (
+          <Box
+            key={i}
+            onClick={() => goTo(i)}
+            sx={{
+              width: i === index ? 10 : 6,
+              height: 6,
+              borderRadius: 3,
+              bgcolor: i === index ? "primary.main" : "action.disabled",
+              cursor: "pointer",
+              transition: "all 0.25s ease",
+              "&:hover": {
+                bgcolor: i === index ? "primary.dark" : "primary.light",
+              },
+            }}
+          />
+        ))}
+      </Box>
     </Box>
   );
 }

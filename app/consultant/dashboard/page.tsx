@@ -1,206 +1,191 @@
-"use client";
+'use client';
 
-import { useConsultantCalendar } from "@/actions/consultants/useConsultantCalendar";
-import { useConsultantRightSidebar } from "@/actions/consultants/useConsultantRightSidebar";
-import { useConsultantStats } from "@/actions/consultants/useConsultantStats";
-import { useConsultantPayments } from "@/actions/payments/useConsultantPayments";
-import { useConsultantProjects } from "@/actions/projects/useConsultantProjects";
-import { SidebarSectionInfo } from "@/components/DashboardSidebarInfo";
-import EngagementCalendarCard from "@/components/EngagementCalendarCard";
-import Sidebar from "@/components/Sidebar";
-import Dashboard from "@/components/specific/Dashboard";
-import {
-  consultantAnnouncements,
-  consultantSidebar,
-  consultantStats,
-} from "@/data/consultantDashboard";
-import { consultantPaymentColumns } from "@/data/consultantPayment";
-import { consultantProjectColumns } from "@/data/consultantProject";
-import {
-  ConsultantPaymentRow,
-  IConsultantPaymentDTO,
-  IConsultantProject,
-  IConsultantProjectRow,
-} from "@/types/consultant";
-import { APP_ROUTES } from "@/utils/app_routes";
-import { currentMonth, currentYear, formatYMD } from "@/utils/dateTime";
-import { mapApiDaysToCalendarEvents } from "@/utils/mapConsultantCalendar";
-import { useAnimatedCounter } from "@/utils/useAnimatedCounter";
-import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useConsultantDashboard } from '@/actions/consultants/useConsultantDashboard';
+import { DashboardCard } from '@/components/consultant-dashboard/dashboard-card';
+import { WelcomeHeader } from '@/components/consultant-dashboard/welcome-header';
+import { Badge } from '@/components/homepage/ui/badge';
+import Sidebar from '@/components/Sidebar';
+import { useAppSelector } from '@/lib/store/hook';
+import { APP_ROUTES } from '@/utils/app_routes';
+import { Calendar, Briefcase, CreditCard, FileText, User, Check, CircleCheck, CircleCheckBig, CircleAlert } from 'lucide-react';
 
-export default function ConsultantDashboardPage() {
-  const router = useRouter();
-  const [projectRows, setProjectRows] = useState<IConsultantProjectRow[]>([]);
-  const { mutate: loadProjects } = useConsultantProjects();
-  const [paymentRows, setPaymentRows] = useState<ConsultantPaymentRow[]>([]);
-  const { mutate: loadPayments } = useConsultantPayments();
-  const { data: calendarData } = useConsultantCalendar(
-    currentMonth,
-    currentYear
-  );
+function formatDate(dateString: string) {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+}
 
-  const { data: statsResponse, isLoading: statsLoading } = useConsultantStats();
-  const dashboardStats = statsResponse?.data?.dashboard;
-  const animatedStats = [
-    useAnimatedCounter(dashboardStats?.appeared_in_search ?? 0),
-    useAnimatedCounter(dashboardStats?.interview_schedule ?? 0),
-    useAnimatedCounter(dashboardStats?.projected_monthly_revenue ?? 0),
-    useAnimatedCounter(dashboardStats?.total_earnings ?? 0),
-  ];
-
-  const stats = consultantStats.map((config, index) => ({
-    ...config,
-    subtitle:
-      index === 2 || index === 3
-        ? `$${animatedStats[index].toLocaleString()}`
-        : animatedStats[index],
-    loading: statsLoading,
-  }));
-
-  const { data: sidebarRes } = useConsultantRightSidebar();
-
-  const sidebarData = sidebarRes?.data;
-  const primarySkill = sidebarData?.skills?.find((s) => s.primary_modules);
-  const otherSkill = sidebarData?.skills?.find((s) => s.other_modules);
-
-  const sidebarSections: SidebarSectionInfo[] = consultantSidebar.map(
-    (section) => {
-      if (section.title === "Skills & Certifications") {
-        return {
-          ...section,
-          items: section.items.map((item) => {
-            if (item.label === "Primary Modules") {
-              return {
-                ...item,
-                value: primarySkill?.primary_modules ?? "-",
-                subValue: `${primarySkill?.exp ?? 0} year experience`,
-              };
-            }
-
-            if (item.label === "Other Modules") {
-              return {
-                ...item,
-                value: otherSkill?.other_modules ?? "-",
-                subValue: `${otherSkill?.rate ?? 0}/hour`,
-              };
-            }
-
-            return item;
-          }),
-        };
-      }
-
-      if (section.title === "Engagement") {
-        return {
-          ...section,
-          items: section.items.map((item) => {
-            if (item.label === "Current Employer") {
-              return {
-                ...item,
-                value: sidebarData?.engagements?.current?.employeer ?? "-",
-                subValue:
-                  sidebarData?.engagements?.current?.project_info ?? "-",
-              };
-            }
-
-            if (item.label === "Upcoming Employer") {
-              return {
-                ...item,
-                value: sidebarData?.engagements?.upcoming?.employeer ?? "-",
-                subValue:
-                  sidebarData?.engagements?.upcoming?.project_info ?? "-",
-              };
-            }
-
-            return item;
-          }),
-        };
-      }
-
-      return section;
-    }
-  );
-
-  const calendarEvents = useMemo(() => {
-    if (!calendarData?.days) return [];
-    return mapApiDaysToCalendarEvents(calendarData.days);
-  }, [calendarData]);
-
-  const fetchProjects = useCallback(() => {
-    loadProjects(undefined, {
-      onSuccess: (res) => {
-        const mapped: IConsultantProjectRow[] =
-          res.data?.map((item: IConsultantProject) => ({
-            id: Number(item.project_id),
-            project_name: item.project_name,
-            client_name: item.client_name,
-            modules: item.modules?.length ? item.modules.join(", ") : "N/A",
-            duration: item.duration !== null ? String(item.duration) : "N/A",
-            start_date: formatYMD(item.start_date) ?? "N/A",
-            status: item.project_status,
-          })) ?? [];
-
-        setProjectRows(mapped);
-      },
-      onError: (err) => console.error(err),
-    });
-  }, [loadProjects]);
-
-  const fetchPayments = useCallback(() => {
-    loadPayments(undefined, {
-      onSuccess: (res) => {
-        const mapped: ConsultantPaymentRow[] =
-          res.data?.map((item: IConsultantPaymentDTO) => ({
-            id: item.id,
-            project: item.project?.name ?? "N/A",
-            duedates: formatYMD(item.due_date),
-            amount: `$${item.amount}`,
-            status: item.payment_module ?? "Pending",
-            invoice: "-",
-          })) ?? [];
-
-        setPaymentRows(mapped);
-      },
-      onError: (err) => console.error(err),
-    });
-  }, [loadPayments]);
-
-  useEffect(() => {
-    fetchProjects();
-    fetchPayments();
-  }, [fetchProjects, fetchPayments]);
-
+export default function Dashboard() {
+    const { data: dashboardData } = useConsultantDashboard();
   return (
     <Sidebar>
-      <Dashboard
-        announcements={consultantAnnouncements}
-        stats={stats}
-        chart={
-          <EngagementCalendarCard
-            events={calendarEvents}
-            year={currentYear}
-            month={currentMonth}
-          />
-        }
-        projectTable={{
-          title: "Project Pipeline",
-          columns: consultantProjectColumns,
-          rows: projectRows.slice(0, 3),
-          showViewMore: true,
-          hidePagination: true,
-          onViewMoreClick: () => router.push(APP_ROUTES.CONSULTANT.PROJECTS),
-        }}
-        financeTable={{
-          title: "Financial List",
-          columns: consultantPaymentColumns,
-          rows: paymentRows.slice(0, 3),
-          showViewMore: true,
-          hidePagination: true,
-          onViewMoreClick: () => router.push(APP_ROUTES.CONSULTANT.PAYMENTS),
-        }}
-        sidebarSections={sidebarSections}
-      />
+        <main className="min-h-screen bg-background p-8">
+        <div className="max-w-screen-2xl mx-auto">
+            <WelcomeHeader />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Calendar Card */}
+            <DashboardCard
+                icon={<Calendar className="w-5 h-5 text-blue-600" />}
+                title="Calendar"
+                href={APP_ROUTES.CONSULTANT.CALENDAR}
+            >
+                <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Weekly Availability</span>
+                    <span className="text-lg font-semibold text-foreground">
+                    {dashboardData?.calender?.weekly_availability} hrs
+                    </span>
+                </div>
+                <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Interviews Scheduled</span>
+                    <span className="text-lg font-semibold text-foreground bg-gray-50 px-2 py-1 rounded-md">
+                    {dashboardData?.calender?.interview_schedule}
+                    </span>
+                </div>
+                {dashboardData?.calender?.next_interview && <div className="border-t pt-4">
+                    <p className="text-xs text-muted-foreground mb-1">Next Interview</p>
+                    <p className="font-semibold text-foreground">
+                    {formatDate(dashboardData?.calender?.next_interview)}
+                    </p>
+                </div>}
+                </div>
+            </DashboardCard>
+
+            {/* Projects Card */}
+            <DashboardCard
+                icon={<Briefcase className="w-5 h-5 text-green-600" />}
+                title="Projects"
+                href={APP_ROUTES.CONSULTANT.PROJECTS}
+            >
+                <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Total Projects</span>
+                    <span className="text-lg font-semibold text-foreground">
+                    {dashboardData?.projects?.total_projects}
+                    </span>
+                </div>
+                <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Active</span>
+                    <Badge variant="secondary" className="bg-green-600 text-white">
+                    {dashboardData?.projects?.active}
+                    </Badge>
+                </div>
+                <div className="border-t pt-4">
+                    <p className="text-xs text-muted-foreground mb-2">Recent Clients</p>
+                    <ul className="space-y-1">
+                    {dashboardData?.projects?.projects.slice(0, 3).map((project, idx) => (
+                        <li key={idx} className="text-sm text-foreground flex items-center gap-2">
+                        <span className="text-muted-foreground">•</span>
+                        {project}
+                        </li>
+                    ))}
+                    </ul>
+                    {dashboardData?.projects && dashboardData?.projects?.projects && dashboardData?.projects?.projects?.length > 3 && (
+                    <p className="text-sm text-blue-600 mt-2 cursor-pointer hover:underline">
+                        +{dashboardData?.projects?.projects?.length - 3} more
+                    </p>
+                    )}
+                </div>
+                </div>
+            </DashboardCard>
+
+            {/* Payments Card */}
+            <DashboardCard
+                icon={<CreditCard className="w-5 h-5 text-purple-600" />}
+                title="Payments"
+                href={APP_ROUTES.CONSULTANT.PAYMENTS}
+            >
+                <div className="space-y-4">
+                <div className="bg-pink-50 p-4 rounded-md">
+                    <p className="text-xs text-muted-foreground mb-1">Next Payment</p>
+                    <p className="text-2xl font-bold text-foreground">
+                    ${dashboardData?.payment?.next_payment?.toLocaleString()}
+                    </p>
+                </div>
+                <div className="border-t pt-4">
+                    <div className="flex justify-between items-start">
+                    <div>
+                        <p className="text-xs text-muted-foreground">Projected Earnings</p>
+                        <p className="text-xl font-semibold text-foreground">
+                        ${dashboardData?.payment?.projected_earning?.toLocaleString()}
+                        </p>
+                    </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-2 italic">
+                    Based on current availability & rate
+                    </p>
+                </div>
+                </div>
+            </DashboardCard>
+
+            {/* Documents Card */}
+            <DashboardCard
+                icon={<FileText className="w-5 h-5 text-orange-600" />}
+                title="Documents"
+                href={APP_ROUTES.CONSULTANT.DOCUMENTS}
+            >
+                <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground flex items-center gap-2">
+                    <CircleCheckBig className="w-4 h-4 text-green-600" />
+                    Uploaded
+                    </span>
+                    <span className="text-lg font-semibold text-foreground">5</span>
+                </div>
+                <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground flex items-center gap-2">
+                    <CircleAlert className="w-4 h-4 text-orange-600" />
+                    Pending
+                    </span>
+                    <span className="text-lg font-semibold text-orange-600">
+                    {dashboardData?.documents?.pending}
+                    </span>
+                </div>
+                <button className="w-full mt-2 py-2 px-3 border border-gray-300 rounded-xl text-sm font-medium text-foreground hover:bg-gray-50 transition-colors">
+                    ⬇ Add Documents
+                </button>
+                </div>
+            </DashboardCard>
+
+            {/* Profile Card */}
+            <DashboardCard
+                icon={<User className="w-5 h-5 text-indigo-600" />}
+                title="Profile"
+                href={APP_ROUTES.CONSULTANT.PROFILE}
+            >
+                <div className="space-y-4">
+                <div>
+                    <div className="flex justify-between items-center">
+                        <p className="text-xs text-muted-foreground mb-2">Profile Completion</p>
+                        <p className="text-sm font-semibold text-foreground">
+                        {dashboardData?.profile?.profile_strength}
+                        </p>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div
+                        className="bg-blue-600 h-2 rounded-full"
+                        style={{ width: dashboardData?.profile?.profile_strength }}
+                    />
+                    </div>
+                    
+                </div>
+                <div className="border-t pt-4">
+                    <p className="text-xs text-muted-foreground mb-2">Verification Status</p>
+                    <Badge className="bg-blue-600 text-white">
+                    <CircleCheckBig className="w-4 h-4 text-white mr-1" /> {dashboardData?.profile?.badges?.[0]}
+                    </Badge>
+                </div>
+                <p className="text-xs text-muted-foreground italic">
+                    Complete profile to get verified & certified
+                </p>
+                </div>
+            </DashboardCard>
+            </div>
+        </div>
+        </main>
     </Sidebar>
   );
 }
