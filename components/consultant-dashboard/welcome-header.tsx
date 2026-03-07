@@ -35,6 +35,8 @@ export function WelcomeHeader() {
     VERIFIED: { bg: 'bg-blue-600', label: 'Verified' },
     CERTIFIED: { bg: 'bg-green-600', label: 'Certified' },
     SENIOR_EXPERT: { bg: 'bg-purple-600', label: 'Senior Expert' },
+    EXPERT: { bg: 'bg-indigo-600', label: 'Expert' },
+    SOLUTION_ARCHITECT: { bg: 'bg-pink-600', label: 'Solution Architect' },
   };
 
   return (
@@ -55,7 +57,7 @@ export function WelcomeHeader() {
                   >
                     {badge === 'VERIFIED' && <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />}
                     {badge === 'CERTIFIED' && <Shield className="w-3.5 h-3.5 flex-shrink-0" />}
-                    {badge === 'SENIOR_EXPERT' && <Shield className="w-3.5 h-3.5 flex-shrink-0" />}
+                    {badge === 'SENIOR_EXPERT' || badge === 'EXPERT' || badge === 'SOLUTION_ARCHITECT' && <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />}
                     <span className="inline-block max-w-0 font-bold overflow-hidden whitespace-nowrap text-xs opacity-0 transition-all duration-200 ease-out group-hover:max-w-[120px] group-hover:opacity-100">
                       {config.label}
                     </span>

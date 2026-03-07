@@ -198,12 +198,12 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
               >
                 <ProfileAvatar
                   name={
-                    session?.user?.username?.replace(
+                    user?.user?.username?.replace(
                       /([a-z])([A-Z])/g,
                       "$1 $2"
                     ) ?? "User"
                   }
-                  imageUrl={session?.user?.avatar}
+                  imageUrl={user?.user?.avatar}
                   size={24}
                   sx={{
                     border: "1.8px solid rgba(0,0,0,0.8)",
@@ -257,7 +257,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
         </Menu>
       </AppBar>
 
-      {/* <ProfileMenu
+      {<ProfileMenu
         anchorEl={anchorEl}
         open={isMenuOpen}
         onClose={handleMenuClose}
@@ -271,7 +271,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
             "User",
           avatar: user?.user?.avatar,
         }}
-      /> */}
+      /> }
 
       <ChatSection
         open={drawerOpen}

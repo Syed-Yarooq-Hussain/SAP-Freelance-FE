@@ -22,7 +22,7 @@ export function ProfileHero({ onEdit, onMessage, onAutofillResume, showEdit = tr
   const rate = user?.rate ?? 0
   const experience = user?.experience ?? 0
   const primaryModule = user?.user?.modules?.find((m: { is_primary?: boolean }) => m?.is_primary)
-  const roleLabel = primaryModule?.module?.name ?? 'Consultant'
+  const roleLabel = primaryModule?.module?.name ?? 'N/A'
   const initials = name
     .split(' ')
     .map((n: string) => n[0])
@@ -73,7 +73,7 @@ export function ProfileHero({ onEdit, onMessage, onAutofillResume, showEdit = tr
         <div className="flex-1 p-6 md:p-8 flex flex-col justify-between">
           <div>
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">
-              {roleLabel}
+              SAP Consultant
             </p>
             <h1 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">
               {name}
@@ -90,8 +90,9 @@ export function ProfileHero({ onEdit, onMessage, onAutofillResume, showEdit = tr
               ${rate}/hr · {city}
             </p>
             <p className="text-sm text-slate-600 mb-4">
-              {experience} yrs exp
+              {roleLabel} - {experience} yrs exp
             </p>
+            
 
             {/* Badges */}
             <div className="flex flex-wrap gap-2 mb-4 border-t-[1px] border-slate-200 pt-4">
