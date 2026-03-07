@@ -77,39 +77,25 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 const Sidebar: FC<ISidebarProps> = ({ children }) => {
   const theme = useTheme();
   const [mounted, setMounted] = useState(true);
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
+  const [hoverOpen, setHoverOpen] = useState(false);
 
-  // useEffect(() => {
-  //   setMounted(true);
-
-  //   const handleResize = () => {
-  //     setOpen(window.innerWidth >= theme.breakpoints.values.md);
-  //   };
-
-  //   handleResize();
-  //   window.addEventListener("resize", handleResize);
-
-  //   return () => window.removeEventListener("resize", handleResize);
-  // }, [theme.breakpoints.values.md]);
+  const expanded = open || hoverOpen;
 
   const appBarHeight = theme.mixins.toolbar.minHeight;
 
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
-      <AppNavbar showSidebar={open} />
+      <AppNavbar showSidebar={expanded} />
 
       <Drawer
         variant="permanent"
-        // sx={{
-        //   width: open ? DESKTOP_DRAWER_WIDTH : MOBILE_DRAWER_WIDTH,
-        //   flexShrink: 0,
-        //   "& .MuiDrawer-paper": {
-        //     width: open ? DESKTOP_DRAWER_WIDTH : MOBILE_DRAWER_WIDTH,
-        //     boxSizing: "border-box",
-        //   },
-        // }}
-        open={open}
+        open={expanded}
+        PaperProps={{
+          onMouseEnter: () => setHoverOpen(true),
+          onMouseLeave: () => setHoverOpen(false),
+        }}
       >
         {/* <Box
           sx={{
@@ -153,37 +139,44 @@ const Sidebar: FC<ISidebarProps> = ({ children }) => {
           </Box>
         </Box>
 
-        {mounted ? <DrawerList open={open} /> : <DrawerListSkeleton />}
-        <DrawerHeader>
+        {mounted ? <DrawerList open={expanded} /> : <DrawerListSkeleton />}
+        {/* <DrawerHeader>
+          <Tooltip title={expanded ? "Collapse sidebar" : "Expand sidebar"} placement="right" arrow>
             <IconButton
               onClick={() => setOpen(!open)}
-              aria-label={open ? "Collapse sidebar" : "Expand sidebar"}
+              aria-label={expanded ? "Collapse sidebar" : "Expand sidebar"}
               sx={{
-                borderRadius: 2,
+                width: 28,
+                height: 28,
+                borderRadius: "10px",
                 bgcolor: "action.hover",
-                width: '100%',
-                height: 40,
-                transition: "all 0.2s ease",
+                transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
                 "&:hover": {
-                  bgcolor: "action.selected",
-                  transform: "scale(1.08)",
+                  bgcolor: "primary.main",
+                  color: "white",
+                  transform: "scale(1.1)",
+                  boxShadow: 1,
                 },
                 "&:active": {
-                  transform: "scale(0.96)",
+                  transform: "scale(0.92)",
+                  transitionDuration: "0.1s",
                 },
                 "& svg": {
-                  transition: "transform 0.25s ease",
-                  transform: open ? "rotate(0deg)" : "rotate(180deg)",
+                  width: 16,
+                  height: 16,
+                  transition: "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                  transform: expanded ? "rotate(0deg)" : "rotate(180deg)",
                 },
               }}
             >
               {theme.direction === "rtl" ? (
-                <ChevronRightIcon style={{ width: 20, height: 20 }} />
+                <ChevronRightIcon />
               ) : (
-                <ChevronLeftIcon style={{ width: 20, height: 20 }} />
+                <ChevronLeftIcon />
               )}
             </IconButton>
-        </DrawerHeader>
+          </Tooltip>
+        </DrawerHeader> */}
       </Drawer>
 
       <Box

@@ -30,7 +30,7 @@ const AppTitle: React.FC = () => {
         return "Profile";
       if (pathname.startsWith(APP_ROUTES.CONSULTANT.CHANGE_PASSWORD))
         return "Change Password";
-      return "Dashboard";
+      return "Consultant Portal";
     }
 
     if (pathname.startsWith("/client")) {
