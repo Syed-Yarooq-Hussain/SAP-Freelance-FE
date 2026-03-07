@@ -250,8 +250,8 @@ export function ProfileEdit({
               <textarea
                 {...register('clients_summary')}
                 placeholder="Profile headline"
-                rows={2}
-                className="w-full md:w-1/2 max-w-full text-xs text-slate-500 bg-transparent border rounded-xl border-slate-300 mt-2 px-2 py-3 focus:outline-none focus:border-brand-blue placeholder-slate-400 resize-none"
+                rows={4}
+                className="w-full max-w-full text-xs text-slate-500 bg-transparent border rounded-xl border-slate-300 mt-2 px-2 py-3 focus:outline-none focus:border-brand-blue placeholder-slate-400 resize-none"
               />
               {errors.clients_summary && (
                 <p className="text-xs text-red-500 mt-1">{errors.clients_summary.message}</p>

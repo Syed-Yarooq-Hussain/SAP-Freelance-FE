@@ -23,7 +23,7 @@ export default function Dashboard() {
   return (
     <Sidebar>
         <main className="min-h-screen bg-background p-8">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-screen-2xl mx-auto">
             <WelcomeHeader />
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Calendar Card */}

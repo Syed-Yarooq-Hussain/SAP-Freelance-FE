@@ -40,7 +40,7 @@ export default function ProfilePage() {
   return (
     <Sidebar>
       <div className="min-h-screen bg-white py-6 px-4">
-        <div className="max-w-4xl mx-auto space-y-6">
+        <div className="max-w-7xl mx-auto space-y-6">
           {isEditing ? (
             <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
               <ProfileEdit
