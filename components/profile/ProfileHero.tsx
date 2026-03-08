@@ -16,7 +16,7 @@ const sanitizeUrl = (url?: string | null) =>
 
 export function ProfileHero({ onEdit, onMessage, onAutofillResume, showEdit = true }: ProfileHeroProps) {
   const user = useAppSelector((state) => state?.user?.user)
-  const name = user?.user?.username ?? '—'
+  const name = user?.user?.username ?? 'User'
   const profileImage = sanitizeUrl(user?.user?.avatar ?? '')
   const city = user?.user?.city ?? 'N/A'
   const rate = user?.rate ?? 0

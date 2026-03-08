@@ -147,7 +147,9 @@ export function CVUploadModal({
           <button
             type="button"
             onClick={handleClose}
-            className="px-4 py-2 border border-slate-300 text-slate-900 font-semibold rounded-input hover:bg-slate-50 transition-colors"
+            disabled={cvParsing}
+            className={`px-4 py-2 border border-slate-300 text-slate-900 font-semibold rounded-input transition-colors
+            ${cvParsing ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-50"}`}
           >
             Close
           </button>
