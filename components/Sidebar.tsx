@@ -12,6 +12,7 @@ import AppNavbar from "./AppNavbar";
 import DrawerList from "./DrawerList";
 import DrawerListSkeleton from "./DrawerListSkeleton";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 type ISidebarProps = {
   children: React.ReactNode;
@@ -76,7 +77,8 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 
 const Sidebar: FC<ISidebarProps> = ({ children }) => {
   const theme = useTheme();
-  const [mounted, setMounted] = useState(true);
+  const session = useSession();
+  const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
   const [hoverOpen, setHoverOpen] = useState(false);
 
@@ -84,6 +86,11 @@ const Sidebar: FC<ISidebarProps> = ({ children }) => {
 
   const appBarHeight = theme.mixins.toolbar.minHeight;
 
+  useEffect(() => {
+    if (session.status === "authenticated") {
+      setMounted(true);
+    }
+  }, [session.status]);
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
@@ -92,9 +99,15 @@ const Sidebar: FC<ISidebarProps> = ({ children }) => {
       <Drawer
         variant="permanent"
         open={expanded}
+        sx={{
+          backgroundColor: expanded ? "white" : "#3BA8D0",
+        }}
         PaperProps={{
           onMouseEnter: () => setHoverOpen(true),
           onMouseLeave: () => setHoverOpen(false),
+          sx:{
+            bgcolor: expanded ? "white" : "primary.main",
+          }
         }}
       >
         {/* <Box
