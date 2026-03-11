@@ -57,8 +57,7 @@ export function SignUpModal({ onClose, onSignUp }: SignUpModalProps) {
   };
 
   const handleLinkedInSignUp = () => {
-    // Simulate LinkedIn signup
-    // onSignUp('linkedin-user@example.com');
+    window.location.href = process.env.NEXT_PUBLIC_API_URL + '/auth/linkedin';
   };
 
   return (
