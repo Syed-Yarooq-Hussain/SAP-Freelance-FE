@@ -66,7 +66,7 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
             value={value}
             onChange={onChange}
             className={`
-              w-full pl-10 pr-12 py-3 
+              w-full pl-10 pr-12 py-2 
               border-2 rounded-lg
               transition-all duration-200
               ${hasError 

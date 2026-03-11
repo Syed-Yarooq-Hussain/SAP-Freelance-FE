@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Plus, Trash2, Edit, ArchiveX } from 'lucide-react'
+import { Plus, Trash2, Edit, ArchiveX, GraduationCap } from 'lucide-react'
 import { EducationModal } from './education-modal'
 import { type EducationFormData } from '@/lib/schemas/education'
 import { ConfirmDeleteModal } from '@/components/common/ConfirmDeleteModal'
@@ -72,7 +72,7 @@ export function EducationTab({
 
       {data.length === 0 ? (
         <div className="w-full flex flex-col items-center justify-center py-12 bg-slate-50 rounded-lg border border-dashed border-slate-300">
-          <ArchiveX className="w-10 h-10 text-slate-300 mb-3" aria-hidden />
+          <GraduationCap className="w-10 h-10 text-slate-300 mb-3" aria-hidden />
           <p className="text-slate-500 text-center">No education added yet</p>
         </div>
       ) : (

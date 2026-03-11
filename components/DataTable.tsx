@@ -215,7 +215,7 @@ export default function DataTable<T extends GridValidRowModel>({
       </Stack>
 
       <Box sx={{ width: "100%" }}>
-        <DataGrid
+        {rows && rows?.length > 0 ? <DataGrid
           rows={rows}
           columns={updatedColumns}
           initialState={{
@@ -278,7 +278,11 @@ export default function DataTable<T extends GridValidRowModel>({
               backgroundColor: rowClickable ? "#f1f7ff" : "#fff",
             },
           }}
-        />
+        /> : (
+          <div className="flex items-center justify-center h-full">
+            <p className="text-gray-500">No {title} available</p>
+          </div>
+        )}
       </Box>
 
       {/* {enableSelection && selectedRows.size > 0 && (

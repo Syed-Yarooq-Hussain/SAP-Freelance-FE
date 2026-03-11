@@ -100,7 +100,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
   };
   const navRoutes = getNavRoutes();
   const navItems = [
-    { label: "Profile", path: navRoutes.profile, icon: ProfileIcon },
+    { label: "My Profile", path: navRoutes.profile, icon: ProfileIcon },
     { label: "Calendar", path: navRoutes.calendar, icon: CalendarMonthIcon },
   ] as const;
 

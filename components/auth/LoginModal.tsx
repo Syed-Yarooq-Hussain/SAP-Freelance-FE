@@ -54,7 +54,7 @@ export function LoginModal({ onClose, onLogin, onSwitchToSignUp, onForgotPasswor
     >
       <div 
         ref={modalRef}
-        className="bg-white rounded-2xl shadow-2xl max-w-md w-full relative"
+        className="bg-white rounded-2xl shadow-2xl max-w-sm w-full relative"
         onClick={(e) => e.stopPropagation()}
       >
         <button

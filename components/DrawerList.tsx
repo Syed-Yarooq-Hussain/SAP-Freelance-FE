@@ -106,14 +106,17 @@ const DrawerList: FC<DrawerListProps> = ({ open }) => {
               sx={{
                 py: 1.5,
                 px: 2,
-                bgcolor: isActive ? "#F2F3F7" : "transparent",
+                m:1,
+                borderRadius: 2,
+                bgcolor: isActive ? !open ? "#C1314A" : "#F2F3F7" : "transparent",
                 "&:hover": { bgcolor: isActive ? "grey.300" : "grey.100" },
               }}
             >
               <ListItemIcon
                 sx={{
-                  color: isActive ? colors.BLUE : !open ? "white" : "grey.700",
+                  color: isActive ? !open ? 'white' : colors.BLUE : !open ? "white" : "grey.700",
                   minWidth: 32,
+                  ml: -1,
                 }}
               >
                 {item.icon}
