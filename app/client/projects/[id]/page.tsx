@@ -165,7 +165,7 @@ export default function ClientProjectDetailsPage() {
 
         setProjectInfo({
           name: data?.name ?? "N/A",
-          clientIndustry: `${data?.client?.username ?? "N/A"} - ${
+          clientIndustry: `${data?.client?.username ?? "User"} - ${
             data?.company_name ?? "N/A"
           }`,
           module: "N/A",

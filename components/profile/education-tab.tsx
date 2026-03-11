@@ -80,7 +80,7 @@ export function EducationTab({
           {data.map((item, index) => (
             <div
               key={index}
-              className="bg-white border border-slate-200 rounded-lg p-5 hover:shadow-md transition-shadow"
+              className="bg-white border rounded-xl border-slate-200 p-5 hover:shadow-md transition-shadow"
             >
               <div className="flex justify-between items-start mb-3">
                 <div>

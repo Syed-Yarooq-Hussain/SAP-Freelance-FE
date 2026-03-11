@@ -5,7 +5,7 @@ import { useAppSelector } from '@/lib/store/hook'
 
 export function MeetSection() {
   const user = useAppSelector((state) => state?.user?.user)
-  const name = user?.user?.username ?? '—'
+  const name = user?.user?.username ?? 'User'
   const firstName = name.split(' ')[0] || name
   const bio = user?.clients_summary || 'No bio added yet.'
   const certifications = user?.certification ?? []
@@ -15,8 +15,7 @@ export function MeetSection() {
     .filter(Boolean)
   const defaultQualifications = [
     'SAP experience',
-    'Remote available',
-    'Professional communication',
+    'Remote available'
   ]
 
   const qualifications = qualificationLabels.length > 0

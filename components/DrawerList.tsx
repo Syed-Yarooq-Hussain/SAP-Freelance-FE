@@ -112,7 +112,7 @@ const DrawerList: FC<DrawerListProps> = ({ open }) => {
             >
               <ListItemIcon
                 sx={{
-                  color: isActive ? colors.BLUE : "grey.700",
+                  color: isActive ? colors.BLUE : !open ? "white" : "grey.700",
                   minWidth: 32,
                 }}
               >

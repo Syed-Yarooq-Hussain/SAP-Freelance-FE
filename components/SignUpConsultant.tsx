@@ -55,9 +55,9 @@ const SignUpConsultant: React.FC = () => {
 
     const payload = {
       consultant: {
-        core_module: data.coreModule ?? [],
-        other_module: data.otherModule ?? [],
-        experience: Number(data.experience) || 0,
+        core_module: data.coreModule?? [],
+        other_module: data.otherModule?? [],
+        experience: Number(data.experience)|| 0,
         rate: Number(data.rate) || 0,
         weekly_available_hours: data.weekly_available_hours ?? 15,
         cv_url: "",
