@@ -45,7 +45,7 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
       : null;
 
     return (
-      <div className="w-full">
+      <div className="w-full max-w-[500px]">
         <label 
           htmlFor={inputId} 
           className="block text-sm font-medium text-gray-700 mb-2"

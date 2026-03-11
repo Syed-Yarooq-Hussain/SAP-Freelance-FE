@@ -53,7 +53,7 @@ const ChangePasswordPage = () => {
           <p className="text-slate-600 text-sm mt-4">Change your password here</p>
         </div>
 
-        <div className="w-full max-w-md mx-auto">
+        <div className="flex flex-col items-center justify-center w-full max-w-md mx-auto">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <Controller
             name="oldPassword"
@@ -100,6 +100,29 @@ const ChangePasswordPage = () => {
               />
             )}
           />
+
+            {/* Password Requirements */}
+            <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
+              <p className="text-xs font-semibold text-slate-700 mb-2">Password Requirements:</p>
+              <ul className="text-xs text-slate-600 space-y-1">
+                <li className="flex items-center gap-2">
+                  <span className="w-1 h-1 bg-slate-400 rounded-full"></span>
+                  At least 8 characters long
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-1 h-1 bg-slate-400 rounded-full"></span>
+                  Contains uppercase and lowercase letters
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-1 h-1 bg-slate-400 rounded-full"></span>
+                  Contains at least one number
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-1 h-1 bg-slate-400 rounded-full"></span>
+                  Contains at least one special character
+                </li>
+              </ul>
+          </div>
 
           <button
             type="submit"

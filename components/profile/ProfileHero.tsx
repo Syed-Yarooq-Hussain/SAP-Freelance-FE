@@ -1,34 +1,44 @@
-'use client'
+"use client";
 
-import Image from 'next/image'
-import { CheckCircle, FileUp, Heart, Mail, Pencil } from 'lucide-react'
-import { useAppSelector } from '@/lib/store/hook'
+import Image from "next/image";
+import { CheckCircle, FileUp, Heart, Mail, Pencil } from "lucide-react";
+import { useAppSelector } from "@/lib/store/hook";
 
 interface ProfileHeroProps {
-  onEdit?: () => void
-  onMessage?: () => void
-  onAutofillResume?: () => void
-  showEdit?: boolean
+  onEdit?: () => void;
+  onMessage?: () => void;
+  onAutofillResume?: () => void;
+  showEdit?: boolean;
 }
 
 const sanitizeUrl = (url?: string | null) =>
-  url ? encodeURI(url.trim()) : undefined
+  url ? encodeURI(url.trim()) : undefined;
 
-export function ProfileHero({ onEdit, onMessage, onAutofillResume, showEdit = true }: ProfileHeroProps) {
-  const user = useAppSelector((state) => state?.user?.user)
-  const name = user?.user?.username ?? 'User'
-  const profileImage = sanitizeUrl(user?.user?.avatar ?? '')
-  const city = user?.user?.city ?? 'N/A'
-  const rate = user?.rate ?? 0
-  const experience = user?.experience ?? 0
-  const primaryModule = user?.user?.modules?.find((m: { is_primary?: boolean }) => m?.is_primary)
-  const roleLabel = primaryModule?.module?.name ?? 'N/A'
+export function ProfileHero({
+  onEdit,
+  onMessage,
+  onAutofillResume,
+  showEdit = true,
+}: ProfileHeroProps) {
+  const user = useAppSelector((state) => state?.user?.user);
+  const name = user?.user?.username ?? "—";
+  const profileImage = sanitizeUrl(user?.user?.avatar ?? "");
+  const city = user?.user?.city ?? "N/A";
+  const rate = user?.rate ?? 0;
+  const experience = user?.experience ?? 0;
+  const primaryModule = user?.user?.modules?.find(
+    (m: { is_primary?: boolean }) => m?.is_primary,
+  );
+  const roleLabel = primaryModule?.module?.name ?? "N/A";
+  const qualificationLabels = user?.user?.modules
+    .map((c: { module?: any }) => c?.module?.name)
+    .filter(Boolean);
   const initials = name
-    .split(' ')
+    .split(" ")
     .map((n: string) => n[0])
-    .join('')
+    .join("")
     .toUpperCase()
-    .slice(0, 2)
+    .slice(0, 2);
 
   return (
     <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm">
@@ -47,7 +57,9 @@ export function ProfileHero({ onEdit, onMessage, onAutofillResume, showEdit = tr
               />
             ) : (
               <div className="absolute inset-0 flex items-center justify-center bg-slate-200">
-                <span className="text-4xl font-semibold text-slate-500">{initials}</span>
+                <span className="text-4xl font-semibold text-slate-500">
+                  {initials}
+                </span>
               </div>
             )}
             {/* Carousel dots (placeholder) */}
@@ -73,11 +85,38 @@ export function ProfileHero({ onEdit, onMessage, onAutofillResume, showEdit = tr
         <div className="flex-1 p-6 md:p-8 flex flex-col justify-between">
           <div>
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">
-              SAP Consultant
+              My Profile
             </p>
-            <h1 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">
-              {name}
-            </h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">
+                {name}
+              </h1>
+              {/* Badges */}
+              <div className="flex flex-wrap gap-2 mb-4 pt-4">
+                {user?.badges?.map((badge: string) => {
+                  const normalized = badge.toUpperCase();
+                  const isVerified = normalized === "VERIFIED";
+                  const isCertified = normalized === "CERTIFIED";
+                  return (
+                    <span
+                      key={badge}
+                      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${
+                        isVerified
+                          ? "bg-emerald-100 text-emerald-700"
+                          : "bg-slate-100 text-slate-700"
+                      }`}
+                    >
+                      <CheckCircle className="w-3.5 h-3.5" />
+                      {isVerified
+                        ? "Verified"
+                        : isCertified
+                          ? "Certified"
+                          : badge}
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
             <div className="flex items-center gap-2 text-slate-600 mb-2">
               {/* <div className="flex gap-0.5">
                 {[1, 2, 3, 4, 5].map((i) => (
@@ -86,32 +125,21 @@ export function ProfileHero({ onEdit, onMessage, onAutofillResume, showEdit = tr
               </div> */}
               {/* <span className="text-sm">(0)</span> */}
             </div>
+            <p className="text-sm font-bold text-slate-600 mb-4">
+              {roleLabel} - {experience} yrs exp
+            </p>
             <p className="text-slate-700 font-medium mb-2">
               ${rate}/hr · {city}
             </p>
-            <p className="text-sm text-slate-600 mb-4">
-              {roleLabel} - {experience} yrs exp
-            </p>
-            
-
-            {/* Badges */}
-            <div className="flex flex-wrap gap-2 mb-4 border-t-[1px] border-slate-200 pt-4">
-              {user?.badges?.map((badge: string) => {
-                const normalized = badge.toUpperCase()
-                const isVerified = normalized === 'VERIFIED'
-                const isCertified = normalized === 'CERTIFIED'
-                return (
-                  <span
-                    key={badge}
-                    className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${
-                      isVerified ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-700'
-                    }`}
-                  >
-                    <CheckCircle className="w-3.5 h-3.5" />
-                    {isVerified ? 'Verified' : isCertified ? 'Certified' : badge}
-                  </span>
-                )
-              })}
+            <div className="flex flex-wrap gap-2 mb-4">
+              {qualificationLabels.map((qualification: string) => (
+                <span
+                  key={qualification}
+                  className="text-sm text-slate-600 bg-slate-100 px-2 py-1 rounded-full"
+                >
+                  {qualification}
+                </span>
+              ))}
             </div>
           </div>
 
@@ -150,5 +178,5 @@ export function ProfileHero({ onEdit, onMessage, onAutofillResume, showEdit = tr
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -7,7 +7,8 @@ import colors from "@/utils/styles/colors";
 import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
 import MenuIcon from "@mui/icons-material/Menu";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import ProfileIcon from "@mui/icons-material/Person";
 import {
   AppBar,
   Badge,
@@ -27,7 +28,7 @@ import ProfileAvatar from "./ProfileAvatar";
 import ProfileMenu from "./ProfileMenu";
 import { APP_ROUTES } from "@/utils/app_routes";
 import { useAppSelector } from "@/lib/store/hook";
-import { LayoutDashboard, User, Settings } from "lucide-react";
+import { User, Calendar, LogOutIcon } from "lucide-react";
 import { Roles } from "@/constants/roles";
 
 interface AppNavbarProps {
@@ -77,31 +78,30 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
       return {
         dashboard: APP_ROUTES.CONSULTANT.DASHBOARD,
         profile: APP_ROUTES.CONSULTANT.PROFILE,
-        account: APP_ROUTES.CONSULTANT.ACCOUNT,
+        calendar: APP_ROUTES.CONSULTANT.CALENDAR,
       };
-    if (role === Roles.CLIENT)
-      return {
-        dashboard: APP_ROUTES.CLIENT.DASHBOARD,
-        profile: APP_ROUTES.CLIENT.PROFILE,
-        account: APP_ROUTES.CLIENT.PROFILE,
-      };
-    if (role === Roles.ADMIN)
-      return {
-        dashboard: APP_ROUTES.ADMIN.DASHBOARD,
-        profile: APP_ROUTES.ADMIN.PROFILE,
-        account: APP_ROUTES.ADMIN.PROFILE,
-      };
+    // if (role === Roles.CLIENT)
+    //   return {
+    //     dashboard: APP_ROUTES.CLIENT.DASHBOARD,
+    //     profile: APP_ROUTES.CLIENT.PROFILE,
+    //     calendar: APP_ROUTES.CLIENT.,
+    //   };
+    // if (role === Roles.ADMIN)
+    //   return {
+    //     dashboard: APP_ROUTES.ADMIN.DASHBOARD,
+    //     profile: APP_ROUTES.ADMIN.PROFILE,
+    //     calendar: APP_ROUTES.ADMIN.CALENDAR,
+    //   };
     return {
       dashboard: "/",
       profile: "/",
-      account: "/",
+      calendar: "/",
     };
   };
   const navRoutes = getNavRoutes();
   const navItems = [
-    { label: "Dashboard", path: navRoutes.dashboard, icon: LayoutDashboard },
-    { label: "Profile Detail", path: navRoutes.profile, icon: User },
-    { label: "Account Settings", path: navRoutes.account, icon: Settings },
+    { label: "Profile", path: navRoutes.profile, icon: ProfileIcon },
+    { label: "Calendar", path: navRoutes.calendar, icon: CalendarMonthIcon },
   ] as const;
 
   const handleNavClick = (path: string) => {
@@ -143,26 +143,6 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
               </Box>
             )}
             <AppTitle />
-            <div className="hidden md:flex items-center gap-1 ml-2">
-              {navItems.map(({ label, path, icon: Icon }) => {
-                const isActive = pathname === path;
-                return (
-                  <button
-                    key={path}
-                    type="button"
-                    onClick={() => router.push(path)}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                      isActive
-                        ? "bg-blue-50 text-blue-600"
-                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-                    }`}
-                  >
-                    <Icon className="w-4 h-4" />
-                    {label}
-                  </button>
-                );
-              })}
-            </div>
           </Box>
 
           <Box
@@ -173,6 +153,24 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
               mr: 1.5,
             }}
           >
+            {navItems.map(({ label, path, icon: Icon }) => {
+              const isActive = pathname === path;
+              return (
+                <button
+                  key={path}
+                  type="button"
+                  onClick={() => router.push(path ?? "")}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                    isActive
+                      ? "bg-blue-50 text-blue-600"
+                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                  }`}
+                >
+                  <Icon className="w-4 h-4" />
+                  {label}
+                </button>
+              );
+            })}
             {/* <Tooltip title="Notifications" arrow>
               <IconButton
                 sx={{ p: 1 }}
@@ -187,14 +185,14 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
                 <ChatOutlinedIcon />
               </IconButton>
             </Tooltip> */}
-
+            <div className="w-[1px] bg-gray-300 h-8"/>
             <Tooltip title="Profile" arrow>
               <IconButton
                 size="large"
                 edge="end"
                 color="inherit"
                 onClick={handleProfileMenuOpen}
-                sx={{ p: 0.5 }}
+                sx={{ p: 0.5, }}
               >
                 <ProfileAvatar
                   name={
@@ -204,7 +202,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
                     ) ?? "User"
                   }
                   imageUrl={user?.user?.avatar}
-                  size={24}
+                  size={28}
                   sx={{
                     border: "1.8px solid rgba(0,0,0,0.8)",
                     bgcolor: "rgba(25,118,210,0.12)",
@@ -241,7 +239,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
             return (
               <MenuItem
                 key={path}
-                onClick={() => handleNavClick(path)}
+                onClick={() => handleNavClick(path ?? "")}
                 selected={isActive}
                 sx={{
                   gap: 1.5,
@@ -249,11 +247,20 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
                   color: isActive ? "#1976d2" : "text.primary",
                 }}
               >
-                <Icon size={18} />
+                <Icon className="w-4 h-4" />
                 <span>{label}</span>
               </MenuItem>
             );
           })}
+           <MenuItem
+                onClick={handleLogout}
+                sx={{
+                  gap: 1.5,
+                }}
+              >
+                <LogOutIcon className="w-4 h-4" />
+                <span>Logout</span>
+              </MenuItem>
         </Menu>
       </AppBar>
 
