@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Plus, Trash2, Edit, ArchiveX } from 'lucide-react'
+import { Plus, Trash2, Edit, ArchiveX, BookOpenText } from 'lucide-react'
 import { CertificationModal } from './certification-modal'
 import { type CertificationFormData } from '@/lib/schemas/certification'
 import { ConfirmDeleteModal } from '@/components/common/ConfirmDeleteModal'
@@ -72,7 +72,7 @@ export function CertificationsTab({
 
       {data.length === 0 ? (
         <div className="w-full flex flex-col items-center justify-center py-12 bg-slate-50 rounded-lg border border-dashed border-slate-300">
-          <ArchiveX className="w-10 h-10 text-slate-300 mb-3" aria-hidden />
+          <BookOpenText className="w-10 h-10 text-slate-300 mb-3" aria-hidden />
           <p className="text-slate-500">No certifications added yet</p>
         </div>
       ) : (

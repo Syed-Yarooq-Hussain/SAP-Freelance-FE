@@ -12,7 +12,7 @@ interface HeaderProps {
 }
 
 const navLinks = [
-  { label: "Join as consultant", href: "#join-consultant" },
+  // { label: "Join as consultant", href: "#join-consultant" },
   { label: "Elite Talent Pool", href: "#elite-talent" },
   { label: "How We're different", href: "#how-different" },
   { label: "Expert Team Builder", href: "#team-builder" },

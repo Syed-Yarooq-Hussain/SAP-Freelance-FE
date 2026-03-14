@@ -100,7 +100,7 @@ const Sidebar: FC<ISidebarProps> = ({ children }) => {
         variant="permanent"
         open={expanded}
         sx={{
-          backgroundColor: expanded ? "white" : "#3BA8D0",
+          backgroundColor: expanded ? "white" : "#3088B7",
         }}
         PaperProps={{
           onMouseEnter: () => setHoverOpen(true),
@@ -142,13 +142,21 @@ const Sidebar: FC<ISidebarProps> = ({ children }) => {
           }}
         >
           <Box sx={{ position: "relative", width: 140, height: 40 }}>
-            <Image
+            {expanded ?<Image
               src="/vx9-logo-02.png"
               alt="Logo"
               fill
               style={{ objectFit: "contain" }}
               priority
-            />
+            /> : (
+              <Image
+                src="/images/logo-small.png"
+                alt="Logo"
+                fill
+                style={{ objectFit: "contain" }}
+                priority
+              />
+            )}
           </Box>
         </Box>
 

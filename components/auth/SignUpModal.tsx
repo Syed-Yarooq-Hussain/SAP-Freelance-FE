@@ -57,8 +57,7 @@ export function SignUpModal({ onClose, onSignUp }: SignUpModalProps) {
   };
 
   const handleLinkedInSignUp = () => {
-    // Simulate LinkedIn signup
-    // onSignUp('linkedin-user@example.com');
+    window.location.href = process.env.NEXT_PUBLIC_API_URL + '/auth/linkedin';
   };
 
   return (
@@ -70,7 +69,7 @@ export function SignUpModal({ onClose, onSignUp }: SignUpModalProps) {
       aria-labelledby="signup-modal-title"
     >
       <div 
-        className="bg-white rounded-xl sm:rounded-2xl shadow-2xl max-w-md w-full relative my-auto max-h-[95vh] sm:max-h-[90vh] flex flex-col"
+        className="bg-white rounded-xl sm:rounded-2xl shadow-2xl max-w-sm w-full relative my-auto max-h-[95vh] sm:max-h-[90vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         <button

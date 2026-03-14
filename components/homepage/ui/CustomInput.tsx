@@ -46,7 +46,7 @@ export const CustomInput = forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             id={inputId}
             className={`
-              w-full px-4 py-3 
+              w-full px-4 py-2
               ${icon ? 'pl-10' : ''}
               ${rightIcon ? 'pr-10' : ''}
               border-2 rounded-lg
