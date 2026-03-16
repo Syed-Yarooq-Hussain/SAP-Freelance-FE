@@ -109,6 +109,8 @@ export function ProfileEdit({
     formState: { errors },
     watch,
     setValue,
+    setError,
+    clearErrors
   } = useForm<AccountFormData>({
     resolver: yupResolver(accountSchema) as any,
     defaultValues: {
@@ -196,17 +198,17 @@ export function ProfileEdit({
         })} className="space-y-6">
           {/* Profile Image */}
           <div className="flex flex-col md:flex-row items-center md:items-start text-center md:text-left gap-6 pb-6 border-b border-slate-100">
-            <div className="relative flex-shrink-0 group w-20 h-20">
+            <div className="relative flex-shrink-0 group">
               {profileImage ? (
                 <img
                   src={profileImage}
                   alt="Profile"
-                  width={80}
-                  height={80}
-                  className="w-20 h-20 rounded-full object-cover"
+                  width={250}
+                  height={250}
+                  className="w-32 h-32 rounded-full object-cover"
                 />
               ) : (
-                <div className="w-20 h-20 rounded-full bg-slate-300 flex items-center justify-center">
+                <div className="w-32 h-32 rounded-full bg-slate-300 flex items-center justify-center">
                   <span className="text-lg font-semibold text-slate-600">
                     {initials}
                   </span>
@@ -265,13 +267,23 @@ export function ProfileEdit({
              {/* Core Modules */}
           <div>
             <label className="block text-sm font-semibold text-slate-900 mb-3">
-              Core Modules <span className="text-red-500">*</span>
+              Primary Modules <span className="text-red-500">*</span>
             </label>
             <MultiSelect
               options={modules?.core?.length > 0 ? modules.core.map((module:any) => ({ label: module.name, value: module.id })) : []}
               value={coreModules || []}
-              onChange={(selected) => setValue('core', selected)}
-              placeholder="Select core modules"
+              onChange={(selected) => {
+                if (selected.length > 2) {
+                  setError('core', {
+                    type: 'manual',
+                    message: 'You can select maximum 2 items',
+                  });
+                  return;
+                }
+              
+                clearErrors('core');
+                setValue('core', selected);
+              }}              placeholder="Select core modules"
             />
             {errors.core && (
               <p className="text-xs text-red-500 mt-2">
@@ -283,7 +295,7 @@ export function ProfileEdit({
           {/* Other Modules */}
           <div>
             <label className="block text-sm font-semibold text-slate-900 mb-3">
-              Other Modules
+              Additional Modules
             </label>
             <MultiSelect
               options={data?.data?.others ? data.data.others.map((module) => ({ label: module.name, value: module.id })) : []}
@@ -348,7 +360,7 @@ export function ProfileEdit({
             {/* Location */}
             <div>
               <label className="block text-sm font-semibold text-slate-900 mb-2">
-                Location <span className="text-red-500">*</span>
+               Current Location <span className="text-red-500">*</span>
               </label>
               <LocationAutocomplete
                 value={watch('city')}

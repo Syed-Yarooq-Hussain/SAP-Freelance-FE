@@ -12,12 +12,12 @@ export default function HireSap({ onSignUpClick }: { onSignUpClick: () => void }
           </div>
 
           {/* Heading */}
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6 leading-tight text-balance">
+          <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight text-balance">
             Hire SAP consultants or join as a verified expert.
           </h2>
 
           {/* Subtitle */}
-          <p className="text-muted-foreground text-lg mb-8 max-w-2xl">
+          <p className="text-muted-foreground text-2xl mb-8 max-w-2xl">
             Our platform connects businesses with vetted SAP professionals worldwide.
           </p>
 

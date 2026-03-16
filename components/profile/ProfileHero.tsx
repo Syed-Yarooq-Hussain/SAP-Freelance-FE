@@ -57,9 +57,17 @@ export function ProfileHero({
               />
             ) : (
               <div className="absolute inset-0 flex items-center justify-center bg-slate-200">
-                <span className="text-4xl font-semibold text-slate-500">
+                {/* <span className="text-4xl font-semibold text-slate-500">
                   {initials}
-                </span>
+                </span> */}
+                <Image
+                  src={'/images/placeholder.png'}
+                  alt={name}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 380px"
+                  priority
+                />
               </div>
             )}
             {/* Carousel dots (placeholder) */}

@@ -9,11 +9,26 @@ import { signOut } from "next-auth/react";
 const baseURL = process.env.NEXT_PUBLIC_API_URL!;
 const instance = axios.create({ baseURL });
 
+type ApiErrorResponse = {
+  message?: string;
+  code?: number;
+};
+
 instance.interceptors.response.use(
   (response) => response,
-  async (error: AxiosError) => {
+  async (error: AxiosError<ApiErrorResponse>) => {
     const status = error.response?.status;
+    console.log("status", error?.response);
+    if(error?.response?.data?.message == "Unauthorized"){
+      try {
+        clearCachedSession();
+        await signOut({ redirect: false });
+        window.location.href = APP_ROUTES.HOME;
+      } catch (e) {
+        console.error("Error during forced logout:", e);
+      }
 
+    }
     if (status === 401) {
       console.warn("Unauthorized (401). Session expired. Logging out.");
 

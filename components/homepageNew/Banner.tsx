@@ -16,7 +16,7 @@ const Banner = ({ onLoginClick, onSignUpClick }: BannerProps) => {
             <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
               {/* Left Content */}
               <div className="flex-1 max-w-2xl mb:0 md:mb:32 xl:mb-44 text-center lg:text-left">
-                <h1 className="text-3xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-slate-900 leading-normal tracking-tight text-balance">
+                <h1 className="text-3xl sm:text-3xl md:text-6xl xl:text-7xl font-bold text-slate-900 leading-normal tracking-tight text-balance">
                   Build Your SAP{" "}
                   <br className="hidden sm:block" />
                   Dream Team —{" "}
@@ -24,7 +24,7 @@ const Banner = ({ onLoginClick, onSignUpClick }: BannerProps) => {
                   <span className="text-brand-blue">Faster Than Ever</span>
                 </h1>
                 
-                <p className="mt-6 text-lg sm:text-lg text-slate-600 leading-relaxed max-w-xl mx-auto lg:mx-0 text-pretty">
+                <p className="mt-6 text-lg sm:text-xl text-slate-600 leading-relaxed max-w-xl mx-auto lg:mx-0 text-pretty">
                   Discover verified SAP experts, schedule calls instantly, and build high-performing SAP teams worldwide.
                 </p>
                 

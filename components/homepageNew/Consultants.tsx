@@ -181,7 +181,7 @@ export default function Consultants({ onSignUpClick }: { onSignUpClick: () => vo
       <div className="container mx-auto px-4 md:px-6">
         {/* Header */}
         <div className="flex flex-col items-center text-center mb-12">
-          <h2 className="text-xl md:text-3xl lg:text-4xl font-bold text-foreground text-balance">
+          <h2 className="text-xl md:text-4xl lg:text-5xl font-bold text-foreground text-balance">
             Meet our highest-rated SAP experts, ready to accelerate your projects with proven expertise and exceptional delivery.
           </h2>
         </div>

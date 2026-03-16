@@ -40,11 +40,11 @@ export default function Teambuilder() {
         {/* Header */}
         <div className="text-center mb-12 md:mb-16">
           
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4 text-balance">
+          <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4 text-balance">
             Hire SAP Consultants in 3 Simple Steps
           </h2>
           
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+          <p className="text-muted-foreground text-xl mt-2 max-w-2xl mx-auto">
             From shortlisting to onboarding — everything happens in one platform.
           </p>
         </div>

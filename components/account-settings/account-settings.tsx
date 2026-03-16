@@ -184,14 +184,14 @@ export default function AccountSettings({ onSubmit, isLoading = false }: Account
                   <img
                     src={profileImage}
                     alt="Profile"
-                    className="w-28 h-28 rounded-full object-cover border-2 border-slate-200"
+                    className="w-32 h-32 rounded-full object-cover border-2 border-slate-200"
                   />
                 ) : (
-                  <div className="w-28 h-28 rounded-full bg-slate-200 flex items-center justify-center border-2 border-slate-200">
-                    <span className="text-2xl font-semibold text-slate-600">
-                      {initials}
-                    </span>
-                  </div>
+                    <img
+                      src={'/images/placeholder.png'}
+                      alt={'user'}
+                      className="w-32 h-32 rounded-full object-cover border-2 border-slate-200"
+                    />
                 )}
               </div>
               <div className="flex-1 space-y-4">

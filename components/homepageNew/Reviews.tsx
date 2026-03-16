@@ -53,10 +53,10 @@ export default function Reviews() {
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4 text-balance">
+          <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4 text-balance">
             Trusted by Global Enterprises
           </h2>
-          <p className="text-muted-foreground text-lg">
+          <p className="text-muted-foreground text-2xl mt-10">
             Real-time metrics from our growing network
           </p>
         </div>

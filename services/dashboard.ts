@@ -12,8 +12,6 @@ export const getConsultantDashboard = async (): Promise<any> => {
       headers: token ? { Authorization: `Bearer ${token}` } : undefined,
     });
   
-    
-  
     if (response.status === API_STATUS.ERROR || !response.data) {
       const errorMessage = response.message || "Consultant Dashboard Not found";
       console.error("getMe error:", errorMessage, response);
