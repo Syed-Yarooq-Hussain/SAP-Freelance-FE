@@ -57,7 +57,16 @@ export function WelcomeHeader() {
                   >
                     {badge === 'VERIFIED' && <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />}
                     {badge === 'CERTIFIED' && <Shield className="w-3.5 h-3.5 flex-shrink-0" />}
-                    {(badge === 'SENIOR_EXPERT' || badge === 'EXPERT' || badge === 'SOLUTION_ARCHITECT') && <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />}
+                    {(badge === 'EXPERT' ||
+                      badge === 'SENIOR_EXPERT' ||
+                      badge === 'SOLUTION_ARCHITECT' ||
+                      badge === 'JUNIOR' ||
+                      badge === 'ASSOCIATE' ||
+                      badge === 'MID_LEVEL' ||
+                      badge === 'SENIOR' ||
+                      badge === 'PRINCIPAL') && (
+                      <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />
+                    ) && <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />}
                     <span className="inline-block max-w-0 font-bold overflow-hidden whitespace-nowrap text-xs opacity-0 transition-all duration-200 ease-out group-hover:max-w-[120px] group-hover:opacity-100">
                       {config.label}
                     </span>

@@ -192,7 +192,7 @@ export default function ClientTaskDetails() {
       onSuccess: (res) => {
         const data = res.data;
 
-        const clientIndustry = `${data?.client?.username ?? "N/A"} - ${
+        const clientIndustry = `${data?.client?.username ?? "User"} - ${
           data?.company_name ?? "N/A"
         }`;
 

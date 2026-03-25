@@ -26,6 +26,40 @@ export default function Dashboard() {
         <div className="max-w-screen-2xl mx-auto">
             <WelcomeHeader />
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+             {/* Profile Card */}
+            <DashboardCard
+                icon={<User className="w-5 h-5 text-indigo-600" />}
+                title="Profile"
+                href={APP_ROUTES.CONSULTANT.PROFILE}
+            >
+                <div className="space-y-4">
+                <div>
+                    <div className="flex justify-between items-center">
+                        <p className="text-xs text-muted-foreground mb-2">Profile Completion</p>
+                        <p className="text-sm font-semibold text-foreground">
+                        {dashboardData?.profile?.profile_strength}
+                        </p>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div
+                        className="bg-blue-600 h-2 rounded-full"
+                        style={{ width: dashboardData?.profile?.profile_strength }}
+                    />
+                    </div>
+                    
+                </div>
+                <div className="border-t pt-4">
+                    <p className="text-xs text-muted-foreground mb-2">Verification Status</p>
+                    <Badge className="bg-blue-600 text-white">
+                    <CircleCheckBig className="w-4 h-4 text-white mr-1" /> {dashboardData?.profile?.badges?.[0]}
+                    </Badge>
+                </div>
+                <p className="text-xs text-muted-foreground italic">
+                    Complete profile to get verified & certified
+                </p>
+                </div>
+            </DashboardCard>
+
             {/* Calendar Card */}
             <DashboardCard
                 icon={<Calendar className="w-5 h-5 text-blue-600" />}
@@ -51,6 +85,35 @@ export default function Dashboard() {
                     {formatDate(dashboardData?.calender?.next_interview)}
                     </p>
                 </div>}
+                </div>
+            </DashboardCard>
+
+            {/* Payments Card */}
+            <DashboardCard
+                icon={<CreditCard className="w-5 h-5 text-purple-600" />}
+                title="Payments"
+                href={APP_ROUTES.CONSULTANT.PAYMENTS}
+            >
+                <div className="space-y-4">
+                <div className="bg-pink-50 p-4 rounded-md">
+                    <p className="text-xs text-muted-foreground mb-1">Next Payment</p>
+                    <p className="text-2xl font-bold text-foreground">
+                    ${dashboardData?.payment?.next_payment?.toLocaleString()}
+                    </p>
+                </div>
+                <div className="border-t pt-4">
+                    <div className="flex justify-between items-start">
+                    <div>
+                        <p className="text-xs text-muted-foreground">Projected Earnings</p>
+                        <p className="text-xl font-semibold text-foreground">
+                        ${dashboardData?.payment?.projected_earning?.toLocaleString()}
+                        </p>
+                    </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-2 italic">
+                    Based on current availability & rate
+                    </p>
+                </div>
                 </div>
             </DashboardCard>
 
@@ -92,34 +155,7 @@ export default function Dashboard() {
                 </div>
             </DashboardCard>
 
-            {/* Payments Card */}
-            <DashboardCard
-                icon={<CreditCard className="w-5 h-5 text-purple-600" />}
-                title="Payments"
-                href={APP_ROUTES.CONSULTANT.PAYMENTS}
-            >
-                <div className="space-y-4">
-                <div className="bg-pink-50 p-4 rounded-md">
-                    <p className="text-xs text-muted-foreground mb-1">Next Payment</p>
-                    <p className="text-2xl font-bold text-foreground">
-                    ${dashboardData?.payment?.next_payment?.toLocaleString()}
-                    </p>
-                </div>
-                <div className="border-t pt-4">
-                    <div className="flex justify-between items-start">
-                    <div>
-                        <p className="text-xs text-muted-foreground">Projected Earnings</p>
-                        <p className="text-xl font-semibold text-foreground">
-                        ${dashboardData?.payment?.projected_earning?.toLocaleString()}
-                        </p>
-                    </div>
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-2 italic">
-                    Based on current availability & rate
-                    </p>
-                </div>
-                </div>
-            </DashboardCard>
+            
 
             {/* Documents Card */}
             <DashboardCard
@@ -150,39 +186,7 @@ export default function Dashboard() {
                 </div>
             </DashboardCard>
 
-            {/* Profile Card */}
-            <DashboardCard
-                icon={<User className="w-5 h-5 text-indigo-600" />}
-                title="Profile"
-                href={APP_ROUTES.CONSULTANT.PROFILE}
-            >
-                <div className="space-y-4">
-                <div>
-                    <div className="flex justify-between items-center">
-                        <p className="text-xs text-muted-foreground mb-2">Profile Completion</p>
-                        <p className="text-sm font-semibold text-foreground">
-                        {dashboardData?.profile?.profile_strength}
-                        </p>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                        className="bg-blue-600 h-2 rounded-full"
-                        style={{ width: dashboardData?.profile?.profile_strength }}
-                    />
-                    </div>
-                    
-                </div>
-                <div className="border-t pt-4">
-                    <p className="text-xs text-muted-foreground mb-2">Verification Status</p>
-                    <Badge className="bg-blue-600 text-white">
-                    <CircleCheckBig className="w-4 h-4 text-white mr-1" /> {dashboardData?.profile?.badges?.[0]}
-                    </Badge>
-                </div>
-                <p className="text-xs text-muted-foreground italic">
-                    Complete profile to get verified & certified
-                </p>
-                </div>
-            </DashboardCard>
+           
             </div>
         </div>
         </main>

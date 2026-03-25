@@ -138,13 +138,28 @@ export default function AccountSettings({ onSubmit, isLoading = false }: Account
                 color: 'bg-blue-100 text-blue-700',
                 icon: Badge,
               },
-              EXPERT: {
-                label: 'Expert',
+              JUNIOR: {
+                label: 'Junior Consultant',
+                color: 'bg-gray-100 text-gray-700',
+                icon: Award,
+              },
+              ASSOCIATE: {
+                label: 'Associate Consultant',
+                color: 'bg-blue-100 text-blue-700',
+                icon: Star,
+              },
+              MID_LEVEL: {
+                label: 'Mid Level',
+                color: 'bg-indigo-100 text-indigo-700',
+                icon: Star,
+              },
+              SENIOR: {
+                label: 'Senior Consultant',
                 color: 'bg-purple-100 text-purple-700',
                 icon: Award,
               },
-              SENIOR_EXPERT: {
-                label: 'Senior Expert',
+              PRINCIPAL: {
+                label: 'Principal Consultant',
                 color: 'bg-amber-100 text-amber-700',
                 icon: Star,
               },
