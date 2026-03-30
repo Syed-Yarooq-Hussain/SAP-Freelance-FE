@@ -7,7 +7,11 @@ export interface DashboardData {
     projects: {
       total_projects: number;
       active: number;
-      projects: string[];
+      projects: {
+        name: string;
+        client: string;
+        status: string;
+      }[];
     };
     payment: {
       next_payment: number;
@@ -20,5 +24,11 @@ export interface DashboardData {
     profile: {
       profile_strength: string; // e.g. "80%"
       badges: string[];
+      name: string;
+      city: string;
+      country: string;
+      avatar: string;
+      created_at: string | null;
+      modules: string[];
     };
   };

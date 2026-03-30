@@ -137,6 +137,7 @@ export const formatDateTimeAmPm = (iso: string) => {
   if (!iso) return "N/A";
 
   const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "N/A";
   const date = d.toISOString().split("T")[0];
 
   let hours = d.getHours();

@@ -14,6 +14,28 @@ interface WorkExperienceModalProps {
   initialData?: WorkExperienceFormData
 }
 
+const toDateInputValue = (value?: string | null) => {
+  if (!value) return ''
+  const normalized = value.trim().toLowerCase()
+  if (normalized === 'current' || normalized === 'present') {
+    return new Date().toISOString().split('T')[0]
+  }
+
+  const directDatePattern = /^\d{4}-\d{2}-\d{2}$/
+  if (directDatePattern.test(value)) return value
+
+  const parsed = new Date(value)
+  if (Number.isNaN(parsed.getTime())) {
+    const monthYearMatch = value.match(/^([a-zA-Z]+)\s+(\d{4})$/)
+    if (!monthYearMatch) return ''
+    const fallback = new Date(`${monthYearMatch[1]} 1, ${monthYearMatch[2]}`)
+    if (Number.isNaN(fallback.getTime())) return ''
+    return fallback.toISOString().split('T')[0]
+  }
+
+  return parsed.toISOString().split('T')[0]
+}
+
 export function WorkExperienceModal({
   isOpen,
   onClose,
@@ -36,6 +58,26 @@ export function WorkExperienceModal({
   })
 
   useEffect(() => {
+    if (!isOpen) return
+    if (initialData) {
+      reset({
+        ...initialData,
+        start_date: toDateInputValue(initialData.start_date),
+        end_date: toDateInputValue(initialData.end_date),
+        responsibilities: initialData.responsibilities || [],
+      })
+      return
+    }
+    reset({
+      company_name: '',
+      position: '',
+      start_date: '',
+      end_date: '',
+      responsibilities: [],
+    })
+  }, [isOpen, initialData, reset])
+
+  useEffect(() => {
     setMounted(true)
   }, [])
 
@@ -45,7 +87,6 @@ export function WorkExperienceModal({
     reset()
     onClose()
   }
-
   const onSubmit = async (data: WorkExperienceFormData) => {
     try {
       await onSave(data)

@@ -9,7 +9,6 @@ export function MeetSection() {
   const firstName = name.split(' ')[0] || name
   const bio = user?.clients_summary || 'No bio added yet.'
   const certifications = user?.certification ?? []
-  console.log(certifications, 'certifications', user)
   const qualificationLabels = user?.user?.modules
     .map((c: { module?: any }) => c?.module?.name)
     .filter(Boolean)

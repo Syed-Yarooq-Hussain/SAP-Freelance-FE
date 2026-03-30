@@ -5,6 +5,7 @@ import { Plus, Trash2, Edit, Briefcase, ArchiveX, BriefcaseBusiness } from 'luci
 import { WorkExperienceModal } from './work-experience-modal'
 import { type WorkExperienceFormData } from '@/lib/schemas/experience'
 import { ConfirmDeleteModal } from '@/components/common/ConfirmDeleteModal'
+import { Button } from '../homepage/ui/button'
 
 interface WorkExperienceTabProps {
   data: WorkExperienceFormData[]
@@ -60,10 +61,10 @@ export function WorkExperienceTab({
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center mb-6">
-        <h3 className="text-lg font-semibold text-slate-900">Work Experience</h3>
+        <h3 className="text-lg font-semibold text-slate-900"></h3>
         <button
           onClick={handleAddClick}
-          className="inline-flex items-center gap-2 px-4 py-2 btn-gradient-blue text-white font-semibold rounded-input transition-all hover:shadow-lg hover:shadow-brand-blue/30"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-brand-blue text-white font-semibold rounded-input transition-all hover:shadow-lg hover:shadow-brand-blue/30"
         >
           <Plus className="w-4 h-4" />
           Add Experience
@@ -71,16 +72,15 @@ export function WorkExperienceTab({
       </div>
 
       {data.length === 0 ? (
-       <div className="w-full flex flex-col items-center justify-center py-12 bg-slate-50 rounded-lg border border-dashed border-slate-300">
-          <BriefcaseBusiness className="w-10 h-10 text-slate-300 mb-3" aria-hidden />
-          <p className="text-slate-500">No work experience added yet</p>
+       <div className="w-full flex flex-col items-center justify-center py-12 bg-brand-yellow rounded-xl border border-dashed border-slate-300">
+          <Button onClick={handleAddClick} className='bg-brand-blue text-white flex items-center gap-1 text-xs'><Plus className="w-3 h-3" /> Add Experience</Button>
         </div>
       ) : (
         <div className="space-y-4">
           {data.map((item, index) => (
             <div
               key={index}
-              className="bg-white border rounded-xl border-slate-200 p-5 hover:shadow-md transition-shadow"
+              className="bg-brand-yellow border rounded-xl border-slate-200 p-5 hover:shadow-md transition-shadow"
             >
               <div className="flex justify-between items-start mb-3">
                 <div>

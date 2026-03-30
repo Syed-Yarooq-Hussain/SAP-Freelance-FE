@@ -7,7 +7,7 @@ export const getConsultantDashboard = async (): Promise<any> => {
     const session = await getCachedSession();
     const token = session?.accessToken;
     const response = await request<void, string>({
-      url: API_ROUTES.CONSULTANT_DASHBOARD,
+      url: API_ROUTES.CONSULTANT_DASHBOARD_V2,
       method: "GET",
       headers: token ? { Authorization: `Bearer ${token}` } : undefined,
     });

@@ -34,3 +34,18 @@ export async function updateConsultantProfile(id: number, data: IConsultantUser)
 
   return res;
 }
+
+export async function getConsultantMeetings(): Promise<ApiResponse<any[]>> {
+  const session = await getCachedSession();
+  const token = session?.accessToken;
+  const res = await request<void, any>({
+    url: API_ROUTES.COMMON_MEETINGS,
+    method: "GET",
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+  });
+  if (res.status !== "success") {
+    throw new Error(res.message || "Failed to get consultant meetings");
+  }
+
+  return res;
+}
