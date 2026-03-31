@@ -18,7 +18,7 @@ import { EducationFormData } from '@/lib/schemas/education'
 import { CertificationFormData } from '@/lib/schemas/certification'
 
 export default function ProfilePage() {
-  const user = useAppSelector((state) => state?.user?.user)
+  const user = useAppSelector((state:any) => state?.user?.user)
   const dispatch = useAppDispatch()
   const [isEditing, setIsEditing] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -114,7 +114,7 @@ export default function ProfilePage() {
 
   return (
     <Sidebar>
-      <div className="min-h-screen bg-background-main py-6 px-4">
+      <div className="min-h-screen bg-background-main rounded-xl py-6 px-4">
         <div className="max-w-7xl mx-auto space-y-6">
           {isEditing ? (
             <div className="bg-background-main rounded-2xl border border-slate-100 shadow-sm overflow-hidden">

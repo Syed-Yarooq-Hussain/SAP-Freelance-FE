@@ -19,11 +19,11 @@ export const DocumentsCard: React.FC<{ data: DashboardData }> = ({ data }) => {
       </div>
 
       <div className="flex gap-4 mb-6">
-        <div className="bg-white border border-[#E5DBDB] w-full md:w-1/4 rounded-xl p-4 text-start">
+        <div className="bg-brand-pink border border-[#E5DBDB] w-full md:w-1/4 rounded-xl p-4 text-start">
           <p className="text-xs text-gray-600 mb-1">Uploaded</p>
           <p className="text-3xl font-bold text-gray-900">{data?.documents?.upcoming || 0}</p>
         </div>
-        <div className="bg-white border border-[#E5DBDB] w-full md:w-1/4 rounded-xl p-4 text-start">
+        <div className="bg-brand-pink border border-[#E5DBDB] w-full md:w-1/4 rounded-xl p-4 text-start">
           <p className="text-xs text-gray-600 mb-1">Pending</p>
           <p className="text-3xl font-bold text-gray-900">{data?.documents?.pending || 0}</p>
         </div>

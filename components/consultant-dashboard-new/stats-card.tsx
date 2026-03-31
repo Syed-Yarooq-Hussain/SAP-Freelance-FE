@@ -14,7 +14,7 @@ const StatCard: React.FC<StatCardProps> = ({ label, value, icon }) => {
   return (
     <div className="bg-white rounded-xl p-3 border border-brand-blue text-start">
       <p className="text-xs font-medium text-gray-600 mb-2">{label}</p>
-      <p className="text-xl font-bold text-gray-900">{value}</p>
+      <p className="text-2xl font-bold text-gray-900">{value}</p>
       {icon && <span className="text-2xl mt-2 inline-block">{icon}</span>}
     </div>
   );

@@ -21,10 +21,12 @@ module.exports = {
         destructive: "var(--destructive)",
         border: "var(--border)",
         // Brand colors from design
+        // "brand-blue": "#3088B7",
         "brand-blue": "#3088B7",
         "brand-blue-dark": "#0891B2",
         "brand-green": "#009966",
         "brand-yellow": "#F0EDE8",
+        "brand-pink": "#F2F5FE",
         "inactive": "#F5F3EF",
         "disabled": "#EBEBEB",
         "success": "#2D5A27",

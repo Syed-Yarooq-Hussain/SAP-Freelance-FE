@@ -108,13 +108,15 @@ const DrawerList: FC<DrawerListProps> = ({ open }) => {
                 px: 2,
                 m:1,
                 borderRadius: 2,
-                bgcolor: isActive ? !open ? "#C1314A" : "#F2F3F7" : "transparent",
-                "&:hover": { bgcolor: isActive ? "grey.300" : "grey.100" },
+                // bgcolor: isActive ? !open ? "#C1314A" : "#F2F3F7" : "transparent",
+                bgcolor: isActive ? "#14394D" : "transparent",
+                "&:hover": { bgcolor: isActive ? "#14394D" : "#14394D" },
               }}
             >
               <ListItemIcon
                 sx={{
-                  color: isActive ? !open ? 'white' : colors.BLUE : !open ? "white" : "grey.700",
+                  // color: isActive ? !open ? 'white' : colors.BLUE : !open ? "white" : "grey.700",
+                  color: "white",
                   minWidth: 32,
                   ml: -1,
                 }}
@@ -128,7 +130,8 @@ const DrawerList: FC<DrawerListProps> = ({ open }) => {
                   primaryTypographyProps={{
                     fontWeight: isActive ? "bold" : 500,
                     fontSize: 14,
-                    color: isActive ? "primary.main" : "inherit",
+                    color: "white",
+                    // color: isActive ? "primary.main" : "inherit",
                   }}
                 />
               )}
