@@ -329,8 +329,8 @@ export const CalendarWidget: React.FC<{ data: DashboardData }> = ({ data }) => {
   return (
     <div className="rounded-xl p-6 border border-[#E5E5E5]">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex gap-2">
+      <div className="flex items-center justify-between flex-wrap mb-6">
+        <div className="flex gap-2 flex-wrap">
           <Button
             variant="outline"
             className="rounded-xl text-sm"
@@ -345,125 +345,127 @@ export const CalendarWidget: React.FC<{ data: DashboardData }> = ({ data }) => {
           >
             Last 8 days
           </Button>
-        </div>
-
-        <div className="flex items-center gap-2">
-          {/* Month/Year Picker */}
-          <div className="relative" ref={pickerRef}>
-            <Button
-              variant="outline"
-              className="rounded-xl px-3 flex items-center gap-2"
-              onClick={openPicker}
-            >
-              <svg
-                width="13"
-                height="13"
-                viewBox="0 0 16 16"
-                fill="none"
-                className="opacity-60 flex-shrink-0"
+            {/* Month/Year Picker */}
+            <div className="relative" ref={pickerRef}>
+              <Button
+                variant="outline"
+                className="rounded-xl px-3 flex items-center gap-2 bg-white border border-brand-blue"
+                onClick={openPicker}
               >
-                <rect
-                  x="1"
-                  y="3"
-                  width="14"
-                  height="12"
-                  rx="2"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
+                <svg
+                  width="13"
+                  height="13"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  className="opacity-60 flex-shrink-0"
+                >
+                  <rect
+                    x="1"
+                    y="3"
+                    width="14"
+                    height="12"
+                    rx="2"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                  />
+                  <path
+                    d="M5 1v4M11 1v4M1 7h14"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                  />
+                </svg>
+                <span className="font-medium text-sm">
+                  {SHORT_MONTHS[month]} {year}
+                </span>
+                <ChevronDown
+                  className="w-4 h-4 opacity-50 transition-transform duration-200"
+                  style={{
+                    transform: pickerOpen ? "rotate(180deg)" : "rotate(0deg)",
+                  }}
                 />
-                <path
-                  d="M5 1v4M11 1v4M1 7h14"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                />
-              </svg>
-              <span className="font-medium text-sm">
-                {SHORT_MONTHS[month]} {year}
-              </span>
-              <ChevronDown
-                className="w-4 h-4 opacity-50 transition-transform duration-200"
-                style={{
-                  transform: pickerOpen ? "rotate(180deg)" : "rotate(0deg)",
-                }}
-              />
-            </Button>
+              </Button>
 
-            {pickerOpen && (
-              <div className="absolute top-[calc(100%+6px)] right-0 w-56 bg-white border border-gray-200 rounded-xl shadow-lg p-3 z-50">
-                {/* Year row */}
-                <div className="flex items-center justify-between mb-3">
-                  <button
-                    className="text-gray-500 hover:bg-gray-100 rounded-md px-2 py-1 text-base"
-                    onClick={() => setPickerYear((y) => y - 1)}
-                  >
-                    ‹
-                  </button>
-                  <span className="text-sm font-medium text-gray-800">
-                    {pickerYear}
-                  </span>
-                  <button
-                    className="text-gray-500 hover:bg-gray-100 rounded-md px-2 py-1 text-base"
-                    onClick={() => setPickerYear((y) => y + 1)}
-                  >
-                    ›
-                  </button>
-                </div>
+              {pickerOpen && (
+                <div className="absolute top-[calc(100%+6px)] right-0 w-56 bg-white border border-gray-200 rounded-xl shadow-lg p-3 z-50">
+                  {/* Year row */}
+                  <div className="flex items-center justify-between mb-3">
+                    <button
+                      className="text-gray-500 hover:bg-gray-100 rounded-md px-2 py-1 text-base"
+                      onClick={() => setPickerYear((y) => y - 1)}
+                    >
+                      ‹
+                    </button>
+                    <span className="text-sm font-medium text-gray-800">
+                      {pickerYear}
+                    </span>
+                    <button
+                      className="text-gray-500 hover:bg-gray-100 rounded-md px-2 py-1 text-base"
+                      onClick={() => setPickerYear((y) => y + 1)}
+                    >
+                      ›
+                    </button>
+                  </div>
 
-                {/* Month grid */}
-                <div className="grid grid-cols-3 gap-1 mb-3">
-                  {SHORT_MONTHS.map((m, i) => {
-                    const isPicked = i === pickerMonth;
-                    return (
-                      <button
-                        key={m}
-                        onClick={() => setPickerMonth(i)}
-                        className={`py-1.5 rounded-xl text-xs font-medium transition-colors ${
-                          isPicked
-                            ? "bg-[#3088B7] text-white"
-                            : "text-gray-700 hover:bg-gray-100"
-                        }`}
-                      >
-                        {m}
-                      </button>
-                    );
-                  })}
-                </div>
+                  {/* Month grid */}
+                  <div className="grid grid-cols-3 gap-1 mb-3">
+                    {SHORT_MONTHS.map((m, i) => {
+                      const isPicked = i === pickerMonth;
+                      return (
+                        <button
+                          key={m}
+                          onClick={() => setPickerMonth(i)}
+                          className={`py-1.5 rounded-xl text-xs font-medium transition-colors ${
+                            isPicked
+                              ? "bg-[#3088B7] text-white"
+                              : "text-gray-700 hover:bg-gray-100"
+                          }`}
+                        >
+                          {m}
+                        </button>
+                      );
+                    })}
+                  </div>
 
-                {/* Actions */}
-                <div className="flex gap-2 pt-2 border-t border-gray-100">
-                  <button
-                    className="flex-1 py-1.5 rounded-xl text-xs border border-gray-200 text-gray-500 hover:bg-gray-50"
-                    onClick={() => setPickerOpen(false)}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    className="flex-1 py-1.5 rounded-xl text-xs bg-[#3088B7] text-white font-medium hover:bg-[#2577a3]"
-                    onClick={applyPicker}
-                  >
-                    Apply
-                  </button>
+                  {/* Actions */}
+                  <div className="flex gap-2 pt-2 border-t border-gray-100">
+                    <button
+                      className="flex-1 py-1.5 rounded-xl text-xs border border-gray-200 text-gray-500 hover:bg-gray-50"
+                      onClick={() => setPickerOpen(false)}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      className="flex-1 py-1.5 rounded-xl text-xs bg-[#3088B7] text-white font-medium hover:bg-[#2577a3]"
+                      onClick={applyPicker}
+                    >
+                      Apply
+                    </button>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
+
+            <div className="min-w-[60px] flex gap-2 items-center justify-between">
+              <Button
+                variant="outline"
+                className="rounded-xl w-8 h-8 p-0 flex items-center justify-center"
+                onClick={prevMonth}
+              >
+                ‹
+              </Button>
+              <Button
+                variant="outline"
+                className="rounded-xl w-8 h-8 p-0 flex items-center justify-center"
+                onClick={nextMonth}
+              >
+                ›
+              </Button>
+            </div>
+          <div className="flex items-center gap-2">
           </div>
-
-          <Button
-            variant="outline"
-            className="rounded-xl w-8 h-8 p-0 flex items-center justify-center"
-            onClick={prevMonth}
-          >
-            ‹
-          </Button>
-          <Button
-            variant="outline"
-            className="rounded-xl w-8 h-8 p-0 flex items-center justify-center"
-            onClick={nextMonth}
-          >
-            ›
-          </Button>
         </div>
+
       </div>
 
       {/* Calendar */}
@@ -473,7 +475,7 @@ export const CalendarWidget: React.FC<{ data: DashboardData }> = ({ data }) => {
           {["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map((day) => (
             <div
               key={day}
-              className="text-center text-xs font-semibold text-gray-500 py-2"
+              className="text-center text-[10px] md:text-xs font-semibold text-gray-500 py-2"
             >
               {day}
             </div>
@@ -492,7 +494,7 @@ export const CalendarWidget: React.FC<{ data: DashboardData }> = ({ data }) => {
                 <div
                   key={idx}
                   onClick={(e) => handleDayClick(e, dayObj)}
-                  className={`aspect-square flex flex-col items-center justify-center rounded-xl text-xs font-medium transition-colors
+                  className={`aspect-square min-w-[25px] flex flex-col items-center  justify-center rounded-sm md:rounded-xl text-xs font-medium transition-colors
                     ${
                       isSelected
                         ? "bg-[#3088B7] text-white"
@@ -502,7 +504,7 @@ export const CalendarWidget: React.FC<{ data: DashboardData }> = ({ data }) => {
                             ? "text-gray-700"
                             : "text-gray-300"
                     }
-                    ${hasEvent ? "cursor-pointer hover:opacity-80 bg-brand-blue text-white rounded-xl" : "cursor-default"}
+                    ${hasEvent ? "cursor-pointer hover:opacity-80 bg-brand-blue text-white " : "cursor-default bg-black/5"}
                   `}
                 >
                   {hasEvent ? (
@@ -584,7 +586,7 @@ export const CalendarWidget: React.FC<{ data: DashboardData }> = ({ data }) => {
         </div>
       </div>
 
-      <div className="my-4">
+      <div className="my-4 p-2 border border-gray-200 rounded-xl">
         <StatsCards data={data} />
       </div>
 

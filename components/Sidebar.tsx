@@ -106,7 +106,7 @@ const Sidebar: FC<ISidebarProps> = ({ children }) => {
           onMouseEnter: () => setHoverOpen(true),
           onMouseLeave: () => setHoverOpen(false),
           sx:{
-            bgcolor: expanded ? "white" : "primary.main",
+            bgcolor: "primary.main",
           }
         }}
       >

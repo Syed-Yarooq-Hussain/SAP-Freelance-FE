@@ -33,7 +33,7 @@ export function ProfileHeader({ setIsEditing }: { setIsEditing: (editing: boolea
 
   return (
     <div className="flex-1">
-      <div className="flex items-start justify-between mb-4">
+      <div className="flex items-start justify-between mb-2">
         <div className="flex items-center gap-3">
           <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2">
             {user?.user?.username}
@@ -120,18 +120,18 @@ export function ProfileHeader({ setIsEditing }: { setIsEditing: (editing: boolea
         )}
       </div>
 
-      {coreModules.length > 0 ? <div className="bg-gradient-success border mb-4 border-slate-200 rounded-xl px-4 py-2">
+      {coreModules.length > 0 ? <div className="bg-gradient-success border mb-4 border-slate-200 rounded-xl px-4 py-3">
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-2">
             <div className='flex items-center mr-1'>
-              <Dot className="w-8 h-8" />
-              <p className="text-sm text-slate-700 font-medium">Core Modules</p>
+              <Dot className="w-8 h-8 text-success" />
+              <p className="text-sm text-success font-medium">Core Modules</p>
             </div>
             <div className="h-5 w-[1px] bg-slate-200"></div>
             <div className="flex items-center gap-2">
               {
                 coreModules.map((module, index) => (
-                  <div key={module} className={`flex items-center font-semibold gap-2 ${index !== 0 ? 'bg-white' : 'bg-success'} rounded-xl px-3 py-1.5 ${index !== 0 ? 'text-success' : 'text-white'}`}>
+                  <div key={module} className={`flex items-center font-semibold gap-2 ${index !== 0 ? 'bg-white' : 'bg-success'} rounded-md px-4 py-1.5 ${index !== 0 ? 'text-success' : 'text-white'}`}>
                     <p className="text-sm font-semibold">{module}</p>
                   </div>
                 ))

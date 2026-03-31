@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { AlertCircle, Star } from 'lucide-react';
+import { AlertCircle, Clock, Star } from 'lucide-react';
 import { Button } from '../homepage/ui/button';
 import { DashboardData } from '@/types/dashboard';
 import { APP_ROUTES } from '@/utils/app_routes';
@@ -12,7 +12,7 @@ export const ProfileCard: React.FC<{ data: DashboardData }> = ({ data }) => {
   return (
     <div className="rounded-xl p-6 border border-[#E5E5E5]">
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 bg-[#3088B7] rounded-lg flex items-center justify-center text-white font-bold">
+        <div className="w-10 h-10 bg-[#3088B7] rounded-xl flex items-center justify-center text-white font-bold">
           AA
         </div>
         <div>
@@ -37,7 +37,7 @@ export const ProfileCard: React.FC<{ data: DashboardData }> = ({ data }) => {
       </div>
 
       <Button className="w-full bg-[#3088B7] text-white rounded-xl mb-3 hover:bg-[#2670A0]">
-        ✓ Complete Profile & Get Certified
+        <Clock className="w-2 h-2" /> Complete Profile & Get Certified
       </Button>
 
       <Button onClick={() => router.push(APP_ROUTES.CONSULTANT.PROFILE)} variant="outline" className="w-full rounded-xl text-sm text-success">

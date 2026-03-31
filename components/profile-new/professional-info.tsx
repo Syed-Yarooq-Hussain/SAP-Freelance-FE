@@ -165,7 +165,7 @@ export function ProfessionalInfo() {
     <div className="border border-slate-200 rounded-xl p-6 mb-6">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-          <span className=" rounded-full flex items-center justify-center text-sm">
+          <span className="bg-[#EAF1FB] p-2 rounded-xl flex items-center justify-center text-sm">
             <Briefcase className="w-4 h-4" />
           </span>
           Professional Information
