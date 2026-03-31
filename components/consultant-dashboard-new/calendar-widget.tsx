@@ -327,20 +327,20 @@ export const CalendarWidget: React.FC<{ data: DashboardData }> = ({ data }) => {
     : "";
 
   return (
-    <div className="rounded-xl p-6 border border-[#E5E5E5]">
+    <div className="rounded-xl p-3">
       {/* Header */}
-      <div className="flex items-center justify-between flex-wrap mb-6">
+      <div className="flex items-center justify-between flex-wrap mb-4">
         <div className="flex gap-2 flex-wrap">
           <Button
             variant="outline"
-            className="rounded-xl text-sm"
+            className="rounded-xl text-sm border-none"
             onClick={goToday}
           >
             Today
           </Button>
           <Button
             variant="outline"
-            className="rounded-xl text-sm"
+            className="rounded-xl text-sm border-none"
             onClick={goLast8}
           >
             Last 8 days
@@ -449,14 +449,14 @@ export const CalendarWidget: React.FC<{ data: DashboardData }> = ({ data }) => {
             <div className="min-w-[60px] flex gap-2 items-center justify-between">
               <Button
                 variant="outline"
-                className="rounded-xl w-8 h-8 p-0 flex items-center justify-center"
+                className="rounded-xl w-8 h-8 p-0 flex items-center justify-center border-none"
                 onClick={prevMonth}
               >
                 ‹
               </Button>
               <Button
                 variant="outline"
-                className="rounded-xl w-8 h-8 p-0 flex items-center justify-center"
+                className="rounded-xl w-8 h-8 p-0 flex items-center justify-center border-none"
                 onClick={nextMonth}
               >
                 ›
@@ -475,7 +475,7 @@ export const CalendarWidget: React.FC<{ data: DashboardData }> = ({ data }) => {
           {["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map((day) => (
             <div
               key={day}
-              className="text-center text-[10px] md:text-xs font-semibold text-gray-500 py-2"
+              className="text-center text-[10px] md:text-[10px] font-semibold text-gray-500 py-2"
             >
               {day}
             </div>

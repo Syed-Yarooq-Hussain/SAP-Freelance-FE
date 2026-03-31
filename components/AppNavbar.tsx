@@ -28,7 +28,7 @@ import ProfileAvatar from "./ProfileAvatar";
 import ProfileMenu from "./ProfileMenu";
 import { APP_ROUTES } from "@/utils/app_routes";
 import { useAppSelector } from "@/lib/store/hook";
-import { User, Calendar, LogOutIcon } from "lucide-react";
+import { User, Calendar, LogOutIcon, ArrowDownIcon, ChevronDown } from "lucide-react";
 import { Roles } from "@/constants/roles";
 
 interface AppNavbarProps {
@@ -123,7 +123,8 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
             ? { xs: "85%", md: `calc(100% - 240px)` }
             : { xs: "85%", sm: "90%", md: "96%" },
           backgroundColor: "#F0F1F3",
-          paddingY:1,
+          paddingY:0.5,
+          borderBottom: "1px solid #D9D9D9",
           transition: "all 0.3s ease",
         }}
       >
@@ -142,7 +143,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
                 </IconButton>
               </Box>
             )}
-            <AppTitle />
+            {/* <AppTitle /> */}
           </Box>
 
           <Box
@@ -191,7 +192,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
                 <ChatOutlinedIcon />
               </IconButton>
             </Tooltip> */}
-            <div className="w-[1px] bg-gray-300 h-8"/>
+            <div className="w-[1px] bg-gray-300 h-5"/>
             <Tooltip title="Profile" arrow>
               <IconButton
                 size="large"
@@ -200,23 +201,32 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
                 onClick={handleProfileMenuOpen}
                 sx={{ p: 0.5, }}
               >
-                <ProfileAvatar
-                  name={
-                    user?.user?.username?.replace(
-                      /([a-z])([A-Z])/g,
-                      "$1 $2"
-                    ) ?? "User"
-                  }
-                  imageUrl={user?.user?.avatar}
-                  size={28}
-                  sx={{
-                    border: "1.8px solid rgba(0,0,0,0.8)",
-                    bgcolor: "rgba(25,118,210,0.12)",
-                    color: colors.BLUE,
-                    fontSize: 18,
-                    fontWeight: 600,
-                  }}
-                />
+                <Box className="flex items-center gap-2 px-2 py-1 bg-brand-yellow border border-gray-300 rounded-xl">
+                  <ProfileAvatar
+                    name={
+                      user?.user?.username?.replace(
+                        /([a-z])([A-Z])/g,
+                        "$1 $2"
+                      ) ?? "User"
+                    }
+                    imageUrl={user?.user?.avatar}
+                    size={28}
+                    sx={{
+                      border: "1.8px solid rgba(0,0,0,0.8)",
+                      bgcolor: "rgba(25,118,210,0.12)",
+                      color: colors.BLUE,
+                      fontSize: 18,
+                      fontWeight: 600,
+                    }}
+                  />
+                  <Box className="flex flex-col items-start justify-center">
+                    <p className="text-xxs font-medium">{user?.user?.username || 'User'}</p>
+                    <p className="text-[7px] text-gray-800">{(user?.user?.module?.core ? user?.user?.module?.core.split(',')[0] : '') || ''}</p>
+                  </Box>
+                  <div>
+                    <ChevronDown className="w-4 h-4 text-gray-800" />
+                  </div>
+                </Box>
               </IconButton>
             </Tooltip>
           </Box>

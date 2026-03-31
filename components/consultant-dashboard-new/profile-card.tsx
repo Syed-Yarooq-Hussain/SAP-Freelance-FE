@@ -16,7 +16,7 @@ export const ProfileCard: React.FC<{ data: DashboardData }> = ({ data }) => {
           AA
         </div>
         <div>
-          <h3 className="font-semibold text-gray-900">Profile</h3>
+          <h3 className="font-medium text-sm text-gray-900 font-neue">Profile</h3>
         </div>
       </div>
 
@@ -36,11 +36,11 @@ export const ProfileCard: React.FC<{ data: DashboardData }> = ({ data }) => {
         </div>
       </div>
 
-      <Button className="w-full bg-[#3088B7] text-white rounded-xl mb-3 hover:bg-[#2670A0]">
-        <Clock className="w-2 h-2" /> Complete Profile & Get Certified
+      <Button className="w-full !text-xxs bg-[#3088B7] text-white rounded-xl mb-3 hover:bg-[#2670A0]">
+        <Clock className="w-2 h-2 " /> Complete Profile & Get Certified
       </Button>
 
-      <Button onClick={() => router.push(APP_ROUTES.CONSULTANT.PROFILE)} variant="outline" className="w-full rounded-xl text-sm text-success">
+      <Button onClick={() => router.push(APP_ROUTES.CONSULTANT.PROFILE)} variant="outline" className="w-full !text-xxs rounded-xl text-success">
         <Star className="w-4 h-4" /> View SAP Certifications
       </Button>
     </div>

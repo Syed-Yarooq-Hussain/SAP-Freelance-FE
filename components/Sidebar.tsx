@@ -4,15 +4,17 @@ import {
   DESKTOP_DRAWER_WIDTH,
   MOBILE_DRAWER_WIDTH,
 } from "@/constants/dimensions";
-import { Box, CssBaseline, IconButton, Drawer as MuiDrawer, Tooltip } from "@mui/material";
+import { Box, Button, CssBaseline, IconButton, Drawer as MuiDrawer, Tooltip } from "@mui/material";
 import { CSSObject, styled, Theme, useTheme } from "@mui/material/styles";
 import Image from "next/image";
 import React, { FC, useEffect, useState } from "react";
 import AppNavbar from "./AppNavbar";
 import DrawerList from "./DrawerList";
 import DrawerListSkeleton from "./DrawerListSkeleton";
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { ChevronLeftIcon, ChevronRightIcon, LogOut, User } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { useAppSelector } from "@/lib/store/hook";
+import { useLogout } from "@/actions/auth/logout";
 
 type ISidebarProps = {
   children: React.ReactNode;
@@ -76,8 +78,13 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 
 
 const Sidebar: FC<ISidebarProps> = ({ children }) => {
+  const { mutate: logout } = useLogout();
+  const handleLogout = () => {
+    logout();
+  }
   const theme = useTheme();
   const session = useSession();
+  const { user } = useAppSelector((state) => state.user);
   const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
   const [hoverOpen, setHoverOpen] = useState(false);
@@ -132,35 +139,69 @@ const Sidebar: FC<ISidebarProps> = ({ children }) => {
             priority
           />
         </Box> */}
-        <Box
-          sx={{
-            height: 64,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            px: 2,
-          }}
-        >
-          <Box sx={{ position: "relative", width: 140, height: 40 }}>
-            {expanded ?<Image
-              src="/vx9-logo-02.png"
-              alt="Logo"
-              fill
-              style={{ objectFit: "contain" }}
-              priority
-            /> : (
-              <Image
-                src="/images/logo-small.png"
+        <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
+          <Box
+            sx={{
+              height: 160,
+              display: "flex",
+              alignItems: "start",
+              justifyContent: "center",
+              px: 2,
+            }}
+          >
+            <Box sx={{ position: "relative", width: 140, height: 40, pt:12 }}>
+              {expanded ?<Image
+                src="/vx9-logo-02.png"
                 alt="Logo"
                 fill
                 style={{ objectFit: "contain" }}
                 priority
-              />
-            )}
+              /> : (
+                <Image
+                  src="/images/logo-small.png"
+                  alt="Logo"
+                  fill
+                  style={{ objectFit: "contain" }}
+                  priority
+                />
+              )}
+            </Box>
           </Box>
+
+          <div>
+            <div className="h-[0.5px] w-11/12 mx-auto bg-[#DBDBDB]/50 mb-8 rounded-full" />
+            {mounted ? <DrawerList open={expanded} /> : <DrawerListSkeleton />}
+          </div>
         </Box>
 
-        {mounted ? <DrawerList open={expanded} /> : <DrawerListSkeleton />}
+        <Box sx={{ mt: "auto"}}>
+          <button
+            onClick={handleLogout}
+            className={`w-full bg-[#14394D] border border-white/20 text-white transition-colors ${
+              expanded
+                ? "px-3 py-3 flex items-center justify-between gap-3"
+                : "h-11 py-3 flex items-center justify-center"
+            }`}
+          >
+            {expanded ? (
+              <>
+                <Box className="flex flex-col items-start text-left justify-center min-w-0">
+                  <p className="text-xs font-medium truncate w-full mb-1">
+                    {user?.user?.username || "User"}
+                  </p>
+                  <p className="text-[7px] text-white/80 truncate w-full">
+                    {(user?.user?.module?.core
+                      ? user.user.module.core.split(",")[0]
+                      : "") || ""}
+                  </p>
+                </Box>
+                <LogOut className="w-3.5 h-3.5 flex-shrink-0" />
+              </>
+            ) : (
+              <LogOut className="w-4 h-4" />
+            )}
+          </button>
+        </Box>
         {/* <DrawerHeader>
           <Tooltip title={expanded ? "Collapse sidebar" : "Expand sidebar"} placement="right" arrow>
             <IconButton
@@ -204,7 +245,8 @@ const Sidebar: FC<ISidebarProps> = ({ children }) => {
         component="main"
         sx={{
           flexGrow: 1,
-          p: 2,
+          px: 0,
+          py:2,
           mt: `${appBarHeight}px`,
           minHeight: "100vh",
         }}

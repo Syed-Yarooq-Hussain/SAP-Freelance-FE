@@ -40,11 +40,11 @@ export function WelcomeHeader() {
   };
 
   return (
-    <div className="bg-background-main border-t border-gray-200 px-4 py-3 sm:p-5 md:px-6 md:py-3 mb-4 sm:mb-6 md:mb-8 ">
+    <div className="bg-background-main max-h-auto md:max-h-[83px] px-4 py-3 sm:p-5 md:px-12 md:py-3">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between lg:gap-6">
         <div className="flex-1 min-w-0">
-          <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-gray-900 break-words">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
+            <h1 className="text-xl sm:text-lg md:text-xl font-bold text-black break-words">
               Welcome {user?.user?.username || 'User'} 👋
             </h1>
             {/* <div className="flex gap-2">
@@ -75,25 +75,25 @@ export function WelcomeHeader() {
               })}
             </div> */}
           </div>
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4 text-xs text-gray-500">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4 text-[9px] text-gray-500">
             <span className="flex items-center gap-2 min-w-0">
-              <MapPin size={16} className="flex-shrink-0" />
+              <MapPin size={12} className="flex-shrink-0" />
               <span className="truncate">{user?.user?.city || ''} {user?.user?.country || ''}</span>
             </span>
             <span className="hidden sm:inline text-gray-400">•</span>
             <span className="flex items-center gap-2 min-w-0">
-              <Calendar size={16} className="flex-shrink-0" />
+              <Calendar size={12} className="flex-shrink-0" />
               <span className="truncate">{date}</span>
             </span>
           </div>
         </div>
 
         {/* Working Clock */}
-        <div className="flex items-center justify-center gap-2 bg-brand-blue rounded-xl p-3 sm:p-4 border border-gray-200 shadow-sm w-full lg:w-auto lg:flex-shrink-0 lg:min-w-[190px]">
-          <Clock className="w-10 h-10 flex-shrink-0 text-white" />
+        <div className="flex items-center justify-center gap-2 bg-brand-blue rounded-xl px-3 py-2 border border-gray-200 shadow-sm w-full lg:w-auto ">
+          <Clock className="w-8 h-8 flex-shrink-0 text-white" />
           <div className="text-center">
             <p className="text-xs font-thin text-white tracking-wide">GMT TIME</p>
-            <p className="text-lg sm:text-xl md:text-xl font-bold text-white mt-1 tabular-nums">{time}</p>
+            <p className="text-lg sm:text-lg md:text-lg font-bold text-white tabular-nums">{time}</p>
           </div>
         </div>
       </div>

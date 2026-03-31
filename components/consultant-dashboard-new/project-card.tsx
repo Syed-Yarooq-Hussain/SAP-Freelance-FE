@@ -12,7 +12,7 @@ export const ProjectsCard: React.FC<{ data: DashboardData }> = ({ data }) => {
         <div className='bg-[#4A7BB51A] rounded-xl p-2'>
           <FileText className="w-5 h-5 text-[#3088B7]" />
         </div>
-        <h3 className="font-semibold text-gray-900">Projects</h3>
+        <h3 className="font-medium text-sm text-gray-900 font-neue">Projects</h3>
       </div>
 
       <div className="flex items-center gap-2 mb-4">

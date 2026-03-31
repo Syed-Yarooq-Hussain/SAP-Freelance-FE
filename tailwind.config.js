@@ -47,6 +47,12 @@ module.exports = {
         lg: "var(--radius-lg)",
         input: "10px",
       },
+      fontFamily: {
+        neue: ['var(--font-neue-hass)', 'sans-serif'],
+      },
+      fontSize: {
+        xxs: '10px'
+      }
     },
   },
   plugins: [],
