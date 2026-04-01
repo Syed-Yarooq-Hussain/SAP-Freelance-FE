@@ -103,11 +103,10 @@ export function ProjectsTab({
   }
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center mb-6">
-        <h3 className="text-lg font-semibold text-slate-900">Projects</h3>
+      <div className="flex justify-end items-center mb-4">
         <button
           onClick={handleAddClick}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#3088B7] to-[#0891B2] text-white font-semibold rounded-xl transition-all hover:shadow-lg hover:shadow-brand-blue/30"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-brand-blue text-white font-semibold rounded-xl transition-all "
         >
           <Plus className="w-4 h-4" />
           Add Project
@@ -133,7 +132,7 @@ export function ProjectsTab({
             >
               <div className="flex justify-between items-start mb-3">
                 <div className="flex-1">
-                  <h4 className="text-base font-semibold text-slate-900">{item.project_name || '-'}</h4>
+                  <h4 className="text-base font-semibold font-syne text-slate-900">{item.project_name || '-'}</h4>
                   <p className="text-xs text-slate-600 mt-1">{item.client_name || '-'}</p>
                 </div>
                 <div className="flex gap-2">

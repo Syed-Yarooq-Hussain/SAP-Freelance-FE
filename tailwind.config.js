@@ -28,6 +28,7 @@ module.exports = {
         "brand-yellow": "#F0EDE8",
         "brand-pink": "#F2F5FE",
         "inactive": "#F5F3EF",
+        "light-grey": "#9e9e9e",
         "disabled": "#EBEBEB",
         "success": "#2D5A27",
         "button-blue": "#2491BD",
@@ -49,6 +50,8 @@ module.exports = {
       },
       fontFamily: {
         neue: ['var(--font-neue-hass)', 'sans-serif'],
+        manrope: ['var(--font-manrope)', 'sans-serif'],
+        syne: ['var(--font-syne)', 'sans-serif']
       },
       fontSize: {
         xxs: '10px'

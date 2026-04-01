@@ -17,10 +17,10 @@ export function CompletionCard({ completionPercentage, onEdit }: CompletionCardP
   return (
     <div className="bg-white rounded-xl border border-brand-blue p-6 sticky top-20">
       <div className="flex items-center gap-2 mb-4">
-        <div className="bg-brand-blue text-white rounded-xl p-2">
+        <div className="bg-[#4A7AB5] text-white rounded-xl p-2">
           <Clock className="w-5 h-5 text-white" />
         </div>
-        <h3 className="font-bold flex-1 text-slate-900">Complete your profile to unlock more opportunities</h3>
+        <h3 className="font-bold flex-1 text-slate-900 font-manrope">Complete your profile to unlock more opportunities</h3>
       </div>
 
       <div className="mb-4">
@@ -28,13 +28,13 @@ export function CompletionCard({ completionPercentage, onEdit }: CompletionCardP
           <span className="text-sm font-semibold text-slate-600">
             Profile Completion
           </span>
-          <span className="text-lg font-bold text-brand-blue">
+          <span className="text-lg font-bold text-[#4A7AB5]">
             {completionPercentage}%
           </span>
         </div>
         <div className="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
           <div
-            className="h-full bg-brand-blue transition-all duration-500"
+            className="h-full bg-[#4A7AB5] transition-all duration-500"
             style={{ width: `${completionPercentage}%` }}
           />
         </div>
@@ -63,7 +63,7 @@ export function CompletionCard({ completionPercentage, onEdit }: CompletionCardP
         ))}
       </div> */}
 
-      <button onClick={onEdit} className="w-fit px-4 bg-brand-blue text-white font-semibold py-2 rounded-xl hover:shadow-lg transition-all">
+      <button onClick={onEdit} className="w-fit px-4 bg-[#4A7AB5] text-white font-semibold py-2 rounded-xl hover:shadow-lg transition-all">
         Finish Now
       </button>
     </div>

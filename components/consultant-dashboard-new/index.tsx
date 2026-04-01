@@ -21,7 +21,7 @@ export default function DashboardPage({ data }: { data: DashboardData }) {
         <WelcomeHeader />
       </div>
       <div className="bg-background-main rounded-xl">
-        <main className="min-h-screen shadow-md rounded-xl p-4 md:p-8">
+        <main className="min-h-screen shadow-md rounded-xl p-4 md:px-8 md:py-6">
           <div className="">
             {
               data?.profile.profile_strength && Number(data?.profile.profile_strength?.replace('%', '')) < 100 && (

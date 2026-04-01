@@ -60,7 +60,7 @@ export function WorkExperienceTab({
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-semibold text-slate-900"></h3>
         <button
           onClick={handleAddClick}
@@ -84,7 +84,7 @@ export function WorkExperienceTab({
             >
               <div className="flex justify-between items-start mb-3">
                 <div>
-                  <h4 className="text-lg font-semibold text-slate-900">{item.position || '-'}</h4>
+                  <h4 className="text-base font-semibold text-slate-900 font-syne">{item.position || '-'}</h4>
                   <p className="text-sm text-brand-blue">{item.company_name || '-'}</p>
                 </div>
                 <div className="flex gap-2">
@@ -103,7 +103,7 @@ export function WorkExperienceTab({
                 </div>
               </div>
 
-              <div className="flex items-center gap-4 text-xs text-slate-600 mb-3">
+              <div className="flex items-center gap-4 text-xxs text-slate-600 mb-3">
                 <span>
                   {item.start_date
                     ? (() => {
@@ -132,7 +132,7 @@ export function WorkExperienceTab({
               </div>
 
               {item.responsibilities && item.responsibilities.length > 0 && (
-                <ul className="text-sm text-slate-600 list-disc list-inside">
+                <ul className="text-sm text-slate-600 list-disc list-inside list-none">
                   {item.responsibilities.map((resp, i) => (
                     <li key={i}>{resp}</li>
                   ))}

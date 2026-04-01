@@ -163,8 +163,8 @@ export function ProfessionalInfo() {
   }
   return (
     <div className="border border-slate-200 rounded-xl p-6 mb-6">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-md font-bold text-slate-900 flex items-center gap-2 font-syne">
           <span className="bg-[#EAF1FB] p-2 rounded-xl flex items-center justify-center text-sm">
             <Briefcase className="w-4 h-4" />
           </span>
@@ -173,12 +173,12 @@ export function ProfessionalInfo() {
       </div>
 
       {/* Tab Navigation */}
-      <div className="flex gap-2 bg-brand-yellow rounded-xl p-2 mb-6 overflow-x-auto">
+      <div className="flex gap-2 bg-brand-yellow rounded-xl p-2 mb-4 overflow-x-auto">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`px-4 py-3 font-medium text-sm rounded-xl flex-1 whitespace-nowrap transition ${
+            className={`px-4 py-2 font-medium text-sm rounded-xl flex-1 whitespace-nowrap transition ${
               activeTab === tab.id
                 ? 'bg-white'
                 : 'text-black'
@@ -190,7 +190,7 @@ export function ProfessionalInfo() {
       </div>
 
       {/* Tab Content */}
-      <div className="mt-6">
+      <div className="mt-1">
         {activeTab === 'work-experience' && <WorkExperienceTab
             data={workExperience}
             onAdd={handleAddWorkExperience}
