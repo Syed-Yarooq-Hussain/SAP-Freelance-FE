@@ -112,7 +112,7 @@ export default function Home() {
         onSignUpClick={() => openSignUp('consultant')}
         isAuthenticated={isAuthenticated}
       />
-      <div className="mt-20"/>
+      <div className="pt-20"/>
       {/* LANDING PAGE */}
       {currentPage === "landing" && (
         <>

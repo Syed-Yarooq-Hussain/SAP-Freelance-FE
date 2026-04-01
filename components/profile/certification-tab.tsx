@@ -62,11 +62,10 @@ export function CertificationsTab({
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center mb-6">
-        <h3 className="text-lg font-semibold text-slate-900">Certifications</h3>
+      <div className="flex justify-end items-center mb-4">
         <button
           onClick={handleAddClick}
-          className="inline-flex items-center gap-2 px-4 py-2 btn-gradient-blue text-white font-semibold rounded-input transition-all hover:shadow-lg hover:shadow-brand-blue/30"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-brand-blue text-white font-semibold rounded-input transition-all "
         >
           <Plus className="w-4 h-4" />
           Add Certification
@@ -88,7 +87,7 @@ export function CertificationsTab({
             >
               <div className="flex justify-between items-start mb-3">
                 <div>
-                  <h4 className="text-lg font-semibold text-slate-900">
+                  <h4 className="text-lg font-semibold font-syne text-slate-900">
                     {item.certification_name || "-"}
                   </h4>
                   <p className="text-sm text-brand-blue">

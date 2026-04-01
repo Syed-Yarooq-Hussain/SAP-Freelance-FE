@@ -49,9 +49,9 @@ export function ProfileLayout({ consultant, setCvModalOpen, setIsEditing }: Prof
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Profile Header Section */}
-        <div className="border border-slate-200 rounded-2xl p-5 mb-8">
-        <div className="sticky top-0 z-40 bg-background-main backdrop-blur border-slate-200 py-4">
-        <div className="max-w-7xl mx-auto px-4 flex justify-end gap-3">
+        <div className="border border-slate-200 rounded-2xl p-6 mb-4">
+        <div className="sticky top-0 z-40 bg-background-main backdrop-blur border-slate-200 mb-2">
+        <div className="max-w-7xl mx-auto  flex justify-end gap-3">
           <button onClick={() => setCvModalOpen(true)} className="flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-200 transition font-medium text-sm">
             <File className="w-4 h-4" />
             Autofill by Resume
@@ -74,7 +74,7 @@ export function ProfileLayout({ consultant, setCvModalOpen, setIsEditing }: Prof
         </div>
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 border border-slate-200 rounded-2xl p-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 rounded-2xl">
           {/* Left Sidebar */}
           <div className="lg:col-span-1">
             {otherModules.length > 0 && (

@@ -35,14 +35,14 @@ export function ProfileHeader({ setIsEditing }: { setIsEditing: (editing: boolea
     <div className="flex-1">
       <div className="flex items-start justify-between mb-2">
         <div className="flex items-center gap-3">
-          <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2">
+          <h1 className="text-xl md:text-3xl font-extrabold text-slate-900 mb-2 font-manrope">
             {user?.user?.username}
           </h1>
           <div className="flex items-center flex-wrap gap-2">
             {badges.map((badge) => {
               const config = badgeConfig[badge as keyof typeof badgeConfig]
               return config ? (
-                <Badge key={badge} className={`${config.variant} text-white rounded-full flex items-center gap-1 hover:scale-105 transition-all duration-300`}>
+                <Badge key={badge} className={`${config.variant} !text-white text-xxs font-thin rounded-full flex items-center gap-1 hover:scale-105 transition-all duration-300`}>
                   {config.startIcon}
                   {config.label}
                 </Badge>
@@ -58,38 +58,38 @@ export function ProfileHeader({ setIsEditing }: { setIsEditing: (editing: boolea
             coreModules.length > 0 && (
               <div className="flex items-center gap-2">
                 {coreModules.map((module) => (
-                  <p key={module} className="text-lg text-black flex items-center gap-2">{module} <span className="bg-black w-2 h-2 rounded-full inline-block"></span></p>
+                  <p key={module} className="text-sm font-thin text-black flex items-center gap-2 font-neue">{module} <span className="bg-black w-2 h-2 rounded-full inline-block"></span></p>
                 ))}
               </div>
             )
           }
-          <p className="text-lg text-black flex items-center gap-2">{user?.experience} years of experience</p>
+          <p className="text-sm font-thin text-black flex items-center gap-2 font-neue">{user?.experience} years of experience</p>
         </div>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4">
-        <div className="border flex flex-col justify-evenly border-slate-200 rounded-xl px-4 py-2">
-          <div className="text-[10px] text-slate-500 uppercase font-semibold mb-1">
+        <div className="max-h-16 border flex flex-col justify-evenly border-slate-200 rounded-xl px-4 py-2">
+          <div className="text-[10px] text-light-grey uppercase font-semibold">
             Hourly Rate
           </div>
-          <div className="text-lg md:text-xl font-bold text-success">
+          <div className="text-sm font-bold text-success">
             ${user?.rate || '-'}/hr
           </div>
         </div>
-        <div className="border flex flex-col justify-evenly border-slate-200 rounded-xl px-4 py-2">
-          <div className="text-[10px] text-slate-500 uppercase font-semibold mb-1">
+        <div className="max-h-16 border flex flex-col justify-evenly border-slate-200 rounded-xl px-4 py-2">
+          <div className="text-[10px] text-light-grey uppercase font-semibold mb-1">
             Availability (Weekly)
           </div>
-          <div className="text-md font-bold flex items-center gap-2">
+          <div className="text-sm font-bold flex items-center gap-1.5">
             <Clock className="w-4 h-4" />
             {user?.weekly_available_hours} hours
           </div>
         </div>
         {user?.user?.city && (
-          <div className="border flex flex-col justify-evenly border-slate-200 rounded-xl px-4 py-2">
-            <div className="flex items-center gap-1 text-[10px] text-slate-500 uppercase font-semibold mb-1">
+          <div className="max-h-16 border flex flex-col justify-evenly border-slate-200 rounded-xl px-4 py-2">
+            <div className="flex items-center gap-1 text-[10px] text-light-grey uppercase font-semibold mb-1">
               Location
             </div>
-            <div className="text-md font-semibold text-slate-900 flex items-center gap-2">
+            <div className="text-sm font-semibold text-slate-900 flex items-center gap-1.5">
               <MapPin className="w-4 h-4" />
               {user?.user?.city}
               {user?.user?.country && `, ${user?.user?.country}`}
@@ -97,22 +97,22 @@ export function ProfileHeader({ setIsEditing }: { setIsEditing: (editing: boolea
           </div>
         )}
         {(
-          <div className="border flex flex-col justify-evenly border-slate-200 rounded-xl px-4 py-2">
-            <div className="flex items-center gap-1 text-[10px] text-slate-500 uppercase font-semibold mb-1">
+          <div className="max-h-16 border flex flex-col justify-evenly border-slate-200 rounded-xl px-4 py-2">
+            <div className="flex items-center gap-1 text-[10px] text-light-grey uppercase font-semibold mb-1">
               Joined
             </div>
-            <div className="text-md font-semibold text-slate-900 flex items-center gap-2">
+            <div className="text-sm font-semibold text-slate-900 flex items-center gap-1.5">
               <Calendar className="w-4 h-4" />
               {user?.user?.created_at || 'Recently'}
             </div>
           </div>
         )}
         {(
-          <div className="border flex flex-col justify-evenly border-slate-200 rounded-xl px-4 py-2">
-            <div className="flex items-center gap-1 text-[10px] text-slate-500 uppercase font-semibold mb-1">
+          <div className="max-h-16 border flex flex-col justify-evenly border-slate-200 rounded-xl px-4 py-2">
+            <div className="flex items-center gap-1 text-[10px] text-light-grey uppercase font-semibold mb-1">
               Projects
             </div>
-            <div className="text-md font-semibold text-slate-900 flex items-center gap-2">
+            <div className="text-sm font-semibold text-slate-900 flex items-center gap-1">
               <CircleCheck className="w-3 h-3" />
               {user?.projects?.length || 0} done
             </div>
@@ -120,9 +120,9 @@ export function ProfileHeader({ setIsEditing }: { setIsEditing: (editing: boolea
         )}
       </div>
 
-      {coreModules.length > 0 ? <div className="bg-gradient-success border mb-4 border-slate-200 rounded-xl px-4 py-3">
+      {coreModules.length > 0 ? <div className="bg-gradient-success h-14 border mb-4 border-slate-200 rounded-xl px-4 py-3">
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 font-manrope">
             <div className='flex items-center mr-1'>
               <Dot className="w-8 h-8 text-success" />
               <p className="text-sm text-success font-medium">Core Modules</p>
@@ -153,11 +153,11 @@ export function ProfileHeader({ setIsEditing }: { setIsEditing: (editing: boolea
 
       {user?.clients_summary ? (
         <div className="mb-4 bg-[#F5F3EF] border border-slate-200 rounded-xl p-4">
-          <p className='font-bold uppercase mb-4 flex items-center gap-2'><span className='bg-brand-blue text-white rounded-md p-1 w-7 h-7 flex items-center justify-center'><FileText className="w-4 h-4" /></span>Professional Summary</p>
-          <p className="text-sm text-slate-700 mb-4 font-medium leading-relaxed">{viewMore ? user?.clients_summary : user?.clients_summary?.slice(0, 250) + (user?.clients_summary?.length > 250 ? '...' : '')}</p>
+          <p className='font-bold mb-4 flex items-center gap-2'><span className='bg-brand-blue text-white rounded-md p-1 w-7 h-7 flex items-center justify-center'><FileText className="w-4 h-4" /></span>Professional Summary</p>
+          <p className="text-sm text-slate-700 mb-4 font-medium leading-relaxed font-manrope">{viewMore ? user?.clients_summary : user?.clients_summary?.slice(0, 250) + (user?.clients_summary?.length > 250 ? '...' : '')}</p>
           {user?.clients_summary?.length > 250 && (
             <button className="text-brand-blue text-sm font-medium flex items-center gap-2" onClick={() => setViewMore(!viewMore)}>
-              {viewMore ? <ChevronUp className="w-4 h-4 text-black" /> : <ChevronDown className="w-4 h-4 text-black" />} {viewMore ? 'Read Less' : 'Read More'}
+              {viewMore ? <ChevronUp className="w-4 h-4 text-black" /> : <ChevronDown className="w-4 h-4 text-black text-xxs" />} {viewMore ? 'Read Less' : 'Read More'}
             </button>
           )}
         </div>
