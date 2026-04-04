@@ -23,11 +23,11 @@ export default function DashboardPage({ data }: { data: DashboardData }) {
       <div className="bg-background-main rounded-xl">
         <main className="min-h-screen shadow-md rounded-xl p-4 md:px-8 md:py-6">
           <div className="">
-            {
+            {/* {
               data?.profile.profile_strength && Number(data?.profile.profile_strength?.replace('%', '')) < 100 && (
                 <ProfileSetupBanner completionPercentage={Number(data?.profile.profile_strength?.replace('%', ''))} />
               )
-            }
+            } */}
             {/* Top Section: Calendar, Earnings, Payment */}
             <div className="grid grid-cols-1 md:grid-cols-9 gap-1 mb-6">
               {/* Calendar - Takes 1 column on desktop */}

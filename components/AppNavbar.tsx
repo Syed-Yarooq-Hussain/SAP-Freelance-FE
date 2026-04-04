@@ -123,7 +123,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
             ? { xs: "85%", md: `calc(100% - 240px)` }
             : { xs: "85%", sm: "90%", md: "96%" },
           backgroundColor: "#F0F1F3",
-          paddingY:0.5,
+          paddingY:0.2,
           borderBottom: "1px solid #D9D9D9",
           transition: "all 0.3s ease",
         }}
