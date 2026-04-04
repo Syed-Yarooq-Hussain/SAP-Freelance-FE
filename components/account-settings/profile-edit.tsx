@@ -161,7 +161,7 @@ export function ProfileEdit({
   if (!file) return; 
 
   const formData = new FormData();
-  formData.append('file', file);
+  formData.append('file', file); 
 
   const result = await request<FormData, { url: string }>({
     url: `/consultants/upload-profile/${user?.user?.id}`,

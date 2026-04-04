@@ -483,7 +483,7 @@ export const CalendarWidget: React.FC<{ data: DashboardData }> = ({ data }) => {
         </div>
 
         {/* Days grid — position:relative so popup is anchored here */}
-        <div className="grid grid-cols-7 gap-2 relative" ref={gridRef}>
+        <div className="grid grid-cols-7 gap-1 relative" ref={gridRef}>
           {days.map((dayObj, idx) => {
             const key = isoKey(dayObj.year, dayObj.month, dayObj.day);
             const hasEvent = meetingDateKeys.has(key);
@@ -494,7 +494,7 @@ export const CalendarWidget: React.FC<{ data: DashboardData }> = ({ data }) => {
                 <div
                   key={idx}
                   onClick={(e) => handleDayClick(e, dayObj)}
-                  className={`aspect-square min-w-[25px] flex flex-col items-center  justify-center rounded-sm md:rounded-xl text-xs font-medium transition-colors
+                  className={`aspect-square min-w-[25px] flex flex-col items-center  justify-center rounded-sm md:rounded-[9px] text-xs font-medium transition-colors
                     ${
                       isSelected
                         ? "bg-[#3088B7] text-white"
@@ -586,7 +586,7 @@ export const CalendarWidget: React.FC<{ data: DashboardData }> = ({ data }) => {
         </div>
       </div>
 
-      <div className="my-4 p-2 border border-gray-200 rounded-xl">
+      <div className="my-2 p-2 border border-gray-200 rounded-xl">
         <StatsCards data={data} />
       </div>
 
