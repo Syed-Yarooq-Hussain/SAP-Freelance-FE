@@ -327,20 +327,20 @@ export const CalendarWidget: React.FC<{ data: DashboardData }> = ({ data }) => {
     : "";
 
   return (
-    <div className="rounded-xl p-3">
+    <div className="rounded-xl p-2">
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap mb-4">
         <div className="flex gap-2 flex-wrap">
           <Button
             variant="outline"
-            className="rounded-xl text-sm border-none"
+            className="rounded-md bg-brand-yellow text-[12px] text-[#5A5A5A] border-none"
             onClick={goToday}
           >
             Today
           </Button>
           <Button
             variant="outline"
-            className="rounded-xl text-sm border-none"
+            className="rounded-md bg-brand-yellow text-[12px] text-[#5A5A5A] border-none"
             onClick={goLast8}
           >
             Last 8 days
@@ -349,7 +349,7 @@ export const CalendarWidget: React.FC<{ data: DashboardData }> = ({ data }) => {
             <div className="relative" ref={pickerRef}>
               <Button
                 variant="outline"
-                className="rounded-xl px-3 flex items-center gap-2 bg-white border border-brand-blue"
+                className="rounded-md px-3 flex items-center gap-2 bg-white border border-brand-blue"
                 onClick={openPicker}
               >
                 <svg
@@ -375,7 +375,7 @@ export const CalendarWidget: React.FC<{ data: DashboardData }> = ({ data }) => {
                     strokeLinecap="round"
                   />
                 </svg>
-                <span className="font-medium text-sm">
+                  <span className="font-medium text-[12px]">
                   {SHORT_MONTHS[month]} {year}
                 </span>
                 <ChevronDown
@@ -449,14 +449,14 @@ export const CalendarWidget: React.FC<{ data: DashboardData }> = ({ data }) => {
             <div className="min-w-[60px] flex gap-2 items-center justify-between">
               <Button
                 variant="outline"
-                className="rounded-xl w-8 h-8 p-0 flex items-center justify-center border-none"
+                className="rounded-md w-8 h-8 p-0 flex items-center justify-center border-none"
                 onClick={prevMonth}
               >
                 ‹
               </Button>
               <Button
                 variant="outline"
-                className="rounded-xl w-8 h-8 p-0 flex items-center justify-center border-none"
+                className="rounded-md w-8 h-8 p-0 bg-brand-yellow flex items-center justify-center border-none"
                 onClick={nextMonth}
               >
                 ›
@@ -504,7 +504,7 @@ export const CalendarWidget: React.FC<{ data: DashboardData }> = ({ data }) => {
                             ? "text-gray-700"
                             : "text-gray-300"
                     }
-                    ${hasEvent ? "cursor-pointer hover:opacity-80 bg-brand-blue text-white " : "cursor-default bg-black/5"}
+                    ${hasEvent ? "cursor-pointer hover:opacity-80 bg-brand-blue text-white " : "cursor-default bg-[#00000005]"}
                   `}
                 >
                   {hasEvent ? (
@@ -525,13 +525,13 @@ export const CalendarWidget: React.FC<{ data: DashboardData }> = ({ data }) => {
                 {popupEvent && (
                   <div
                     ref={popupRef}
-                    className="absolute z-40 w-56 bg-[#1A4B65] rounded-xl p-4 text-white"
+                    className="absolute z-40 w-56 bg-[#1A4B65] rounded-lg p-3 text-white font-manrope"
                     style={popupStyle}
                   >
                     <div className="flex items-center justify-between mb-3 border-b border-white/20 pb-2">
                       <div className="flex items-center gap-2 ">
                         <Calendar className="w-4 h-4" />
-                        <span className="text-xs font-medium leading-tight">
+                        <span className="text-nano font-medium leading-tight">
                           {popupLabel}
                         </span>
                       </div>
@@ -543,25 +543,25 @@ export const CalendarWidget: React.FC<{ data: DashboardData }> = ({ data }) => {
                       </button>
                     </div>
 
-                    <div className="rounded-xl p-3 mb-3">
-                      <p className="text-xs w-fit px-2 py-1 font-medium mb-2 rounded-2xl bg-[#378ADD38] text-[#78B4F5]">
+                    <div className="rounded-xl mb-3">
+                      <p className="text-nano w-fit px-2 py-1 font-medium mb-2 rounded-2xl bg-[#378ADD38] text-[#78B4F5]">
                         {popupEvent.badge}
                       </p>
-                      <p className="text-base font-semibold leading-tight">
+                      <p className="text-xs font-semibold leading-tight">
                         {popupEvent.title}
                       </p>
                       {/* <p className="text-sm font-semibold">
                         {popupEvent.title}
                       </p> */}
-                      <p className="text-xs opacity-90 mt-2 flex items-center gap-1.5">
+                      <p className="text-nano opacity-90 mt-2 flex items-center gap-1.5">
                         <Clock className="w-3.5 h-3.5" /> {popupEvent.time}
                       </p>
-                      <p className="text-xs opacity-80 mt-1 flex items-center gap-1.5">
+                      <p className="text-nano opacity-80 mt-1 flex items-center gap-1.5">
                         <MapPin className="w-3.5 h-3.5" /> {popupEvent.location}
                       </p>
                     </div>
 
-                    <div className="bg-[#2C6B8B] rounded-xl px-3 py-2.5 mb-3 flex items-center gap-2.5">
+                    <div className="bg-[#2C6B8B] rounded-lg px-3 py-2.5 mb-3 flex items-center gap-2.5">
                       <div className="w-8 h-8 rounded-full bg-[#1C4C2B] text-[#9EE2A8] text-xs font-semibold flex items-center justify-center">
                         {getInitials(popupEvent.clientName)}
                       </div>
@@ -569,13 +569,13 @@ export const CalendarWidget: React.FC<{ data: DashboardData }> = ({ data }) => {
                         <p className="text-xs text-white font-medium truncate">
                           {popupEvent.clientName}
                         </p>
-                        <p className="text-[10px] text-white/75 truncate">
+                        <p className="text-[8px] text-white/75 truncate">
                           {popupEvent.projectName}
                         </p>
                       </div>
                     </div>
 
-<a href={APP_ROUTES.CONSULTANT.CALENDAR} className="block bg-white w-full px-2 py-2 text-center text-[#0891B2] rounded-xl text-xs font-semibold hover:bg-gray-100">
+<a href={APP_ROUTES.CONSULTANT.CALENDAR} className="block bg-white w-full px-2 py-2 text-center text-[#0891B2] rounded-lg text-xs font-semibold hover:bg-gray-100">
                       View Details →
                     </a>
                   </div>

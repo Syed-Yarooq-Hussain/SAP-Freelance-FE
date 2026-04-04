@@ -150,7 +150,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
             sx={{
               display: { xs: "none", md: "flex" },
               alignItems: "center",
-              gap: 1.5,
+              gap: 1,
               mr: 1.5,
             }}
           >
@@ -167,7 +167,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
                   key={index}
                   type="button"
                   onClick={() => router.push(path ?? "")}
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-manrope transition-colors ${
                     isActive
                       ? "bg-blue-50 text-blue-600"
                       : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
@@ -201,7 +201,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
                 onClick={handleProfileMenuOpen}
                 sx={{ p: 0.5, }}
               >
-                <Box className="flex items-center gap-2 px-2 py-1 bg-brand-yellow border border-gray-300 rounded-xl">
+                <Box className="flex items-center gap-2 px-2 py-1 bg-brand-yellow border border-gray-300 rounded-[8px]">
                   <ProfileAvatar
                     name={
                       user?.user?.username?.replace(

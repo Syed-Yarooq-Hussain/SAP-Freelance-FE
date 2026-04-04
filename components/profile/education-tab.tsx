@@ -75,13 +75,13 @@ export function EducationTab({
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex justify-end items-center mb-4">
+    <div className="space-y-3">
+      <div className="flex justify-end items-center mb-2">
         <button
           onClick={handleAddClick}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-brand-blue text-white font-semibold rounded-input transition-all "
+          className="inline-flex items-center text-xs gap-2 px-4 py-2 bg-brand-blue text-white font-semibold rounded-input transition-all "
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-3 h-3" />
           Add Education
         </button>
       </div>
@@ -91,18 +91,18 @@ export function EducationTab({
           <Button onClick={handleAddClick} className='bg-brand-blue text-white flex items-center gap-1 text-xs'><Plus className="w-3 h-3" /> Add Education</Button>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {data.map((item, index) => (
             <div
               key={index}
-              className="bg-brand-yellow border rounded-xl border-slate-200 p-5 hover:shadow-md transition-shadow"
+              className="bg-brand-yellow border rounded-xl border-slate-200 p-4 hover:shadow-md transition-shadow"
             >
               <div className="flex justify-between items-start mb-3">
                 <div>
-                  <h4 className="text-base font-semibold font-syne text-slate-900">{item.degree || '-'}</h4>
-                  <p className="text-sm text-brand-blue">{item.institution_name || '-'}</p>
+                  <h4 className="text-sm font-semibold font-syne text-slate-900">{item.degree || '-'}</h4>
+                  <p className="text-xs text-brand-blue">{item.institution_name || '-'}</p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex">
                   <button
                     onClick={() => handleEditClick(index, item)}
                     className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
@@ -118,7 +118,7 @@ export function EducationTab({
                 </div>
               </div>
 
-              <div className="flex items-center gap-4 text-xs text-slate-600 mb-3">
+              <div className="flex items-center text-xs text-slate-600 mb-3">
                 <span>
                   {formatMonthYear(item.start_date)}{' '}
                   -{' '}
@@ -127,7 +127,7 @@ export function EducationTab({
               </div>
 
               {item.details && item.details.length > 0 && (
-                <ul className="text-sm text-slate-600 list-disc list-inside">
+                <ul className="text-xs text-slate-600 list-none">
                   {item.details.map((detail, i) => (
                     <li key={i}>{detail}</li>
                   ))}

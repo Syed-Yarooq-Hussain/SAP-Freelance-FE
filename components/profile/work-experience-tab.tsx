@@ -59,14 +59,14 @@ export function WorkExperienceTab({
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center mb-4">
+    <div className="space-y-3">
+      <div className="flex justify-between items-center mb-2">
         <h3 className="text-lg font-semibold text-slate-900"></h3>
         <button
           onClick={handleAddClick}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-brand-blue text-white font-semibold rounded-input transition-all hover:shadow-lg hover:shadow-brand-blue/30"
+          className="inline-flex items-center text-xs gap-2 px-4 py-2 bg-brand-blue text-white font-semibold rounded-input transition-all hover:shadow-lg hover:shadow-brand-blue/30"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-3 h-3" />
           Add Experience
         </button>
       </div>
@@ -80,12 +80,12 @@ export function WorkExperienceTab({
           {data.map((item, index) => (
             <div
               key={index}
-              className="bg-brand-yellow border rounded-xl border-slate-200 p-5 hover:shadow-md transition-shadow"
+              className="bg-brand-yellow border rounded-xl border-slate-200 p-4 hover:shadow-md transition-shadow"
             >
               <div className="flex justify-between items-start mb-3">
                 <div>
-                  <h4 className="text-base font-semibold text-slate-900 font-syne">{item.position || '-'}</h4>
-                  <p className="text-sm text-brand-blue">{item.company_name || '-'}</p>
+                  <h4 className="text-sm font-semibold text-slate-900 font-syne">{item.position || '-'}</h4>
+                  <p className="text-xs text-brand-blue">{item.company_name || '-'}</p>
                 </div>
                 <div className="flex gap-2">
                   <button
@@ -103,7 +103,7 @@ export function WorkExperienceTab({
                 </div>
               </div>
 
-              <div className="flex items-center gap-4 text-xxs text-slate-600 mb-3">
+              <div className="flex items-center gap-4 text-xs text-slate-600 mb-3">
                 <span>
                   {item.start_date
                     ? (() => {
@@ -132,7 +132,7 @@ export function WorkExperienceTab({
               </div>
 
               {item.responsibilities && item.responsibilities.length > 0 && (
-                <ul className="text-sm text-slate-600 list-disc list-inside list-none">
+                <ul className="text-xs text-slate-600 list-inside list-none">
                   {item.responsibilities.map((resp, i) => (
                     <li key={i}>{resp}</li>
                   ))}

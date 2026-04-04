@@ -22,16 +22,16 @@ export const TodaySchedule: React.FC = () => {
 
       <div className="space-y-2">
         {scheduleItems.map((item, idx) => (
-          <div key={idx} className="flex md:flex-row flex-col gap-y-2 rounded-xl items-center gap-4 py-3 px-2 bg-brand-yellow last:border-0">
+          <div key={idx} className="flex md:flex-row flex-col gap-y-2 rounded-md items-center gap-4 py-2 px-2 bg-brand-yellow last:border-0">
             
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 flex items-center gap-3 min-w-0 sm:flex-1">
+              <p className="text-[10px] font-medium text-gray-900 flex items-center gap-3 min-w-0">
                 <span className="w-1 bg-success rounded-full flex-shrink-0 h-5" />
-                <span className="truncate">{item.title}</span>
+                <span className="truncate font-manrope">{item.title}</span>
               </p>
-              <p className="text-xs text-gray-500 truncate sm:max-w-[180px]">{item.company}</p>
-              <p className="text-xs text-gray-500">{item.time}</p>
-              <p className={`text-[10px] font-bold px-2 py-1 rounded-xl flex-shrink-0 w-fit ${
+              <p className="text-[9px] text-gray-500 truncate sm:max-w-[180px] font-manrope">{item.company}</p>
+              <p className="text-[9px] text-gray-500 font-manrope">{item.time}</p>
+              <p className={`text-[7px] font-bold px-2 py-1 rounded-xl flex-shrink-0 w-fit font-manrope ${
                 item.type === 'CLIENT'
                   ? 'bg-[#E8F5E9] text-success'
                   : 'bg-[#E3F2FD] text-[#1976D2]'
