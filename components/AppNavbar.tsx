@@ -156,12 +156,12 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
           >
             {navItems.map(({ label, path, icon: Icon }, index) => {
               const isActive = pathname === path;
-              const isProfileItem = path === APP_ROUTES.CONSULTANT.PROFILE;
-              const isCalendarItem = path === APP_ROUTES.CONSULTANT.CALENDAR;
-              const shouldHideCurrentNavButton =
-                (isProfileItem && pathname === APP_ROUTES.CONSULTANT.PROFILE) ||
-                (isCalendarItem && pathname === APP_ROUTES.CONSULTANT.CALENDAR);
-              if (shouldHideCurrentNavButton) return null;
+              // const isProfileItem = path === APP_ROUTES.CONSULTANT.PROFILE;
+              // const isCalendarItem = path === APP_ROUTES.CONSULTANT.CALENDAR;
+              // const shouldHideCurrentNavButton =
+              //   (isProfileItem && pathname === APP_ROUTES.CONSULTANT.PROFILE) ||
+              //   (isCalendarItem && pathname === APP_ROUTES.CONSULTANT.CALENDAR);
+              // if (shouldHideCurrentNavButton) return null;
               return (
                 <button
                   key={index}
@@ -169,7 +169,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
                   onClick={() => router.push(path ?? "")}
                   className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-manrope transition-colors ${
                     isActive
-                      ? "bg-blue-50 text-blue-600"
+                      ? "bg-brand-yellow text-brand-blue"
                       : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
                   }`}
                 >
@@ -252,12 +252,12 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
         >
           {navItems.map(({ label, path, icon: Icon }) => {
             const isActive = pathname === path;
-            const isProfileItem = path === APP_ROUTES.CONSULTANT.PROFILE;
-            const isCalendarItem = path === APP_ROUTES.CONSULTANT.CALENDAR;
-            const shouldHideCurrentNavButton =
-              (isProfileItem && pathname === APP_ROUTES.CONSULTANT.PROFILE) ||
-              (isCalendarItem && pathname === APP_ROUTES.CONSULTANT.CALENDAR);
-            if (shouldHideCurrentNavButton) return null;
+            // const isProfileItem = path === APP_ROUTES.CONSULTANT.PROFILE;
+            // const isCalendarItem = path === APP_ROUTES.CONSULTANT.CALENDAR;
+            // const shouldHideCurrentNavButton =
+            //   (isProfileItem && pathname === APP_ROUTES.CONSULTANT.PROFILE) ||
+            //   (isCalendarItem && pathname === APP_ROUTES.CONSULTANT.CALENDAR);
+            // if (shouldHideCurrentNavButton) return null;
             return (
               <MenuItem
                 key={path}
