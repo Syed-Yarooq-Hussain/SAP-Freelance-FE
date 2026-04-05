@@ -133,7 +133,7 @@ export function ProjectsTab({
               <div className="flex justify-between items-start mb-3">
                 <div className="flex-1">
                   <h4 className="text-sm font-semibold font-syne text-slate-900">{item.project_name || '-'}</h4>
-                  <p className="text-xs text-slate-600 mt-1">{item.client_name || '-'}</p>
+                  <p className="text-xs text-slate-600 mt-1">{item.client_name || ''}</p>
                 </div>
                 <div className="flex gap-2">
                   <button
@@ -152,14 +152,14 @@ export function ProjectsTab({
               </div>
 
               <p className="text-xs text-slate-600 mb-4 line-clamp-2">
-                {item.project_summary || '-'}
+                {(item.project_summary ?? item?.summary) || '-'}
               </p>
 
               <div className="flex items-center gap-4 text-xs text-slate-600 mb-4">
                 <span>
-                  {formatMonthYear(item.start_date as any)}{' '}
-                  -{' '}
-                  {item.end_date ? formatMonthYear(item.end_date as any) : 'Present'}
+                  {item?.start_date ? formatMonthYear(item.start_date as any) : ''}{' '}
+                  {item?.end_date ? '-' : ''}{' '}
+                  {item.end_date ? formatMonthYear(item.end_date as any) : ''}
                 </span>
               </div>
             </div>

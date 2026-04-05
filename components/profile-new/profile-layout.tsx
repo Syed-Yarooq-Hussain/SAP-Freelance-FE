@@ -6,7 +6,7 @@ import { ProfessionalSummary } from './professional-summary'
 import { ProfessionalInfo } from './professional-info'
 import { OtherModulesSection } from './other-modules-section'
 import { CompletionCard } from './completion-card'
-import { Download, Edit, File } from 'lucide-react'
+import { Download, Edit, File, Link2 } from 'lucide-react'
 
 interface ProfileLayoutProps {
   consultant: any
@@ -68,6 +68,11 @@ export function ProfileLayout({ consultant, setCvModalOpen, setIsEditing }: Prof
                 imageUrl={user?.avatar}
                 name={user?.username || 'User'}
               />
+              {/* <div className=" rounded-xl flex flex-col gap-2  p-3 mt-4  text-black">
+                <p className="text-xs font-bod flex justify-center align-center items-center gap-2 p-2 shadow-md rounded-xl"><Link2 className="w-4 h-4" /> http://www.linkedin.com/in/</p>
+                <p className="text-xs font-bod flex justify-center align-center items-center gap-2 p-2 shadow-md rounded-xl"><Link2 className="w-4 h-4" /> http://www.github.com/in/</p>
+                <p className="text-xs font-bod flex justify-center align-center items-center gap-2 p-2 shadow-md rounded-xl"><Link2 className="w-4 h-4" /> http://www.test.com/in/</p>
+              </div> */}
             </div>
             <ProfileHeader setIsEditing={setIsEditing}/>
           </div>
