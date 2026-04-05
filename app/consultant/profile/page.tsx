@@ -16,6 +16,7 @@ import { CVUploadModal } from '@/components/profile/cv-upload-modal'
 import { WorkExperienceFormData } from '@/lib/schemas/experience'
 import { EducationFormData } from '@/lib/schemas/education'
 import { CertificationFormData } from '@/lib/schemas/certification'
+import ProfileEditPage from '@/components/profile/profile-edit'
 
 export default function ProfilePage() {
   const user = useAppSelector((state:any) => state?.user?.user)
@@ -118,11 +119,12 @@ export default function ProfilePage() {
         <div className="mx-auto space-y-6">
           {isEditing ? (
             <div className="bg-background-main rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-              <ProfileEdit
+              {/* <ProfileEdit
                 onSubmit={handleSave}
                 isLoading={isLoading}
                 onCancel={() => setIsEditing(false)}
-              />
+              /> */}
+              <ProfileEditPage />
             </div>
           ) : (
             <ProfileLayout consultant={user} setIsEditing={setIsEditing} setCvModalOpen={setIsCVModalOpen}/>
