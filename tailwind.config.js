@@ -45,7 +45,8 @@ module.exports = {
         "gradient-success": "linear-gradient(135deg, #F0F7EE 14.64%, #E6F0E4 85.36%)"
       },
       borderRadius: {
-        lg: "var(--radius-lg)",
+        md: "7px",
+        lg: "9px",
         input: "10px",
       },
       fontFamily: {
@@ -54,6 +55,7 @@ module.exports = {
         syne: ['var(--font-syne)', 'sans-serif']
       },
       fontSize: {
+        nano: "8px",
         xxs: '10px'
       }
     },

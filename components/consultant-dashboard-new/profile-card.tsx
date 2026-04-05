@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 export const ProfileCard: React.FC<{ data: DashboardData }> = ({ data }) => {
   const router = useRouter();
   return (
-    <div className="rounded-xl p-6 border border-[#E5E5E5]">
+    <div className="rounded-xl p-4 border border-[#E5E5E5]">
       <div className="flex items-center gap-3 mb-6">
         <div className="w-10 h-10 bg-[#3088B7] rounded-xl flex items-center justify-center text-white font-bold">
           AA
@@ -25,7 +25,7 @@ export const ProfileCard: React.FC<{ data: DashboardData }> = ({ data }) => {
           <AlertCircle className="w-4 h-4 text-yellow-500" />
           <span className="text-xs font-medium text-yellow-600">Verification Pending</span>
         </div>}
-        <h4 className="font-semibold text-gray-900">{data?.profile?.name}</h4>
+        <h4 className="font-semibold text-sm font-manrope text-gray-900">{data?.profile?.name}</h4>
         <p className="text-xs text-gray-500">{data?.profile?.modules || ''}</p>
       </div>
 
@@ -36,13 +36,16 @@ export const ProfileCard: React.FC<{ data: DashboardData }> = ({ data }) => {
         </div>
       </div>
 
-      <Button className="w-full !text-xxs bg-[#3088B7] text-white rounded-xl mb-3 hover:bg-[#2670A0]">
+          <div className='flex items-center gap-2'>
+      <Button className="flex-1 !text-xxs bg-[#3088B7] text-white rounded-xl mb-3 hover:bg-[#2670A0]">
         <Clock className="w-2 h-2 " /> Complete Profile & Get Certified
       </Button>
 
-      <Button onClick={() => router.push(APP_ROUTES.CONSULTANT.PROFILE)} variant="outline" className="w-full !text-xxs rounded-xl text-success">
+      <Button onClick={() => router.push(APP_ROUTES.CONSULTANT.PROFILE)} variant="outline" className="flex-1 !text-xxs rounded-xl text-success">
         <Star className="w-4 h-4" /> View SAP Certifications
       </Button>
+
+          </div>
     </div>
   );
 };

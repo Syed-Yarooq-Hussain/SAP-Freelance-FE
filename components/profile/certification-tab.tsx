@@ -61,13 +61,13 @@ export function CertificationsTab({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <div className="flex justify-end items-center mb-4">
         <button
           onClick={handleAddClick}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-brand-blue text-white font-semibold rounded-input transition-all "
+          className="inline-flex items-center text-xs gap-2 px-4 py-2 bg-brand-blue text-white font-semibold rounded-input transition-all "
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-3 h-3" />
           Add Certification
         </button>
       </div>
@@ -83,14 +83,14 @@ export function CertificationsTab({
           {data.map((item, index) => (
             <div
               key={index}
-              className="bg-brand-yellow border rounded-xl border-slate-200 p-5 hover:shadow-md transition-shadow"
+              className="bg-brand-yellow border rounded-xl border-slate-200 p-4 hover:shadow-md transition-shadow"
             >
               <div className="flex justify-between items-start mb-3">
                 <div>
-                  <h4 className="text-lg font-semibold font-syne text-slate-900">
+                  <h4 className="text-sm font-semibold font-syne text-slate-900">
                     {item.certification_name || "-"}
                   </h4>
-                  <p className="text-sm text-brand-blue">
+                  <p className="text-xs text-brand-blue">
                     {item.issuing_organization || "-"}
                   </p>
                 </div>

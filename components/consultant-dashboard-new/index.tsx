@@ -15,13 +15,14 @@ import { WelcomeHeader } from '../consultant-dashboard/welcome-header';
 import { ProfileSetupBanner } from './profile-setup-banner';
 
 export default function DashboardPage({ data }: { data: DashboardData }) {
+  const projectExists = data?.projects?.projects?.length > 0;
   return (
     <>
-      <div className="-mt-3 w-[101%] relative left-[-1%] mx-auto mb-4">
+      <div className="-mt-5 w-[101%] relative left-[-1%] mx-auto mb-4">
         <WelcomeHeader />
       </div>
       <div className="bg-background-main rounded-xl">
-        <main className="min-h-screen shadow-md rounded-xl p-4 md:px-8 md:py-6">
+        <main className="min-h-screen shadow-md rounded-xl p-4 md:px-6 md:py-5">
           <div className="">
             {/* {
               data?.profile.profile_strength && Number(data?.profile.profile_strength?.replace('%', '')) < 100 && (
@@ -40,22 +41,26 @@ export default function DashboardPage({ data }: { data: DashboardData }) {
                 <EarningsCard data={data}/>
                 <NextPaymentCard data={data} />
                 {/* Middle Section: Projects, Active Projects, Profile */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 mt-10">
+                <div className="mt-1">
                   <ProjectsCard data={data}/>
                   {/* <div className="md:col-span-1 lg:col-span-1">
                     <ActiveProjects />
                   </div> */}
-                  <div className="md:col-span-2 lg:col-span-1">
+                   <div className="md:col-span-5 mt-2 col-span-full">
                     <ProfileCard data={data}/>
                   </div>
+                  
                 </div>
               </div>
             </div>
 
-            <div>
-              <div>
+            <div className='grid grid-cols-9 gap-2'>
+              <div className='col-span-full'>
                 <DocumentsCard data={data} />
               </div>
+              {/* <div className="md:col-span-5 col-span-full">
+                    <ProfileCard data={data}/>
+                  </div> */}
             </div>
           </div>
         </main>

@@ -102,13 +102,13 @@ export function ProjectsTab({
     setDeleteIndex(null)
   }
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <div className="flex justify-end items-center mb-4">
         <button
           onClick={handleAddClick}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-brand-blue text-white font-semibold rounded-xl transition-all "
+          className="inline-flex items-center text-xs gap-2 px-4 py-2 bg-brand-blue text-white font-semibold rounded-xl transition-all "
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-3 h-3" />
           Add Project
         </button>
       </div>
@@ -128,11 +128,11 @@ export function ProjectsTab({
           {data?.map((item, index) => (
             <div
               key={index}
-              className="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-md transition-shadow"
+              className="bg-white border border-slate-200 rounded-xl p-4 hover:shadow-md transition-shadow"
             >
               <div className="flex justify-between items-start mb-3">
                 <div className="flex-1">
-                  <h4 className="text-base font-semibold font-syne text-slate-900">{item.project_name || '-'}</h4>
+                  <h4 className="text-sm font-semibold font-syne text-slate-900">{item.project_name || '-'}</h4>
                   <p className="text-xs text-slate-600 mt-1">{item.client_name || '-'}</p>
                 </div>
                 <div className="flex gap-2">
