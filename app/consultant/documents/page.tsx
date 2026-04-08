@@ -12,19 +12,21 @@ import {
 export default function ConsultantDocumentsPage() {
   return (
     <Sidebar>
-      <Document
-        title="Documents"
-        columns={consultantDocsColumns}
-        rows={consultantDocsRows}
-      />
+      <div className='p-2'>
+        <Document
+          title="Documents"
+          columns={consultantDocsColumns}
+          rows={consultantDocsRows}
+        />
 
-      <div style={{ marginTop: 16 }} />
-      <Document
-        title="Contracts"
-        columns={consultantDocumentColumns}
-        rows={consultantDocumentRows}
-        showRejectPopup
-      />
+        <div style={{ marginTop: 16 }} />
+        <Document
+          title="Contracts"
+          columns={consultantDocumentColumns}
+          rows={consultantDocumentRows}
+          showRejectPopup
+        />
+      </div>
     </Sidebar>
   );
 }

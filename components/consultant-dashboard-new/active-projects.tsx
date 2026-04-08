@@ -29,7 +29,7 @@ export const ActiveProjects: React.FC<{ data: DashboardData }> = ({ data }) => {
         {projects?.map((project, idx) => (
           <div key={idx} className="grid grid-cols-3 mt-3 items-center gap-3 pb-3 border-b border-[#F5F3EF] last:border-0">
             <div className="flex items-center gap-2">
-            <div className={`w-2 h-2  rounded-full ${colors[idx]}`} />
+            <div className={`w-2 h-2  rounded-full bg-[#292C63]`} />
               <p className="text-sm font-medium text-gray-900">{project?.name}</p>
             </div>
               <p className="text-xs text-gray-500 text-center">{project.client}</p>

@@ -13,6 +13,11 @@ export const projectSchema = yup.object().shape({
     .string()
     .required('Project summary is required')
     .min(10, 'Project summary must be at least 10 characters'),
+  summary: yup
+    .string()
+    .optional()
+    .nullable()
+    .min(10, 'Project summary must be at least 10 characters'),
   start_date: yup
     .string()
     .required('Start date is required')

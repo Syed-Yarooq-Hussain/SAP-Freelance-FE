@@ -30,6 +30,7 @@ export default function ProfilePage() {
     work_experiences?: WorkExperienceFormData[]
     education?: EducationFormData[]
     certification?: CertificationFormData[],
+    projects?: any[],
     clients_summary?: string,
   }, userData?: {
       username?: string
@@ -80,7 +81,7 @@ export default function ProfilePage() {
    // Handle CV autofill data
    const handleCVAutofill = (cvData: any) => {
     if (cvData?.consultant) {
-      const { clients_summary, work_experiences: cvWorkExp, education: cvEducation, certifications: cvCertifications } = cvData.consultant
+      const { clients_summary, work_experiences: cvWorkExp, education: cvEducation, certifications: cvCertifications, projects: cvProjects } = cvData.consultant
       const {username, city, country, phone, currency} = cvData.user
       const updatedWorkExp = cvWorkExp && Array.isArray(cvWorkExp) ? cvWorkExp : user?.work_experiences
       const updatedEducation = cvEducation && Array.isArray(cvEducation) ? cvEducation : user?.education
@@ -107,6 +108,7 @@ export default function ProfilePage() {
       updateProfile({
         work_experiences: updatedWorkExp,
         education: updatedEducation,
+        projects: cvProjects,
         certification: updatedCertifications,
         clients_summary: clients_summary ?? user?.user?.clients_summary
       }, userData)

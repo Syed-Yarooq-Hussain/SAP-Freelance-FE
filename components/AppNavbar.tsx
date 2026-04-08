@@ -196,6 +196,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
             <Tooltip title="Profile" arrow>
               <IconButton
                 size="large"
+                disableRipple
                 edge="end"
                 color="inherit"
                 onClick={handleProfileMenuOpen}
