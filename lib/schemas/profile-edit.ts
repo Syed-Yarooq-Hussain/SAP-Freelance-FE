@@ -142,6 +142,16 @@ const projectSchema = yup.object().shape({
 
 // Combined Profile Edit Schema
 export const profileEditSchema = yup.object().shape({
+  expertise_level: yup.string().nullable(),
+  core: yup
+    .array()
+    .of(yup.string())
+    .max(2, 'You can select maximum 2 items')
+    .default([]),
+  others: yup.array().of(yup.string()).default([]),
+  linkedin_url: yup.string().nullable(),
+  professional_headline: yup.string().nullable(),
+  industries: yup.string().nullable(),
   // Basic Information - from user object
   username: yup
     .string()
@@ -180,16 +190,27 @@ export const profileEditSchema = yup.object().shape({
   experience: yup
     .number()
     .nullable()
+    .transform((value, originalValue) => {
+      if (originalValue === '' || originalValue == null) return null
+      const parsed = Number(originalValue)
+      return Number.isNaN(parsed) ? null : parsed
+    })
     .typeError('Experience must be a number')
     .min(0, 'Experience cannot be negative'),
   rate: yup
     .number()
     .nullable()
+    .transform((value, originalValue) =>
+      originalValue === '' || originalValue == null ? null : value
+    )
     .typeError('Rate must be a number')
     .min(0, 'Rate cannot be negative'),
   weekly_available_hours: yup
     .number()
     .nullable()
+    .transform((value, originalValue) =>
+      originalValue === '' || originalValue == null ? null : value
+    )
     .typeError('Hours must be a number')
     .min(0, 'Hours cannot be negative'),
   cv_url: yup.string().nullable(),
@@ -213,9 +234,7 @@ export const profileEditSchema = yup.object().shape({
   projects: yup
     .array()
     .of(projectSchema)
-    .default([]),
-  
-  skills: yup.array().of(yup.string()).default([]),
+    .default([])
 })
 
 export type WorkExperienceFormData = yup.InferType<typeof workExperienceSchema>
@@ -228,6 +247,7 @@ export type ProjectFormData = yup.InferType<typeof projectSchema>
  * which does not match Resolver's expected FieldValues).
  */
 export type ProfileEditFormData = {
+  linkedin_url: string | null | undefined
   username: string
   email: string
   phone: string | null | undefined
@@ -236,13 +256,17 @@ export type ProfileEditFormData = {
   clients_summary: string | null | undefined
   experience: number | null | undefined
   rate: number | null | undefined
+  expertise_level: string | null | undefined
+  professional_headline: string | null | undefined;
+  industries: string | null | undefined;
+  core: string[]
+  others: string[]
   weekly_available_hours: number | null | undefined
   cv_url: string | null | undefined
   work_experiences: WorkExperienceFormData[]
   certifications: CertificationFormData[]
   educations: EducationFormData[]
-  projects: ProjectFormData[]
-  skills: string[]
+  projects: ProjectFormData[]  
 }
 
 function toNullableNumber(value: unknown): number | null {
@@ -251,11 +275,42 @@ function toNullableNumber(value: unknown): number | null {
   return Number.isNaN(n) ? null : n
 }
 
+function parseModuleValue(raw: unknown): string[] {
+  if (!raw) return []
+  if (Array.isArray(raw)) return raw.map((m) => String(m)).filter(Boolean)
+  if (typeof raw === 'string') {
+    try {
+      const parsed = JSON.parse(raw)
+      if (Array.isArray(parsed)) return parsed.map((m) => String(m)).filter(Boolean)
+    } catch {
+      return raw
+        .split(',')
+        .map((m) => m.trim())
+        .filter(Boolean)
+    }
+  }
+  return []
+}
+
 export function buildProfileEditDefaults(consultant: unknown): ProfileEditFormData {
   const c = consultant as Record<string, unknown> | null | undefined
   const u = (c?.user as Record<string, unknown> | undefined) ?? {}
+  const userModules = Array.isArray(u?.modules)
+    ? (u.modules as Array<Record<string, unknown>>)
+    : []
+  const coreFromUserModules = userModules
+    .filter((m) => Boolean(m?.is_primary))
+    .map((m) => String((m?.module as Record<string, unknown> | undefined)?.id ?? ''))
+    .filter(Boolean)
+  const othersFromUserModules = userModules
+    .filter((m) => !(m?.is_primary))
+    .map((m) => String((m?.module as Record<string, unknown> | undefined)?.id ?? ''))
+    .filter(Boolean)
+  const fallbackCore = parseModuleValue(c?.core_module)
+  const fallbackOthers = parseModuleValue(c?.other_module)
 
   return {
+    linkedin_url: u.linkedin_url != null ? String(u.linkedin_url) : '',
     username: String(u.username ?? ''),
     email: String(u.email ?? ''),
     phone: u.phone != null ? String(u.phone) : '',
@@ -264,6 +319,11 @@ export function buildProfileEditDefaults(consultant: unknown): ProfileEditFormDa
     clients_summary: c?.clients_summary != null ? String(c.clients_summary) : '',
     experience: toNullableNumber(c?.experience),
     rate: toNullableNumber(c?.rate),
+    expertise_level: c?.expertise_level != null ? String(c.expertise_level) : '',
+    professional_headline: c?.professional_headline != null ? String(c.professional_headline) : '',
+    industries: c?.industries != null ? String(c.industries) : '',
+    core: coreFromUserModules.length > 0 ? coreFromUserModules : fallbackCore,
+    others: othersFromUserModules.length > 0 ? othersFromUserModules : fallbackOthers,
     weekly_available_hours: toNullableNumber(c?.weekly_available_hours),
     cv_url: c?.cv_url != null ? String(c.cv_url) : '',
     work_experiences: Array.isArray(c?.work_experiences) ? (c.work_experiences as WorkExperienceFormData[]) : [],
@@ -274,6 +334,5 @@ export function buildProfileEditDefaults(consultant: unknown): ProfileEditFormDa
         : [],
     educations: Array.isArray(c?.education) ? (c.education as EducationFormData[]) : [],
     projects: Array.isArray(c?.projects) ? (c.projects as ProjectFormData[]) : [],
-    skills: Array.isArray(c?.skills) ? (c.skills as string[]).filter((s): s is string => typeof s === 'string') : [],
   }
 }
