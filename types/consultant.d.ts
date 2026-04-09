@@ -10,6 +10,9 @@ export interface IConsultantMeta {
   module_id: number | null;
   level_id: number | null;
   experience: number | null;
+  industries: string | null;
+  professional_headline: string | null;
+  expertise_level: string | null;
   rate: number | null;
   weekly_available_hours: number | null;
   user_id: string;

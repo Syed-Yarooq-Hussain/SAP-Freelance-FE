@@ -237,7 +237,7 @@ export function ProjectsModal({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-6 py-2 bg-gradient-to-r from-[#3088B7] to-[#0891B2] text-white font-semibold rounded-xl transition-all hover:shadow-lg hover:shadow-brand-blue/30 disabled:opacity-50"
+              className="px-6 py-2 bg-brand-blue text-white font-semibold rounded-xl transition-all hover:shadow-lg hover:shadow-brand-blue/30 disabled:opacity-50"
             >
               {isSubmitting ? 'Saving...' : 'Save Project'}
             </button>

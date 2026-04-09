@@ -1281,13 +1281,13 @@
     border-radius: 3.40282e38px;
   }
 
-  .rounded-lg {
+  /* .rounded-lg {
     border-radius: var(--radius);
   }
 
   .rounded-xl {
     border-radius: calc(var(--radius)  + 4px);
-  }
+  } */
 
   .rounded-t-2xl {
     border-top-left-radius: var(--radius-2xl);

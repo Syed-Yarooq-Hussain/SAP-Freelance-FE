@@ -89,7 +89,13 @@ export function WorkExperienceModal({
   }
   const onSubmit = async (data: WorkExperienceFormData) => {
     try {
-      await onSave(data)
+      const normalizedData: WorkExperienceFormData = {
+        ...data,
+        responsibilities: Array.isArray(data.responsibilities)
+          ? data.responsibilities.map((line) => String(line).trim()).filter(Boolean)
+          : [],
+      }
+      await onSave(normalizedData)
       handleClose()
     } catch (error) {
       console.error('Error saving work experience:', error)
@@ -180,7 +186,8 @@ export function WorkExperienceModal({
                   className="w-full px-4 py-2 border border-slate-300 rounded-input focus:outline-none focus:border-brand-blue text-slate-900 resize-none"
                   value={Array.isArray(field.value) ? field.value.join('\n') : ''}
                   onChange={(e) => {
-                    const lines = e.target.value.split('\n').filter(line => line.trim())
+                    // Keep empty lines while typing so Enter/Shift+Enter creates a new line naturally.
+                    const lines = e.target.value.split('\n')
                     field.onChange(lines)
                   }}
                 />
@@ -202,7 +209,7 @@ export function WorkExperienceModal({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-4 btn-gradient-blue text-white font-semibold py-2 rounded-input transition-all hover:shadow-lg hover:shadow-brand-blue/30 disabled:opacity-50"
+              className="px-4 bg-brand-blue text-white font-semibold py-2 rounded-input transition-all hover:shadow-lg hover:shadow-brand-blue/30 disabled:opacity-50"
             >
               {isSubmitting ? 'Saving...' : 'Save'}
             </button>

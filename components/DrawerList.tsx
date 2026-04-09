@@ -20,6 +20,7 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -106,19 +107,27 @@ const DrawerList: FC<DrawerListProps> = ({ open }) => {
               sx={{
                 py: 1.5,
                 px: 2,
-                m:1,
+                m: 1,
                 borderRadius: 2,
-                // bgcolor: isActive ? !open ? "#C1314A" : "#F2F3F7" : "transparent",
-                bgcolor: isActive ? "#14394D" : "transparent",
-                "&:hover": { bgcolor: isActive ? "#14394D" : "#14394D" },
+                bgcolor: isActive ? colors.BLUE : "transparent",
+                color: isActive ? "#fff" : colors.BLUE,
+                "&:hover": {
+                  bgcolor: isActive ? "#14394D" : alpha(colors.BLUE, 0.12),
+                  color: isActive ? "#fff" : colors.BLUE,
+                },
+                "& .MuiListItemIcon-root": {
+                  color: "inherit",
+                },
+                "& .MuiListItemText-root, & .MuiListItemText-root .MuiTypography-root": {
+                  color: "inherit",
+                },
               }}
             >
               <ListItemIcon
                 sx={{
-                  // color: isActive ? !open ? 'white' : colors.BLUE : !open ? "white" : "grey.700",
-                  color: "white",
                   minWidth: 32,
                   ml: -1,
+                  color: "inherit",
                 }}
               >
                 {item.icon}
@@ -128,10 +137,9 @@ const DrawerList: FC<DrawerListProps> = ({ open }) => {
                 <ListItemText
                   primary={item.label}
                   primaryTypographyProps={{
-                    fontWeight: isActive ? "bold" : 500,
+                    fontWeight: isActive ? 600 : 500,
                     fontSize: 14,
-                    color: "white",
-                    // color: isActive ? "primary.main" : "inherit",
+                    color: "inherit",
                   }}
                 />
               )}

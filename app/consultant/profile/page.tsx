@@ -16,6 +16,7 @@ import { CVUploadModal } from '@/components/profile/cv-upload-modal'
 import { WorkExperienceFormData } from '@/lib/schemas/experience'
 import { EducationFormData } from '@/lib/schemas/education'
 import { CertificationFormData } from '@/lib/schemas/certification'
+import ProfileEditPage from '@/components/profile/profile-edit'
 
 export default function ProfilePage() {
   const user = useAppSelector((state:any) => state?.user?.user)
@@ -29,6 +30,7 @@ export default function ProfilePage() {
     work_experiences?: WorkExperienceFormData[]
     education?: EducationFormData[]
     certification?: CertificationFormData[],
+    projects?: any[],
     clients_summary?: string,
   }, userData?: {
       username?: string
@@ -79,7 +81,7 @@ export default function ProfilePage() {
    // Handle CV autofill data
    const handleCVAutofill = (cvData: any) => {
     if (cvData?.consultant) {
-      const { clients_summary, work_experiences: cvWorkExp, education: cvEducation, certifications: cvCertifications } = cvData.consultant
+      const { clients_summary, work_experiences: cvWorkExp, education: cvEducation, certifications: cvCertifications, projects: cvProjects } = cvData.consultant
       const {username, city, country, phone, currency} = cvData.user
       const updatedWorkExp = cvWorkExp && Array.isArray(cvWorkExp) ? cvWorkExp : user?.work_experiences
       const updatedEducation = cvEducation && Array.isArray(cvEducation) ? cvEducation : user?.education
@@ -106,6 +108,7 @@ export default function ProfilePage() {
       updateProfile({
         work_experiences: updatedWorkExp,
         education: updatedEducation,
+        projects: cvProjects,
         certification: updatedCertifications,
         clients_summary: clients_summary ?? user?.user?.clients_summary
       }, userData)
@@ -114,18 +117,21 @@ export default function ProfilePage() {
 
   return (
     <Sidebar>
-      <div className="min-h-screen bg-background-main rounded-xl py-6 px-4 -mt-4">
+      <div className="min-h-screen bg-background-main rounded-xl  -mt-4">
         <div className="mx-auto space-y-6">
           {isEditing ? (
-            <div className="bg-background-main rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-              <ProfileEdit
+            <div className="overflow-hidden bg-white">
+              {/* <ProfileEdit
                 onSubmit={handleSave}
                 isLoading={isLoading}
                 onCancel={() => setIsEditing(false)}
-              />
+              /> */}
+              <ProfileEditPage goBack={() => setIsEditing(false)}/>
             </div>
           ) : (
-            <ProfileLayout consultant={user} setIsEditing={setIsEditing} setCvModalOpen={setIsCVModalOpen}/>
+            <div className=' py-4 px-4'>
+              <ProfileLayout consultant={user} setIsEditing={setIsEditing} setCvModalOpen={setIsCVModalOpen}/>
+            </div>
             // <>
             //   <ProfileHero
             //     showEdit

@@ -13,19 +13,25 @@ export const projectSchema = yup.object().shape({
     .string()
     .required('Project summary is required')
     .min(10, 'Project summary must be at least 10 characters'),
-  summary: yup
-    .string()
-    .optional()
-    .nullable()
-    .min(10, 'Project summary must be at least 10 characters'),
   start_date: yup
-    .string()
+    .date()
     .required('Start date is required')
     .typeError('Start date must be a valid date'),
   end_date: yup
-    .string()
+    .date()
     .nullable()
-    .typeError('End date must be a valid date')
+    .typeError('End date must be a valid date'),
+  budget: yup
+    .number()
+    .nullable()
+    .typeError('Budget must be a valid number'),
+  technologies: yup
+    .array()
+    .of(yup.string())
+    .nullable(),
+  status: yup
+    .string()
+    .oneOf(['active', 'completed', 'paused'], 'Invalid status'),
 })
 
 export type ProjectFormData = yup.InferType<typeof projectSchema>

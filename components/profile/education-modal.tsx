@@ -205,7 +205,7 @@ export function EducationModal({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-4 btn-gradient-blue text-white font-semibold py-2 rounded-input transition-all hover:shadow-lg hover:shadow-brand-blue/30 disabled:opacity-50"
+              className="px-4 bg-brand-blue text-white font-semibold py-2 rounded-input transition-all hover:shadow-lg hover:shadow-brand-blue/30 disabled:opacity-50"
             >
               {isSubmitting ? 'Saving...' : 'Save'}
             </button>

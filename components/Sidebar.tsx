@@ -107,13 +107,13 @@ const Sidebar: FC<ISidebarProps> = ({ children }) => {
         variant="permanent"
         open={expanded}
         sx={{
-          backgroundColor: expanded ? "white" : "#3088B7",
+          backgroundColor: expanded ? "white" : "#F0F1F3",
         }}
         PaperProps={{
           onMouseEnter: () => setHoverOpen(true),
           onMouseLeave: () => setHoverOpen(false),
           sx:{
-            bgcolor: "primary.main",
+            bgcolor: "#F0F1F3",
           }
         }}
       >
@@ -177,7 +177,7 @@ const Sidebar: FC<ISidebarProps> = ({ children }) => {
         <Box sx={{ mt: "auto"}}>
           <button
             onClick={handleLogout}
-            className={`w-full bg-[#14394D] border border-white/20 text-white transition-colors ${
+            className={`w-full bg-brand-blue border border-white/20 text-white transition-colors ${
               expanded
                 ? "px-3 py-3 flex items-center justify-between gap-3"
                 : "h-11 py-3 flex items-center justify-center"
