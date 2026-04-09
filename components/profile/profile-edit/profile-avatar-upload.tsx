@@ -100,7 +100,7 @@ export function ProfileAvatarUpload() {
   }
 
   return (
-    <div className="flex flex-col items-center gap-4 p-6 bg-background-main rounded-2xl border border-slate-200">
+    <div className="flex flex-col items-center gap-4 p-6 bg-background-main rounded-box border border-slate-200">
       {/* Profile Image */}
       <div className="relative w-32 h-32">
         {avatarUrl ? (
@@ -109,7 +109,7 @@ export function ProfileAvatarUpload() {
             alt="Profile avatar"
             width={128}
             height={128}
-            className="w-full h-full rounded-xl object-cover"
+            className="w-full h-full rounded-3xl object-cover"
           />
         ) : (
           <div className="w-full h-full rounded-3xl shadow-xl bg-brand-blue flex flex-col items-center justify-center">

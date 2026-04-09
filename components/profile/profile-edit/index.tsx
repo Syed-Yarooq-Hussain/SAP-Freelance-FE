@@ -133,6 +133,60 @@ function mapProfileProjectToModal(
   } as ProjectFormData & { budget?: number | null; status?: string };
 }
 
+const InputField = ({
+  label,
+  name,
+  type = "text",
+  required = false,
+  optional = false,
+  error,
+  placeholder = "",
+  ...rest
+}: any) => (
+  <div>
+    <label className="flex text-xs font-manrope font-medium text-slate-700 mb-2 items-center justify-between">
+      <span> {label} </span>
+      {required && <span className="text-red-500 ml-1">*</span>}
+      {optional && <span className="text-xs text-light-grey ml-1">Optional</span>}
+    </label>
+    <input
+      type={type}
+      {...rest}
+      placeholder={placeholder || `Enter ${label.toLowerCase()}`}
+      className={`${rest?.disabled ? "text-slate-500" : "text-black"} bg-brand-yellow w-full px-4 py-2.5 border rounded-xl font-manrope text-sm focus:outline-none focus:ring-2 focus:ring-[#3088B7] ${error ? "border-red-500" : "border-slate-300"}`}
+    />
+    {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
+  </div>
+);
+
+const SelectField = ({
+  label,
+  required = false,
+  error,
+  options = [],
+  placeholder = "Select option",
+  ...rest
+}: any) => (
+  <div>
+    <label className="flex text-xs font-manrope font-medium text-slate-700 mb-2 items-center justify-between">
+      {label}
+      {required && <span className="text-red-500 ml-1">*</span>}
+    </label>
+    <select
+      {...rest}
+      className={`w-full bg-brand-yellow px-4 py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3088B7] ${error ? "border-red-500" : "border-slate-300"}`}
+    >
+      <option value="">{placeholder}</option>
+      {options.map((option: { label: string; value: string }) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
+    {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
+  </div>
+);
+
 export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
   const router = useRouter();
   const toast = useToast();
@@ -533,59 +587,6 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
     }
   };
 
-  const InputField = ({
-    label,
-    name,
-    type = "text",
-    required = false,
-    optional = false,
-    error,
-    placeholder = "",
-    ...rest
-  }: any) => (
-    <div>
-      <label className="flex text-xs font-manrope font-medium text-slate-700 mb-2 items-center justify-between">
-        <span> {label} </span>
-        {required && <span className="text-red-500 ml-1">*</span>}
-        {optional && <span className="text-xs text-light-grey ml-1">Optional</span>}
-      </label>
-      <input
-        type={type}
-        {...rest}
-        placeholder={placeholder || `Enter ${label.toLowerCase()}`}
-        className={`w-full px-4 py-2.5 border rounded-xl font-manrope text-sm bg-brand-yellow focus:outline-none focus:ring-2 focus:ring-[#3088B7] ${error ? "border-red-500" : "border-slate-300"}`}
-      />
-      {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
-    </div>
-  );
-
-  const SelectField = ({
-    label,
-    required = false,
-    error,
-    options = [],
-    placeholder = "Select option",
-    ...rest
-  }: any) => (
-    <div>
-      <label className="flex text-xs font-manrope font-medium text-slate-700 mb-2 items-center justify-between">
-        {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
-      </label>
-      <select
-        {...rest}
-        className={`w-full bg-brand-yellow px-4 py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3088B7] ${error ? "border-red-500" : "border-slate-300"}`}
-      >
-        <option value="">{placeholder}</option>
-        {options.map((option: { label: string; value: string }) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-      {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
-    </div>
-  );
 
   const TextAreaField = ({ label, required = false, error, ...rest }: any) => (
     <div>
@@ -595,7 +596,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
       </label>
       <textarea
         {...rest}
-        className={`w-full px-3 py-2 border rounded-lg font-manrope focus:outline-none focus:ring-2 focus:ring-[#3088B7] ${error ? "border-red-500" : "border-slate-300"} resize-none`}
+        className={`w-full px-3 py-2 border rounded-xl font-manrope focus:outline-none focus:ring-2 focus:ring-[#3088B7] ${error ? "border-red-500" : "border-slate-300"} resize-none`}
         rows={4}
       />
       {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
@@ -619,7 +620,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
       className="w-full bg-background-main px-6 py-4 flex items-center justify-between hover:bg-slate-100/80 transition"
     >
       <div className="flex items-center gap-3">
-        {icon && <div className="bg-[#EAF1FB] p-2 rounded-lg">{icon}</div>}
+        {icon && <div className="bg-[#EAF1FB] p-2 rounded-xl">{icon}</div>}
         <div className="font-manrope flex flex-col gap-0.5 items-start">
           <h2 className="text-sm font-manrope text-black">{title}</h2>
           {description && (
@@ -638,11 +639,11 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
   return (
     <div className="min-h-screen bg-white  pb-12 font-manrope">
       {/* Header */}
-      <div className="bg-[#FFFFFF] border-b border-slate-200 sticky top-0 z-10">
+      <div className="bg-[#FFFFFF]  sticky top-0 z-10">
         <div className="mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="flex items-center">
-              <div onClick={goBack} className="w-10 h-10 bg-background-main rounded-lg border border-slate-200 flex items-center justify-center">
+              <div onClick={goBack} className="w-10 h-10 bg-background-main rounded-xl border border-slate-200 flex items-center justify-center">
                 <ChevronLeft className="w-5 h-5 text-black" />
               </div>
             </div>
@@ -679,7 +680,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
             className="flex flex-col gap-2"
           >
             {/* Contant and location Information */}
-            <div className="rounded-xl border border-slate-200 overflow-hidden bg-background-main">
+            <div className="rounded-box border border-slate-200 overflow-hidden bg-background-main">
               <SectionHeader
                 icon={<MapPin className="w-5 h-5 text-slate-600" />}
                 title="Contact & location"
@@ -695,6 +696,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                       type="text"
                       disabled
                       required
+                      cl
                       error={errors.email?.message}
                       {...register("email")}
                     />
@@ -765,7 +767,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
               )}
             </div>
             {/* Basic Information */}
-            <div className="rounded-xl border border-slate-200 overflow-hidden bg-background-main">
+            <div className="rounded-box border border-slate-200 overflow-hidden bg-background-main">
               <SectionHeader
                 icon={<User className="w-5 h-5 text-slate-600" />}
                 title="Basic Information"
@@ -795,7 +797,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                       <textarea
                         {...register("clients_summary")}
                         placeholder="e.g., SAP S/4HANA Consultant · Finance & Controlling · 5 yrs exp"
-                        className={`w-full bg-brand-yellow text-sm px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3088B7] resize-none ${errors.clients_summary?.message ? "border-red-500" : "border-slate-300"}`}
+                        className={`w-full bg-brand-yellow text-sm px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3088B7] resize-none ${errors.clients_summary?.message ? "border-red-500" : "border-slate-300"}`}
                         rows={1}
                       />
                       <p className="text-xs text-slate-500 mt-1">
@@ -866,7 +868,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
             </div>
 
             {/* Professional Summary */}
-            <div className="rounded-xl border border-slate-200 overflow-hidden bg-background-main">
+            <div className="rounded-box border border-slate-200 overflow-hidden bg-background-main">
               <SectionHeader icon={<Folder className="w-5 h-5 text-slate-600" />} title="Professional Summary" description="Your elevator pitch - Keep it focused and compelling" section="keyLocations" />
               {expandedSections.keyLocations && (
                 <div className="px-6 py-4 border-t border-slate-200 bg-background-main space-y-4">
@@ -879,13 +881,13 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                       error={errors.linkedin_url?.message}
                       onChange={(e: any) => setValue("linkedin_url", e.target.value)}
                     />
-                    <p className="text-xs border border-slate-200 flex items-center gap-2 text-brand-blue bg-[#EAF1FB] p-2 rounded-lg">
+                    <p className="text-xs border border-slate-200 flex items-center gap-2 text-brand-blue bg-[#EAF1FB] p-2 rounded-xl">
                       <Info className="w-4 h-4 text-black" /> Mention your SAP specialisation, years of experience, key industries and outcomes. Use numbers — e.g. &quot;reduced close cycle by 60%&quot;. Max 500 characters.
                     </p>
                     <textarea
                       {...register("professional_headline")}
                       placeholder="e.g. Experienced SAP S/4HANA Finance & Controlling consultant with 5 years of hands-on delivery across EMEA. Specialising in end-to-end FI/CO implementations for mid-to-large enterprises, I bridge the gap between business finance teams and technical SAP landscapes. Proven track record in digital transformation, reducing close cycles and improving reporting visibility."
-                      className={`w-full bg-brand-yellow p-3 border text-sm text-slate-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#3088B7] resize-none ${errors.clients_summary?.message ? "border-red-500" : "border-slate-300"}`}
+                      className={`w-full bg-brand-yellow p-3 border text-sm text-slate-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3088B7] resize-none ${errors.clients_summary?.message ? "border-red-500" : "border-slate-300"}`}
                       rows={5}
                     />
                   </div>
@@ -894,7 +896,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
             </div>
 
             {/* Professional Summary */}
-            <div className="rounded-xl border border-slate-200 overflow-hidden bg-background-main">
+            <div className="rounded-box border border-slate-200 overflow-hidden bg-background-main">
               <SectionHeader
                 title="Expertise & SAP Modules"
                 description="Your core module, skills, and certifications"
@@ -967,65 +969,8 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
               )}
             </div>
 
-            {/* Experience & Rate */}
-            {/* <div className="rounded-xl border border-slate-200 overflow-hidden bg-white">
-              <SectionHeader
-                icon={<Briefcase className="w-5 h-5 text-slate-600" />}
-                title="Work Experience"
-                description="Your rates, availability, and resume"
-                section="experience"
-              />
-              {expandedSections.experience && (
-                <div className="px-6 py-5 border-t border-slate-200 bg-background-main space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <InputField
-                      label="Years of Experience"
-                      type="number"
-                      error={errors.experience?.message}
-                      {...register("experience")}
-                    />
-                    <InputField
-                      label="Hourly Rate ($)"
-                      type="number"
-                      step="0.01"
-                      error={errors.rate?.message}
-                      {...register("rate")}
-                    />
-                    <InputField
-                      label="Weekly Available Hours"
-                      type="number"
-                      error={errors.weekly_available_hours?.message}
-                      {...register("weekly_available_hours")}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-manrope font-medium text-slate-700 mb-2">
-                      CV/Resume
-                    </label>
-                    <div className="border-2 border-dashed border-slate-300 rounded-xl p-6 text-center hover:border-[#3088B7] transition cursor-pointer bg-brand-yellow/40">
-                      <Upload className="w-6 h-6 text-slate-400 mx-auto mb-2" />
-                      <p className="text-sm text-slate-600">Upload CV/Resume</p>
-                    </div>
-                    {cvUrl ? (
-                      <p className="text-xs text-slate-500 mt-2">
-                        Current:{" "}
-                        <a
-                          href={cvUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-[#3088B7] underline"
-                        >
-                          View CV
-                        </a>
-                      </p>
-                    ) : null}
-                  </div>
-                </div>
-              )}
-            </div> */}
-
             {/* Work Experience */}
-            <div className="rounded-xl border border-slate-200 overflow-hidden bg-white">
+            <div className="rounded-box border border-slate-200 overflow-hidden bg-white">
               <SectionHeader
                 icon={<Briefcase className="w-5 h-5 text-slate-600" />}
                 title="Work Experience"
@@ -1075,7 +1020,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                               <button
                                 type="button"
                                 onClick={() => openWorkEdit(index)}
-                                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                                className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
                                 aria-label="Edit work experience"
                               >
                                 <Edit className="w-4 h-4" />
@@ -1086,7 +1031,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                                   setWorkDeleteIndex(index);
                                   setWorkDeleteOpen(true);
                                 }}
-                                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                                className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
                                 aria-label="Delete work experience"
                               >
                                 <Trash2 className="w-4 h-4" />
@@ -1115,7 +1060,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
            
 
             {/* Education */}
-            <div className="rounded-xl border border-slate-200 overflow-hidden bg-white">
+            <div className="rounded-box border border-slate-200 overflow-hidden bg-white">
               <SectionHeader
                 icon={<GraduationCap className="w-5 h-5 text-slate-600" />}
                 title="Education"
@@ -1165,7 +1110,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                               <button
                                 type="button"
                                 onClick={() => openEduEdit(index)}
-                                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                                className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
                                 aria-label="Edit education"
                               >
                                 <Edit className="w-4 h-4" />
@@ -1176,7 +1121,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                                   setEduDeleteIndex(index);
                                   setEduDeleteOpen(true);
                                 }}
-                                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                                className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
                                 aria-label="Delete education"
                               >
                                 <Trash2 className="w-4 h-4" />
@@ -1203,7 +1148,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
             </div>
 
             {/* Projects */}
-            <div className="rounded-xl border border-slate-200 overflow-hidden bg-white">
+            <div className="rounded-box border border-slate-200 overflow-hidden bg-white">
               <SectionHeader
                 icon={<FolderKanban className="w-5 h-5 text-slate-600" />}
                 title="Projects"
@@ -1253,7 +1198,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                               <button
                                 type="button"
                                 onClick={() => openProjEdit(index)}
-                                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                                className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
                                 aria-label="Edit project"
                               >
                                 <Edit className="w-4 h-4" />
@@ -1264,7 +1209,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                                   setProjDeleteIndex(index);
                                   setProjDeleteOpen(true);
                                 }}
-                                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                                className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
                                 aria-label="Delete project"
                               >
                                 <Trash2 className="w-4 h-4" />
@@ -1291,7 +1236,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
             </div>
 
              {/* Certifications */}
-             <div className="rounded-xl border border-slate-200 overflow-hidden bg-white">
+             <div className="rounded-box border border-slate-200 overflow-hidden bg-white">
               <SectionHeader
                 icon={<Star className="w-5 h-5 text-slate-600" />}
                 title="Certifications"
@@ -1341,7 +1286,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                               <button
                                 type="button"
                                 onClick={() => openCertEdit(index)}
-                                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                                className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
                                 aria-label="Edit certification"
                               >
                                 <Edit className="w-4 h-4" />
@@ -1352,7 +1297,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                                   setCertDeleteIndex(index);
                                   setCertDeleteOpen(true);
                                 }}
-                                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                                className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
                                 aria-label="Delete certification"
                               >
                                 <Trash2 className="w-4 h-4" />

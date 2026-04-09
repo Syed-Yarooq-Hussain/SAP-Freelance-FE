@@ -92,7 +92,7 @@ export function ProfileHeader({ setIsEditing }: { setIsEditing: (editing: boolea
             <div className="text-sm text-slate-900 flex items-center gap-1.5 font-manrope">
               <MapPin className="w-4 h-4" />
               {user?.user?.city}
-              {user?.user?.country && `, ${user?.user?.country}`}
+              {/* {user?.user?.country && `, ${user?.user?.country}`} */}
             </div>
           </div>
         )}
