@@ -34,6 +34,7 @@ export const APP_ROUTES = {
     PAYMENTS: "/admin/payments",
     PROFILE: "/admin/profile",
     CONSULTANTS: "/admin/consultant",
+    MODULES: "/admin/module",
     CLIENT: "/admin/client",
     NOTIFICATIONS: "/admin/notifications"
   },

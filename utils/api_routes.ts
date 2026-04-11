@@ -61,4 +61,5 @@ export const API_ROUTES = {
   CLIENT_STATS: "/clients/stats",
   CLIENT_PROFILE: "/clients/me",
   UPDATE_CLIENT_PROFILE: "/clients",
+  MODULES: "/common/module",
 };

@@ -50,6 +50,7 @@ const DrawerList: FC<DrawerListProps> = ({ open }) => {
         { icon: <DashboardIcon />, label: "Dashboard", link: r.DASHBOARD },
         { icon: <ProfileIcon />, label: "Profile", link: r.PROFILE },
         { icon: <PeopleIcon />, label: "Consultants", link: r.CONSULTANTS },
+        { icon: <PeopleIcon />, label: "Modules", link: r.MODULES },
         { icon: <PeopleIcon />, label: "Clients", link: r.CLIENT },
         { icon: <WorkIcon />, label: "Projects", link: r.PROJECTS },
         { icon: <EventNoteIcon />, label: "Meetings", link: r.INTERVIEWS },
