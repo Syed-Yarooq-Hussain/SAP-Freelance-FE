@@ -135,7 +135,6 @@ function mapProfileProjectToModal(
 
 const InputField = ({
   label,
-  name,
   type = "text",
   required = false,
   optional = false,
@@ -206,15 +205,15 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
 
   const [expandedSections, setExpandedSections] = useState({
-    basicInfo: true,
-    keyLocations: true,
+    basicInfo: false ,
+    keyLocations: false,
     contactAndLocation: true,
-    professionalSummary: true,
-    experience: true,
-    workExperience: true,
-    certifications: true,
-    education: true,
-    projects: true,
+    professionalSummary: false,
+    experience: false,
+    workExperience: false,
+    certifications: false,
+    education: false,
+    projects: false,
   });
 
   const {
@@ -536,7 +535,6 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
   };
 
   const onSubmit: SubmitHandler<ProfileEditFormData> = async (data) => {
-    console.log("RAW FORM DATA:", data);         // check what react-hook-form gives
     const payloadToSend = {
       user: {
         username: data.username ?? "",
@@ -551,6 +549,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
         experience: data.experience != null ? Number(data.experience) : null,
         expertise_level: data.expertise_level ?? "",
         industries: data.industries ?? "",
+        weekly_available_hours: data.weekly_available_hours ?? null,
         professional_headline: (data.professional_headline || data.clients_summary || "").trim(),
         clients_summary: data.clients_summary ?? "",
         
@@ -736,8 +735,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                       className="bg-brand-yellow"
                     />
                   </div>
-                  <div>
-                    <p>Hourly Rate</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="flex items-center gap-2 mt-4">
                       <div className="w-full">
                       <InputField
@@ -747,6 +745,31 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                         className="w-full"
                         error={errors.rate?.message}
                           {...register("rate")}
+                        />
+                        <p className="text-xs text-light-grey mt-2">Set your preferred hourly rate range. Clients see this when browsing your profile.</p>
+
+                        </div>
+                      {/* <span className="text-slate-500 mt-4 text-2xl">-</span> */}
+                      {/* <div className="w-full">
+                      <InputField
+                        label="Maximum"
+                        type="number"
+                        required
+                        error={errors.rate?.message}
+                        {...register("rate")}
+                      />
+                      </div> */}
+                    </div>
+                  <div>
+                    <div className="flex items-center gap-2 mt-4">
+                      <div className="w-full">
+                      <InputField
+                        label="Weekly Availability"
+                        type="number"
+                        required
+                        className="w-full"
+                        error={errors.weekly_available_hours?.message}
+                          {...register("weekly_available_hours")}
                         />
                         </div>
                       {/* <span className="text-slate-500 mt-4 text-2xl">-</span> */}
@@ -760,7 +783,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                       />
                       </div> */}
                     </div>
-                    <p className="text-xs text-light-grey mt-2">Set your preferred hourly rate range. Clients see this when browsing your profile.</p>
+                  </div>
                   </div>
 
                 </div>

@@ -179,7 +179,6 @@ export const profileEditSchema = yup.object().shape({
     .nullable()
     .min(2, 'City must be at least 2 characters'),
   country: yup.string().nullable(),
-
   // Professional Summary - from clients_summary
   clients_summary: yup
     .string()
@@ -208,9 +207,11 @@ export const profileEditSchema = yup.object().shape({
   weekly_available_hours: yup
     .number()
     .nullable()
-    .transform((value, originalValue) =>
-      originalValue === '' || originalValue == null ? null : value
-    )
+    .transform((value, originalValue) => {
+      if (originalValue === '' || originalValue == null) return null
+      const parsed = Number(originalValue)
+      return Number.isNaN(parsed) ? null : parsed
+    })
     .typeError('Hours must be a number')
     .min(0, 'Hours cannot be negative'),
   cv_url: yup.string().nullable(),

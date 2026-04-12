@@ -38,8 +38,18 @@ export default function DashboardPage({ data }: { data: DashboardData }) {
 
               {/* Right side: Earnings and Payment stacked */}
               <div className="flex flex-col gap-3 col-span-1 md:col-span-5">
-                <EarningsCard data={data}/>
-                <NextPaymentCard data={data} />
+                <div className='grid grid-cols-1 md:grid-cols-5 gap-2'>
+                  <div className='col-span-1 md:col-span-3 flex flex-col gap-2'>
+                    <EarningsCard data={data}/>
+                    <NextPaymentCard data={data} />
+                  </div>
+                  <div className='col-span-1 md:col-span-2'>
+                    <div className='bg-brand-green text-white p-2 flex justify-center items-center flex-col gap-3 rounded-lg h-full'>
+                      <p className='text-4xl font-bold font-manrope'>$ {data?.payment?.projected_earning || 0}</p>
+                      <p className='text-sm font-bold font-manrope'>My Total Earnings</p>
+                    </div>
+                  </div>
+                </div>
                 {/* Middle Section: Projects, Active Projects, Profile */}
                 <div className="mt-1">
                   <ProjectsCard data={data}/>

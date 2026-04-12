@@ -1,6 +1,6 @@
 import { getConsultantDashboard } from "@/services/dashboard";
-import { getConsultantSchedule } from "@/services/getConsultantSchedule";
-import { ApiCalendarResponse } from "@/types/calendar";
+// import { getConsultantSchedule } from "@/services/getConsultantSchedule";
+// import { ApiCalendarResponse } from "@/types/calendar";
 import { DashboardData } from "@/types/dashboard";
 import { useQuery } from "@tanstack/react-query";
 

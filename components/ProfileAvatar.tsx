@@ -14,15 +14,11 @@ interface ProfileAvatarProps {
 
 const PLACEHOLDERS = ["/default.png", "/image.png", "", undefined];
 
+/** Single letter when there is no photo (first character of the name). */
 const getInitials = (name?: string) => {
-  if (!name) return "?";
-
-  return name
-    .trim()
-    .split(/\s+/)
-    .map((word) => word[0])
-    .join("")
-    .toUpperCase();
+  const trimmed = name?.trim();
+  if (!trimmed) return "?";
+  return trimmed[0].toLocaleUpperCase();
 };
 
 const ProfileAvatar: FC<ProfileAvatarProps> = ({

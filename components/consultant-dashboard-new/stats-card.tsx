@@ -23,9 +23,9 @@ const StatCard: React.FC<StatCardProps> = ({ label, value, icon }) => {
 export const StatsCards: React.FC<{ data: DashboardData }> = ({ data }) => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-      <StatCard label="Weekly Availability" value={data?.calender?.weekly_availability || 'N/A'} />
-      <StatCard label="Interview Schedule" value={data?.calender?.interview_schedule || 'N/A'} />
-      <StatCard label="Next Interview" value={data?.calender?.next_interview ? ymd(new Date(data?.calender?.next_interview as any)) : 'N/A'} />
+      <StatCard label="Weekly Availability" value={data?.calender?.weekly_availability || '0'} />
+      <StatCard label="Interview Schedule" value={data?.calender?.interview_schedule || '0'} />
+      <StatCard label="Next Interview" value={data?.calender?.next_interview ? ymd(new Date(data?.calender?.next_interview as any)) : '-'} />
     </div>
   );
 };
