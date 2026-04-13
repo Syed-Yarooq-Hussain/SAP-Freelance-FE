@@ -789,6 +789,78 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                 </div>
               )}
             </div>
+            {/* Professional Summary */}
+            <div className="rounded-box border border-slate-200 overflow-hidden bg-background-main">
+              <SectionHeader
+                title="Expertise & SAP Modules"
+                description="Your core module, skills, and certifications"
+                icon={<LaptopMinimal className="w-5 h-5 text-slate-600" />}
+                section="professionalSummary"
+              />
+              {expandedSections.professionalSummary && (
+                <div className="px-6 py-4 border-t border-slate-200 bg-background-main space-y-4">
+                  <div className=" flex flex-col gap-4">
+                    <div>
+                      <label className="block text-xs font-manrope font-medium text-slate-700 mb-2">
+                        Core Modules
+                        <span className="text-red-500 ml-1">*</span>
+                      </label>
+                      <MultiSelect
+                        options={
+                          modules?.core?.length > 0
+                            ? modules.core.map((module: any) => ({
+                                label: module.name,
+                                value: String(module.id),
+                              }))
+                            : []
+                        }
+                        value={coreModules || []}
+                        onChange={(selected) => {
+                          if (selected.length > 2) {
+                            setError("core", {
+                              type: "manual",
+                              message: "You can select maximum 2 items",
+                            });
+                            return;
+                          }
+
+                          clearErrors("core");
+                          setValue("core", selected, { shouldValidate: true });
+                        }}
+                        placeholder="Select core modules"
+                      />
+                      <p className="text-xs text-light-grey mt-2">Only 2 modules allowed. </p>
+                      {errors.core && (
+                        <p className="text-xs text-red-500 mt-2">
+                          {errors.core.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-manrope font-medium text-slate-700 mb-2">
+                        Other Modules
+                      </label>
+                      <MultiSelect
+                        options={
+                          modules?.others?.length > 0
+                            ? modules.others.map((module: any) => ({
+                                label: module.name,
+                                value: String(module.id),
+                              }))
+                            : []
+                        }
+                        value={otherModules || []}
+                        onChange={(selected) =>{
+                          setValue("others", selected, { shouldValidate: true })
+                        }}
+                        placeholder="Select other modules"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
             {/* Basic Information */}
             <div className="rounded-box border border-slate-200 overflow-hidden bg-background-main">
               <SectionHeader
@@ -918,79 +990,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
               )}
             </div>
 
-            {/* Professional Summary */}
-            <div className="rounded-box border border-slate-200 overflow-hidden bg-background-main">
-              <SectionHeader
-                title="Expertise & SAP Modules"
-                description="Your core module, skills, and certifications"
-                icon={<LaptopMinimal className="w-5 h-5 text-slate-600" />}
-                section="professionalSummary"
-              />
-              {expandedSections.professionalSummary && (
-                <div className="px-6 py-4 border-t border-slate-200 bg-background-main space-y-4">
-                  <div className=" flex flex-col gap-4">
-                    <div>
-                      <label className="block text-xs font-manrope font-medium text-slate-700 mb-2">
-                        Core Modules
-                        <span className="text-red-500 ml-1">*</span>
-                      </label>
-                      <MultiSelect
-                        options={
-                          modules?.core?.length > 0
-                            ? modules.core.map((module: any) => ({
-                                label: module.name,
-                                value: String(module.id),
-                              }))
-                            : []
-                        }
-                        value={coreModules || []}
-                        onChange={(selected) => {
-                          if (selected.length > 2) {
-                            setError("core", {
-                              type: "manual",
-                              message: "You can select maximum 2 items",
-                            });
-                            return;
-                          }
-
-                          clearErrors("core");
-                          setValue("core", selected, { shouldValidate: true });
-                        }}
-                        placeholder="Select core modules"
-                      />
-                      <p className="text-xs text-light-grey mt-2">Only 2 modules allowed. </p>
-                      {errors.core && (
-                        <p className="text-xs text-red-500 mt-2">
-                          {errors.core.message}
-                        </p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-manrope font-medium text-slate-700 mb-2">
-                        Other Modules
-                      </label>
-                      <MultiSelect
-                        options={
-                          modules?.others?.length > 0
-                            ? modules.others.map((module: any) => ({
-                                label: module.name,
-                                value: String(module.id),
-                              }))
-                            : []
-                        }
-                        value={otherModules || []}
-                        onChange={(selected) =>{
-                          console.log({selected});
-                          setValue("others", selected, { shouldValidate: true })
-                        }}
-                        placeholder="Select other modules"
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
+            
 
             {/* Work Experience */}
             <div className="rounded-box border border-slate-200 overflow-hidden bg-white">

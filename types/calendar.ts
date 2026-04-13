@@ -19,9 +19,9 @@ export interface ApiEvent {
 }
 
 export interface ApiDay {
+  active: boolean;
   date: string;
-  day_name: string;
-  availability: ApiAvailability;
+  slots: ApiSlot[];
   events: ApiEvent[];
 }
 

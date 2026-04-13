@@ -105,13 +105,13 @@ export function UpcomingEvents({ events = defaultEvents, maxItems = 4 }: Upcomin
         <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">
           Upcoming
         </h3>
-        <div className={`flex items-center justify-center w-7 h-7 rounded-full text-white text-sm font-semibold ${getTagColor(events[0]?.type || 'meeting')}`}>
+        <div className={`flex items-center justify-center w-7 h-7 rounded-full text-white text-sm font-semibold bg-[#E8643A]`}>
           {events.length}
         </div>
       </div>
 
       {/* Events List */}
-      <div className="space-y-4">
+      <div className="space-y-2">
         {displayedEvents.length === 0 ? (
           <div className="text-center py-8">
             <Calendar className="w-12 h-12 text-slate-300 mx-auto mb-3" />
@@ -119,13 +119,13 @@ export function UpcomingEvents({ events = defaultEvents, maxItems = 4 }: Upcomin
           </div>
         ) : (
           displayedEvents.map((event) => (
-            <div key={event.id} className="flex gap-4 pb-4 border-b border-slate-100 last:border-b-0 last:pb-0">
+            <div key={event.id} className="flex font-manrope gap-4 pb-4 border-b border-slate-100 last:border-b-0 last:pb-0">
               {/* Date */}
               <div className="flex flex-col items-center min-w-max">
-                <div className="text-2xl font-bold text-slate-800">
+                <div className="text-md font-bold text-slate-800">
                   {formatDate(event.date)}
                 </div>
-                <div className="text-xs font-medium text-slate-500 uppercase">
+                <div className="text-[9px] font-medium text-slate-500 uppercase">
                   {formatMonth(event.date)}
                 </div>
               </div>
@@ -135,19 +135,19 @@ export function UpcomingEvents({ events = defaultEvents, maxItems = 4 }: Upcomin
 
               {/* Event Details */}
               <div className="flex-1 min-w-0">
-                <h4 className="font-semibold text-slate-800 text-sm mb-1 truncate">
+                <h4 className="font-semibold text-slate-800 text-xs mb-1 truncate">
                   {event.title}
                 </h4>
                 
-                <div className="flex items-center gap-2 mb-2">
+                <div className="flex items-center gap-2 mb-1">
                   <Clock className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
-                  <p className="text-xs text-slate-600">
+                  <p className="text-[10px] text-slate-600">
                     {event.time}-{event.endTime}
                   </p>
                 </div>
 
                 {event.tag && (
-                  <span className={`inline-block px-2 py-0.5 rounded text-xs font-semibold ${getTagStyles(event.type)}`}>
+                  <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-semibold ${getTagStyles(event.type)}`}>
                     {event.tag}
                   </span>
                 )}

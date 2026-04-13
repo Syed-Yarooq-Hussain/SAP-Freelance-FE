@@ -43,7 +43,7 @@ export default function DashboardPage({ data }: { data: DashboardData }) {
                     <EarningsCard data={data}/>
                     <NextPaymentCard data={data} />
                   </div>
-                  <div className='col-span-1 md:col-span-2'>
+                  <div className='col-span-1 md:col-span-2 border border-slate-300 rounded-xl'>
                     <div className='bg-brand-green text-white p-2 flex justify-center items-center flex-col gap-3 rounded-lg h-full'>
                       <p className='text-4xl font-bold font-manrope'>$ {data?.payment?.projected_earning || 0}</p>
                       <p className='text-sm font-bold font-manrope'>My Total Earnings</p>

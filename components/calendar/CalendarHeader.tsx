@@ -11,6 +11,7 @@ interface CalendarHeaderProps {
   onFilterChange?: (filter: FilterType) => void
   onNewMeeting?: () => void
   onAddAvailability?: () => void
+  onAddCustomAvailability?: () => void
 }
 
 const views: { label: string; value: ViewMode }[] = [
@@ -23,6 +24,7 @@ export function CalendarHeader({
   onFilterChange,
   onNewMeeting,
   onAddAvailability,
+  onAddCustomAvailability,
 }: CalendarHeaderProps) {
   // ✅ Everything comes from context — no duplicate useState for view
   const { activeView, currentTitle, goToday, goPrev, goNext, changeView } = useCalendar()
@@ -34,7 +36,7 @@ export function CalendarHeader({
   }
 
   const viewSegment = (fullWidth?: boolean) => (
-    <div className={`inline-flex gap-2 items-center bg-white p-0.5 shadow-sm ${fullWidth ? 'w-full' : ''}`}>
+    <div className={`inline-flex gap-2 items-center bg-white p-0.5 ${fullWidth ? 'w-full' : ''}`}>
       {views.map((v) => (
         <button
           key={v.value}
@@ -42,7 +44,7 @@ export function CalendarHeader({
           onClick={() => changeView(v.value)}   // ✅ calls context directly
           className={`${fullWidth ? 'flex-1' : ''} rounded-xl text-xs border border-slate-200 px-3 md:px-4 py-1.5 font-medium font-manrope transition-colors ${
             activeView === v.value
-              ? 'bg-brand-blue text-white shadow-sm'
+              ? 'bg-brand-blue text-white '
               : 'text-slate-600 hover:bg-slate-50'
           }`}
         >
@@ -97,21 +99,29 @@ export function CalendarHeader({
 
             {/* Right: actions */}
             <div className="flex items-center justify-end gap-2 flex-wrap justify-self-end">
-              <button
+              {/* <button
                 type="button"
                 onClick={onNewMeeting}
                 className="inline-flex items-center gap-1.5 rounded-lg border border-slate-900 bg-white px-3 py-2 text-xs font-medium text-slate-900 transition hover:bg-slate-50 whitespace-nowrap"
               >
                 <Plus className="w-4 h-4 shrink-0" />
                 <span>New Meeting</span>
-              </button>
+              </button> */}
               <button
                 type="button"
                 onClick={onAddAvailability}
                 className="inline-flex items-center gap-1.5 rounded-lg bg-brand-blue px-3 py-2 text-xs font-medium text-white transition hover:bg-[#2678a5] whitespace-nowrap"
               >
                 <Plus className="w-4 h-4 shrink-0" />
-                <span>Add Your Availability</span>
+                <span>Add Weekly Availability</span>
+              </button>
+              <button
+                type="button"
+                onClick={onAddCustomAvailability}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-brand-blue bg-white px-3 py-2 text-xs font-medium text-brand-blue transition hover:bg-sky-50 whitespace-nowrap"
+              >
+                <Plus className="w-4 h-4 shrink-0" />
+                <span>Add Custom Availability</span>
               </button>
             </div>
           </div>
@@ -134,11 +144,14 @@ export function CalendarHeader({
                 <span className="text-base font-semibold text-slate-900">{currentTitle}</span>
               </div>
               <div className="flex items-center gap-2 flex-wrap">
-                <button type="button" onClick={onNewMeeting} className="inline-flex items-center gap-1.5 rounded-lg border border-slate-900 bg-white px-3 py-2 text-xs font-medium text-slate-900 transition hover:bg-slate-50">
+                {/* <button type="button" onClick={onNewMeeting} className="inline-flex items-center gap-1.5 rounded-lg border border-slate-900 bg-white px-3 py-2 text-xs font-medium text-slate-900 transition hover:bg-slate-50">
                   <Plus className="w-4 h-4" /> New Meeting
-                </button>
+                </button> */}
                 <button type="button" onClick={onAddAvailability} className="inline-flex items-center gap-1.5 rounded-lg bg-brand-blue px-3 py-2 text-xs font-medium text-white transition hover:bg-[#2678a5]">
-                  <Plus className="w-4 h-4" /> Add Your Availability
+                  <Plus className="w-4 h-4" /> Add Weekly Availability
+                </button>
+                <button type="button" onClick={onAddCustomAvailability} className="inline-flex items-center gap-1.5 rounded-lg border border-brand-blue bg-white px-3 py-2 text-xs font-medium text-brand-blue transition hover:bg-sky-50">
+                  <Plus className="w-4 h-4" /> Add Custom Availability
                 </button>
               </div>
             </div>
@@ -163,11 +176,14 @@ export function CalendarHeader({
             <span className="text-sm font-semibold text-slate-900 truncate">{currentTitle}</span>
             {viewSegment(true)}
             <div className="flex flex-col gap-2">
-              <button type="button" onClick={onNewMeeting} className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-slate-900 bg-white py-2 text-xs font-medium text-slate-900">
+              {/* <button type="button" onClick={onNewMeeting} className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-slate-900 bg-white py-2 text-xs font-medium text-slate-900">
                 <Plus className="w-4 h-4" /> New Meeting
-              </button>
+              </button> */}
               <button type="button" onClick={onAddAvailability} className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-brand-blue py-2 text-xs font-medium text-white">
-                <Plus className="w-4 h-4" /> Add Your Availability
+                <Plus className="w-4 h-4" /> Add Weekly Availability
+              </button>
+              <button type="button" onClick={onAddCustomAvailability} className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-brand-blue bg-white py-2 text-xs font-medium text-brand-blue">
+                <Plus className="w-4 h-4" /> Add Custom Availability
               </button>
             </div>
           </div>
@@ -183,7 +199,7 @@ export function CalendarHeader({
                 onClick={() => handleFilterChange(filter)}
                 className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs md:text-sm font-medium transition whitespace-nowrap ${
                   activeFilter === filter
-                    ? 'bg-brand-blue text-white shadow-sm'
+                    ? 'bg-brand-blue text-white'
                     : 'bg-brand-yellow text-slate-700 hover:bg-slate-200 border border-transparent'
                 }`}
               >

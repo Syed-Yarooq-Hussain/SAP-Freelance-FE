@@ -3,14 +3,14 @@ import { ApiDay } from "@/types/calendar";
 import { toAmPm } from "@/utils/dateTime";
 
 export const mapApiDaysToCalendarEvents = (
-  days: ApiDay[],
+  days: any[],
   onChangeAvailability?: (date: string, start: string, end: string) => void
 ): CalendarEvent[] => {
   const events: CalendarEvent[] = [];
 
   days.forEach((day) => {
     if (day.availability?.available && day.availability.slots?.length) {
-      day.availability.slots.forEach((slot) => {
+      day.availability.slots.forEach((slot:any) => {
         const hours =
           Number(slot.end_time.split(":")[0]) -
             Number(slot.start_time.split(":")[0]) || 0;
@@ -29,7 +29,7 @@ export const mapApiDaysToCalendarEvents = (
       });
     }
 
-    day.events?.forEach((e) => {
+    day.events?.forEach((e:any) => {
       const start = e.start_time;
       const end = e.end_time;
 
