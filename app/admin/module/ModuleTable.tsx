@@ -34,6 +34,7 @@ export default function ModuleTable({ onEdit }: any) {
   const renderRows: any = (nodes: any[], level = 0) => {
     return nodes.map((node) => (
       <>
+      
         <tr
           key={node.id}
           className="border-t hover:bg-gray-50 transition"
