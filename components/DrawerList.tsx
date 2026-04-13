@@ -4,15 +4,24 @@ import { Roles } from "@/constants/roles";
 import { APP_ROUTES } from "@/utils/app_routes";
 import colors from "@/utils/styles/colors";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import CalendarMonthIconOutline from "@mui/icons-material/CalendarMonthOutlined";
 import DashboardIcon from "@mui/icons-material/Dashboard";
+import DashboardIconOutline from "@mui/icons-material/DashboardOutlined";
 import DescriptionIcon from "@mui/icons-material/Description";
-import EventNoteIcon from "@mui/icons-material/EventNote";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import PaymentIcon from "@mui/icons-material/Payment";
-import PeopleIcon from "@mui/icons-material/People";
-import ProfileIcon from "@mui/icons-material/Person";
-import WorkIcon from "@mui/icons-material/Work";
+import DescriptionIconOutline from "@mui/icons-material/DescriptionOutlined";
 
+import EventNoteIcon from "@mui/icons-material/EventNote";
+import EventNoteIconOutline from "@mui/icons-material/EventNoteOutlined";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import NotificationsIconOutline from "@mui/icons-material/NotificationsOutlined";
+import PaymentIcon from "@mui/icons-material/Payment";
+import PaymentIconOutline from "@mui/icons-material/PaymentOutlined";
+import PeopleIcon from "@mui/icons-material/People";
+import PeopleIconOutline from "@mui/icons-material/PeopleOutlined";
+import ProfileIcon from "@mui/icons-material/Person";
+import ProfileIconOutline from "@mui/icons-material/PersonOutlined";  
+import WorkIcon from "@mui/icons-material/Work";
+import WorkIconOutline from "@mui/icons-material/WorkOutlined";
 import {
   List,
   ListItem,
@@ -29,6 +38,7 @@ import DrawerListSkeleton from "./DrawerListSkeleton";
 
 type DrawerItem = {
   icon: React.ReactNode;
+  outlined: React.ReactNode;
   label: string;
   link: string;
 };
@@ -47,19 +57,15 @@ const DrawerList: FC<DrawerListProps> = ({ open }) => {
       const r = APP_ROUTES.ADMIN;
 
       return [
-        { icon: <DashboardIcon />, label: "Dashboard", link: r.DASHBOARD },
-        { icon: <ProfileIcon />, label: "Profile", link: r.PROFILE },
-        { icon: <PeopleIcon />, label: "Consultants", link: r.CONSULTANTS },
-        { icon: <PeopleIcon />, label: "Modules", link: r.MODULES },
-        { icon: <PeopleIcon />, label: "Clients", link: r.CLIENT },
-        { icon: <WorkIcon />, label: "Projects", link: r.PROJECTS },
-        { icon: <EventNoteIcon />, label: "Meetings", link: r.INTERVIEWS },
-        { icon: <PaymentIcon />, label: "Payments", link: r.PAYMENTS },
-        {
-          icon: <NotificationsIcon />,
-          label: "Notifications",
-          link: r.NOTIFICATIONS,
-        },
+        { icon: <DashboardIcon />, outlined: <DashboardIconOutline />, label: "Dashboard", link: r.DASHBOARD },
+        { icon: <ProfileIcon />, outlined: <ProfileIconOutline />, label: "Profile", link: r.PROFILE },
+        { icon: <PeopleIcon />, outlined: <PeopleIconOutline />, label: "Consultants", link: r.CONSULTANTS },
+        { icon: <PeopleIcon />, outlined: <PeopleIconOutline />, label: "Modules", link: r.MODULES },
+        { icon: <PeopleIcon />, outlined: <PeopleIconOutline />, label: "Clients", link: r.CLIENT },
+        { icon: <WorkIcon />, outlined: <WorkIconOutline />, label: "Projects", link: r.PROJECTS },
+        { icon: <EventNoteIcon />, outlined: <EventNoteIconOutline />, label: "Meetings", link: r.INTERVIEWS },
+        { icon: <PaymentIcon />, outlined: <PaymentIconOutline />, label: "Payments", link: r.PAYMENTS },
+        { icon: <NotificationsIcon />, outlined: <NotificationsIconOutline />, label: "Notifications", link: r.NOTIFICATIONS },
       ];
     }
 
@@ -67,26 +73,26 @@ const DrawerList: FC<DrawerListProps> = ({ open }) => {
       const r = APP_ROUTES.CLIENT;
 
       return [
-        { icon: <DashboardIcon />, label: "Dashboard", link: r.DASHBOARD },
-        { icon: <ProfileIcon />, label: "Profile", link: r.PROFILE },
-        { icon: <PeopleIcon />, label: "Consultant", link: r.CONSULTANT },
-        { icon: <WorkIcon />, label: "Projects", link: r.PROJECTS },
-        { icon: <EventNoteIcon />, label: "Meetings", link: r.INTERVIEWS },
-        { icon: <DescriptionIcon />, label: "Documents", link: r.DOCUMENTS },
-        { icon: <PaymentIcon />, label: "Payments", link: r.PAYMENTS },
+        { icon: <DashboardIcon />, outlined: <DashboardIconOutline />, label: "Dashboard", link: r.DASHBOARD },
+        { icon: <ProfileIcon />, outlined: <ProfileIconOutline />, label: "Profile", link: r.PROFILE },
+        { icon: <PeopleIcon />, outlined: <PeopleIconOutline />, label: "Consultant", link: r.CONSULTANT },
+        { icon: <WorkIcon />, outlined: <WorkIconOutline />, label: "Projects", link: r.PROJECTS },
+        { icon: <EventNoteIcon />, outlined: <EventNoteIconOutline />, label: "Meetings", link: r.INTERVIEWS },
+        { icon: <DescriptionIcon />, outlined: <DescriptionIconOutline />, label: "Documents", link: r.DOCUMENTS },
+        { icon: <PaymentIcon />, outlined: <PaymentIconOutline />, label: "Payments", link: r.PAYMENTS },
       ];
     }
 
     const r = APP_ROUTES.CONSULTANT;
 
     return [
-      { icon: <DashboardIcon />, label: "Dashboard", link: r.DASHBOARD },
-      { icon: <ProfileIcon />, label: "Profile", link: r.PROFILE },
-      { icon: <CalendarMonthIcon />, label: "Calendar", link: r.CALENDAR },
+      { icon: <DashboardIcon />, outlined: <DashboardIconOutline />, label: "Dashboard", link: r.DASHBOARD },
+      { icon: <ProfileIcon />, outlined: <ProfileIconOutline />, label: "Profile", link: r.PROFILE },
+      { icon: <CalendarMonthIcon />, outlined: <CalendarMonthIconOutline />, label: "Calendar", link: r.CALENDAR },
       // { icon: <WorkIcon />, label: "Projects", link: r.PROJECTS },
       // { icon: <EventNoteIcon />, label: "Meetings", link: r.INTERVIEWS },
-      { icon: <DescriptionIcon />, label: "Documents", link: r.DOCUMENTS },
-      { icon: <PaymentIcon />, label: "Payments", link: r.PAYMENTS },
+      { icon: <DescriptionIcon />, outlined: <DescriptionIconOutline />, label: "Documents", link: r.DOCUMENTS },
+      { icon: <PaymentIcon />, outlined: <PaymentIconOutline />, label: "Payments", link: r.PAYMENTS },
     ];
   }, [role]);
 
@@ -131,7 +137,7 @@ const DrawerList: FC<DrawerListProps> = ({ open }) => {
                   color: "inherit",
                 }}
               >
-                {item.icon}
+                {!isActive ? item.outlined : item.icon}
               </ListItemIcon>
 
               {open && (

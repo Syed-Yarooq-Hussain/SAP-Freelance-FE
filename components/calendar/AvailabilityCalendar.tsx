@@ -1,12 +1,23 @@
 "use client";
 
 import { useConsultantCalendar } from "@/actions/consultants/useConsultantCalendar";
-import type { ApiDay, ApiEvent, ApiSlot } from "@/types/calendar";
+import type { ApiDay } from "@/types/calendar";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export type AvailabilitySavePayload = ApiDay[];
+type AvailabilitySlotPayload = {
+  start: string;
+  end: string;
+};
+
+type AvailabilityDayPayload = {
+  date: string;
+  active: boolean;
+  slot: AvailabilitySlotPayload[];
+};
+
+export type AvailabilitySavePayload = AvailabilityDayPayload[];
 
 interface AvailabilityCalendarProps {
   onSave: (payload: AvailabilitySavePayload) => void;
@@ -90,11 +101,11 @@ function pad2(n: number): string {
   return String(n).padStart(2, "0");
 }
 
-/** Selected hours → API `slots` (consecutive hours merged). */
-function buildApiSlots(hours: Set<number>): ApiSlot[] {
+/** Selected hours → payload `slot` (consecutive hours merged). */
+function buildCustomSlots(hours: Set<number>): AvailabilitySlotPayload[] {
   const sorted = [...hours].sort((a, b) => a - b);
   if (!sorted.length) return [];
-  const slots: ApiSlot[] = [];
+  const slots: AvailabilitySlotPayload[] = [];
   let start = sorted[0];
   let prev = sorted[0];
   for (let i = 1; i < sorted.length; i++) {
@@ -102,16 +113,16 @@ function buildApiSlots(hours: Set<number>): ApiSlot[] {
       prev = sorted[i];
     } else {
       slots.push({
-        start_time: `${pad2(start)}:00`,
-        end_time: `${pad2(prev + 1)}:00`,
+        start: `${pad2(start)}:00`,
+        end: `${pad2(prev + 1)}:00`,
       });
       start = sorted[i];
       prev = sorted[i];
     }
   }
   slots.push({
-    start_time: `${pad2(start)}:00`,
-    end_time: `${pad2(prev + 1)}:00`,
+    start: `${pad2(start)}:00`,
+    end: `${pad2(prev + 1)}:00`,
   });
   return slots;
 }
@@ -123,12 +134,19 @@ function hydrateFromApiDays(days: ApiDay[]): {
   const dates = new Set<string>();
   const hours: Record<string, Set<number>> = {};
   for (const day of days) {
-    const a = day.availability;
-    if (!a?.available || !a.slots?.length) continue;
+    const active =
+      "active" in day
+        ? Boolean(day.active)
+        : Boolean((day as unknown as { availability?: { available?: boolean } }).availability?.available);
+    const slots =
+      "slots" in day && Array.isArray(day.slots)
+        ? day.slots
+        : ((day as unknown as { availability?: { slots?: { start_time: string; end_time: string }[] } }).availability?.slots ?? []);
+    if (!active || !slots.length) continue;
     const key = isoDateToGridKey(day.date);
     dates.add(key);
     const set = new Set<number>();
-    for (const slot of a.slots) {
+    for (const slot of slots) {
       slotToHourIndices(slot.start_time, slot.end_time).forEach((h) =>
         set.add(h),
       );
@@ -420,24 +438,16 @@ export default function AvailabilityCalendar({ onSave }: AvailabilityCalendarPro
   const payload: AvailabilitySavePayload = sortedDates
     .map((key) => {
       const iso = gridKeyToIso(key);
-      const slots = buildApiSlots(selectedHours[key] || new Set<number>());
+      const slots = buildCustomSlots(selectedHours[key] || new Set<number>());
       if (!slots.length) return null;
-      const existing = data?.days?.find((d) => d.date === iso);
-      const events: ApiEvent[] = existing?.events?.length
-        ? existing.events.map((e) => ({ ...e }))
-        : [];
-      const day: ApiDay = {
+      const day: AvailabilityDayPayload = {
         date: iso,
-        day_name: existing?.day_name ?? dayNameFromIso(iso),
-        availability: {
-          available: true,
-          slots,
-        },
-        events,
+        active: true,
+        slot: slots,
       };
       return day;
     })
-    .filter((d): d is ApiDay => d !== null);
+    .filter((d): d is AvailabilityDayPayload => d !== null);
 
   const handleSave = () => {
     onSave(payload);
@@ -520,9 +530,21 @@ export default function AvailabilityCalendar({ onSave }: AvailabilityCalendarPro
 
         <div className="col-span-1 md:col-span-7 flex-1 min-w-0 flex flex-col gap-3">
           <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">
-              Time Slots — click or drag to select
-            </p>
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">
+                Time Slots — click or drag to select
+              </p>
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={handleSave}
+                  disabled={payload.length === 0}
+                  className="px-6 py-2.5 bg-brand-blue hover:bg-brand-blue-dark disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed text-white text-xs font-semibold rounded-xl transition-colors shadow-sm"
+                >
+                  Save Availability
+                </button>
+              </div>
+            </div>
             <TimeGrid
               sortedDates={sortedDates}
               selectedHours={selectedHours}
@@ -530,16 +552,7 @@ export default function AvailabilityCalendar({ onSave }: AvailabilityCalendarPro
             />
           </div>
 
-          <div className="flex justify-end">
-            <button
-              type="button"
-              onClick={handleSave}
-              disabled={payload.length === 0}
-              className="px-6 py-2.5 bg-brand-blue hover:bg-brand-blue-dark disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-xl transition-colors shadow-sm"
-            >
-              Save Availability
-            </button>
-          </div>
+          
         </div>
       </div>
     </div>

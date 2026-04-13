@@ -241,7 +241,7 @@ export default function EventsCalendar() {
   const events = useMemo(() => transformApiData(data?.days as any ?? []), [data])
 
   return (
-    <div className="relative fc-shell">
+    <div className="relative fc-shell h-[60vh]">
       <style>{`
 
         /* ─── Reset / base ─────────────────────────────────── */
@@ -298,7 +298,7 @@ export default function EventsCalendar() {
         //   color: #fff !important;
         //   border-radius: 50% !important;
         //   width: 28px !important;
-        //   height: 28px !important;
+        //   height: 55px !important;
         //   display: flex !important;
         //   align-items: center !important;
         //   justify-content: center !important;
@@ -385,7 +385,7 @@ export default function EventsCalendar() {
         initialView="dayGridMonth"
         headerToolbar={false}
         events={events}
-        height="auto"
+        height="100%"
         dayMaxEvents={3}
 
         // ─── "+X more" → go to that day view ──────────────────
