@@ -7,7 +7,7 @@ import { DashboardData } from '@/types/dashboard';
 
 export const ProjectsCard: React.FC<{ data: DashboardData }> = ({ data }) => {
   return (
-    <div className="rounded-lg p-4 border border-[#E5E5E5]">
+    <div className="rounded-lg p-4 border border-[#E5E5E5] shadow-custom">
       <div className="flex items-center gap-2 mb-6">
         <div className='bg-[#4A7BB51A] rounded-xl p-2'>
           <FileText className="w-5 h-5 text-[#3088B7]" />

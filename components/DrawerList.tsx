@@ -116,11 +116,13 @@ const DrawerList: FC<DrawerListProps> = ({ open }) => {
                 px: 2,
                 m: 1,
                 borderRadius: 2,
-                bgcolor: isActive ? colors.BLUE : "transparent",
-                color: isActive ? "#fff" : colors.BLUE,
+                bgcolor: isActive ? '#4A7AB5' : "transparent",
+                // color: isActive ? "#fff" : colors.BLUE,
+                color: isActive ? "#fff" : '#4A7AB5',
                 "&:hover": {
-                  bgcolor: isActive ? "#14394D" : alpha(colors.BLUE, 0.12),
-                  color: isActive ? "#fff" : colors.BLUE,
+                  // bgcolor: isActive ? "#14394D" : alpha(colors.BLUE, 0.12),
+                  bgcolor: isActive ? "#4A7AB5" : alpha('#4A7AB5', 0.12),
+                  color: isActive ? "#fff" : '#4A7AB5',
                 },
                 "& .MuiListItemIcon-root": {
                   color: "inherit",
