@@ -67,7 +67,7 @@ export function ProfileHeader({ setIsEditing }: { setIsEditing: (editing: boolea
         </div>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4">
-        <div className="max-h-16 border flex flex-col justify-evenly border-slate-200 rounded-lg px-4 py-2">
+        <div className="shadow-custom max-h-16 border flex flex-col justify-evenly border-slate-200 rounded-lg px-4 py-2">
           <div className="text-[10px] text-light-grey font-semibold font-manrope">
             Hourly Rate
           </div>
@@ -75,7 +75,7 @@ export function ProfileHeader({ setIsEditing }: { setIsEditing: (editing: boolea
             ${user?.rate || '-'}/hr
           </div>
         </div>
-        <div className="max-h-16 border flex flex-col justify-evenly border-slate-200 rounded-lg px-4 py-2">
+        <div className="shadow-custom max-h-16 border flex flex-col justify-evenly border-slate-200 rounded-lg px-4 py-2">
           <div className="text-[10px] text-light-grey font-semibold mb-1 font-manrope">
             Availability (Weekly)
           </div>
@@ -85,7 +85,7 @@ export function ProfileHeader({ setIsEditing }: { setIsEditing: (editing: boolea
           </div>
         </div>
         {user?.user?.city && (
-          <div className="max-h-16 border flex flex-col justify-evenly border-slate-200 rounded-lg px-4 py-2">
+          <div className="shadow-custom max-h-16 border flex flex-col justify-evenly border-slate-200 rounded-lg px-4 py-2">
             <div className="flex items-center gap-1 text-[10px] text-light-grey font-semibold mb-1 font-manrope">
               Location
             </div>
@@ -97,7 +97,7 @@ export function ProfileHeader({ setIsEditing }: { setIsEditing: (editing: boolea
           </div>
         )}
         {(
-          <div className="max-h-16 border flex flex-col justify-evenly border-slate-200 rounded-lg px-4 py-2">
+          <div className="shadow-custom max-h-16 border flex flex-col justify-evenly border-slate-200 rounded-lg px-4 py-2">
             <div className="flex items-center gap-1 text-[10px] text-light-grey font-semibold mb-1 font-manrope">
               Joined
             </div>
@@ -108,7 +108,7 @@ export function ProfileHeader({ setIsEditing }: { setIsEditing: (editing: boolea
           </div>
         )}
         {(
-          <div className="max-h-16 border flex flex-col justify-evenly border-slate-200 rounded-lg px-4 py-2">
+          <div className="shadow-custom max-h-16 border flex flex-col justify-evenly border-slate-200 rounded-lg px-4 py-2">
             <div className="flex items-center gap-1 text-[10px] text-light-grey font-semibold mb-1 font-manrope">
               Projects
             </div>

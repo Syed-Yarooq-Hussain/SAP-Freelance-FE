@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 export const DocumentsCard: React.FC<{ data: DashboardData }> = ({ data }) => {
   const router = useRouter();
   return (
-    <div className="flex flex-col justify-between rounded-lg p-3 border h-full border-[#E5E5E5]">
+    <div className="flex shadow-custom flex-col justify-between rounded-lg p-3 border h-full border-[#E5E5E5]">
       <div>
         <div className="flex items-center gap-2 mb-3">
           <div className='bg-[#FEF8E8] rounded-xl p-2'>

@@ -893,7 +893,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                         {...register("clients_summary")}
                         placeholder="e.g., SAP S/4HANA Consultant · Finance & Controlling · 5 yrs exp"
                         className={`w-full bg-brand-yellow text-sm px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3088B7] resize-none ${errors.clients_summary?.message ? "border-red-500" : "border-slate-300"}`}
-                        rows={1}
+                        rows={3}
                       />
                       <p className="text-xs text-slate-500 mt-1">
                         This appears right below your name - keep it punchy and
@@ -937,6 +937,17 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                     />
                   </div>
 
+                  <div>
+                    <InputField
+                      name="linkedin_url"
+                      label="LinkedIn URL"
+                      type="text"
+                      value={watch("linkedin_url") || ''}
+                      error={errors.linkedin_url?.message}
+                      onChange={(e: any) => setValue("linkedin_url", e.target.value)}
+                    />
+                  </div>
+
                   {/* Industry Focus */}
                   <div>
                     
@@ -968,14 +979,14 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
               {expandedSections.keyLocations && (
                 <div className="px-6 py-4 border-t border-slate-200 bg-background-main space-y-4">
                   <div className="flex flex-col gap-4">
-                    <InputField
+                    {/* <InputField
                       name="linkedin_url"
                       label="LinkedIn URL"
                       type="text"
                       value={watch("linkedin_url") || ''}
                       error={errors.linkedin_url?.message}
                       onChange={(e: any) => setValue("linkedin_url", e.target.value)}
-                    />
+                    /> */}
                     <p className="text-xs border border-slate-200 flex items-center gap-2 text-brand-blue bg-[#EAF1FB] p-2 rounded-xl">
                       <Info className="w-4 h-4 text-black" /> Mention your SAP specialisation, years of experience, key industries and outcomes. Use numbers — e.g. &quot;reduced close cycle by 60%&quot;. Max 500 characters.
                     </p>

@@ -22,7 +22,8 @@ module.exports = {
         border: "var(--border)",
         // Brand colors from design
         // "brand-blue": "#3088B7",
-        "brand-blue": "#3088B7",
+        // "brand-blue": "#3088B7",
+        "brand-blue": "#4A7AB5",
         "brand-blue-dark": "#0891B2",
         "brand-green": "#009966",
         "brand-yellow": "#F0EDE8",
@@ -59,6 +60,9 @@ module.exports = {
       fontSize: {
         nano: "8px",
         xxs: '10px'
+      },
+      boxShadow: {
+        custom: '0 1px 2px rgba(0,0,0,0.2),0 4px 12px rgba(0,0,0,0.06)'
       }
     },
   },

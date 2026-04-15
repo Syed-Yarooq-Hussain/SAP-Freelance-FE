@@ -12,7 +12,7 @@ interface StatCardProps {
 
 const StatCard: React.FC<StatCardProps> = ({ label, value, icon }) => {
   return (
-    <div className="bg-white rounded-xl px-3 py-4 border border-gray-400 text-start">
+    <div className="bg-white shadow-sm rounded-xl px-3 py-4 border border-gray-400 text-start">
       <p className="text-xs font-manrope font-medium text-gray-600 mb-2">{label}</p>
       <p className="text-xl font-neue text-gray-900">{value}</p>
       {icon && <span className="text-2xl mt-2 inline-block">{icon}</span>}

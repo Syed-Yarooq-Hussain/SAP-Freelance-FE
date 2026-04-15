@@ -10,9 +10,9 @@ import { useRouter } from 'next/navigation';
 export const ProfileCard: React.FC<{ data: DashboardData }> = ({ data }) => {
   const router = useRouter();
   return (
-    <div className="rounded-xl p-4 border border-[#E5E5E5]">
+    <div className="rounded-xl shadow-custom p-4 border border-[#E5E5E5]">
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 bg-[#3088B7] rounded-xl flex items-center justify-center text-white font-bold">
+        <div className="w-10 h-10 bg-brand-blue rounded-xl flex items-center justify-center text-white font-bold">
           AA
         </div>
         <div>
@@ -32,12 +32,12 @@ export const ProfileCard: React.FC<{ data: DashboardData }> = ({ data }) => {
       <div className="mb-6">
         <p className="text-xs font-medium text-gray-600 mb-2">Profile Completion</p>
         <div className="w-full bg-[#F5F3EF] rounded-full h-2">
-          <div className="bg-[#3088B7] h-2 rounded-full" style={{ width: `${data?.profile?.profile_strength || '0%'}` }}></div>
+          <div className="bg-brand-blue h-2 rounded-full" style={{ width: `${data?.profile?.profile_strength || '0%'}` }}></div>
         </div>
       </div>
 
           <div className='flex items-center gap-2'>
-      <Button className="flex-1 !text-xxs bg-[#3088B7] text-white rounded-xl mb-3 hover:bg-[#2670A0]">
+      <Button className="flex-1 !text-xxs bg-brand-blue text-white rounded-xl mb-3 hover:bg-[#2670A0]">
         <Clock className="w-2 h-2 " /> Complete Profile & Get Certified
       </Button>
 
