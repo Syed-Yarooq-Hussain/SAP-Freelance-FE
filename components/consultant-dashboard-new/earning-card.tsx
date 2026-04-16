@@ -6,7 +6,7 @@ import { DashboardData } from '@/types/dashboard';
 
 export const EarningsCard: React.FC<{ data: DashboardData }> = ({ data }) => {
   return (
-    <div className="bg-[#4A7AB5] shadow-xl flex items-center rounded-lg px-5 py-3 text-white h-24">
+    <div className="bg-[#4A7AB5] shadow-custom flex items-center rounded-lg px-5 py-3 text-white h-24">
       <div className="flex items-center justify-start flex-1">
         <div className='flex-1 md:max-w-[80%]'>
           <p className="text-xs font-thin opacity-90 mb-2 font-neue">Projected Earnings</p>

@@ -177,7 +177,7 @@ const Sidebar: FC<ISidebarProps> = ({ children }) => {
         <Box sx={{ mt: "auto"}}>
           <button
             onClick={handleLogout}
-            className={`w-full bg-brand-blue border border-white/20 text-white transition-colors ${
+            className={`w-full  border hover:bg-brand-blue hover:text-white border-white/20 text-brand-blue transition-colors ${
               expanded
                 ? "px-3 py-3 flex items-center justify-between gap-3"
                 : "h-11 py-3 flex items-center justify-center"
@@ -195,10 +195,14 @@ const Sidebar: FC<ISidebarProps> = ({ children }) => {
                       : "") || ""}
                   </p>
                 </Box>
-                <LogOut className="w-3.5 h-3.5 flex-shrink-0" />
+                <div className="bg-brand-blue text-white p-3 rounded-xl">
+                  <LogOut className="w-3.5 h-3.5 flex-shrink-0" />
+                </div>
               </>
             ) : (
-              <LogOut className="w-4 h-4" />
+              <div className="bg-brand-blue text-white p-3 rounded-lg">
+                  <LogOut className="w-3.5 h-3.5 flex-shrink-0" />
+                </div>
             )}
           </button>
         </Box>

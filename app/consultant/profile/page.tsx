@@ -120,7 +120,7 @@ export default function ProfilePage() {
       <div className="min-h-screen bg-background-main rounded-xl  -mt-4">
         <div className="mx-auto space-y-6">
           {isEditing ? (
-            <div className="overflow-hidden bg-white">
+            <div className="bg-white">
               {/* <ProfileEdit
                 onSubmit={handleSave}
                 isLoading={isLoading}

@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom'
 import { useEffect, useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { parseCVViaAPI } from '@/services/common/pdfReader'
+import { CircularProgress } from '@mui/material'
 
 interface CVUploadModalProps {
   isOpen: boolean
@@ -113,8 +114,9 @@ export function CVUploadModal({
             >
               {cvParsing ? (
                 <>
-                  <p className="font-semibold text-brand-blue">
-                    Parsing Resume… Please wait
+                  <p className="font-semibold text-brand-blue flex items-center justify-center gap-2">
+                    Uploading Resume... Please wait
+                    <CircularProgress size={20} />
                   </p>
                   <p className="text-sm text-slate-600">
                     {fileNames["cv"]}

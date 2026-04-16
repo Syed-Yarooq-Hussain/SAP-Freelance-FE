@@ -52,6 +52,7 @@ export default function AccountSettings({ onSubmit, isLoading = false }: Account
   })
 
   useEffect(() => {
+    console.log(user,'-----')
     if (user) {
       setValue('name', user?.user?.username ?? (user as any)?.username ?? '')
       setValue(
@@ -60,7 +61,7 @@ export default function AccountSettings({ onSubmit, isLoading = false }: Account
       )
       setValue(
         'linkedin_profile_url',
-        (user as any)?.user?.linkedin_url ?? (user as any)?.linkedin_url ?? ''
+        user?.user?.linkedin_url || ''
       )
       if (user?.user?.avatar) setProfileImage(sanitizeUrl(user.user.avatar) || '')
     }
@@ -113,6 +114,7 @@ export default function AccountSettings({ onSubmit, isLoading = false }: Account
         user:{
             username: data.name,
             phone: data.phone,
+            linkedin_url: data.linkedin_profile_url,
         }
      })
   }
@@ -336,7 +338,7 @@ export default function AccountSettings({ onSubmit, isLoading = false }: Account
             <button
               type="submit"
               disabled={isLoading}
-              className="btn-gradient-blue text-white font-semibold px-8 py-3 rounded-xl transition-all hover:shadow-lg hover:shadow-brand-blue/30 disabled:opacity-60 disabled:cursor-not-allowed"
+              className="bg-brand-blue text-white font-semibold px-8 py-3 rounded-xl transition-all hover:shadow-lg hover:shadow-brand-blue/30 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {isLoading ? 'Saving...' : 'Save Changes'}
             </button>

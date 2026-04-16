@@ -55,6 +55,8 @@ import type { CertificationFormData } from "@/lib/schemas/certification";
 import type { EducationFormData } from "@/lib/schemas/education";
 import type { ProjectFormData } from "@/lib/schemas/projects";
 import { updateConsultantProfile } from "@/services/consultants";
+import { getIndustries } from "@/services/getIndustries";
+import { getExpertiseLevels } from "@/services/getExpertiseLevel";
 import { useToast } from "@/providers/ToastProvider";
 import { LocationAutocomplete } from "@/components/account-settings/LocationAutocomplete";
 
@@ -191,7 +193,8 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
   const toast = useToast();
   const dispatch = useAppDispatch();
   const { user: consultant } = useAppSelector((state) => state.user);
-
+  const [industries, setIndustries] = useState<any[]>([]);
+  const [expertiseLevels, setExpertiseLevels] = useState<any[]>([]);
   const defaultValues = useMemo(
     () => buildProfileEditDefaults(consultant),
     [consultant],
@@ -242,6 +245,20 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
     };
   }, [photoPreview]);
 
+  useEffect(() => {
+    getIndustries().then((industries) => {
+      setIndustries(industries);
+    });
+  }, []);
+
+  useEffect(() => {
+    getExpertiseLevels().then((expertiseLevels) => {
+      setExpertiseLevels(expertiseLevels);
+    });
+  }, []);
+
+  // console.log(industries, expertiseLevels,'levellll');
+
   const cvUrl = watch("cv_url");
   const coreModules = watch("core");
   const otherModules = watch("others");
@@ -255,47 +272,47 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
     (usernameW || nestedUser?.username || "?").trim().charAt(0).toUpperCase() ||
     "?";
 
-  const handlePhotoSelected = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const file = e.target.files?.[0];
-    e.target.value = "";
-    if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-      alert("File is too large. Maximum size is 5 MB.");
-      return;
-    }
-    const allowed = ["image/jpeg", "image/png", "image/webp"];
-    if (!allowed.includes(file.type)) {
-      alert("Please use JPG, PNG, or WebP.");
-      return;
-    }
-    if (photoPreview?.startsWith("blob:")) URL.revokeObjectURL(photoPreview);
-    const blobUrl = URL.createObjectURL(file);
-    setPhotoPreview(blobUrl);
+  // const handlePhotoSelected = async (
+  //   e: React.ChangeEvent<HTMLInputElement>,
+  // ) => {
+  //   const file = e.target.files?.[0];
+  //   e.target.value = "";
+  //   if (!file) return;
+  //   if (file.size > 5 * 1024 * 1024) {
+  //     alert("File is too large. Maximum size is 5 MB.");
+  //     return;
+  //   }
+  //   const allowed = ["image/jpeg", "image/png", "image/webp"];
+  //   if (!allowed.includes(file.type)) {
+  //     alert("Please use JPG, PNG, or WebP.");
+  //     return;
+  //   }
+  //   if (photoPreview?.startsWith("blob:")) URL.revokeObjectURL(photoPreview);
+  //   const blobUrl = URL.createObjectURL(file);
+  //   setPhotoPreview(blobUrl);
 
-    const formData = new FormData();
-    formData.append("file", file);
-    try {
-      const result = await request<FormData, { url: string }>({
-        url: `/consultants/upload-profile/${nestedUser?.id}`,
-        method: "POST",
-        data: formData,
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      if (sanitizeUrl(result?.data?.url)) {
-        const consultantData = await getConsultantMeService();
-        if (consultantData?.data)
-          dispatch(updateUser({ user: consultantData.data }));
-        setPhotoPreview((prev) => {
-          if (prev?.startsWith("blob:")) URL.revokeObjectURL(prev);
-          return null;
-        });
-      }
-    } catch {
-      // keep blob preview so the user can retry
-    }
-  };
+  //   const formData = new FormData();
+  //   formData.append("file", file);
+  //   try {
+  //     const result = await request<FormData, { url: string }>({
+  //       url: `/consultants/upload-profile/${nestedUser?.id}`,
+  //       method: "POST",
+  //       data: formData,
+  //       headers: { "Content-Type": "multipart/form-data" },
+  //     });
+  //     if (sanitizeUrl(result?.data?.url)) {
+  //       const consultantData = await getConsultantMeService();
+  //       if (consultantData?.data)
+  //         dispatch(updateUser({ user: consultantData.data }));
+  //       setPhotoPreview((prev) => {
+  //         if (prev?.startsWith("blob:")) URL.revokeObjectURL(prev);
+  //         return null;
+  //       });
+  //     }
+  //   } catch {
+  //     // keep blob preview so the user can retry
+  //   }
+  // };
 
   const clearLocalPhotoPreview = () => {
     if (photoPreview?.startsWith("blob:")) URL.revokeObjectURL(photoPreview);
@@ -638,8 +655,8 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
   return (
     <div className="min-h-screen bg-white  pb-12 font-manrope">
       {/* Header */}
-      <div className="bg-[#FFFFFF]  sticky top-0 z-10">
-        <div className="mx-auto px-6 py-4 flex items-center justify-between">
+      <div className="sticky top-14 z-20 border-b border-slate-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/85">
+        <div className="mx-auto px-6 py-4 flex items-center justify-between shadow-sm">
           <div className="flex items-center gap-4">
             <div className="flex items-center">
               <div onClick={goBack} className="w-10 h-10 bg-background-main rounded-xl border border-slate-200 flex items-center justify-center">
@@ -654,13 +671,13 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
           <div className="flex items-center gap-2">
             <button
               onClick={goBack}
-              className="px-6 py-2 text-sm bg-background-main border border-slate-200 text-black rounded-xl hover:scale-105 transition font-medium"
+              className="px-6 py-2 text-sm bg-background-main border border-slate-200 text-black rounded-xl transition font-medium hover:bg-slate-100"
             >
               Discard Changes
             </button>
             <button
               onClick={handleSubmit(onSubmit)}
-              className="px-6 py-2 text-sm bg-brand-blue text-white rounded-xl hover:bg-[#0891B2] transition font-medium hover:scale-105" 
+              className="px-6 py-2 text-sm bg-brand-blue text-white rounded-xl hover:bg-[#0891B2] transition font-medium"
             >
               Save Changes
             </button>
@@ -927,12 +944,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                       required
                       placeholder="Select level"
                       error={errors.expertise_level?.message}
-                      options={[
-                        { label: "Beginner", value: "Beginner" },
-                        { label: "Intermediate", value: "Intermediate" },
-                        { label: "Advanced", value: "Advanced" },
-                        { label: "Expert", value: "Expert" },
-                      ]}
+                      options={expertiseLevels?.length > 0 ? expertiseLevels.map((level: any) => ({ label: level, value: level })) : []}
                       {...register("expertise_level")}
                     />
                   </div>
@@ -951,7 +963,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                   {/* Industry Focus */}
                   <div>
                     
-                    <InputField
+                    {/* <InputField
                       name="industries"
                       label="Industry Focus"
                       type="text"
@@ -959,7 +971,34 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                       value={watch("industries") || ''}
                       error={errors.industries?.message}
                       onChange={(e: any) => setValue("industries", e.target.value)}
-                     />
+                     /> */}
+                     <MultiSelect
+                        options={
+                          industries?.length > 0
+                            ? industries?.map((industry: any) => ({
+                                label: industry.name,
+                                value: String(industry.id),
+                              }))
+                            : []
+                        }
+                        value={
+                          typeof watch("industries") === "string" &&
+                          watch("industries")?.trim()
+                            ? watch("industries")!
+                                .split(",")
+                                .map((v) => v.trim())
+                                .filter(Boolean)
+                            : []
+                        }
+                        onChange={(selected) => {
+                          clearErrors("industries");
+                          setValue("industries", selected.join(","), {
+                            shouldValidate: true,
+                            shouldDirty: true,
+                          });
+                        }}
+                        placeholder="Select industry focus"
+                      />
                     <p className="text-xs text-slate-500 mt-1">
                       Separate multiple industries with commas
                     </p>

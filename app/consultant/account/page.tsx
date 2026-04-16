@@ -1,46 +1,62 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { ProfileView } from '@/components/account-settings/profile-view'
-import { ProfileEdit } from '@/components/account-settings/profile-edit'
-import type { AccountFormData } from '@/lib/schemas/account'
-import Sidebar from '@/components/Sidebar'
-import { updateConsultantProfile } from '@/services/consultants'
-import { useAppDispatch, useAppSelector } from '@/lib/store/hook'
-import { getConsultantMeService } from '@/services/getConsultantProfile'
-import { updateUser } from '@/lib/store/features/user/userSlice'
-import AccountSettings from '@/components/account-settings/account-settings'
+import { useState } from "react";
+import { ProfileView } from "@/components/account-settings/profile-view";
+import { ProfileEdit } from "@/components/account-settings/profile-edit";
+import type { AccountFormData } from "@/lib/schemas/account";
+import Sidebar from "@/components/Sidebar";
+import { updateConsultantProfile } from "@/services/consultants";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
+import { getConsultantMeService } from "@/services/getConsultantProfile";
+import { updateUser } from "@/lib/store/features/user/userSlice";
+import AccountSettings from "@/components/account-settings/account-settings";
 
 const mockBadges = [
-  { id: '1', label: 'Verified', color: 'green' as const, icon: '/images/green-tick-badge.svg' },
-  { id: '2', label: 'Top Rated', color: 'blue' as const, icon: '/images/star-profile-badge.svg' },
-  { id: '3', label: 'Expert', color: 'orange' as const, icon: '/images/leader-badge.svg' },
-]
+  {
+    id: "1",
+    label: "Verified",
+    color: "green" as const,
+    icon: "/images/green-tick-badge.svg",
+  },
+  {
+    id: "2",
+    label: "Top Rated",
+    color: "blue" as const,
+    icon: "/images/star-profile-badge.svg",
+  },
+  {
+    id: "3",
+    label: "Expert",
+    color: "orange" as const,
+    icon: "/images/leader-badge.svg",
+  },
+];
 
 export default function AccountPage() {
-  const dispatch = useAppDispatch()
-  const user = useAppSelector(state => state?.user?.user)
-  const [isEditing, setIsEditing] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+  const dispatch = useAppDispatch();
+  const user = useAppSelector((state) => state?.user?.user);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSave = async (data: AccountFormData, apiPayload?: any) => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const res = await updateConsultantProfile(user?.id, apiPayload)
+      const res = await updateConsultantProfile(user?.id, apiPayload);
 
       if (res.status == "success") {
         const consultantData = await getConsultantMeService();
-        
+
         if (consultantData?.data) {
           dispatch(updateUser({ user: consultantData.data }));
-        }      }
-      setIsEditing(false)
+        }
+      }
+      setIsEditing(false);
     } catch (error) {
-      console.error('Error saving profile:', error)
+      console.error("Error saving profile:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <Sidebar>
@@ -56,7 +72,7 @@ export default function AccountPage() {
             </p>
           </div>
 
-          <div className='bg-white rounded-xl p-2 border border-slate-200 shadow-lg'>
+          <div className="bg-white rounded-xl p-2 border border-slate-200 shadow-lg">
             {/* Content */}
             {/* {isEditing ? (
               <ProfileEdit
@@ -75,5 +91,5 @@ export default function AccountPage() {
         </div>
       </main>
     </Sidebar>
-  )
+  );
 }

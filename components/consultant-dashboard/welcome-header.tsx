@@ -89,7 +89,7 @@ export function WelcomeHeader() {
         </div>
 
         {/* Working Clock */}
-        <div className="flex items-center justify-center gap-2 bg-brand-blue rounded-[7px] px-4 md:px-7 py-2 border border-gray-200 shadow-sm w-full lg:w-auto ">
+        <div className="flex shadow-custom items-center justify-center gap-2 bg-brand-blue rounded-[7px] px-4 md:px-7 py-2 border border-gray-200 w-full lg:w-auto ">
           <Clock className="w-8 h-8 flex-shrink-0 text-white" />
           <div className="text-center">
             <p className="text-xxs font-thin text-white tracking-wide">GMT TIME ZONE</p>

@@ -1,6 +1,6 @@
 'use client'
 
-import { MapPin, Calendar, CheckCircle2, Zap, Star, CircleStar, FileText, ChevronUp, ChevronDown, Clock, CircleCheck, Dot, Laptop, Plus } from 'lucide-react'
+import { MapPin, Calendar, CheckCircle2, Zap, Star, CircleStar, FileText, ChevronUp, ChevronDown, Clock, CircleCheck, Dot, Laptop, Plus, Sparkles, Award } from 'lucide-react'
 import { Badge } from '../homepage/ui/badge'
 import { useAppSelector } from '@/lib/store/hook'
 import { useState } from 'react'
@@ -19,10 +19,53 @@ interface ProfileHeaderProps {
   coreModules?: string[]
 }
 
+
+// const badgeConfig = {
+//   VERIFIED: { label: 'Verified', variant: 'bg-success' as const, startIcon: <CheckCircle2 className="w-3 h-3" /> },
+//   CERTIFIED: { label: 'Certified', variant: 'bg-brand-blue' as const, startIcon: <Star className="w-3 h-3" /> },
+//   SENIOR_EXPERT: { label: 'Senior Expert', variant: 'bg-brand-blue' as const, startIcon: <CircleStar className="w-3 h-3" /> },
+// }
 const badgeConfig = {
-  VERIFIED: { label: 'Verified', variant: 'bg-success' as const, startIcon: <CheckCircle2 className="w-3 h-3" /> },
-  CERTIFIED: { label: 'Certified', variant: 'bg-brand-blue' as const, startIcon: <Star className="w-3 h-3" /> },
-  SENIOR_EXPERT: { label: 'Senior Expert', variant: 'bg-brand-blue' as const, startIcon: <CircleStar className="w-3 h-3" /> },
+  VERIFIED: {
+    label: 'Verified',
+    variant: 'bg-success' as const,
+    startIcon: CheckCircle2,
+  },
+  CERTIFIED: {
+    label: 'Certified',
+    variant: 'bg-brand-blue' as const,
+    startIcon: Star,
+  },
+  JUNIOR: {
+    label: 'Junior Consultant',
+    variant: 'bg-gray-100' as const,
+    startIcon: Award,
+  },
+  ASSOCIATE: {
+    label: 'Associate Consultant',
+    variant: 'bg-brand-blue' as const,
+    startIcon: Star,
+  },
+  MID_LEVEL: {
+    label: 'Mid Level',
+    variant: 'bg-indigo-100' as const,
+    startIcon: Star,
+  },
+  SENIOR: {
+    label: 'Senior Consultant',
+    variant: 'bg-purple-100' as const,
+    startIcon: CircleStar,
+  },
+  PRINCIPAL: {
+    label: 'Principal Consultant',
+    variant: 'bg-amber-100' as const,
+    startIcon: Star,
+  },
+  SOLUTION_ARCHITECT: {
+    label: 'Solution Architect',
+    variant: 'bg-brand-blue' as const,
+    startIcon: Sparkles,
+  },
 }
 
 export function ProfileHeader({ setIsEditing }: { setIsEditing: (editing: boolean) => void }) {
@@ -43,7 +86,7 @@ export function ProfileHeader({ setIsEditing }: { setIsEditing: (editing: boolea
               const config = badgeConfig[badge as keyof typeof badgeConfig]
               return config ? (
                 <Badge key={badge} className={`${config.variant} !text-white text-xxs font-bold rounded-full flex items-center gap-1 hover:scale-105 transition-all duration-300`}>
-                  {config.startIcon}
+                  <config.startIcon className="w-3 h-3" />
                   {config.label}
                 </Badge>
               ) : null

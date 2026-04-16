@@ -9,11 +9,13 @@ import { getConsultantMeService } from '@/services/getConsultantProfile'
 import { updateUser } from '@/lib/store/features/user/userSlice'
 import { Camera, Trash, Upload, X } from 'lucide-react'
 import { updateConsultantProfile } from '@/services/consultants'
+import { ConfirmDeleteModal } from '@/components/common/ConfirmDeleteModal'
 
 export function ProfileAvatarUpload() {
   const dispatch = useDispatch()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [loading, setLoading] = useState(false)
+  const [confirmOpen, setConfirmOpen] = useState(false)
 
   // Get user data from Redux
   const { user } = useAppSelector((state) => state.user)
@@ -76,10 +78,6 @@ export function ProfileAvatarUpload() {
   }
 
   const handleClearImage = async () => {
-    if (!confirm('Are you sure you want to remove your profile picture?')) {
-      return
-    }
-
     setLoading(true)
     try {
       // Send request to clear avatar on backend
@@ -114,7 +112,6 @@ export function ProfileAvatarUpload() {
         ) : (
           <div className="w-full h-full rounded-3xl shadow-xl bg-brand-blue flex flex-col items-center justify-center">
             <Camera className="w-8 h-8 text-white" />
-            <p className="text-xs text-gray-400 mt-2">Upload Photo</p>
           </div>
         )}
       </div>
@@ -147,7 +144,7 @@ export function ProfileAvatarUpload() {
       {/* Clear button - only show if image exists */}
       {avatarUrl && (
         <button
-          onClick={handleClearImage}
+          onClick={() => setConfirmOpen(true)}
           disabled={loading}
           className="w-full text-sm px-4 py-2 bg-white hover:bg-slate-100 text-slate-500 border border-slate-200 rounded-xl font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
@@ -155,6 +152,18 @@ export function ProfileAvatarUpload() {
           Remove
         </button>
       )}
+
+      <ConfirmDeleteModal
+        isOpen={confirmOpen}
+        title="Remove profile picture"
+        message="Are you sure you want to remove your profile picture?"
+        confirmLabel="Remove"
+        onCancel={() => setConfirmOpen(false)}
+        onConfirm={() => {
+          setConfirmOpen(false)
+          void handleClearImage()
+        }}
+      />
     </div>
   )
 }
