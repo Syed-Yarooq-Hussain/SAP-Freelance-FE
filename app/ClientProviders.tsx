@@ -14,9 +14,10 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { Providers } from "@/lib/store/provider";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistor } from "@/lib/store/store";
-import { Toaster } from "@/components/homepage/ui/sonner";
+// import { Toaster } from "@/components/homepage/ui/sonner";
 import ThemeRegistry from "./ThemeRegistry";
 import { usePathname } from "next/navigation";
+import { Toaster } from "sonner";
 
 export default function ClientProviders({
   children,
@@ -52,7 +53,7 @@ export default function ClientProviders({
                       </PersistGate>
                     </Providers>
                   </ToastProvider>
-                  <Toaster />
+                  <Toaster richColors/>
                 </Box>
               </Container>
             </SessionProvider>

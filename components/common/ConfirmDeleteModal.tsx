@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { Trash2, X } from "lucide-react";
+import { CheckCircle2, Trash2, X } from "lucide-react";
+import type { ReactNode } from "react";
 
 interface ConfirmDeleteModalProps {
   isOpen: boolean;
@@ -10,6 +11,8 @@ interface ConfirmDeleteModalProps {
   title?: string;
   confirmLabel?: string;
   cancelLabel?: string;
+  variant?: "danger" | "primary";
+  icon?: ReactNode;
   onCancel: () => void;
   onConfirm: () => void;
 }
@@ -20,6 +23,8 @@ export function ConfirmDeleteModal({
   title = "Delete item",
   confirmLabel = "Delete",
   cancelLabel = "Cancel",
+  variant = "danger",
+  icon,
   onCancel,
   onConfirm,
 }: ConfirmDeleteModalProps) {
@@ -30,6 +35,17 @@ export function ConfirmDeleteModal({
   }, []);
 
   if (!isOpen || !mounted) return null;
+
+  const isDanger = variant === "danger";
+  const defaultIcon = isDanger ? (
+    <Trash2 className="h-5 w-5 text-red-500" />
+  ) : (
+    <CheckCircle2 className="h-5 w-5 text-brand-blue" />
+  );
+  const iconContainerClass = isDanger ? "bg-red-50" : "bg-[#EAF1FB]";
+  const confirmButtonClass = isDanger
+    ? "bg-red-500 hover:bg-red-600"
+    : "bg-brand-blue hover:bg-[#2676A1]";
 
   const content = (
     <div
@@ -50,8 +66,10 @@ export function ConfirmDeleteModal({
         </button>
 
         <div className="flex items-center gap-3 mb-4">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-50">
-            <Trash2 className="h-5 w-5 text-red-500" />
+          <div
+            className={`flex h-10 w-10 items-center justify-center rounded-full ${iconContainerClass}`}
+          >
+            {icon ?? defaultIcon}
           </div>
           <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
         </div>
@@ -69,7 +87,7 @@ export function ConfirmDeleteModal({
           <button
             type="button"
             onClick={onConfirm}
-            className="px-4 py-2 rounded-input bg-red-500 text-white text-sm font-semibold hover:bg-red-600 transition-colors"
+            className={`px-4 py-2 rounded-input text-white text-sm font-semibold transition-colors ${confirmButtonClass}`}
           >
             {confirmLabel}
           </button>

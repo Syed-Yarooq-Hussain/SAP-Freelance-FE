@@ -2,38 +2,18 @@
 
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { X } from 'lucide-react'
+import { Briefcase } from 'lucide-react'
 import { createPortal } from 'react-dom'
 import { useEffect, useState } from 'react'
 import { workExperienceSchema, type WorkExperienceFormData } from '@/lib/schemas/experience'
+import { formatDateFieldForInput } from '@/lib/utils/dateFieldDisplay'
+import { ProfileFormModalHeader } from '@/components/profile/profile-form-modal-header'
 
 interface WorkExperienceModalProps {
   isOpen: boolean
   onClose: () => void
   onSave: (data: WorkExperienceFormData) => Promise<void>
   initialData?: WorkExperienceFormData
-}
-
-const toDateInputValue = (value?: string | null) => {
-  if (!value) return ''
-  const normalized = value.trim().toLowerCase()
-  if (normalized === 'current' || normalized === 'present') {
-    return new Date().toISOString().split('T')[0]
-  }
-
-  const directDatePattern = /^\d{4}-\d{2}-\d{2}$/
-  if (directDatePattern.test(value)) return value
-
-  const parsed = new Date(value)
-  if (Number.isNaN(parsed.getTime())) {
-    const monthYearMatch = value.match(/^([a-zA-Z]+)\s+(\d{4})$/)
-    if (!monthYearMatch) return ''
-    const fallback = new Date(`${monthYearMatch[1]} 1, ${monthYearMatch[2]}`)
-    if (Number.isNaN(fallback.getTime())) return ''
-    return fallback.toISOString().split('T')[0]
-  }
-
-  return parsed.toISOString().split('T')[0]
 }
 
 export function WorkExperienceModal({
@@ -62,8 +42,8 @@ export function WorkExperienceModal({
     if (initialData) {
       reset({
         ...initialData,
-        start_date: toDateInputValue(initialData.start_date),
-        end_date: toDateInputValue(initialData.end_date),
+        start_date: formatDateFieldForInput(initialData.start_date),
+        end_date: formatDateFieldForInput(initialData.end_date),
         responsibilities: initialData.responsibilities || [],
       })
       return
@@ -109,9 +89,12 @@ export function WorkExperienceModal({
         onClick={(e) => e.stopPropagation()}
       >
 
-        <h2 className="text-xl font-bold text-slate-900 mb-6">
-          {initialData ? 'Edit Work Experience' : 'Add Work Experience'}
-        </h2>
+        <ProfileFormModalHeader
+          icon={Briefcase}
+          title={initialData ? 'Edit Work Experience' : 'Add Work Experience'}
+          subtitle="Fill in your role details to showcase your work experience on your profile."
+          onClose={handleClose}
+        />
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <div>
@@ -149,7 +132,9 @@ export function WorkExperienceModal({
               </label>
               <input
                 {...register('start_date')}
-                type="date"
+                type="text"
+                placeholder="2020"
+                autoComplete="off"
                 className="w-full px-4 py-2 border border-slate-300 rounded-input focus:outline-none focus:border-brand-blue text-slate-900"
               />
               {errors.start_date && (
@@ -163,7 +148,9 @@ export function WorkExperienceModal({
               </label>
               <input
                 {...register('end_date')}
-                type="date"
+                type="text"
+                placeholder="2024"
+                autoComplete="off"
                 className="w-full px-4 py-2 border border-slate-300 rounded-input focus:outline-none focus:border-brand-blue text-slate-900"
               />
               {errors.end_date && (

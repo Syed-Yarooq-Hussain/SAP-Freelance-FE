@@ -59,6 +59,7 @@ import { getIndustries } from "@/services/getIndustries";
 import { getExpertiseLevels } from "@/services/getExpertiseLevel";
 import { useToast } from "@/providers/ToastProvider";
 import { LocationAutocomplete } from "@/components/account-settings/LocationAutocomplete";
+import { toast } from "sonner";
 
 const inputSurfaceClass =
   "bg-background-main border-slate-200 focus:ring-[#3088B7] focus:border-[#3088B7]";
@@ -189,8 +190,6 @@ const SelectField = ({
 );
 
 export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
-  const router = useRouter();
-  const toast = useToast();
   const dispatch = useAppDispatch();
   const { user: consultant } = useAppSelector((state) => state.user);
   const [industries, setIndustries] = useState<any[]>([]);
@@ -209,9 +208,11 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
 
   const [expandedSections, setExpandedSections] = useState({
     basicInfo: false ,
+    myInformation: true,
     keyLocations: false,
     contactAndLocation: true,
     professionalSummary: false,
+    professionalInformation: false,
     experience: false,
     workExperience: false,
     certifications: false,
@@ -403,6 +404,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
   >();
   const [projDeleteOpen, setProjDeleteOpen] = useState(false);
   const [projDeleteIndex, setProjDeleteIndex] = useState<number | null>(null);
+  const [saveConfirmOpen, setSaveConfirmOpen] = useState(false);
 
   const toggleSection = (section: keyof typeof expandedSections) => {
     setExpandedSections((prev) => ({
@@ -593,9 +595,9 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
         if (consultantData?.data) {
           dispatch(updateUser({ user: consultantData.data }))
         }
-        toast.toast("Profile updated successfully!", "success");
+        toast.success("Profile updated successfully!");
       } else {
-        toast.toast("Failed to update profile!", "error");
+        toast.error("Failed to update profile!");
       }
     } catch (error) {
       console.error('Error updating profile:', error)
@@ -664,7 +666,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
               </div>
             </div>
             <div>
-              <h1 className="text-3xl font-neue text-slate-900">Setup Your Profile</h1>
+              <h1 className="text-2xl font-neue text-slate-900">Setup Your Profile</h1>
               <p className="text-sm font-manrope text-light-grey">Keep your profile accurate to attract the right clients</p>
             </div>
           </div>
@@ -676,12 +678,11 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
               Discard Changes
             </button>
             <button
-              onClick={handleSubmit(onSubmit)}
-              className="px-6 py-2 text-sm bg-brand-blue text-white rounded-xl hover:bg-[#0891B2] transition font-medium"
+              onClick={() => setSaveConfirmOpen(true)}
+              className="px-6 py-2 text-sm bg-brand-blue text-white rounded-xl transition font-medium"
             >
               Save Changes
             </button>
-
           </div>
         </div>
       </div>
@@ -695,199 +696,20 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
             onSubmit={handleSubmit(onSubmit)}
             className="flex flex-col gap-2"
           >
-            {/* Contant and location Information */}
-            <div className="rounded-box border border-slate-200 overflow-hidden bg-background-main">
-              <SectionHeader
-                icon={<MapPin className="w-5 h-5 text-slate-600" />}
-                title="Contact & location"
-                description="Where you are and how to reach you"
-                section="contactAndLocation"
-              />
-              {expandedSections.contactAndLocation && (
-                <div className="px-6 py-4 border-t border-slate-200 bg-background-main space-y-6">
-                  {/* First and Last Name */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <InputField
-                      label="Email Address"
-                      type="text"
-                      disabled
-                      required
-                      cl
-                      error={errors.email?.message}
-                      {...register("email")}
-                    />
-                    <InputField
-                      label="Phone Number"
-                      type="text"
-                      optional
-                      error={errors.phone?.message}
-                      {...register("phone")}
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-2 border-b border-slate-200 pb-4">
-                  {/* <InputField
-                      label="Country"
-                      type="text"
-                      required
-                      error={errors.country?.message}
-                      {...register("country")}
-                    />
-                    <InputField
-                      label="City"
-                      type="text"
-                      required
-                      error={errors.city?.message}
-                      {...register("city")}
-                    /> */}
-                    <LocationAutocomplete
-                      value={watch('country') || ''}
-                      onChange={(value) => setValue('country', value)}
-                      placeholder="Select country"
-                      className="bg-brand-yellow"
-                    />
-                    <LocationAutocomplete
-                      value={watch('city') || ''}
-                      onChange={(value) => setValue('city', value)}
-                      placeholder="Select city"
-                      className="bg-brand-yellow"
-                    />
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="flex items-center gap-2 mt-4">
-                      <div className="w-full">
-                      <InputField
-                        label="Hourly Rate (USD)"
-                        type="number"
-                        required
-                        className="w-full"
-                        error={errors.rate?.message}
-                          {...register("rate")}
-                        />
-                        <p className="text-xs text-light-grey mt-2">Set your preferred hourly rate range. Clients see this when browsing your profile.</p>
-
-                        </div>
-                      {/* <span className="text-slate-500 mt-4 text-2xl">-</span> */}
-                      {/* <div className="w-full">
-                      <InputField
-                        label="Maximum"
-                        type="number"
-                        required
-                        error={errors.rate?.message}
-                        {...register("rate")}
-                      />
-                      </div> */}
-                    </div>
-                  <div>
-                    <div className="flex items-center gap-2 mt-4">
-                      <div className="w-full">
-                      <InputField
-                        label="Weekly Availability"
-                        type="number"
-                        required
-                        className="w-full"
-                        error={errors.weekly_available_hours?.message}
-                          {...register("weekly_available_hours")}
-                        />
-                        </div>
-                      {/* <span className="text-slate-500 mt-4 text-2xl">-</span> */}
-                      {/* <div className="w-full">
-                      <InputField
-                        label="Maximum"
-                        type="number"
-                        required
-                        error={errors.rate?.message}
-                        {...register("rate")}
-                      />
-                      </div> */}
-                    </div>
-                  </div>
-                  </div>
-
-                </div>
-              )}
-            </div>
-            {/* Professional Summary */}
-            <div className="rounded-box border border-slate-200 overflow-hidden bg-background-main">
-              <SectionHeader
-                title="Expertise & SAP Modules"
-                description="Your core module, skills, and certifications"
-                icon={<LaptopMinimal className="w-5 h-5 text-slate-600" />}
-                section="professionalSummary"
-              />
-              {expandedSections.professionalSummary && (
-                <div className="px-6 py-4 border-t border-slate-200 bg-background-main space-y-4">
-                  <div className=" flex flex-col gap-4">
-                    <div>
-                      <label className="block text-xs font-manrope font-medium text-slate-700 mb-2">
-                        Core Modules
-                        <span className="text-red-500 ml-1">*</span>
-                      </label>
-                      <MultiSelect
-                        options={
-                          modules?.core?.length > 0
-                            ? modules.core.map((module: any) => ({
-                                label: module.name,
-                                value: String(module.id),
-                              }))
-                            : []
-                        }
-                        value={coreModules || []}
-                        onChange={(selected) => {
-                          if (selected.length > 2) {
-                            setError("core", {
-                              type: "manual",
-                              message: "You can select maximum 2 items",
-                            });
-                            return;
-                          }
-
-                          clearErrors("core");
-                          setValue("core", selected, { shouldValidate: true });
-                        }}
-                        placeholder="Select core modules"
-                      />
-                      <p className="text-xs text-light-grey mt-2">Only 2 modules allowed. </p>
-                      {errors.core && (
-                        <p className="text-xs text-red-500 mt-2">
-                          {errors.core.message}
-                        </p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-manrope font-medium text-slate-700 mb-2">
-                        Other Modules
-                      </label>
-                      <MultiSelect
-                        options={
-                          modules?.others?.length > 0
-                            ? modules.others.map((module: any) => ({
-                                label: module.name,
-                                value: String(module.id),
-                              }))
-                            : []
-                        }
-                        value={otherModules || []}
-                        onChange={(selected) =>{
-                          setValue("others", selected, { shouldValidate: true })
-                        }}
-                        placeholder="Select other modules"
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-            {/* Basic Information */}
+            {/* My Information */}
             <div className="rounded-box border border-slate-200 overflow-hidden bg-background-main">
               <SectionHeader
                 icon={<User className="w-5 h-5 text-slate-600" />}
-                title="Basic Information"
-                description="Your name, headline, and professional identity"
-                section="basicInfo"
+                title="My Information"
+                description="Basic profile, contact details, location, and SAP expertise"
+                section="myInformation"
               />
-              {expandedSections.basicInfo && (
+              {expandedSections.myInformation && (
                 <div className="px-6 py-4 border-t border-slate-200 bg-background-main space-y-6">
+                  <div className="flex items-center gap-2">
+                    <User className="w-4 h-4 text-slate-600" />
+                    <h3 className="text-sm font-semibold text-slate-800">Basic Information</h3>
+                  </div>
                   {/* First and Last Name */}
                   <div className="grid grid-cols-1 gap-4">
                     <InputField
@@ -1008,6 +830,138 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                       </p>
                     )}
                   </div>
+
+                  {/* <div className="h-px bg-slate-200" />
+                  <div className="flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-slate-600" />
+                    <h3 className="text-sm font-semibold text-slate-800">Contact & location</h3>
+                  </div> */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <InputField
+                      label="Email Address"
+                      type="text"
+                      disabled
+                      required
+                      cl
+                      error={errors.email?.message}
+                      {...register("email")}
+                    />
+                    <InputField
+                      label="Phone Number"
+                      type="text"
+                      optional
+                      error={errors.phone?.message}
+                      {...register("phone")}
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <LocationAutocomplete
+                      value={watch('country') || ''}
+                      onChange={(value) => setValue('country', value)}
+                      placeholder="Select country"
+                      className="bg-brand-yellow"
+                    />
+                    <LocationAutocomplete
+                      value={watch('city') || ''}
+                      onChange={(value) => setValue('city', value)}
+                      placeholder="Select city"
+                      className="bg-brand-yellow"
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex items-center gap-2 mt-4">
+                      <div className="w-full">
+                        <InputField
+                          label="Hourly Rate (USD)"
+                          type="number"
+                          required
+                          className="w-full"
+                          error={errors.rate?.message}
+                          {...register("rate")}
+                        />
+                        <p className="text-xs text-light-grey mt-2">Set your preferred hourly rate range. Clients see this when browsing your profile.</p>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2 mt-4">
+                        <div className="w-full">
+                          <InputField
+                            label="Weekly Availability"
+                            type="number"
+                            required
+                            className="w-full"
+                            error={errors.weekly_available_hours?.message}
+                            {...register("weekly_available_hours")}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* <div className="h-px bg-slate-200" />
+                  <div className="flex items-center gap-2">
+                    <LaptopMinimal className="w-4 h-4 text-slate-600" />
+                    <h3 className="text-sm font-semibold text-slate-800">Expertise & SAP Modules</h3>
+                  </div> */}
+                  <div className=" flex flex-col gap-4">
+                    <div>
+                      <label className="block text-xs font-manrope font-medium text-slate-700 mb-2">
+                        Core Modules
+                        <span className="text-red-500 ml-1">*</span>
+                      </label>
+                      <MultiSelect
+                        options={
+                          modules?.core?.length > 0
+                            ? modules.core.map((module: any) => ({
+                                label: module.name,
+                                value: String(module.id),
+                              }))
+                            : []
+                        }
+                        value={coreModules || []}
+                        onChange={(selected) => {
+                          if (selected.length > 2) {
+                            setError("core", {
+                              type: "manual",
+                              message: "You can select maximum 2 items",
+                            });
+                            return;
+                          }
+
+                          clearErrors("core");
+                          setValue("core", selected, { shouldValidate: true });
+                        }}
+                        placeholder="Select core modules"
+                      />
+                      <p className="text-xs text-light-grey mt-2">Only 2 modules allowed. </p>
+                      {errors.core && (
+                        <p className="text-xs text-red-500 mt-2">
+                          {errors.core.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-manrope font-medium text-slate-700 mb-2">
+                        Other Modules
+                      </label>
+                      <MultiSelect
+                        options={
+                          modules?.others?.length > 0
+                            ? modules.others.map((module: any) => ({
+                                label: module.name,
+                                value: String(module.id),
+                              }))
+                            : []
+                        }
+                        value={otherModules || []}
+                        onChange={(selected) =>{
+                          setValue("others", selected, { shouldValidate: true })
+                        }}
+                        placeholder="Select other modules"
+                      />
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
@@ -1042,16 +996,20 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
 
             
 
-            {/* Work Experience */}
+            {/* Professional Information */}
             <div className="rounded-box border border-slate-200 overflow-hidden bg-white">
               <SectionHeader
                 icon={<Briefcase className="w-5 h-5 text-slate-600" />}
-                title="Work Experience"
-                description="Your consulting history and previous roles"
-                section="workExperience"
+                title="Professional Information"
+                description="Work experience, education, projects, and certifications"
+                section="professionalInformation"
               />
-              {expandedSections.workExperience && (
-                <div className="px-6 py-5 border-t border-slate-200 bg-background-main space-y-4">
+              {expandedSections.professionalInformation && (
+                <div className="px-6 py-5 border-t border-slate-200 bg-background-main space-y-6">
+                  <div className="flex items-center gap-2">
+                    <Briefcase className="w-4 h-4 text-slate-600" />
+                    <h3 className="text-sm font-semibold text-slate-800">Work Experience</h3>
+                  </div>
                   {workFields.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-12 bg-brand-yellow rounded-xl border border-dashed border-slate-300">
                       <p className="text-slate-600 text-sm mb-4">
@@ -1115,7 +1073,6 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                       })}
                     </div>
                   )}
-
                   {workFields.length > 0 ? (
                     <button
                       type="button"
@@ -1126,22 +1083,12 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                       Add Work Experience
                     </button>
                   ) : null}
-                </div>
-              )}
-            </div>
 
-           
-
-            {/* Education */}
-            <div className="rounded-box border border-slate-200 overflow-hidden bg-white">
-              <SectionHeader
-                icon={<GraduationCap className="w-5 h-5 text-slate-600" />}
-                title="Education"
-                description="Degrees, institutions, and academic background"
-                section="education"
-              />
-              {expandedSections.education && (
-                <div className="px-6 py-5 border-t border-slate-200 bg-background-main space-y-4">
+                  <div className="h-px bg-slate-200" />
+                  <div className="flex items-center gap-2">
+                    <GraduationCap className="w-4 h-4 text-slate-600" />
+                    <h3 className="text-sm font-semibold text-slate-800">Education</h3>
+                  </div>
                   {eduFields.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-12 bg-brand-yellow rounded-xl border border-dashed border-slate-300">
                       <p className="text-slate-600 text-sm mb-4">
@@ -1205,7 +1152,6 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                       })}
                     </div>
                   )}
-
                   {eduFields.length > 0 ? (
                     <button
                       type="button"
@@ -1216,20 +1162,12 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                       Add Education
                     </button>
                   ) : null}
-                </div>
-              )}
-            </div>
 
-            {/* Projects */}
-            <div className="rounded-box border border-slate-200 overflow-hidden bg-white">
-              <SectionHeader
-                icon={<FolderKanban className="w-5 h-5 text-slate-600" />}
-                title="Projects"
-                description="Notable client work and delivery highlights"
-                section="projects"
-              />
-              {expandedSections.projects && (
-                <div className="px-6 py-5 border-t border-slate-200 bg-background-main space-y-4">
+                  <div className="h-px bg-slate-200" />
+                  <div className="flex items-center gap-2">
+                    <FolderKanban className="w-4 h-4 text-slate-600" />
+                    <h3 className="text-sm font-semibold text-slate-800">Projects</h3>
+                  </div>
                   {projFields.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-12 bg-brand-yellow rounded-xl border border-dashed border-slate-300">
                       <p className="text-slate-600 text-sm mb-4">
@@ -1293,7 +1231,6 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                       })}
                     </div>
                   )}
-
                   {projFields.length > 0 ? (
                     <button
                       type="button"
@@ -1304,20 +1241,12 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                       Add Project
                     </button>
                   ) : null}
-                </div>
-              )}
-            </div>
 
-             {/* Certifications */}
-             <div className="rounded-box border border-slate-200 overflow-hidden bg-white">
-              <SectionHeader
-                icon={<Star className="w-5 h-5 text-slate-600" />}
-                title="Certifications"
-                description="Professional credentials and SAP certifications"
-                section="certifications"
-              />
-              {expandedSections.certifications && (
-                <div className="px-6 py-5 border-t border-slate-200 bg-background-main space-y-4">
+                  <div className="h-px bg-slate-200" />
+                  <div className="flex items-center gap-2">
+                    <Star className="w-4 h-4 text-slate-600" />
+                    <h3 className="text-sm font-semibold text-slate-800">Certifications</h3>
+                  </div>
                   {certFields.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-12 bg-brand-yellow rounded-xl border border-dashed border-slate-300">
                       <p className="text-slate-600 text-sm mb-4">
@@ -1381,7 +1310,6 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                       })}
                     </div>
                   )}
-
                   {certFields.length > 0 ? (
                     <button
                       type="button"
@@ -1487,6 +1415,19 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                 if (projDeleteIndex !== null) removeProj(projDeleteIndex);
                 setProjDeleteOpen(false);
                 setProjDeleteIndex(null);
+              }}
+            />
+            <ConfirmDeleteModal
+              isOpen={saveConfirmOpen}
+              title="Save changes"
+              message="Are you sure you want to save these profile changes?"
+              confirmLabel="Save"
+              cancelLabel="Cancel"
+              variant="primary"
+              onCancel={() => setSaveConfirmOpen(false)}
+              onConfirm={() => {
+                setSaveConfirmOpen(false);
+                handleSubmit(onSubmit)();
               }}
             />
           </form>

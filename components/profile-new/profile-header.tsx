@@ -1,6 +1,6 @@
 'use client'
 
-import { MapPin, Calendar, CheckCircle2, Zap, Star, CircleStar, FileText, ChevronUp, ChevronDown, Clock, CircleCheck, Dot, Laptop, Plus, Sparkles, Award } from 'lucide-react'
+import { MapPin, Calendar, CheckCircle2, Zap, Star, CircleStar, FileText, ChevronUp, ChevronDown, Clock, CircleCheck, Dot, Laptop, Plus, Sparkles, Award, Linkedin } from 'lucide-react'
 import { Badge } from '../homepage/ui/badge'
 import { useAppSelector } from '@/lib/store/hook'
 import { useState } from 'react'
@@ -109,8 +109,8 @@ export function ProfileHeader({ setIsEditing }: { setIsEditing: (editing: boolea
           <p className="text-sm font-thin text-black flex items-center gap-2 font-neue">{user?.experience} years of experience</p>
         </div>
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4">
-        <div className="shadow-custom max-h-16 border flex flex-col justify-evenly border-slate-200 rounded-lg px-4 py-2">
+      <div className={`grid grid-cols-2  gap-4 mb-4 ${user?.user?.linkedin_url ? 'md:grid-cols-5' : 'md:grid-cols-4'}`}>
+        <div className="shadow-custom min-h-16 border flex flex-col justify-evenly border-slate-200 rounded-lg px-4 py-2">
           <div className="text-[10px] text-light-grey font-semibold font-manrope">
             Hourly Rate
           </div>
@@ -118,7 +118,7 @@ export function ProfileHeader({ setIsEditing }: { setIsEditing: (editing: boolea
             ${user?.rate || '-'}/hr
           </div>
         </div>
-        <div className="shadow-custom max-h-16 border flex flex-col justify-evenly border-slate-200 rounded-lg px-4 py-2">
+        <div className="shadow-custom min-h-16 border flex flex-col justify-evenly border-slate-200 rounded-lg px-4 py-2">
           <div className="text-[10px] text-light-grey font-semibold mb-1 font-manrope">
             Availability (Weekly)
           </div>
@@ -128,7 +128,7 @@ export function ProfileHeader({ setIsEditing }: { setIsEditing: (editing: boolea
           </div>
         </div>
         {user?.user?.city && (
-          <div className="shadow-custom max-h-16 border flex flex-col justify-evenly border-slate-200 rounded-lg px-4 py-2">
+          <div className="shadow-custom min-h-16 border flex flex-col justify-evenly border-slate-200 rounded-lg px-4 py-2">
             <div className="flex items-center gap-1 text-[10px] text-light-grey font-semibold mb-1 font-manrope">
               Location
             </div>
@@ -139,19 +139,19 @@ export function ProfileHeader({ setIsEditing }: { setIsEditing: (editing: boolea
             </div>
           </div>
         )}
-        {(
-          <div className="shadow-custom max-h-16 border flex flex-col justify-evenly border-slate-200 rounded-lg px-4 py-2">
+        {user?.user?.linkedin_url && (
+          <div className="shadow-custom min-h-16 border flex flex-col justify-evenly border-slate-200 rounded-lg px-4 py-2">
             <div className="flex items-center gap-1 text-[10px] text-light-grey font-semibold mb-1 font-manrope">
-              Joined
+              LinkedIn
             </div>
             <div className="text-sm text-slate-900 flex items-center gap-1.5 font-manrope">
-              <Calendar className="w-4 h-4" />
-              {user?.user?.created_at || 'Recently'}
+              <Linkedin className="w-3 h-3" />
+              <a href={user?.user?.linkedin_url} target="_blank" rel="noopener noreferrer">View Profile</a>
             </div>
           </div>
         )}
         {(
-          <div className="shadow-custom max-h-16 border flex flex-col justify-evenly border-slate-200 rounded-lg px-4 py-2">
+          <div className="shadow-custom min-h-16 border flex flex-col justify-evenly border-slate-200 rounded-lg px-4 py-2">
             <div className="flex items-center gap-1 text-[10px] text-light-grey font-semibold mb-1 font-manrope">
               Projects
             </div>

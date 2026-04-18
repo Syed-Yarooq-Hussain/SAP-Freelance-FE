@@ -65,7 +65,7 @@ export function PhotoGuidelinesModal({
 
         <button
           onClick={onClose}
-          className="btn-gradient-blue w-full text-white font-semibold py-3 rounded-input mt-7 transition-all duration-300 ease-out hover:shadow-lg hover:shadow-brand-blue/30 hover:scale-105 active:scale-95"
+          className="bg-brand-blue w-full text-white font-semibold py-3 rounded-input mt-7 transition-all duration-300 ease-out hover:shadow-lg hover:shadow-brand-blue/30 hover:scale-105 active:scale-95"
         >
           Got it
         </button>

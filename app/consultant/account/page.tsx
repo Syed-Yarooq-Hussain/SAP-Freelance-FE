@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
 import { getConsultantMeService } from "@/services/getConsultantProfile";
 import { updateUser } from "@/lib/store/features/user/userSlice";
 import AccountSettings from "@/components/account-settings/account-settings";
+import { toast } from "sonner";
 
 const mockBadges = [
   {
@@ -45,14 +46,15 @@ export default function AccountPage() {
 
       if (res.status == "success") {
         const consultantData = await getConsultantMeService();
-
         if (consultantData?.data) {
           dispatch(updateUser({ user: consultantData.data }));
         }
+        toast.success("Account settings updated successfully!");
       }
       setIsEditing(false);
     } catch (error) {
       console.error("Error saving profile:", error);
+      toast.error("Failed to update account settings!");
     } finally {
       setIsLoading(false);
     }
@@ -60,14 +62,14 @@ export default function AccountPage() {
 
   return (
     <Sidebar>
-      <main className=" bg-white rounded-xl">
-        <div className="container mx-auto px-4 py-12">
+      <main className=" bg-white">
+        <div className=" mx-auto px-4 py-8">
           {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2">
-              Account
+          <div className="mb-4 font-manrope">
+            <h1 className="text-2xl font-neue text-slate-900 tracking-tight">
+              Account Settings
             </h1>
-            <p className="text-slate-600">
+            <p className="text-sm text-light-grey mt-2 max-w-2xl">
               Manage your professional information and credentials
             </p>
           </div>
