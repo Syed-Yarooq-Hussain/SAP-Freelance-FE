@@ -6,6 +6,7 @@ import { useSendVerificationEmail } from '@/actions/auth/useSendVerificationEmai
 import { useToast } from '@/providers/ToastProvider';
 import { ISignupDTO, IUser } from '@/types/common-auth';
 import { useState } from 'react';
+import { toast } from 'sonner';
 // import { toast } from 'sonner';
 
 export interface AuthModalHandlers {
@@ -47,7 +48,6 @@ export function useAuthModals() {
   const { mutateAsync: mutateForgetPassword, isPending: isForgetPasswordPending } = useForgetPassword()
   const { mutateAsync: mutateResetPassword, isPending: isResetPasswordPending } = useResetPassword()
 
-  const { toast } = useToast();
 
   const openLogin = () => {
     setShowLogin(true);
@@ -100,7 +100,7 @@ export function useAuthModals() {
       });
       
       // Show backend error message to user
-      toast(errorMessage,'error');      
+      toast.error(errorMessage);      
     }
   };
 
@@ -115,9 +115,9 @@ export function useAuthModals() {
       }
 
       if(response?.message){
-        toast(response?.message,'error');
+        toast.error(response?.message);
       }else{
-        toast(response?.data?.message || 'Something went wrong','error');
+        toast.error(response?.data?.message || 'Something went wrong');
       }
       // const responseData = response?.data as any;
       // const userId = responseData?.id || responseData?.user?.id;
@@ -129,7 +129,7 @@ export function useAuthModals() {
       if(error?.response?.data?.message){
         errorMessage = error?.response?.data?.message;
       }
-      toast(errorMessage,'error');
+      toast.error(errorMessage);
       console.error('Signup error:', error);
     }
   };

@@ -2,10 +2,12 @@
 
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { X } from 'lucide-react'
+import { FolderKanban } from 'lucide-react'
 import { createPortal } from 'react-dom'
 import { useEffect, useState } from 'react'
 import { projectSchema, type ProjectFormData } from '@/lib/schemas/projects'
+import { formatDateFieldForInput } from '@/lib/utils/dateFieldDisplay'
+import { ProfileFormModalHeader } from '@/components/profile/profile-form-modal-header'
 
 interface ProjectsModalProps {
   isOpen: boolean
@@ -18,28 +20,6 @@ type ProjectPayload = ProjectFormData & {
   budget?: number | null | ''
   technologies?: string[] | string | null
   status?: string
-}
-
-const toDateInputValue = (value?: string | null) => {
-  if (!value) return ''
-  const normalized = value.trim().toLowerCase()
-  if (normalized === 'current' || normalized === 'present') {
-    return new Date().toISOString().split('T')[0]
-  }
-
-  const directDatePattern = /^\d{4}-\d{2}-\d{2}$/
-  if (directDatePattern.test(value)) return value
-
-  const parsed = new Date(value)
-  if (Number.isNaN(parsed.getTime())) {
-    const monthYearMatch = value.match(/^([a-zA-Z]+)\s+(\d{4})$/)
-    if (!monthYearMatch) return ''
-    const fallback = new Date(`${monthYearMatch[1]} 1, ${monthYearMatch[2]}`)
-    if (Number.isNaN(fallback.getTime())) return ''
-    return fallback.toISOString().split('T')[0]
-  }
-
-  return parsed.toISOString().split('T')[0]
 }
 
 export function ProjectsModal({
@@ -58,8 +38,8 @@ export function ProjectsModal({
     resolver: yupResolver(projectSchema) as any,
     defaultValues: {
       ...initialData,
-      start_date: toDateInputValue(initialData?.start_date as any),
-      end_date: toDateInputValue(initialData?.end_date as any),
+      start_date: formatDateFieldForInput(initialData?.start_date as any),
+      end_date: formatDateFieldForInput(initialData?.end_date as any),
     },
   })
 
@@ -68,8 +48,8 @@ export function ProjectsModal({
     if (initialData) {
       reset({
         ...initialData,
-        start_date: toDateInputValue(initialData.start_date as any),
-        end_date: toDateInputValue(initialData.end_date as any),
+        start_date: formatDateFieldForInput(initialData.start_date as any),
+        end_date: formatDateFieldForInput(initialData.end_date as any),
       })
       return
     }
@@ -140,16 +120,12 @@ export function ProjectsModal({
         className="relative w-full max-w-2xl rounded-2xl bg-white p-8 shadow-2xl z-[100000]"
         onClick={(e) => e.stopPropagation()}
       >
-        <button
-          onClick={handleClose}
-          className="absolute top-4 right-4 p-2 hover:bg-slate-100 rounded-lg transition-colors"
-        >
-          <X className="w-5 h-5 text-slate-600" />
-        </button>
-
-        <h2 className="text-xl font-bold text-slate-900 mb-6">
-          {initialData ? 'Edit Project' : 'Add Project'}
-        </h2>
+        <ProfileFormModalHeader
+          icon={FolderKanban}
+          title={initialData ? 'Edit Project' : 'Add Project'}
+          subtitle="Fill in project details to highlight your client delivery work on your profile."
+          onClose={handleClose}
+        />
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <div>
@@ -202,7 +178,9 @@ export function ProjectsModal({
               </label>
               <input
                 {...register('start_date')}
-                type="date"
+                type="text"
+                placeholder="e.g. Q1 2021 or 2021-01-01"
+                autoComplete="off"
                 className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:border-brand-blue text-slate-900"
               />
               {errors.start_date && (
@@ -216,7 +194,9 @@ export function ProjectsModal({
               </label>
               <input
                 {...register('end_date')}
-                type="date"
+                type="text"
+                placeholder="e.g. Jun 2024, Present, or leave blank"
+                autoComplete="off"
                 className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:border-brand-blue text-slate-900"
               />
               {errors.end_date && (

@@ -1,39 +1,22 @@
-'use client'
+"use client";
 
-import { useForm, Controller } from 'react-hook-form'
-import { yupResolver } from '@hookform/resolvers/yup'
-import { X } from 'lucide-react'
-import { createPortal } from 'react-dom'
-import { useEffect, useState } from 'react'
-import { educationSchema, type EducationFormData } from '@/lib/schemas/education'
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { GraduationCap } from "lucide-react";
+import { createPortal } from "react-dom";
+import { useEffect, useState } from "react";
+import {
+  educationSchema,
+  type EducationFormData,
+} from "@/lib/schemas/education";
+import { formatDateFieldForInput } from "@/lib/utils/dateFieldDisplay";
+import { ProfileFormModalHeader } from "@/components/profile/profile-form-modal-header";
 
 interface EducationModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onSave: (data: EducationFormData) => Promise<void>
-  initialData?: EducationFormData
-}
-
-const toDateInputValue = (value?: string | null) => {
-  if (!value) return ''
-  const normalized = value.trim().toLowerCase()
-  if (normalized === 'current' || normalized === 'present') {
-    return new Date().toISOString().split('T')[0]
-  }
-
-  const directDatePattern = /^\d{4}-\d{2}-\d{2}$/
-  if (directDatePattern.test(value)) return value
-
-  const parsed = new Date(value)
-  if (Number.isNaN(parsed.getTime())) {
-    const monthYearMatch = value.match(/^([a-zA-Z]+)\s+(\d{4})$/)
-    if (!monthYearMatch) return ''
-    const fallback = new Date(`${monthYearMatch[1]} 1, ${monthYearMatch[2]}`)
-    if (Number.isNaN(fallback.getTime())) return ''
-    return fallback.toISOString().split('T')[0]
-  }
-
-  return parsed.toISOString().split('T')[0]
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (data: EducationFormData) => Promise<void>;
+  initialData?: EducationFormData;
 }
 
 export function EducationModal({
@@ -42,7 +25,7 @@ export function EducationModal({
   onSave,
   initialData,
 }: EducationModalProps) {
-  const [mounted, setMounted] = useState(false)
+  const [mounted, setMounted] = useState(false);
   const {
     register,
     handleSubmit,
@@ -53,104 +36,119 @@ export function EducationModal({
     resolver: yupResolver(educationSchema) as any,
     defaultValues: {
       ...initialData,
-      start_date: toDateInputValue(initialData?.start_date),
-      end_date: toDateInputValue(initialData?.end_date),
+      start_date: initialData?.start_date,
+      end_date: initialData?.end_date,
+      // grade: initialData?.grade || "",
       details: initialData?.details || [],
     },
-  })
+  });
 
   useEffect(() => {
-    if (!isOpen) return
+    if (!isOpen) return;
     if (initialData) {
       reset({
         ...initialData,
-        start_date: toDateInputValue(initialData.start_date),
-        end_date: toDateInputValue(initialData.end_date),
+        start_date: formatDateFieldForInput(initialData.start_date),
+        end_date: formatDateFieldForInput(initialData.end_date),
         details: initialData.details || [],
-      })
-      return
+      });
+      return;
     }
     reset({
-      institution_name: '',
-      degree: '',
-      start_date: '',
-      end_date: '',
+      institution_name: "",
+      degree: "",
+      start_date: "",
+      end_date: "",
       details: [],
-    })
-  }, [isOpen, initialData, reset])
+    });
+  }, [isOpen, initialData, reset]);
 
   useEffect(() => {
-    setMounted(true)
-  }, [])
+    setMounted(true);
+  }, []);
 
-  if (!isOpen || !mounted) return null
+  if (!isOpen || !mounted) return null;
 
   const handleClose = () => {
-    reset()
-    onClose()
-  }
+    reset();
+    onClose();
+  };
 
   const onSubmit = async (data: EducationFormData) => {
     try {
-      await onSave(data)
-      handleClose()
+      await onSave(data);
+      handleClose();
     } catch (error) {
-      console.error('Error saving education:', error)
+      console.error("Error saving education:", error);
     }
-  }
+  };
 
   const modalContent = (
-    <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/50 px-4" onClick={handleClose}>
-      <div 
+    <div
+      className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/50 px-4"
+      onClick={handleClose}
+    >
+      <div
         className="relative w-full max-w-4xl rounded-2xl bg-white p-8 shadow-2xl z-[100000]"
         onClick={(e) => e.stopPropagation()}
       >
-
-        <h2 className="text-xl font-bold text-slate-900 mb-6">
-          {initialData ? 'Edit Education' : 'Add Education'}
-        </h2>
+        <ProfileFormModalHeader
+          icon={GraduationCap}
+          title={initialData ? "Edit Education" : "Add Education"}
+          subtitle="Fill in your academic details to showcase your education on your profile."
+          onClose={handleClose}
+        />
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-          <div>
-            <label className="block text-sm font-semibold text-slate-900 mb-2">
-              Institution Name <span className="text-red-500">*</span>
-            </label>
-            <input
-              {...register('institution_name')}
-              placeholder="e.g., Stanford University"
-              className="w-full px-4 py-2 border border-slate-300 rounded-input focus:outline-none focus:border-brand-blue text-slate-900"
-            />
-            {errors.institution_name && (
-              <p className="text-xs text-red-500 mt-1">{errors.institution_name.message}</p>
-            )}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-semibold text-slate-900 mb-2">
+                Degree <span className="text-red-500">*</span>
+              </label>
+              <input
+                {...register("degree")}
+                placeholder="e.g., Bachelor of Science"
+                className="w-full px-4 py-2 border border-slate-300 rounded-input focus:outline-none focus:border-brand-blue text-slate-900"
+              />
+              {errors.degree && (
+                <p className="text-xs text-red-500 mt-1">
+                  {errors.degree.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-slate-900 mb-2">
+                Institution Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                {...register("institution_name")}
+                placeholder="e.g., Stanford University"
+                className="w-full px-4 py-2 border border-slate-300 rounded-input focus:outline-none focus:border-brand-blue text-slate-900"
+              />
+              {errors.institution_name && (
+                <p className="text-xs text-red-500 mt-1">
+                  {errors.institution_name.message}
+                </p>
+              )}
+            </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-semibold text-slate-900 mb-2">
-              Degree <span className="text-red-500">*</span>
-            </label>
-            <input
-              {...register('degree')}
-              placeholder="e.g., Bachelor of Science"
-              className="w-full px-4 py-2 border border-slate-300 rounded-input focus:outline-none focus:border-brand-blue text-slate-900"
-            />
-            {errors.degree && (
-              <p className="text-xs text-red-500 mt-1">{errors.degree.message}</p>
-            )}
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-semibold text-slate-900 mb-2">
                 Start Date <span className="text-red-500">*</span>
               </label>
               <input
-                {...register('start_date')}
-                type="date"
+                {...register("start_date")}
+                type="text"
+                placeholder="2020"
+                autoComplete="off"
                 className="w-full px-4 py-2 border border-slate-300 rounded-input focus:outline-none focus:border-brand-blue text-slate-900"
               />
               {errors.start_date && (
-                <p className="text-xs text-red-500 mt-1">{errors.start_date.message}</p>
+                <p className="text-xs text-red-500 mt-1">
+                  {errors.start_date.message}
+                </p>
               )}
             </div>
 
@@ -159,38 +157,63 @@ export function EducationModal({
                 End Date
               </label>
               <input
-                {...register('end_date')}
-                type="date"
+                {...register("end_date")}
+                type="text"
+                placeholder="2024"
+                autoComplete="off"
                 className="w-full px-4 py-2 border border-slate-300 rounded-input focus:outline-none focus:border-brand-blue text-slate-900"
               />
               {errors.end_date && (
-                <p className="text-xs text-red-500 mt-1">{errors.end_date.message}</p>
+                <p className="text-xs text-red-500 mt-1">
+                  {errors.end_date.message}
+                </p>
               )}
             </div>
+            {/* <div>
+              <label className="block text-sm font-semibold text-slate-900 mb-2">
+                Grade
+              </label>
+              <input
+                {...register("grade")}
+                type="text"
+                placeholder="e.g. 3.5"
+                autoComplete="off"
+                className="w-full px-4 py-2 border border-slate-300 rounded-input focus:outline-none focus:border-brand-blue text-slate-900"
+              />
+              {errors.end_date && (
+                <p className="text-xs text-red-500 mt-1">
+                  {errors.end_date.message}
+                </p>
+              )}
+            </div> */}
           </div>
 
           <div>
             <label className="block text-sm font-semibold text-slate-900 mb-2">
-              Details
+              Activities / Awards
             </label>
             <Controller
               name="details"
               control={control}
               render={({ field }) => (
                 <textarea
-                  placeholder="Enter details..."
+                  placeholder="Type here..."
                   rows={4}
                   className="w-full px-4 py-2 border border-slate-300 rounded-input focus:outline-none focus:border-brand-blue text-slate-900 resize-none"
-                  value={Array.isArray(field.value) ? field.value.join(' ') : ''}
+                  value={
+                    Array.isArray(field.value) ? field.value.join(" ") : ""
+                  }
                   onChange={(e) => {
-                    const value = e.target.value
-                    field.onChange(value ? [value] : [])
+                    const value = e.target.value;
+                    field.onChange(value ? [value] : []);
                   }}
                 />
               )}
             />
             {errors.details && (
-              <p className="text-xs text-red-500 mt-1">{errors.details.message}</p>
+              <p className="text-xs text-red-500 mt-1">
+                {errors.details.message}
+              </p>
             )}
           </div>
 
@@ -207,13 +230,13 @@ export function EducationModal({
               disabled={isSubmitting}
               className="px-4 bg-brand-blue text-white font-semibold py-2 rounded-input transition-all hover:shadow-lg hover:shadow-brand-blue/30 disabled:opacity-50"
             >
-              {isSubmitting ? 'Saving...' : 'Save'}
+              {isSubmitting ? "Saving..." : "Save"}
             </button>
           </div>
         </form>
       </div>
     </div>
-  )
+  );
 
-  return createPortal(modalContent, document.body)
+  return createPortal(modalContent, document.body);
 }

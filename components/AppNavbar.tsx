@@ -30,6 +30,7 @@ import { APP_ROUTES } from "@/utils/app_routes";
 import { useAppSelector } from "@/lib/store/hook";
 import { User, Calendar, LogOutIcon, ArrowDownIcon, ChevronDown } from "lucide-react";
 import { Roles } from "@/constants/roles";
+import { ConfirmDeleteModal } from "@/components/common/ConfirmDeleteModal";
 
 interface AppNavbarProps {
   showSidebar?: boolean;
@@ -47,6 +48,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
   const [drawerType, setDrawerType] = React.useState<
     "chat" | "notification" | null
   >(null);
+  const [signOutOpen, setSignOutOpen] = React.useState(false);
   const {user} = useAppSelector(state => state.user)
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -276,7 +278,10 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
             );
           })}
            <MenuItem
-                onClick={handleLogout}
+                onClick={() => {
+                  handleMobileMenuClose();
+                  setSignOutOpen(true);
+                }}
                 sx={{
                   gap: 1.5,
                 }}
@@ -291,7 +296,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
         anchorEl={anchorEl}
         open={isMenuOpen}
         onClose={handleMenuClose}
-        onLogoutClick={handleLogout}
+        onLogoutClick={() => setSignOutOpen(true)}
         onProfileClick={handleProfileClick}
         onChangePasswordClick={() => router.push(APP_ROUTES.CONSULTANT.CHANGE_PASSWORD)}
         selectedPath={selectedMenu}
@@ -307,6 +312,19 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
         open={drawerOpen}
         type={drawerType || "chat"}
         onClose={() => setDrawerOpen(false)}
+      />
+
+      <ConfirmDeleteModal
+        isOpen={signOutOpen}
+        title="Sign out"
+        message="Are you sure you want to sign out? You will need to sign in again to access your account."
+        confirmLabel="Sign out"
+        cancelLabel="Cancel"
+        onCancel={() => setSignOutOpen(false)}
+        onConfirm={() => {
+          setSignOutOpen(false);
+          handleLogout();
+        }}
       />
     </>
   );

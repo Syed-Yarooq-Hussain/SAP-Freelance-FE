@@ -15,6 +15,7 @@ import { ChevronLeftIcon, ChevronRightIcon, LogOut, User } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useAppSelector } from "@/lib/store/hook";
 import { useLogout } from "@/actions/auth/logout";
+import { ConfirmDeleteModal } from "@/components/common/ConfirmDeleteModal";
 
 type ISidebarProps = {
   children: React.ReactNode;
@@ -88,6 +89,7 @@ const Sidebar: FC<ISidebarProps> = ({ children }) => {
   const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
   const [hoverOpen, setHoverOpen] = useState(false);
+  const [signOutOpen, setSignOutOpen] = useState(false);
 
   const expanded = open || hoverOpen;
 
@@ -112,9 +114,14 @@ const Sidebar: FC<ISidebarProps> = ({ children }) => {
         PaperProps={{
           onMouseEnter: () => setHoverOpen(true),
           onMouseLeave: () => setHoverOpen(false),
-          sx:{
+          sx: {
             bgcolor: "#F0F1F3",
-          }
+            height: "100vh",
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden",
+            boxSizing: "border-box",
+          },
         }}
       >
         {/* <Box
@@ -139,17 +146,55 @@ const Sidebar: FC<ISidebarProps> = ({ children }) => {
             priority
           />
         </Box> */}
-        <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
+        <Box
+          sx={{
+            flex: 1,
+            minHeight: 0,
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden",
+          }}
+        >
           <Box
             sx={{
-              height: 160,
+              flexShrink: 0,
               display: "flex",
-              alignItems: "start",
+              alignItems: "flex-start",
               justifyContent: "center",
               px: 2,
+              pt: { xs: 1.5, sm: 2 },
+              pb: { xs: 1, sm: 1.5 },
+              minHeight: { xs: 72, sm: 88, md: 104 },
+              maxHeight: { xs: 88, sm: 104, md: 120 },
+              "@media (max-height: 640px)": {
+                minHeight: 56,
+                maxHeight: 72,
+                pt: 1,
+                pb: 0.5,
+              },
+              "@media (max-height: 520px)": {
+                minHeight: 48,
+                maxHeight: 56,
+                pt: 0.5,
+                pb: 0.5,
+              },
             }}
           >
-            <Box sx={{ position: "relative", width: 140, height: 40, pt:12 }}>
+            <Box
+              sx={{
+                position: "relative",
+                width: { xs: 112, sm: 128, md: 140 },
+                height: { xs: 28, sm: 32, md: 36 },
+                "@media (max-height: 640px)": {
+                  width: 100,
+                  height: 24,
+                },
+                "@media (max-height: 520px)": {
+                  width: 88,
+                  height: 22,
+                },
+              }}
+            >
               {expanded ?<Image
                 src="/vx9-logo-02.png"
                 alt="Logo"
@@ -168,16 +213,25 @@ const Sidebar: FC<ISidebarProps> = ({ children }) => {
             </Box>
           </Box>
 
-          <div>
-            <div className="h-[0.5px] w-11/12 mx-auto bg-[#DBDBDB]/50 mb-8 rounded-full" />
+          <Box
+            sx={{
+              flex: 1,
+              minHeight: 0,
+              overflow: "auto",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <div className="h-[0.5px] w-11/12 mx-auto bg-[#DBDBDB]/50 mb-4 sm:mb-8 rounded-full shrink-0" />
             {mounted ? <DrawerList open={expanded} /> : <DrawerListSkeleton />}
-          </div>
+          </Box>
         </Box>
 
-        <Box sx={{ mt: "auto"}}>
+        <Box sx={{ flexShrink: 0, mt: 0 }}>
           <button
-            onClick={handleLogout}
-            className={`w-full  border hover:bg-brand-blue hover:text-white border-white/20 text-brand-blue transition-colors ${
+            type="button"
+            onClick={() => setSignOutOpen(true)}
+            className={`w-full  border hover:bg-brand-blue/20  border-white/20 text-brand-blue transition-colors ${
               expanded
                 ? "px-3 py-3 flex items-center justify-between gap-3"
                 : "h-11 py-3 flex items-center justify-center"
@@ -206,6 +260,19 @@ const Sidebar: FC<ISidebarProps> = ({ children }) => {
             )}
           </button>
         </Box>
+
+        <ConfirmDeleteModal
+          isOpen={signOutOpen}
+          title="Sign out"
+          message="Are you sure you want to sign out? You will need to sign in again to access your account."
+          confirmLabel="Sign out"
+          cancelLabel="Cancel"
+          onCancel={() => setSignOutOpen(false)}
+          onConfirm={() => {
+            setSignOutOpen(false);
+            handleLogout();
+          }}
+        />
         {/* <DrawerHeader>
           <Tooltip title={expanded ? "Collapse sidebar" : "Expand sidebar"} placement="right" arrow>
             <IconButton

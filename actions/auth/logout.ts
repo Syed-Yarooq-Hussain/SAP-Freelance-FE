@@ -3,10 +3,9 @@ import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { APP_ROUTES } from "@/utils/app_routes";
 import { signOut } from "next-auth/react";
-import { useToast } from "@/providers/ToastProvider";
+import { toast } from "sonner";
 
 export const useLogout = () => {
-  const { toast } = useToast();
   const router = useRouter();
 
   return useMutation({
@@ -15,7 +14,7 @@ export const useLogout = () => {
       clearCachedSession();
     },
     onSuccess: () => {
-      toast(`Logged out successfull`, "success");
+      toast.success(`Logged out successfull`);
       console.log("Logout successful");
       router.push(APP_ROUTES.HOME);
     },

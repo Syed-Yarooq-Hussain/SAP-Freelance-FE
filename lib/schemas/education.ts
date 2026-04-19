@@ -20,6 +20,9 @@ export const educationSchema = yup.object().shape({
     .array()
     .of(yup.string())
     .default([]),
+  grade: yup
+    .string()
+    .nullable(),
 })
 
 export type EducationFormData = yup.InferType<typeof educationSchema>

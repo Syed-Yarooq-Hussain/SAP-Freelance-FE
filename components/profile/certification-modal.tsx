@@ -2,38 +2,18 @@
 
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { X } from 'lucide-react'
+import { Award } from 'lucide-react'
 import { createPortal } from 'react-dom'
 import { useEffect, useState } from 'react'
 import { certificationSchema, type CertificationFormData } from '@/lib/schemas/certification'
+import { formatDateFieldForInput } from '@/lib/utils/dateFieldDisplay'
+import { ProfileFormModalHeader } from '@/components/profile/profile-form-modal-header'
 
 interface CertificationModalProps {
   isOpen: boolean
   onClose: () => void
   onSave: (data: CertificationFormData) => Promise<void>
   initialData?: CertificationFormData
-}
-
-const toDateInputValue = (value?: string | null) => {
-  if (!value) return ''
-  const normalized = value.trim().toLowerCase()
-  if (normalized === 'current' || normalized === 'present') {
-    return new Date().toISOString().split('T')[0]
-  }
-
-  const directDatePattern = /^\d{4}-\d{2}-\d{2}$/
-  if (directDatePattern.test(value)) return value
-
-  const parsed = new Date(value)
-  if (Number.isNaN(parsed.getTime())) {
-    const monthYearMatch = value.match(/^([a-zA-Z]+)\s+(\d{4})$/)
-    if (!monthYearMatch) return ''
-    const fallback = new Date(`${monthYearMatch[1]} 1, ${monthYearMatch[2]}`)
-    if (Number.isNaN(fallback.getTime())) return ''
-    return fallback.toISOString().split('T')[0]
-  }
-
-  return parsed.toISOString().split('T')[0]
 }
 
 export function CertificationModal({
@@ -52,8 +32,8 @@ export function CertificationModal({
     resolver: yupResolver(certificationSchema) as any,
     defaultValues: {
       ...initialData,
-      issue_date: toDateInputValue(initialData?.issue_date),
-      expiration_date: toDateInputValue(initialData?.expiration_date),
+      issue_date: formatDateFieldForInput(initialData?.issue_date),
+      expiration_date: formatDateFieldForInput(initialData?.expiration_date),
     },
   })
 
@@ -62,8 +42,8 @@ export function CertificationModal({
     if (initialData) {
       reset({
         ...initialData,
-        issue_date: toDateInputValue(initialData.issue_date),
-        expiration_date: toDateInputValue(initialData.expiration_date),
+        issue_date: formatDateFieldForInput(initialData.issue_date),
+        expiration_date: formatDateFieldForInput(initialData.expiration_date),
       })
       return
     }
@@ -98,52 +78,58 @@ export function CertificationModal({
   const modalContent = (
     <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/50 px-4" onClick={handleClose}>
       <div 
-        className="relative w-full max-w-lg rounded-2xl bg-white p-8 shadow-2xl z-[100000]"
+        className="relative w-full max-w-2xl rounded-2xl bg-white p-8 shadow-2xl z-[100000]"
         onClick={(e) => e.stopPropagation()}
       >
-    
-
-        <h2 className="text-xl font-bold text-slate-900 mb-6">
-          {initialData ? 'Edit Certification' : 'Add Certification'}
-        </h2>
+        <ProfileFormModalHeader
+          icon={Award}
+          title={initialData ? 'Edit Certification' : 'Add Certification'}
+          subtitle="Fill in your credential details to showcase your certifications on your profile."
+          onClose={handleClose}
+        />
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-          <div>
-            <label className="block text-sm font-semibold text-slate-900 mb-2">
-              Certification Name <span className="text-red-500">*</span>
-            </label>
-            <input
-              {...register('certification_name')}
-              placeholder="e.g., SAP Certified Associate – SAP Analytics Cloud"
-              className="w-full px-4 py-2 border border-slate-300 rounded-input focus:outline-none focus:border-brand-blue text-slate-900"
-            />
-            {errors.certification_name && (
-              <p className="text-xs text-red-500 mt-1">{errors.certification_name.message}</p>
-            )}
-          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-semibold text-slate-900 mb-2">
+                Certification <span className="text-red-500">*</span>
+              </label>
+              <input
+                {...register('certification_name')}
+                placeholder="e.g., SAP Certified Associate – SAP Analytics Cloud"
+                className="w-full px-4 py-2 border border-slate-300 rounded-input focus:outline-none focus:border-brand-blue text-slate-900"
+              />
+              {errors.certification_name && (
+                <p className="text-xs text-red-500 mt-1">{errors.certification_name.message}</p>
+              )}
+            </div>
 
-          <div>
-            <label className="block text-sm font-semibold text-slate-900 mb-2">
-              Issuing Organization <span className="text-red-500">*</span>
-            </label>
-            <input
-              {...register('issuing_organization')}
-              placeholder="e.g., SAP"
-              className="w-full px-4 py-2 border border-slate-300 rounded-input focus:outline-none focus:border-brand-blue text-slate-900"
-            />
-            {errors.issuing_organization && (
-              <p className="text-xs text-red-500 mt-1">{errors.issuing_organization.message}</p>
-            )}
+            <div>
+              <label className="block text-sm font-semibold text-slate-900 mb-2">
+                Institution <span className="text-red-500">*</span>
+              </label>
+              <input
+                {...register('issuing_organization')}
+                placeholder="e.g., SAP"
+                className="w-full px-4 py-2 border border-slate-300 rounded-input focus:outline-none focus:border-brand-blue text-slate-900"
+              />
+              {errors.issuing_organization && (
+                <p className="text-xs text-red-500 mt-1">{errors.issuing_organization.message}</p>
+              )}
+            </div>
+
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-semibold text-slate-900 mb-2">
-                Issue Date <span className="text-red-500">*</span>
+                Start Date <span className="text-red-500">*</span>
               </label>
               <input
                 {...register('issue_date')}
-                type="date"
+                type="text"
+                placeholder="2020"
+                autoComplete="off"
                 className="w-full px-4 py-2 border border-slate-300 rounded-input focus:outline-none focus:border-brand-blue text-slate-900"
               />
               {errors.issue_date && (
@@ -153,11 +139,13 @@ export function CertificationModal({
 
             <div>
               <label className="block text-sm font-semibold text-slate-900 mb-2">
-                Expiration Date
+                End Date
               </label>
               <input
                 {...register('expiration_date')}
-                type="date"
+                type="text"
+                placeholder="2024"
+                autoComplete="off"
                 className="w-full px-4 py-2 border border-slate-300 rounded-input focus:outline-none focus:border-brand-blue text-slate-900"
               />
               {errors.expiration_date && (
