@@ -71,7 +71,6 @@ export function LocationAutocomplete({
       delete window.initGoogleMapsAutocomplete
     }
   }, [])
-
   // Initialise Autocomplete once the API is ready and input is mounted
   useEffect(() => {
     if (!isLoaded || !inputRef.current) return
