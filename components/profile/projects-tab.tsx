@@ -128,7 +128,7 @@ export function ProjectsTab({
           {data?.map((item, index) => (
             <div
               key={index}
-              className="bg-white border border-slate-200 rounded-xl p-4 hover:shadow-md transition-shadow"
+              className="bg-brand-yellow border border-slate-200 rounded-xl p-4 hover:shadow-md transition-shadow"
             >
               <div className="flex justify-between items-start mb-3">
                 <div className="flex-1">

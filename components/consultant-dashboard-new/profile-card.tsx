@@ -37,12 +37,12 @@ export const ProfileCard: React.FC<{ data: DashboardData }> = ({ data }) => {
       </div>
 
           <div className='flex items-center gap-2'>
-      <Button className="flex-1 !text-xxs bg-brand-blue text-white rounded-xl mb-3 hover:bg-[#2670A0]">
-        <Clock className="w-2 h-2 " /> Complete Profile & Get Certified
+      <Button className="flex-1 !text-xs bg-brand-blue text-white rounded-xl h-10 hover:bg-[#2670A0]">
+        <Clock className="w-2 h-2 " /> Complete your profile now
       </Button>
 
-      <Button onClick={() => router.push(APP_ROUTES.CONSULTANT.PROFILE)} variant="outline" className="flex-1 !text-xxs rounded-xl text-success">
-        <Star className="w-4 h-4" /> View SAP Certifications
+      <Button onClick={() => router.push(APP_ROUTES.CONSULTANT.PROFILE)} variant="outline" className="flex-1 h-10 !text-xs rounded-xl text-success">
+        <Star className="w-4 h-4" /> Add your certifications
       </Button>
 
           </div>

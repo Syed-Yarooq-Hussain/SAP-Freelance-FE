@@ -121,7 +121,7 @@ export function CalendarHeader({
                 className="inline-flex items-center gap-1.5 rounded-lg border border-brand-blue bg-white px-3 py-2 text-xs font-medium text-brand-blue transition hover:bg-sky-50 whitespace-nowrap"
               >
                 <Plus className="w-4 h-4 shrink-0" />
-                <span>Add Custom Availability</span>
+                <span>Add Flexible Availbility</span>
               </button>
             </div>
           </div>
