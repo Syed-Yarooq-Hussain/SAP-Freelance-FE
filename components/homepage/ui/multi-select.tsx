@@ -100,7 +100,7 @@ export function MultiSelect({
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent className="w-full p-0">
+      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
         <Command>
           <CommandEmpty>No results found.</CommandEmpty>
           <CommandGroup>

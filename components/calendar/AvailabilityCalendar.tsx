@@ -163,6 +163,7 @@ interface CalendarProps {
   month: number;
   selectedDates: Set<string>;
   onToggleDate: (key: string) => void;
+  isDateDisabled: (key: string) => boolean;
   onPrev: () => void;
   onNext: () => void;
 }
@@ -172,6 +173,7 @@ function Calendar({
   month,
   selectedDates,
   onToggleDate,
+  isDateDisabled,
   onPrev,
   onNext,
 }: CalendarProps) {
@@ -217,6 +219,7 @@ function Calendar({
           const d = i + 1;
           const key = toKey(year, month, d);
           const isSelected = selectedDates.has(key);
+          const isDisabled = isDateDisabled(key);
           const isToday =
             today.getFullYear() === year &&
             today.getMonth() === month &&
@@ -227,8 +230,12 @@ function Calendar({
               key={d}
               role="button"
               tabIndex={0}
-              onClick={() => onToggleDate(key)}
+              onClick={() => {
+                if (isDisabled) return;
+                onToggleDate(key);
+              }}
               onKeyDown={(e) => {
+                if (isDisabled) return;
                 if (e.key === "Enter" || e.key === " ") {
                   e.preventDefault();
                   onToggleDate(key);
@@ -236,6 +243,9 @@ function Calendar({
               }}
               className={[
                 "text-center sm:w-8 xl:w-12 sm:h-8 xl:h-12 flex items-center justify-center text-xs py-1.5 rounded-lg cursor-pointer select-none transition-colors",
+                isDisabled
+                  ? "bg-gray-100 text-gray-300 cursor-not-allowed hover:bg-gray-100"
+                  : "",
                 isSelected
                   ? "bg-brand-blue text-white font-semibold"
                   : isToday
@@ -255,12 +265,14 @@ function Calendar({
 interface TimeGridProps {
   sortedDates: string[];
   selectedHours: Record<string, Set<number>>;
+  isDateDisabled: (key: string) => boolean;
   onToggleHour: (key: string, h: number, mode: DragMode) => void;
 }
 
 function TimeGrid({
   sortedDates,
   selectedHours,
+  isDateDisabled,
   onToggleHour,
 }: TimeGridProps) {
   const dragRef = useRef<DragState>({
@@ -272,22 +284,24 @@ function TimeGrid({
 
   const handleMouseDown = useCallback(
     (key: string, h: number) => {
+      if (isDateDisabled(key)) return;
       const currently = (selectedHours[key] || new Set<number>()).has(h);
       const mode: DragMode = currently ? "deselect" : "select";
       dragRef.current = { active: true, key, mode, lastH: h };
       onToggleHour(key, h, mode);
     },
-    [selectedHours, onToggleHour],
+    [isDateDisabled, selectedHours, onToggleHour],
   );
 
   const handleMouseEnter = useCallback(
     (key: string, h: number) => {
+      if (isDateDisabled(key)) return;
       const { active, key: dk, mode, lastH } = dragRef.current;
       if (!active || dk !== key || h === lastH || !mode) return;
       dragRef.current.lastH = h;
       onToggleHour(key, h, mode);
     },
-    [onToggleHour],
+    [isDateDisabled, onToggleHour],
   );
 
   const handleMouseUp = useCallback(() => {
@@ -324,6 +338,7 @@ function TimeGrid({
         </div>
 
         {sortedDates.map((key) => {
+          const isDisabled = isDateDisabled(key);
           const { d, m, y } = fromKey(key);
           const label = new Date(y, m, d).toLocaleDateString("en-GB", {
             weekday: "short",
@@ -344,6 +359,9 @@ function TimeGrid({
                     key={h}
                     className={[
                       "h-8 rounded mb-px border cursor-pointer transition-colors",
+                      isDisabled
+                        ? "bg-gray-100 border-gray-200 cursor-not-allowed"
+                        : "",
                       sel
                         ? "bg-brand-blue border-brand-blue"
                         : "bg-gray-50 border-gray-100 hover:bg-brand-blue hover:border-brand-blue",
@@ -376,14 +394,29 @@ export default function AvailabilityCalendar({ onSave }: AvailabilityCalendarPro
 
   const { data, isLoading } = useConsultantCalendar(month, year);
 
+  const isDateDisabled = useCallback((key: string) => {
+    const { d, m, y } = fromKey(key);
+    const dateOnly = new Date(y, m, d);
+    dateOnly.setHours(0, 0, 0, 0);
+    const todayOnly = new Date();
+    todayOnly.setHours(0, 0, 0, 0);
+    return dateOnly < todayOnly;
+  }, []);
+
   useEffect(() => {
     if (!data) return;
     const { dates, hours } = hydrateFromApiDays(data.days ?? []);
-    setSelectedDates(dates);
-    setSelectedHours(hours);
-  }, [data]);
+    // Keep past dates non-editable by excluding them from selected state.
+    const filteredDates = new Set([...dates].filter((k) => !isDateDisabled(k)));
+    const filteredHours = Object.fromEntries(
+      Object.entries(hours).filter(([k]) => !isDateDisabled(k)),
+    ) as Record<string, Set<number>>;
+    setSelectedDates(filteredDates);
+    setSelectedHours(filteredHours);
+  }, [data, isDateDisabled]);
 
   const handleToggleDate = useCallback((key: string) => {
+    if (isDateDisabled(key)) return;
     setSelectedDates((prev) => {
       const next = new Set(prev);
       if (next.has(key)) {
@@ -398,7 +431,7 @@ export default function AvailabilityCalendar({ onSave }: AvailabilityCalendarPro
       }
       return next;
     });
-  }, []);
+  }, [isDateDisabled]);
 
   const handleToggleHour = useCallback(
     (key: string, h: number, mode: DragMode) => {
@@ -437,6 +470,7 @@ export default function AvailabilityCalendar({ onSave }: AvailabilityCalendarPro
 
   const payload: AvailabilitySavePayload = sortedDates
     .map((key) => {
+      if (isDateDisabled(key)) return null;
       const iso = gridKeyToIso(key);
       const slots = buildCustomSlots(selectedHours[key] || new Set<number>());
       if (!slots.length) return null;
@@ -481,6 +515,7 @@ export default function AvailabilityCalendar({ onSave }: AvailabilityCalendarPro
               month={month}
               selectedDates={selectedDates}
               onToggleDate={handleToggleDate}
+              isDateDisabled={isDateDisabled}
               onPrev={handlePrev}
               onNext={handleNext}
             />
@@ -548,6 +583,7 @@ export default function AvailabilityCalendar({ onSave }: AvailabilityCalendarPro
             <TimeGrid
               sortedDates={sortedDates}
               selectedHours={selectedHours}
+              isDateDisabled={isDateDisabled}
               onToggleHour={handleToggleHour}
             />
           </div>

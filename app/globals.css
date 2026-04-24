@@ -8,6 +8,11 @@
   }
 }
 
+.ql-snow{
+  border: none !important
+}
+
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {

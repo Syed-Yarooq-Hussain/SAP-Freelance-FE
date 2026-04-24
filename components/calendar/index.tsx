@@ -12,6 +12,7 @@ import { useConsultantMe } from '@/actions/consultants/useConsultantProfile'
 import { useSaveConsultantSchedule } from '@/actions/consultants/useSaveConsultantSchedule'
 import { DAY_MAP, WEEKLY_ROWS_INIT } from '@/constants/calendar'
 import { useToast } from '@/providers/ToastProvider'
+import { ArrowLeft } from 'lucide-react'
 
 type WeeklySlot = { start: string; end: string }
 type WeeklySchedule = { day: string; slot?: WeeklySlot[]; active: boolean }
@@ -38,6 +39,7 @@ const Index = () => {
   const [showCustomAvailability, setShowCustomAvailability] = useState(false)
   const [availOpen, setAvailOpen] = useState(false)
   const [weeklyRows, setWeeklyRows] = useState<WeeklyRow[]>(WEEKLY_ROWS_INIT)
+  const [applyToAllChecked, setApplyToAllChecked] = useState(false)
 
   const { data: meData } = useConsultantMe()
   const { mutateAsync: saveSchedule, isPending } = useSaveConsultantSchedule()
@@ -78,11 +80,39 @@ const Index = () => {
   }
 
   const updateWeeklyRow = (idx: number, patch: Partial<WeeklyRow>) => {
+    setApplyToAllChecked(false)
     setWeeklyRows((rows) => {
       const copy = rows.slice()
       copy[idx] = { ...copy[idx], ...patch }
       return copy
     })
+  }
+
+  const sourceTimeRow = useMemo(
+    () =>
+      weeklyRows.find(
+        (r) => r.enabled && r.startTime.trim() && r.endTime.trim() && r.startTime < r.endTime,
+      ),
+    [weeklyRows],
+  )
+
+  const canApplyToAll = Boolean(sourceTimeRow)
+
+  const handleApplyToAll = (checked: boolean) => {
+    setApplyToAllChecked(checked)
+    if (!checked || !sourceTimeRow) return
+
+    setWeeklyRows((rows) =>
+      rows.map((row) =>
+        row.enabled
+          ? {
+              ...row,
+              startTime: sourceTimeRow.startTime,
+              endTime: sourceTimeRow.endTime,
+            }
+          : row,
+      ),
+    )
   }
 
   const weeklyValid = useMemo(
@@ -99,6 +129,7 @@ const Index = () => {
     } else {
       setWeeklyRows((WEEKLY_ROWS_INIT as WeeklyRow[]).map((r) => ({ ...r })))
     }
+    setApplyToAllChecked(false)
     setAvailOpen(true)
   }
 
@@ -147,12 +178,13 @@ const Index = () => {
     <Sidebar>
       {showCustomAvailability ? (
         <div className="bg-white -mt-4">
-          <div className="p-3 border-b border-slate-200 flex justify-end">
+          <div className="p-3 border-b border-slate-200 flex justify-start">
             <button
               type="button"
               onClick={() => setShowCustomAvailability(false)}
-              className="rounded-lg border border-slate-300 px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50"
+              className="rounded-lg border flex items-center gap-2 border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
             >
+              <ArrowLeft className="w-4 h-4" />
               Back To Calendar
             </button>
           </div>
@@ -198,6 +230,21 @@ const Index = () => {
                   </div>
 
                   <div className="p-5 space-y-3">
+                    <label className="flex items-center gap-2 px-1">
+                      <input
+                        type="checkbox"
+                        checked={applyToAllChecked}
+                        disabled={!canApplyToAll}
+                        onChange={(e) => handleApplyToAll(e.target.checked)}
+                        className="h-4 w-4 rounded border-slate-300 accent-brand-blue disabled:cursor-not-allowed disabled:opacity-50"
+                      />
+                      <span
+                        className={`text-xs font-medium ${canApplyToAll ? 'text-slate-700' : 'text-slate-400'}`}
+                      >
+                        Apply to all checked days
+                      </span>
+                    </label>
+
                     <div className="grid grid-cols-[1fr_1.3fr_1.3fr] gap-3 px-1">
                       <p className="text-sm font-semibold text-slate-800">Days</p>
                       <p className="text-sm font-semibold text-slate-800">Start time</p>

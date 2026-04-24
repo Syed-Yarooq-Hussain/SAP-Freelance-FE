@@ -60,6 +60,8 @@ import { getExpertiseLevels } from "@/services/getExpertiseLevel";
 import { useToast } from "@/providers/ToastProvider";
 import { LocationAutocomplete } from "@/components/account-settings/LocationAutocomplete";
 import { toast } from "sonner";
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
 
 const inputSurfaceClass =
   "bg-background-main border-slate-200 focus:ring-[#3088B7] focus:border-[#3088B7]";
@@ -100,11 +102,7 @@ function mapModalProjectToProfileRow(
   };
   const s = String(raw.status || "active").toLowerCase();
   const status =
-    s === "completed"
-      ? "Completed"
-      : s === "paused"
-        ? "Paused"
-        : "Active";
+    s === "completed" ? "Completed" : s === "paused" ? "Paused" : "Active";
   const budgetRaw = raw.budget;
   const budget =
     budgetRaw === "" || budgetRaw === null || budgetRaw === undefined
@@ -149,7 +147,9 @@ const InputField = ({
     <label className="flex text-xs font-manrope font-medium text-slate-700 mb-2 items-center justify-between">
       <span> {label} </span>
       {required && <span className="text-red-500 ml-1">*</span>}
-      {optional && <span className="text-xs text-light-grey ml-1">Optional</span>}
+      {optional && (
+        <span className="text-xs text-light-grey ml-1">Optional</span>
+      )}
     </label>
     <input
       type={type}
@@ -207,7 +207,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
 
   const [expandedSections, setExpandedSections] = useState({
-    basicInfo: false ,
+    basicInfo: false,
     myInformation: true,
     keyLocations: false,
     contactAndLocation: true,
@@ -372,9 +372,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
   const projectsList = watch("projects");
 
   const [workModalOpen, setWorkModalOpen] = useState(false);
-  const [workEditingIndex, setWorkEditingIndex] = useState<number | null>(
-    null,
-  );
+  const [workEditingIndex, setWorkEditingIndex] = useState<number | null>(null);
   const [workEditingData, setWorkEditingData] = useState<
     WorkExperienceFormData | undefined
   >();
@@ -561,7 +559,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
         phone: data.phone ?? "",
         city: data.city ?? "",
         country: data.country ?? "",
-        linkedin_url: data.linkedin_url ?? "",  // ✅ belongs on USER
+        linkedin_url: data.linkedin_url ?? "", // ✅ belongs on USER
       },
       consultant: {
         rate: data.rate ?? null,
@@ -569,42 +567,52 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
         expertise_level: data.expertise_level ?? "",
         industries: data.industries ?? "",
         weekly_available_hours: data.weekly_available_hours ?? null,
-        professional_headline: (data.professional_headline || data.clients_summary || "").trim(),
+        professional_headline: (
+          data.professional_headline ||
+          data.clients_summary ||
+          ""
+        ).trim(),
         clients_summary: data.clients_summary ?? "",
-        
+
         // ✅ fixed key names to match backend
         core_module: Array.isArray(data.core) ? data.core : [],
         other_module: Array.isArray(data.others) ? data.others : [],
-        
-        work_experiences: Array.isArray(data.work_experiences) ? data.work_experiences : [],
-        
+
+        work_experiences: Array.isArray(data.work_experiences)
+          ? data.work_experiences
+          : [],
+
         // ✅ fixed key names to match backend
-        certification: Array.isArray(data.certifications) ? data.certifications : [],
+        certification: Array.isArray(data.certifications)
+          ? data.certifications
+          : [],
         education: Array.isArray(data.educations) ? data.educations : [],
-        
+
         projects: Array.isArray(data.projects) ? data.projects : [],
       },
     };
 
     try {
-      
-      const res = await updateConsultantProfile(consultant?.id, payloadToSend as any)
+      const res = await updateConsultantProfile(
+        consultant?.id,
+        payloadToSend as any,
+      );
 
-      if (res.status === 'success') {
-        const consultantData = await getConsultantMeService()
+      if (res.status === "success") {
+        const consultantData = await getConsultantMeService();
         if (consultantData?.data) {
-          dispatch(updateUser({ user: consultantData.data }))
+          dispatch(updateUser({ user: consultantData.data }));
         }
         toast.success("Profile updated successfully!");
+        goBack();
       } else {
         toast.error("Failed to update profile!");
       }
     } catch (error) {
-      console.error('Error updating profile:', error)
-      throw error
+      console.error("Error updating profile:", error);
+      throw error;
     }
   };
-
 
   const TextAreaField = ({ label, required = false, error, ...rest }: any) => (
     <div>
@@ -642,7 +650,9 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
         <div className="font-manrope flex flex-col gap-0.5 items-start">
           <h2 className="text-sm font-manrope text-black">{title}</h2>
           {description && (
-            <p className="text-xs font-manrope text-light-grey">{description}</p>
+            <p className="text-xs font-manrope text-light-grey">
+              {description}
+            </p>
           )}
         </div>
       </div>
@@ -661,13 +671,20 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
         <div className="mx-auto px-6 py-4 flex items-center justify-between shadow-sm">
           <div className="flex items-center gap-4">
             <div className="flex items-center">
-              <div onClick={goBack} className="w-10 h-10 bg-background-main rounded-xl border border-slate-200 flex items-center justify-center">
+              <div
+                onClick={goBack}
+                className="w-10 h-10 bg-background-main rounded-xl border border-slate-200 flex items-center justify-center"
+              >
                 <ChevronLeft className="w-5 h-5 text-black" />
               </div>
             </div>
             <div>
-              <h1 className="text-2xl font-neue text-slate-900">Setup Your Profile</h1>
-              <p className="text-sm font-manrope text-light-grey">Keep your profile accurate to attract the right clients</p>
+              <h1 className="text-2xl font-neue text-slate-900">
+                Setup Your Profile
+              </h1>
+              <p className="text-sm font-manrope text-light-grey">
+                Keep your profile accurate to attract the right clients
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -700,174 +717,17 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
             <div className="rounded-box border border-slate-200 overflow-hidden bg-background-main">
               <SectionHeader
                 icon={<User className="w-5 h-5 text-slate-600" />}
-                title="My Information"
+                title="Profile Essentials"
                 description="Basic profile, contact details, location, and SAP expertise"
                 section="myInformation"
               />
               {expandedSections.myInformation && (
                 <div className="px-6 py-4 border-t border-slate-200 bg-background-main space-y-6">
-                  <div className="flex items-center gap-2">
+                  {/* <div className="flex items-center gap-2">
                     <User className="w-4 h-4 text-slate-600" />
                     <h3 className="text-sm font-semibold text-slate-800">Basic Information</h3>
-                  </div>
-                  {/* First and Last Name */}
-                  <div className="grid grid-cols-1 gap-4">
-                    <InputField
-                      label="Full Name"
-                      type="text"
-                      required
-                      error={errors.username?.message}
-                      {...register("username")}
-                    />
-                  </div>
-
-                  {/* Professional Headline */}
-                  <div>
-                    <label className="block text-xs font-manrope font-medium text-slate-700 mb-2">
-                      Professional Headline
-                      <span className="text-red-500 ml-1">*</span>
-                    </label>
-                    <div className="relative">
-                      <textarea
-                        {...register("clients_summary")}
-                        placeholder="e.g., SAP S/4HANA Consultant · Finance & Controlling · 5 yrs exp"
-                        className={`w-full bg-brand-yellow text-sm px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3088B7] resize-none ${errors.clients_summary?.message ? "border-red-500" : "border-slate-300"}`}
-                        rows={3}
-                      />
-                      <p className="text-xs text-slate-500 mt-1">
-                        This appears right below your name - keep it punchy and
-                        specific
-                      </p>
-                      <div className="absolute top-2 right-3 text-xs text-slate-500">
-                        {watch("clients_summary")?.length || 0} / 100
-                      </div>
-                    </div>
-                    {errors.clients_summary?.message && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {errors.clients_summary?.message}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Years of Experience and Expertise Level */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <InputField
-                      name="experience"
-                      label="Years of Experience"
-                      type="number"
-                      required
-                      value={watch("experience") || ''}
-                      error={errors.experience?.message}
-                      onChange={(e: any) => setValue("experience", Number(e.target.value))}
-                    />
-
-                    <SelectField
-                      label="Expertise Level"
-                      required
-                      placeholder="Select level"
-                      error={errors.expertise_level?.message}
-                      options={expertiseLevels?.length > 0 ? expertiseLevels.map((level: any) => ({ label: level, value: level })) : []}
-                      {...register("expertise_level")}
-                    />
-                  </div>
-
-                  <div>
-                    <InputField
-                      name="linkedin_url"
-                      label="LinkedIn URL"
-                      type="text"
-                      value={watch("linkedin_url") || ''}
-                      error={errors.linkedin_url?.message}
-                      onChange={(e: any) => setValue("linkedin_url", e.target.value)}
-                    />
-                  </div>
-
-                  {/* Industry Focus */}
-                  <div>
-                    
-                    {/* <InputField
-                      name="industries"
-                      label="Industry Focus"
-                      type="text"
-                      optional={true}
-                      value={watch("industries") || ''}
-                      error={errors.industries?.message}
-                      onChange={(e: any) => setValue("industries", e.target.value)}
-                     /> */}
-                     <MultiSelect
-                        options={
-                          industries?.length > 0
-                            ? industries?.map((industry: any) => ({
-                                label: industry.name,
-                                value: String(industry.id),
-                              }))
-                            : []
-                        }
-                        value={
-                          typeof watch("industries") === "string" &&
-                          watch("industries")?.trim()
-                            ? watch("industries")!
-                                .split(",")
-                                .map((v) => v.trim())
-                                .filter(Boolean)
-                            : []
-                        }
-                        onChange={(selected) => {
-                          clearErrors("industries");
-                          setValue("industries", selected.join(","), {
-                            shouldValidate: true,
-                            shouldDirty: true,
-                          });
-                        }}
-                        placeholder="Select industry focus"
-                      />
-                    <p className="text-xs text-slate-500 mt-1">
-                      Separate multiple industries with commas
-                    </p>
-                    {errors.industries?.message && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {errors.industries?.message}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* <div className="h-px bg-slate-200" />
-                  <div className="flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-slate-600" />
-                    <h3 className="text-sm font-semibold text-slate-800">Contact & location</h3>
                   </div> */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <InputField
-                      label="Email Address"
-                      type="text"
-                      disabled
-                      required
-                      cl
-                      error={errors.email?.message}
-                      {...register("email")}
-                    />
-                    <InputField
-                      label="Phone Number"
-                      type="text"
-                      optional
-                      error={errors.phone?.message}
-                      {...register("phone")}
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <LocationAutocomplete
-                      value={watch('country') || ''}
-                      onChange={(value) => setValue('country', value)}
-                      placeholder="Select country"
-                      className="bg-brand-yellow"
-                    />
-                    <LocationAutocomplete
-                      value={watch('city') || ''}
-                      onChange={(value) => setValue('city', value)}
-                      placeholder="Select city"
-                      className="bg-brand-yellow"
-                    />
-                  </div>
+                  {/* First and Last Name */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="flex items-center gap-2 mt-4">
                       <div className="w-full">
@@ -879,7 +739,10 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                           error={errors.rate?.message}
                           {...register("rate")}
                         />
-                        <p className="text-xs text-light-grey mt-2">Set your preferred hourly rate range. Clients see this when browsing your profile.</p>
+                        <p className="text-xs text-light-grey mt-2">
+                          Set your preferred hourly rate range. Clients see this
+                          when browsing your profile.
+                        </p>
                       </div>
                     </div>
                     <div>
@@ -898,13 +761,48 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                     </div>
                   </div>
 
-                  {/* <div className="h-px bg-slate-200" />
-                  <div className="flex items-center gap-2">
-                    <LaptopMinimal className="w-4 h-4 text-slate-600" />
-                    <h3 className="text-sm font-semibold text-slate-800">Expertise & SAP Modules</h3>
-                  </div> */}
                   <div className=" flex flex-col gap-4">
                     <div>
+                      <label className="block text-xs font-manrope font-medium text-slate-700 mb-2">
+                        Core Modules
+                        <span className="text-red-500 ml-1">*</span>
+                      </label>
+                      <MultiSelect
+                        options={
+                          modules?.core?.length > 0
+                            ? modules.core.map((module: any) => ({
+                                label: module.name,
+                                value: String(module.id),
+                              }))
+                            : []
+                        }
+                        value={coreModules || []}
+                        onChange={(selected) => {
+                          if (selected.length > 2) {
+                            setError("core", {
+                              type: "manual",
+                              message: "You can select maximum 2 items",
+                            });
+                            return;
+                          }
+
+                          clearErrors("core");
+                          setValue("core", selected, { shouldValidate: true });
+                        }}
+                        placeholder="Select core modules"
+                      />
+                      <p className="text-xs text-light-grey mt-2">
+                        Only 2 modules allowed.{" "}
+                      </p>
+                      {errors.core && (
+                        <p className="text-xs text-red-500 mt-2">
+                          {errors.core.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className=" flex flex-col gap-4">
+                      {/* <div>
                       <label className="block text-xs font-manrope font-medium text-slate-700 mb-2">
                         Core Modules
                         <span className="text-red-500 ml-1">*</span>
@@ -939,28 +837,204 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                           {errors.core.message}
                         </p>
                       )}
-                    </div>
+                    </div> */}
 
+                      <div>
+                        <label className="block text-xs font-manrope font-medium text-slate-700 mb-2">
+                          Other Modules
+                        </label>
+                        <MultiSelect
+                          options={
+                            modules?.others?.length > 0
+                              ? modules.others.map((module: any) => ({
+                                  label: module.name,
+                                  value: String(module.id),
+                                }))
+                              : []
+                          }
+                          value={otherModules || []}
+                          onChange={(selected) => {
+                            setValue("others", selected, {
+                              shouldValidate: true,
+                            });
+                          }}
+                          placeholder="Select other modules"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-manrope font-medium text-slate-700 mb-2">
-                        Other Modules
+                        City
+                        <span className="text-red-500 ml-1">*</span>
                       </label>
-                      <MultiSelect
-                        options={
-                          modules?.others?.length > 0
-                            ? modules.others.map((module: any) => ({
-                                label: module.name,
-                                value: String(module.id),
-                              }))
-                            : []
-                        }
-                        value={otherModules || []}
-                        onChange={(selected) =>{
-                          setValue("others", selected, { shouldValidate: true })
-                        }}
-                        placeholder="Select other modules"
+                      <LocationAutocomplete
+                        value={watch("city") || ""}
+                        onChange={(value) => setValue("city", value)}
+                        placeholder="Select city"
+                        className="bg-brand-yellow"
                       />
                     </div>
+                    <div>
+                        <label className="block text-xs font-manrope font-medium text-slate-700 mb-2">
+                          Country
+                          <span className="text-red-500 ml-1">*</span>
+                        </label>
+                        <LocationAutocomplete
+                        value={watch('country') || ''}
+                        onChange={(value) => setValue('country', value)}
+                        placeholder="Select country"
+                        className="bg-brand-yellow"
+                      /> 
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <InputField
+                      label="Email Address"
+                      type="text"
+                      disabled
+                      required
+                      cl
+                      error={errors.email?.message}
+                      {...register("email")}
+                    />
+                    <InputField
+                      label="Phone Number"
+                      type="text"
+                      optional
+                      error={errors.phone?.message}
+                      {...register("phone")}
+                    />
+                    {/* <LocationAutocomplete
+                      value={watch('country') || ''}
+                      onChange={(value) => setValue('country', value)}
+                      placeholder="Select country"
+                      className="bg-brand-yellow"
+                    /> */}
+
+                    {/* <div className="col-span-full">
+                      <InputField
+                        name="linkedin_url"
+                        label="LinkedIn URL"
+                        type="text"
+                        value={watch("linkedin_url") || ""}
+                        error={errors.linkedin_url?.message}
+                        onChange={(e: any) =>
+                          setValue("linkedin_url", e.target.value)
+                        }
+                      />
+                    </div> */}
+                  </div>
+
+                  {/* <div className="grid grid-cols-1 gap-4">
+                    <InputField
+                      label="Full Name"
+                      type="text"
+                      required
+                      error={errors.username?.message}
+                      {...register("username")}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-manrope font-medium text-slate-700 mb-2">
+                      Professional Headline
+                      <span className="text-red-500 ml-1">*</span>
+                    </label>
+                    <div className="relative">
+                      <ReactQuill className="bg-brand-yellow rounded-lg" style={{borderRadius: '10px'}} theme="snow" value={watch("clients_summary") || ''} onChange={(value) => {
+                        console.log("clients_summary", value)
+                        setValue("clients_summary", value)
+                      }} />
+                      <p className="text-xs text-slate-500 mt-1">
+                        This appears right below your name - keep it punchy and
+                        specific
+                      </p>
+                      <div className="absolute top-2 right-3 text-xs text-slate-500">
+                        {watch("clients_summary")?.length || 0} / 100
+                      </div>
+                    </div>
+                    {errors.clients_summary?.message && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.clients_summary?.message}
+                      </p>
+                    )}
+                  </div> */}
+
+                  {/* Years of Experience and Expertise Level */}
+                  {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <InputField
+                      name="experience"
+                      label="Years of Experience"
+                      type="number"
+                      required
+                      value={watch("experience") || ""}
+                      error={errors.experience?.message}
+                      onChange={(e: any) =>
+                        setValue("experience", Number(e.target.value))
+                      }
+                    />
+
+                    <SelectField
+                      label="Expertise Level"
+                      required
+                      placeholder="Select level"
+                      error={errors.expertise_level?.message}
+                      options={
+                        expertiseLevels?.length > 0
+                          ? expertiseLevels.map((level: any) => ({
+                              label: level,
+                              value: level,
+                            }))
+                          : []
+                      }
+                      {...register("expertise_level")}
+                    />
+                  </div> */}
+
+                  {/* Industry Focus */}
+                  <div>
+                    <label className="block text-xs font-manrope font-medium text-slate-700 mb-2">
+                      Industry Focus
+                      <span className="text-red-500 ml-1">*</span>
+                    </label>
+                    <MultiSelect
+                      options={
+                        industries?.length > 0
+                          ? industries?.map((industry: any) => ({
+                              label: industry.name,
+                              value: String(industry.id),
+                            }))
+                          : []
+                      }
+                      value={
+                        typeof watch("industries") === "string" &&
+                        watch("industries")?.trim()
+                          ? watch("industries")!
+                              .split(",")
+                              .map((v) => v.trim())
+                              .filter(Boolean)
+                          : []
+                      }
+                      onChange={(selected) => {
+                        clearErrors("industries");
+                        setValue("industries", selected.join(","), {
+                          shouldValidate: true,
+                          shouldDirty: true,
+                        });
+                      }}
+                      placeholder="Select industry focus"
+                    />
+                    <p className="text-xs text-slate-500 mt-1">
+                      Separate multiple industries with commas
+                    </p>
+                    {errors.industries?.message && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.industries?.message}
+                      </p>
+                    )}
                   </div>
                 </div>
               )}
@@ -968,10 +1042,67 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
 
             {/* Professional Summary */}
             <div className="rounded-box border border-slate-200 overflow-hidden bg-background-main">
-              <SectionHeader icon={<Folder className="w-5 h-5 text-slate-600" />} title="Professional Summary" description="Your elevator pitch - Keep it focused and compelling" section="keyLocations" />
+              <SectionHeader
+                icon={<Folder className="w-5 h-5 text-slate-600" />}
+                title="Basic Information"
+                description="Your key details — Keep it clear and concise"
+                section="keyLocations"
+              />
               {expandedSections.keyLocations && (
                 <div className="px-6 py-4 border-t border-slate-200 bg-background-main space-y-4">
                   <div className="flex flex-col gap-4">
+                    <div className="grid md:grid-cols-2 grid-cols-1 gap-4">
+                      <div className="grid grid-cols-1 gap-4">
+                        <InputField
+                          label="Full Name"
+                          type="text"
+                          required
+                          error={errors.username?.message}
+                          {...register("username")}
+                        />
+                      </div>
+
+                      <div className="col-span-1">
+                        <InputField
+                          name="linkedin_url"
+                          label="LinkedIn URL"
+                          type="text"
+                          value={watch("linkedin_url") || ""}
+                          error={errors.linkedin_url?.message}
+                          onChange={(e: any) =>
+                            setValue("linkedin_url", e.target.value)
+                          }
+                        />
+                      </div>
+
+                      <InputField
+                        name="experience"
+                        label="Years of Experience"
+                        type="number"
+                        required
+                        value={watch("experience") || ""}
+                        error={errors.experience?.message}
+                        onChange={(e: any) =>
+                          setValue("experience", Number(e.target.value))
+                        }
+                      />
+
+                      <SelectField
+                        label="Expertise Level"
+                        required
+                        placeholder="Select level"
+                        error={errors.expertise_level?.message}
+                        options={
+                          expertiseLevels?.length > 0
+                            ? expertiseLevels.map((level: any) => ({
+                                label: level,
+                                value: level,
+                              }))
+                            : []
+                        }
+                        {...register("expertise_level")}
+                      />
+                    </div>
                     {/* <InputField
                       name="linkedin_url"
                       label="LinkedIn URL"
@@ -981,20 +1112,51 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                       onChange={(e: any) => setValue("linkedin_url", e.target.value)}
                     /> */}
                     <p className="text-xs border border-slate-200 flex items-center gap-2 text-brand-blue bg-[#EAF1FB] p-2 rounded-xl">
-                      <Info className="w-4 h-4 text-black" /> Mention your SAP specialisation, years of experience, key industries and outcomes. Use numbers — e.g. &quot;reduced close cycle by 60%&quot;. Max 500 characters.
+                      <Info className="w-4 h-4 text-black" /> Mention your SAP
+                      specialisation, years of experience, key industries and
+                      outcomes. Use numbers — e.g. &quot;reduced close cycle by
+                      60%&quot;. Max 500 characters.
                     </p>
-                    <textarea
+                    <div>
+                      <label className="block text-xs font-manrope font-medium text-slate-700 mb-2">
+                        Professional Headline
+                        <span className="text-red-500 ml-1">*</span>
+                      </label>
+                      <div className="relative">
+                        <ReactQuill
+                          className="bg-brand-yellow rounded-lg"
+                          style={{ borderRadius: "10px" }}
+                          theme="snow"
+                          value={watch("clients_summary") || ""}
+                          onChange={(value) => {
+                            console.log("clients_summary", value);
+                            setValue("clients_summary", value);
+                          }}
+                        />
+                        <p className="text-xs text-slate-500 mt-1">
+                          This appears right below your name - keep it punchy
+                          and specific
+                        </p>
+                        <div className="absolute top-2 right-3 text-xs text-slate-500">
+                          {watch("clients_summary")?.length || 0} / 100
+                        </div>
+                      </div>
+                      {errors.clients_summary?.message && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {errors.clients_summary?.message}
+                        </p>
+                      )}
+                    </div>
+                    {/* <textarea
                       {...register("professional_headline")}
                       placeholder="e.g. Experienced SAP S/4HANA Finance & Controlling consultant with 5 years of hands-on delivery across EMEA. Specialising in end-to-end FI/CO implementations for mid-to-large enterprises, I bridge the gap between business finance teams and technical SAP landscapes. Proven track record in digital transformation, reducing close cycles and improving reporting visibility."
                       className={`w-full bg-brand-yellow p-3 border text-sm text-slate-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3088B7] resize-none ${errors.clients_summary?.message ? "border-red-500" : "border-slate-300"}`}
                       rows={5}
-                    />
+                    /> */}
                   </div>
                 </div>
               )}
             </div>
-
-            
 
             {/* Professional Information */}
             <div className="rounded-box border border-slate-200 overflow-hidden bg-white">
@@ -1008,7 +1170,9 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                 <div className="px-6 py-5 border-t border-slate-200 bg-background-main space-y-6">
                   <div className="flex items-center gap-2">
                     <Briefcase className="w-4 h-4 text-slate-600" />
-                    <h3 className="text-sm font-semibold text-slate-800">Work Experience</h3>
+                    <h3 className="text-sm font-semibold text-slate-800">
+                      Work Experience
+                    </h3>
                   </div>
                   {workFields.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-12 bg-brand-yellow rounded-xl border border-dashed border-slate-300">
@@ -1087,7 +1251,9 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                   <div className="h-px bg-slate-200" />
                   <div className="flex items-center gap-2">
                     <GraduationCap className="w-4 h-4 text-slate-600" />
-                    <h3 className="text-sm font-semibold text-slate-800">Education</h3>
+                    <h3 className="text-sm font-semibold text-slate-800">
+                      Education
+                    </h3>
                   </div>
                   {eduFields.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-12 bg-brand-yellow rounded-xl border border-dashed border-slate-300">
@@ -1166,7 +1332,9 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                   <div className="h-px bg-slate-200" />
                   <div className="flex items-center gap-2">
                     <FolderKanban className="w-4 h-4 text-slate-600" />
-                    <h3 className="text-sm font-semibold text-slate-800">Projects</h3>
+                    <h3 className="text-sm font-semibold text-slate-800">
+                      Projects
+                    </h3>
                   </div>
                   {projFields.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-12 bg-brand-yellow rounded-xl border border-dashed border-slate-300">
@@ -1245,7 +1413,9 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                   <div className="h-px bg-slate-200" />
                   <div className="flex items-center gap-2">
                     <Star className="w-4 h-4 text-slate-600" />
-                    <h3 className="text-sm font-semibold text-slate-800">Certifications</h3>
+                    <h3 className="text-sm font-semibold text-slate-800">
+                      Certifications
+                    </h3>
                   </div>
                   {certFields.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-12 bg-brand-yellow rounded-xl border border-dashed border-slate-300">

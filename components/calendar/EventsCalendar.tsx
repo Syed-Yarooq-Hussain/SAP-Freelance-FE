@@ -181,7 +181,7 @@ function transformApiData(days: Day[]) {
     // 1. Available slot → shows as "09:00 Available" green text event in month view
     //    AND green background band in week/day view
     if (day.availability.available && day.availability.slots.length > 0) {
-      day.availability.slots.forEach((slot) => {
+      day.availability.slots.forEach((slot, idx) => {
 
         // Background band for week/day view
         fcEvents.push({
@@ -199,7 +199,13 @@ function transformApiData(days: Day[]) {
           display:    'auto',
           title:      'Available',
           classNames: ['fc-avail-label'],
-          extendedProps: { isAvailability: true, slotStart: slot.start_time, date: day.date },
+          extendedProps: {
+            isAvailability: true,
+            slotStart: slot.start_time,
+            slotEnd: slot.end_time,
+            date: day.date,
+            showTopBar: idx === 0,
+          },
         })
       })
     }
@@ -231,17 +237,32 @@ function transformApiData(days: Day[]) {
 export default function EventsCalendar() {
   const { calendarRef, setActiveView, setCurrentTitle } = useCalendar()
 
-  const goToDayView = (date: Date) => {
-    calendarRef.current?.getApi().changeView('timeGridDay', date)
+  const goToDayView = (date: Date, scrollTime?: string) => {
+    const api = calendarRef.current?.getApi()
+    if (!api) return
+    api.changeView('timeGridDay', date)
     setActiveView('timeGridDay')
+    if (scrollTime) {
+      // Wait for day view render before scrolling to the target slot.
+      setTimeout(() => {
+        api.scrollToTime(scrollTime)
+      }, 0)
+    }
   }
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1)
   const [currentYear,  setCurrentYear]  = useState(new Date().getFullYear())
   const { data, isLoading } = useConsultantCalendar(currentMonth- 1, currentYear)
   const events = useMemo(() => transformApiData(data?.days as any ?? []), [data])
 
+  const formatCompactAvailabilityTime = (value?: string) => {
+    if (!value) return ''
+    if (!value.endsWith(':00')) return value
+    const [hour] = value.split(':')
+    return String(Number(hour))
+  }
+
   return (
-    <div className="relative fc-shell h-[60vh]">
+    <div className="relative fc-shell h-[80vh] pr-2">
       <style>{`
 
         /* ─── Reset / base ─────────────────────────────────── */
@@ -385,7 +406,7 @@ export default function EventsCalendar() {
         initialView="dayGridMonth"
         headerToolbar={false}
         events={events}
-        height="100%"
+        height="auto"
         dayMaxEvents={3}
 
         // ─── "+X more" → go to that day view ──────────────────
@@ -396,7 +417,7 @@ export default function EventsCalendar() {
 
         // ─── Event content ─────────────────────────────────────
         eventContent={(arg) => {
-          const { isAvailability, slotStart, type, startTime } = arg.event.extendedProps
+          const { isAvailability, slotStart, slotEnd, type, startTime, showTopBar } = arg.event.extendedProps
           const viewType = arg.view.type
           const isMonth  = viewType === 'dayGridMonth'
           const isTimeGrid = viewType === 'timeGridWeek' || viewType === 'timeGridDay'
@@ -414,13 +435,15 @@ export default function EventsCalendar() {
                 padding:    '1px 6px',
                 fontSize:   11,
               }}>
-                <div className='w-full absolute top-[-180%] left-0 h-[2px] rounded-xl bg-success'/>
+                {showTopBar ? (
+                  <div className='w-full absolute top-[-180%] left-0 h-[2px] rounded-xl bg-success'/>
+                ) : null}
                 {/* <span style={{
                   width: 6, height: 6, borderRadius: '50%',
                   background: '#22c55e', flexShrink: 0,
                 }} /> */}
                 <span style={{ color: '#16a34a', fontWeight: 500 }}>
-                  {slotStart} Available
+                  {formatCompactAvailabilityTime(slotStart)} - {formatCompactAvailabilityTime(slotEnd)} available
                 </span>
               </div>
             )
@@ -463,7 +486,7 @@ export default function EventsCalendar() {
                 padding: '6px 8px', height: '100%',
                 display: 'flex', flexDirection: 'column', gap: 2,
               }}>
-                <div className={`w-full z-20 absolute top-[-180%] left-0 h-[2px] bg-[${accentColor}]`}/>
+                {/* <div className={`w-full z-20 absolute top-[-180%] left-0 h-[2px] bg-[${accentColor}]`}/> */}
                 {/* Time range */}
                 <span style={{ fontSize: 10, color: '#6b7280', fontWeight: 500 }}>
                   {arg.event.start?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -492,9 +515,17 @@ export default function EventsCalendar() {
         }}
 
         eventClick={(info) => {
-            if(info.event.extendedProps.date){
-                goToDayView(new Date(info.event.extendedProps.date))
-            }
+          const date = info.event.extendedProps.date
+          if (!date) return
+
+          const timeFromProps =
+            info.event.extendedProps.startTime || info.event.extendedProps.slotStart
+          const timeFromDate =
+            info.event.start != null
+              ? `${String(info.event.start.getHours()).padStart(2, '0')}:${String(info.event.start.getMinutes()).padStart(2, '0')}:00`
+              : undefined
+
+          goToDayView(new Date(date), timeFromProps || timeFromDate)
           // open your modal here
         }}
 

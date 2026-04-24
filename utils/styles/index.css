@@ -288,7 +288,8 @@
   }
 
   ol, ul, menu {
-    list-style: none;
+    /* list-style: none; */
+    padding-left: 10px;
   }
 
   img, svg, video, canvas, audio, iframe, embed, object {
