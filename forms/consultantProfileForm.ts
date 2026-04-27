@@ -90,7 +90,7 @@ export function getProfileCommercialFields(): IFieldConfig[] {
     },
     {
       name: "availability",
-      label: "Weekly Availability",
+      label: "Weekly availability (hours)",
       type: "text",
       column: { xs: 12, md: 4 },
       rules: {

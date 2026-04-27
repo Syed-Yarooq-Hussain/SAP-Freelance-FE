@@ -263,9 +263,9 @@ const Sidebar: FC<ISidebarProps> = ({ children }) => {
 
         <ConfirmDeleteModal
           isOpen={signOutOpen}
-          title="Sign out"
-          message="Are you sure you want to sign out? You will need to sign in again to access your account."
-          confirmLabel="Sign out"
+          title="Logout"
+          message="Are you sure you want to logout? You will need to sign in again to access your account."
+          confirmLabel="Logout"
           cancelLabel="Cancel"
           onCancel={() => setSignOutOpen(false)}
           onConfirm={() => {

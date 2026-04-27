@@ -49,3 +49,19 @@ export async function getConsultantMeetings(): Promise<ApiResponse<any[]>> {
 
   return res;
 }
+
+export async function deleteConsultantProfile(): Promise<ApiResponse<null>> {
+  const session = await getCachedSession();
+  const token = session?.accessToken;
+  const res = await request<void, null>({
+    url: API_ROUTES.DELETE_CONSULTANT_PROFILE+'/'+session?.user?.id,
+    method: "DELETE",
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+  });
+
+  if (res.status !== "success") {
+    throw new Error(res.message || "Failed to delete profile");
+  }
+
+  return res;
+}

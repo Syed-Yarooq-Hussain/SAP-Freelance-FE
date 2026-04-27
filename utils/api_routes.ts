@@ -54,6 +54,7 @@ export const API_ROUTES = {
   PDF_READER: "/common/pdf-reader",
   CONSULTANT_PROFILE: "/consultants/me",
   UPDATE_CONSULTANT_PROFILE: `/consultants/`,
+  DELETE_CONSULTANT_PROFILE: "/consultants/profile",
   GET_CONSULTANT_SCHEDULE: "/consultants/schedule",
   POST_CONSULTANT_SCHEDULE: "/consultants/schedule",
   CONSULTANT_STATS: "/consultants/stats",

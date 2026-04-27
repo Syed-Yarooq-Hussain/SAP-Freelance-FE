@@ -45,7 +45,7 @@ export function WelcomeHeader() {
         <div className="flex-1 min-w-0">
           <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
             <h1 className="text-xl sm:text-lg md:text-3xl font-light text-black break-words font-neue">
-              Welcome, {user?.user?.username || 'User'}! 👋
+              Welcome, {user?.user?.username || ''}
             </h1>
             {/* <div className="flex gap-2">
               {user?.badges.slice(0, 2).map((badge: string) => {
