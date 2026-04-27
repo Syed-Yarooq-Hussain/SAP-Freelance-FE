@@ -95,13 +95,13 @@ export const CalendarWidget: React.FC<{ data: DashboardData }> = ({ data }) => {
   }, [meetingList]);
 
   return (
-    <div className="rounded-xl p-2">
+    <div className="rounded-xl md:p-2 p-0">
       <DashboardCalendar
         events={calendarEvents}
         viewDetailsHref={APP_ROUTES.CONSULTANT.CALENDAR}
       />
 
-      <div className="my-2 p-2 border border-gray-200 rounded-xl">
+      <div className="my-2 border-none md:border border-gray-200 md:bg-none bg-white md:rounded-none rounded-box-xl md:p-0 p-3">
         <StatsCards data={data} />
       </div>
 

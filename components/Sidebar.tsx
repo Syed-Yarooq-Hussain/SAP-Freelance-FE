@@ -11,6 +11,7 @@ import React, { FC, useEffect, useState } from "react";
 import AppNavbar from "./AppNavbar";
 import DrawerList from "./DrawerList";
 import DrawerListSkeleton from "./DrawerListSkeleton";
+import BottomNav from "@/components/BottomNav";
 import { ChevronLeftIcon, ChevronRightIcon, LogOut, User } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useAppSelector } from "@/lib/store/hook";
@@ -110,6 +111,7 @@ const Sidebar: FC<ISidebarProps> = ({ children }) => {
         open={expanded}
         sx={{
           backgroundColor: expanded ? "white" : "#F0F1F3",
+          display: { xs: "none", md: "block" },
         }}
         PaperProps={{
           onMouseEnter: () => setHoverOpen(true),
@@ -317,13 +319,16 @@ const Sidebar: FC<ISidebarProps> = ({ children }) => {
         sx={{
           flexGrow: 1,
           px: 0,
-          py:2,
+          py: 2,
           mt: `${appBarHeight}px`,
           minHeight: "100vh",
+          pb: { xs: "120px", md: "0px" },
         }}
       >
         {children}
       </Box>
+
+      <BottomNav />
     </Box>
   );
 };

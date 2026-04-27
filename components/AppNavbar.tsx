@@ -1,11 +1,9 @@
 "use client";
 
 import { useLogout } from "@/actions/auth/logout";
-import { DESKTOP_DRAWER_WIDTH } from "@/constants/dimensions";
 import { getProfileRouteByRole } from "@/utils/roleRoutes";
 import colors from "@/utils/styles/colors";
 import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
-import MenuIcon from "@mui/icons-material/Menu";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import ProfileIcon from "@mui/icons-material/Person";
@@ -21,14 +19,14 @@ import {
 } from "@mui/material";
 import { useSession } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
+import Image from "next/image";
 import * as React from "react";
-import AppTitle from "./AppTitle";
 import ChatSection from "./ChatSection";
 import ProfileAvatar from "./ProfileAvatar";
 import ProfileMenu from "./ProfileMenu";
 import { APP_ROUTES } from "@/utils/app_routes";
 import { useAppSelector } from "@/lib/store/hook";
-import { User, Calendar, LogOutIcon, ArrowDownIcon, ChevronDown } from "lucide-react";
+import { LogOutIcon, ChevronDown } from "lucide-react";
 import { Roles } from "@/constants/roles";
 import { ConfirmDeleteModal } from "@/components/common/ConfirmDeleteModal";
 
@@ -121,9 +119,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
 //             ? { md: `calc(100% - ${240}px)` }
 //             :  {md: "96%", sm: "85%"},
 //        ml: showSidebar ? { md: `${DESKTOP_DRAWER_WIDTH}px` } : 0,
-          width: showSidebar
-            ? { xs: "85%", md: `calc(100% - 240px)` }
-            : { xs: "85%", sm: "90%", md: "96%" },
+          width: { xs: "100%", md: showSidebar ? `calc(100% - 240px)` : "96%" },
           backgroundColor: "#F0F1F3",
           paddingY:0.2,
           borderBottom: "1px solid #D9D9D9",
@@ -138,14 +134,16 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
           }}
         >
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            {showSidebar && (
-              <Box sx={{ display: { xs: "flex", md: "none" }, mr: 1 }}>
-                <IconButton size="large" edge="start" color="inherit">
-                  <MenuIcon />
-                </IconButton>
-              </Box>
-            )}
-            {/* <AppTitle /> */}
+            <Box sx={{ display: { xs: "flex", md: "none" }, alignItems: "center" }}>
+              <Image
+                src="/vx9-logo-02.png"
+                alt="Logo"
+                width={120}
+                height={34}
+                priority
+                style={{ objectFit: "contain", maxWidth: "100%", height: "auto" }}
+              />
+            </Box>
           </Box>
 
           <Box

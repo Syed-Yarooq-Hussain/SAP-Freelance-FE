@@ -21,7 +21,7 @@ module.exports = {
         destructive: "var(--destructive)",
         border: "var(--border)",
         // Brand colors from design
-        // "brand-blue": "#3088B7",
+        "brand-blue-light": "#3088B7",
         // "brand-blue": "#3088B7",
         "brand-blue": "#4A7AB5",
         "brand-blue-dark": "#0891B2",
@@ -50,6 +50,7 @@ module.exports = {
         lg: "9px",
         xl: "12",
         box: "19px",
+        "box-xl": "22px",
         input: "10px",
       },
       fontFamily: {
