@@ -1,6 +1,8 @@
 "use client";
 
 import { useLogout } from "@/actions/auth/logout";
+import { useDeleteConsultantProfile } from "@/actions/consultants/useDeleteConsultantProfile";
+import { DESKTOP_DRAWER_WIDTH } from "@/constants/dimensions";
 import { getProfileRouteByRole } from "@/utils/roleRoutes";
 import colors from "@/utils/styles/colors";
 import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
@@ -29,6 +31,7 @@ import { useAppSelector } from "@/lib/store/hook";
 import { LogOutIcon, ChevronDown } from "lucide-react";
 import { Roles } from "@/constants/roles";
 import { ConfirmDeleteModal } from "@/components/common/ConfirmDeleteModal";
+import { useToast } from "@/providers/ToastProvider";
 
 interface AppNavbarProps {
   showSidebar?: boolean;
@@ -38,6 +41,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
   const router = useRouter();
   const pathname = usePathname();
   const { mutate: logout } = useLogout();
+  const deleteProfile = useDeleteConsultantProfile();
   const { data: session } = useSession();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
@@ -47,6 +51,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
     "chat" | "notification" | null
   >(null);
   const [signOutOpen, setSignOutOpen] = React.useState(false);
+  const [deleteAccountOpen, setDeleteAccountOpen] = React.useState(false);
   const {user} = useAppSelector(state => state.user)
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -62,11 +67,26 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
   const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) =>
     setMobileMoreAnchorEl(event.currentTarget);
   const handleMobileMenuClose = () => setMobileMoreAnchorEl(null);
+  const { toast } = useToast();
   const handleLogout = () => logout();
   const handleProfileClick = () => {
     const role = session?.user?.role;
     const route = getProfileRouteByRole(role);
     router.push(route);
+  };
+
+  const handleDeleteAccount = () => {
+    deleteProfile.mutate(undefined, {
+      onSuccess: () => {
+        toast("Account deleted successfully", "success");
+        setDeleteAccountOpen(false);
+        logout();
+      },
+      onError: (error: any) => {
+        toast(error?.message || "Failed to delete account", "error");
+        setDeleteAccountOpen(false);
+      },
+    });
   };
 
   const profileRoute = getProfileRouteByRole(session?.user?.role);
@@ -297,6 +317,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
         onLogoutClick={() => setSignOutOpen(true)}
         onProfileClick={handleProfileClick}
         onChangePasswordClick={() => router.push(APP_ROUTES.CONSULTANT.CHANGE_PASSWORD)}
+        onDeleteAccount={() => setDeleteAccountOpen(true)}
         selectedPath={selectedMenu}
         user={{
           name:
@@ -314,15 +335,26 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
 
       <ConfirmDeleteModal
         isOpen={signOutOpen}
-        title="Sign out"
-        message="Are you sure you want to sign out? You will need to sign in again to access your account."
-        confirmLabel="Sign out"
+        title="Logout"
+        message="Are you sure you want to logout? You will need to sign in again to access your account."
+        confirmLabel="Logout"
         cancelLabel="Cancel"
         onCancel={() => setSignOutOpen(false)}
         onConfirm={() => {
           setSignOutOpen(false);
           handleLogout();
         }}
+      />
+
+      <ConfirmDeleteModal
+        isOpen={deleteAccountOpen}
+        title="Delete Account"
+        message="Are you sure you want to delete your account? This action cannot be undone. All your data will be permanently deleted."
+        confirmLabel={deleteProfile.isPending ? "Deleting..." : "Delete Account"}
+        cancelLabel="Cancel"
+        variant="danger"
+        onCancel={() => setDeleteAccountOpen(false)}
+        onConfirm={handleDeleteAccount}
       />
     </>
   );

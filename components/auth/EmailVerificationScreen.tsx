@@ -43,6 +43,12 @@ export function EmailVerificationScreen({ onClose, email, userDetails }: EmailVe
     }
   }, [countdown, canResend]);
 
+  useEffect(() => {
+    if (userDetails?.id && !emailSent) {
+      handleSendVerificationEmail();
+    }
+  }, [userDetails?.id]);
+
   const handleSendVerificationEmail = async () => {
     if(!userDetails?.id) {
       toast.error('User details not found');

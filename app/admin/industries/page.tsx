@@ -20,7 +20,6 @@ export default function IndustriesPage() {
     setEditData(null);
     setActiveTab("list");
   };
-  
   return (
     <Sidebar>
       <div className="p-6 bg-gray-50 min-h-screen">
@@ -29,7 +28,6 @@ export default function IndustriesPage() {
           <h1 className="text-3xl font-bold text-gray-800">Industries Management</h1>
           <p className="text-gray-500 mt-2">Manage SAP industry classifications</p>
         </div>
-
         {/* Tabs */}
         <div className="flex gap-2 mb-6 border-b border-gray-200">
           <button

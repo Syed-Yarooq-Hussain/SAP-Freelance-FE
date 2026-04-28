@@ -749,7 +749,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                       <div className="flex items-center gap-2 mt-4">
                         <div className="w-full">
                           <InputField
-                            label="Weekly Availability"
+                            label="Weekly availability (hours)"
                             type="number"
                             required
                             className="w-full"
@@ -1077,7 +1077,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
 
                       <InputField
                         name="experience"
-                        label="Years of Experience"
+                        label="Experience (in years)"
                         type="number"
                         required
                         value={watch("experience") || ""}

@@ -115,7 +115,7 @@ export function useAuthModals() {
       }
 
       if(response?.message){
-        toast.error(response?.message);
+        toast.success(response?.message);
       }else{
         toast.error(response?.data?.message || 'Something went wrong');
       }
