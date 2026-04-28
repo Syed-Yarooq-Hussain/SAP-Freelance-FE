@@ -27,11 +27,12 @@ import ChatSection from "./ChatSection";
 import ProfileAvatar from "./ProfileAvatar";
 import ProfileMenu from "./ProfileMenu";
 import { APP_ROUTES } from "@/utils/app_routes";
-import { useAppSelector } from "@/lib/store/hook";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
 import { LogOutIcon, ChevronDown } from "lucide-react";
 import { Roles } from "@/constants/roles";
 import { ConfirmDeleteModal } from "@/components/common/ConfirmDeleteModal";
 import { useToast } from "@/providers/ToastProvider";
+import { logoutUser } from "@/lib/store/features/user/userSlice";
 
 interface AppNavbarProps {
   showSidebar?: boolean;
@@ -67,8 +68,12 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
   const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) =>
     setMobileMoreAnchorEl(event.currentTarget);
   const handleMobileMenuClose = () => setMobileMoreAnchorEl(null);
+  const dispatch = useAppDispatch()
   const { toast } = useToast();
-  const handleLogout = () => logout();
+  const handleLogout = () => {
+    logout()
+    dispatch(logoutUser())
+  };
   const handleProfileClick = () => {
     const role = session?.user?.role;
     const route = getProfileRouteByRole(role);

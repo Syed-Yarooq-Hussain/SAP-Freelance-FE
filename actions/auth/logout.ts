@@ -10,7 +10,7 @@ export const useLogout = () => {
       clearCachedSession();
       await signOut({
         redirect: true,
-        callbackUrl: APP_ROUTES.LOGIN,
+        callbackUrl: APP_ROUTES.HOME,
       });
     },
     onSuccess: () => {
