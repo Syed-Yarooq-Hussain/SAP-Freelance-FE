@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 export const ProfileCard: React.FC<{ data: DashboardData }> = ({ data }) => {
   const router = useRouter();
   return (
-    <div className="rounded-xl shadow-custom p-4 border border-[#E5E5E5]">
+    <div className="rounded-xl shadow-custom p-4 border border-[#E5E5E5] md:bg-transparent bg-white">
       <div className="flex items-center gap-3 mb-6">
         <div className="w-10 h-10 bg-brand-blue rounded-xl flex items-center justify-center text-white font-bold">
           AA
@@ -36,12 +36,12 @@ export const ProfileCard: React.FC<{ data: DashboardData }> = ({ data }) => {
         </div>
       </div>
 
-          <div className='flex items-center gap-2'>
-      <Button className="flex-1 !text-xs bg-brand-blue text-white rounded-xl h-10 hover:bg-[#2670A0]">
+          <div className='flex flex-col md:flex-row items-center gap-2'>
+      <Button className="flex-1 w-full md:w-auto !text-xs bg-brand-blue text-white rounded-xl h-10 hover:bg-[#2670A0]">
         <Clock className="w-2 h-2 " /> Complete your profile now
       </Button>
 
-      <Button onClick={() => router.push(APP_ROUTES.CONSULTANT.PROFILE)} variant="outline" className="flex-1 h-10 !text-xs rounded-xl text-success">
+      <Button onClick={() => router.push(APP_ROUTES.CONSULTANT.PROFILE)} variant="outline" className="flex-1 w-full md:w-auto h-10 !text-xs rounded-xl text-success">
         <Star className="w-4 h-4" /> Add your certifications
       </Button>
 

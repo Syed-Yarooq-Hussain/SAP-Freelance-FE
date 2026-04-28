@@ -10,6 +10,8 @@ import {
   MapPin,
 } from "lucide-react";
 import { Button } from "../homepage/ui/button";
+import { APP_ROUTES } from "@/utils/app_routes";
+import { usePathname } from "next/navigation";
 
 const MONTHS = [
   "January",
@@ -104,6 +106,7 @@ export function DashboardCalendar({
   onMonthChange,
   onDateClick,
 }: DashboardCalendarProps) {
+  const pathname = usePathname()
   const today = new Date();
   const todayKey = isoKey(
     today.getFullYear(),
@@ -321,7 +324,7 @@ export function DashboardCalendar({
     : "";
 
   return (
-    <div className={className}>
+    <div className={`${className}`}>
       {showSmallHeader ? (
         <div className="flex items-center justify-between mb-4 px-0.5">
           <h3 className="text-base font-semibold text-slate-900 font-manrope">
@@ -485,7 +488,23 @@ export function DashboardCalendar({
       </div>
       )}
 
-      <div className="mb-6">
+      <div className="mb-6 md:bg-transparent bg-white md:rounded-none rounded-box-xl md:p-0 p-3">
+        {pathname.includes('dashboard') && (
+          <div className='md:hidden flex justify-between items-center mb-4'>
+            <div className="flex items-center gap-2">
+              <div className="bg-[#4A7BB51A] rounded-xl p-2">
+                <Calendar className="w-5 h-5 text-[#3088B7]" />
+              </div>
+              <p className="font-medium text-sm text-gray-900 font-neue">Calendar</p>
+            </div>
+            <a
+              href={APP_ROUTES.CONSULTANT.CALENDAR}
+              className="text-xs font-manrope font-semibold text-brand-blue hover:text-[#2670A0]"
+            >
+              View All
+            </a>
+          </div>
+        )}
         <div className="grid grid-cols-7 gap-2 mb-2">
           {["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"].map((day) => (
             <div

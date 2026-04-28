@@ -24,6 +24,9 @@ import { useAppSelector } from "@/lib/store/hook";
 import { useState } from "react";
 import { Separator } from "../homepage/ui/separator";
 import { Button } from "../homepage/ui/button";
+import UserInfo from "./userInfo";
+import CoreModules from "./coreModules";
+import ProfileSpecification from "./profile-specification";
 
 interface ProfileHeaderProps {
   name: string;
@@ -102,117 +105,28 @@ export function ProfileHeader({
       ?.map((module: any) => module?.module?.name) || [];
 
   return (
-    <div className="flex-1">
-      <div className="flex items-start justify-between mb-2">
-        <div className="flex items-center gap-3">
-          <h1 className="text-xl md:text-3xl text-slate-900 mb-2 font-neue">
-            {user?.user?.username}
-          </h1>
-          <div className="flex items-center flex-wrap gap-2">
-            {badges.map((badge) => {
-              const config = badgeConfig[badge as keyof typeof badgeConfig]
-              return config ? (
-                <Badge key={badge} className={`${config.variant} !text-white text-xxs font-bold rounded-full flex items-center gap-1 hover:scale-105 transition-all duration-300`}>
-                  <config.startIcon className="w-3 h-3" />
-                  {config.label}
-                </Badge>
-              ) : null
-            })}
-          </div>
-        </div>
+    <div className="flex-1 flex flex-col gap-3 md:mt-0 mt-4">
+      <div className="md:block hidden">
+        <UserInfo
+          user={user?.user}
+          badges={badges}
+        />
+        <CoreModules coreModules={coreModules} />
+        <ProfileSpecification user={user} />
       </div>
 
-      <div className="mb-4">
-        <div className="flex items-center gap-2">
-          {coreModules.length > 0 && (
-            <div className="flex items-center gap-2">
-              {coreModules.map((module) => (
-                <p
-                  key={module}
-                  className="text-sm font-thin text-black flex items-center gap-2 font-neue"
-                >
-                  {module}{" "}
-                  <span className="bg-black w-2 h-2 rounded-full inline-block"></span>
-                </p>
-              ))}
-            </div>
-          )}
-          {/* <p className="text-sm font-thin text-black flex items-center gap-2 font-neue">{user?.experience} years of experience</p> */}
-        </div>
-      </div>
-      <div
-        className={`grid grid-cols-2  gap-4 mb-4 ${user?.user?.linkedin_url ? "md:grid-cols-5" : "md:grid-cols-4"}`}
-      >
-        <div className="shadow-custom min-h-16 border flex flex-col justify-evenly border-slate-200 rounded-lg px-4 py-2">
-          <div className="text-[10px] text-light-grey font-semibold font-manrope">
-            Hourly Rate
-          </div>
-          <div className="text-sm font-bold text-success font-manrope">
-            ${user?.rate || "-"}/hr
-          </div>
-        </div>
-        <div className="shadow-custom min-h-16 border flex flex-col justify-evenly border-slate-200 rounded-lg px-4 py-2">
-          <div className="text-[10px] text-light-grey font-semibold mb-1 font-manrope">
-            Availability (Weekly)
-          </div>
-          <div className="text-sm flex items-center gap-1.5 font-manrope">
-            <Clock className="w-4 h-4" />
-            {user?.weekly_available_hours} hours
-          </div>
-        </div>
-        {user?.user?.city && (
-          <div className="shadow-custom min-h-16 border flex flex-col justify-evenly border-slate-200 rounded-lg px-4 py-2">
-            <div className="flex items-center gap-1 text-[10px] text-light-grey font-semibold mb-1 font-manrope">
-              Location
-            </div>
-            <div className="text-sm text-slate-900 flex items-center gap-1.5 font-manrope">
-              <MapPin className="w-4 h-4" />
-              {user?.user?.city}
-              {/* {user?.user?.country && `, ${user?.user?.country}`} */}
-            </div>
-          </div>
-        )}
-        {user?.user?.linkedin_url && (
-          <div className="shadow-custom min-h-16 border flex flex-col justify-evenly border-slate-200 rounded-lg px-4 py-2">
-            <div className="flex items-center gap-1 text-[10px] text-light-grey font-semibold mb-1 font-manrope">
-              LinkedIn
-            </div>
-            <div className="text-sm text-slate-900 flex items-center gap-1.5 font-manrope">
-              <img src="/images/linkedin.png" alt="LinkedIn" className="w-4 h-4" />
-              <a
-                href={user?.user?.linkedin_url}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                View Profile
-              </a>
-            </div>
-          </div>
-        )}
-        {
-          <div className="shadow-custom min-h-16 border flex flex-col justify-evenly border-slate-200 rounded-lg px-4 py-2">
-            <div className="flex items-center gap-1 text-[10px] text-light-grey font-semibold mb-1 font-manrope">
-              Projects
-            </div>
-            <div className="text-sm text-slate-900 flex items-center gap-1 font-manrope">
-              <CircleCheck className="w-3 h-3" />
-              {user?.projects?.length || 0} done
-            </div>
-          </div>
-        }
-      </div>
-
+    <div className="md:order-2 order-3">
       {coreModules.length > 0 ? (
-        <div className="bg-gradient-success h-14 border mb-4 border-slate-200 rounded-xl px-4 py-3">
+        <div className="bg-gradient-success md:h-14 h-auto border mb-4 border-slate-200 rounded-xl px-4 py-3">
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-2 font-manrope">
+            <div className="flex md:flex-row flex-col md:items-center items-start gap-2 font-manrope">
               <div className="flex items-center mr-1">
                 <Dot className="w-8 h-8 text-success" />
-                <p className="text-xxs text-success font-medium">
+                <p className="text-sm text-success font-medium">
                   Core Modules
                 </p>
               </div>
-              <div className="h-5 w-[1px] bg-slate-200"></div>
+              <div className="h-5 w-[1px] bg-slate-200 md:block hidden"></div>
               <div className="flex items-center gap-2">
                 {coreModules.map((module, index) => (
                   <div
@@ -243,72 +157,75 @@ export function ProfileHeader({
           </div>
         </div>
       )}
+    </div>
 
-      {user?.clients_summary ? (
-        <div className="mb-4 bg-[#F5F3EF] border border-slate-200 rounded-lg p-4">
-          <p className="font-bold mb-4 flex items-center gap-2 font-manrope text-sm">
-            <span className="bg-brand-blue text-white rounded-md p-1 w-6 h-6 flex items-center justify-center font-manrope">
-              <FileText className="w-4 h-4" />
-            </span>
-            Professional Summary
-          </p>
-          <div
-            className="text-[12px] text-slate-600 mb-4 leading-relaxed font-manrope max-w-full overflow-hidden [&_*]:max-w-full [&_*]:break-words [&_ul]:list-disc [&_ul]:pl-3 [&_ol]:list-decimal [&_ol]:pl-3 [&_li]:mb-1"
-            style={
-              !viewMore
-                ? {
-                    display: "-webkit-box",
-                    WebkitLineClamp: 4,
-                    WebkitBoxOrient: "vertical",
-                    overflow: "hidden",
-                    overflowWrap: "break-word",
-                    wordBreak: "break-word",
-                  }
-                : {
-                    overflowWrap: "break-word",
-                    wordBreak: "break-word",
-                  }
-            }
-            dangerouslySetInnerHTML={{ __html: summaryHtml }}
-          />
-          {shouldShowSummaryToggle && (
-            <button
-              type="button"
-              className="text-brand-blue text-sm font-medium flex items-center gap-2"
-              onClick={() => setViewMore(!viewMore)}
-            >
-              {viewMore ? (
-                <ChevronUp className="w-4 h-4 text-black" />
-              ) : (
-                <ChevronDown className="w-4 h-4 text-black text-xxs" />
-              )}{" "}
-              {viewMore ? "Read Less" : "Read More"}
-            </button>
-          )}
-        </div>
-      ) : (
-        <div className="bg-inactive border border-dashed mb-4 border-slate-200 rounded-xl px-4 py-3 flex flex-col text-center justify-center items-center gap-2">
-          <div className="flex items-center gap-2 bg-disabled rounded-xl p-2">
-            <FileText className="w-6 h-6" />
-          </div>
-          <div className="flex flex-col justify-center items-center gap-1 flex-1">
-            <p className="font-bold font-manrope text-sm text-slate-500">
-              No professional summary yet
+      <div className="md:order-3 order-2">
+        {user?.clients_summary ? (
+          <div className="mb-4 bg-background-main md:bg-[#F5F3EF] border border-slate-200 rounded-lg p-4">
+            <p className="font-bold mb-4 flex items-center gap-2 font-manrope text-sm">
+              <span className="bg-brand-blue text-white rounded-md p-1 w-6 h-6 flex items-center justify-center font-manrope">
+                <FileText className="w-4 h-4" />
+              </span>
+              Professional Summary
             </p>
-            <p className="text-xs font-manrope text-slate-300 max-w-md">
-              Tell clients about your expertise, experience, and what makes you
-              stand out. A strong summary increases your chances of being hired
-              by 3×.
-            </p>
-            <Button
-              onClick={() => setIsEditing(true)}
-              className="bg-white w-fit flex items-center gap-1 px-4 py-2 rounded-xl text-xs border border-slate-300 text-brand-blue"
-            >
-              <Plus className="w-4 h-4 text-black" /> Write Summary
-            </Button>
+            <div
+              className="text-[12px] text-slate-600 mb-4 leading-relaxed font-manrope max-w-full overflow-hidden [&_*]:max-w-full [&_*]:break-words [&_ul]:list-disc [&_ul]:pl-3 [&_ol]:list-decimal [&_ol]:pl-3 [&_li]:mb-1"
+              style={
+                !viewMore
+                  ? {
+                      display: "-webkit-box",
+                      WebkitLineClamp: 4,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                      overflowWrap: "break-word",
+                      wordBreak: "break-word",
+                    }
+                  : {
+                      overflowWrap: "break-word",
+                      wordBreak: "break-word",
+                    }
+              }
+              dangerouslySetInnerHTML={{ __html: summaryHtml }}
+            />
+            {shouldShowSummaryToggle && (
+              <button
+                type="button"
+                className="text-brand-blue text-sm font-medium flex items-center gap-2"
+                onClick={() => setViewMore(!viewMore)}
+              >
+                {viewMore ? (
+                  <ChevronUp className="w-4 h-4 text-black" />
+                ) : (
+                  <ChevronDown className="w-4 h-4 text-black text-xxs" />
+                )}{" "}
+                {viewMore ? "Read Less" : "Read More"}
+              </button>
+            )}
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="bg-inactive border border-dashed mb-4 border-slate-200 rounded-xl px-4 py-3 flex flex-col text-center justify-center items-center gap-2">
+            <div className="flex items-center gap-2 bg-disabled rounded-xl p-2">
+              <FileText className="w-6 h-6" />
+            </div>
+            <div className="flex flex-col justify-center items-center gap-1 flex-1">
+              <p className="font-bold font-manrope text-sm text-slate-500">
+                No professional summary yet
+              </p>
+              <p className="text-xs font-manrope text-slate-300 max-w-md">
+                Tell clients about your expertise, experience, and what makes you
+                stand out. A strong summary increases your chances of being hired
+                by 3×.
+              </p>
+              <Button
+                onClick={() => setIsEditing(true)}
+                className="bg-white w-fit flex items-center gap-1 px-4 py-2 rounded-xl text-xs border border-slate-300 text-brand-blue"
+              >
+                <Plus className="w-4 h-4 text-black" /> Write Summary
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

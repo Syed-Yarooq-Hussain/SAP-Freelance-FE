@@ -13,7 +13,7 @@ interface StatCardProps {
 const StatCard: React.FC<StatCardProps> = ({ label, value, icon }) => {
   return (
     <div className="bg-white shadow-sm rounded-xl px-3 py-4 border border-gray-400 text-start">
-      <p className="text-xs font-manrope font-medium text-gray-600 mb-2">{label}</p>
+      <p className="text-[9px] md:text-xs font-manrope font-medium text-gray-600 mb-2">{label}</p>
       <p className="text-xl font-neue text-gray-900">{value}</p>
       {icon && <span className="text-2xl mt-2 inline-block">{icon}</span>}
     </div>
@@ -22,7 +22,7 @@ const StatCard: React.FC<StatCardProps> = ({ label, value, icon }) => {
 
 export const StatsCards: React.FC<{ data: DashboardData }> = ({ data }) => {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div className="grid grid-cols-3 gap-2 md:gap-4">
       <StatCard label="Weekly availability (hours)" value={data?.calender?.weekly_availability || '0'} />
       <StatCard label="Meetings" value={data?.calender?.interview_schedule || '0'} />
       <StatCard label="Next Meeting" value={data?.calender?.next_interview ? ymd(new Date(data?.calender?.next_interview as any)) : '-'} />

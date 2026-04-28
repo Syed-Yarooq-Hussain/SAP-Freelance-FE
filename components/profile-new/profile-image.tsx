@@ -17,11 +17,6 @@ interface ProfileImageProps {
 export function ProfileImage({ imageUrl, name, initials }: ProfileImageProps) {
   const user = useAppSelector((state) => state?.user?.user);
   const dispatch = useAppDispatch();
-  const getInitials = () => {
-    if (initials) return initials
-    const parts = name.split(' ')
-    return parts.map((part) => part[0]).join('').toUpperCase().slice(0, 2)
-  }
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
