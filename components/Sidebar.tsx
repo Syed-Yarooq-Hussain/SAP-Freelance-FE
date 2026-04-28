@@ -322,7 +322,7 @@ const Sidebar: FC<ISidebarProps> = ({ children }) => {
           py: 2,
           mt: `${appBarHeight}px`,
           minHeight: "100vh",
-          pb: { xs: "120px", md: "0px" },
+          pb: { xs: "70px", md: "0px" },
         }}
       >
         {children}

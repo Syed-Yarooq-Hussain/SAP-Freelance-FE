@@ -54,7 +54,7 @@ export function WelcomeHeader() {
 
   return (
     <div className="px-0 py-0 sm:p-5 md:px-12 md:py-4 bg-white">
-      <div className="md:hidden bg-gradient-to-br from-[#4C7FBF] via-[#3F6FAE] to-[#2D5C9A] px-4 pt-5 pb-10 sm:px-6 sm:py-6 text-white shadow-custom">
+      <div className="md:hidden bg-brand-blue px-4 pt-5 pb-10 sm:px-6 sm:py-6 text-white shadow-custom">
         <div className="mx-auto max-w-3xl">
           {/* <div className="mb-4 flex items-center justify-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#2D5C9A] font-bold">
