@@ -30,6 +30,12 @@ export const userSlice = createSlice({
       state.user = action.payload.user;
       // state.token = action.payload.token;
     },
+    logoutUser: (state) => {
+      state.user = null;
+      state.token = null;
+      state.permissions = [];
+      state.role = {};
+    },
   },
   // extraReducers: (builder) => {
   //   builder.addCase(getCurrentUser.pending, (state) => {
@@ -48,7 +54,7 @@ export const userSlice = createSlice({
   // },
 });
 
-export const { updateUser } = userSlice.actions;
+export const { updateUser, logoutUser } = userSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
 export const selectUser = (state: RootState) => state.user;

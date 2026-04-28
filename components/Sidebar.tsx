@@ -14,9 +14,10 @@ import DrawerListSkeleton from "./DrawerListSkeleton";
 import BottomNav from "@/components/BottomNav";
 import { ChevronLeftIcon, ChevronRightIcon, LogOut, User } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { useAppSelector } from "@/lib/store/hook";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
 import { useLogout } from "@/actions/auth/logout";
 import { ConfirmDeleteModal } from "@/components/common/ConfirmDeleteModal";
+import { logoutUser } from "@/lib/store/features/user/userSlice";
 
 type ISidebarProps = {
   children: React.ReactNode;
@@ -81,7 +82,9 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 
 const Sidebar: FC<ISidebarProps> = ({ children }) => {
   const { mutate: logout } = useLogout();
+  const dispatch = useAppDispatch()
   const handleLogout = () => {
+    dispatch(logoutUser())
     logout();
   }
   const theme = useTheme();
