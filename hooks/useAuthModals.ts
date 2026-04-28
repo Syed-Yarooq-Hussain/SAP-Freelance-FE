@@ -121,7 +121,6 @@ export function useAuthModals() {
       }
       // const responseData = response?.data as any;
       // const userId = responseData?.id || responseData?.user?.id;
-      
       // return { response, userId };
     } catch (error: any) {
       let errorMessage = error?.message || 'Something went wrong';
