@@ -54,7 +54,7 @@ export function WelcomeHeader() {
 
   return (
     <div className="px-0 py-0 sm:p-5 md:px-12 md:py-4 bg-white">
-      <div className="md:hidden bg-brand-blue px-4 pt-5 pb-10 sm:px-6 sm:py-6 text-white shadow-custom">
+      <div style={{ backgroundImage: 'linear-gradient(360deg, #134481 -18.69%, #4A7AB5 89.76%)'}} className="md:hidden px-4 pt-5 pb-10 sm:px-6 sm:py-6 text-white shadow-custom">
         <div className="mx-auto max-w-3xl">
           {/* <div className="mb-4 flex items-center justify-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#2D5C9A] font-bold">
@@ -63,7 +63,7 @@ export function WelcomeHeader() {
             <p className="text-[30px] font-bold font-neue tracking-tight leading-none">Vertex9</p>
           </div> */}
 
-          <h1 className="text-2xl md:text-4xl text-center font-bold font-neue tracking-tight mb-2">
+          <h1 className="text-lg md:text-4xl text-center font-bold font-neue tracking-tight mb-2">
             Welcome, {user?.user?.username || 'User'}! 👋
           </h1>
 
