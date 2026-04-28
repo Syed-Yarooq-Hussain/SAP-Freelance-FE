@@ -171,7 +171,7 @@ export function ProfileLayout({
                       name={user?.username || "User"}
                     />
                   </div>
-                  <h1 className="text-2xl mt-8 font-bold text-center text-slate-900 font-manrope">
+                  <h1 className="text-2xl mt-8 font-bold text-center text-slate-900 font-neue">
                     {user?.username || "User"}
                   </h1>
 
@@ -179,7 +179,7 @@ export function ProfileLayout({
                     {profileBadges.map((badge) => (
                       <span
                         key={badge}
-                        className={`inline-flex items-center gap-1 rounded-full px-4 py-1.5 text-sm text-white ${
+                        className={`inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs text-white ${
                           badge === "VERIFIED" ? "bg-success" : "bg-brand-blue"
                         }`}
                       >
@@ -193,23 +193,23 @@ export function ProfileLayout({
                     ))}
                   </div>
 
-                  <p className="mt-4 text-center text-xl font-neue text-slate-900">
+                  <p className="mt-4 text-center text-xs font-neue text-slate-900">
                     {mobileTitle}{" "}
                     <span className="font-normal">
                       · {experienceText} yrs experience
                     </span>
                   </p>
 
-                  <div className="mt-5 flex flex-wrap gap-3">
-                    {mobileStats.map((item) => (
+                <div className="mt-5 grid grid-cols-6 gap-3">
+                    {mobileStats.map((item, index) => (
                       <div
                         key={item.label}
-                        className={`rounded-2xl flex-1 border border-slate-300 bg-white px-3 py-3 ${
-                          item.label === "Projects" ? "col-span-1" : ""
+                        className={`rounded-2xl flex flex-col justify-between border border-slate-300 bg-white px-3 py-3 ${
+                          index < 3 ? "col-span-2" : "col-span-3"
                         }`}
                       >
-                        <p className="text-xxs text-slate-500">{item.label}</p>
-                        <div className="mt-1 flex items-center gap-1.5 text-sm text-slate-900 font-neue">
+                        <p className="text-xs text-slate-500">{item.label}</p>
+                        <div className="mt-1 flex items-center gap-1.5 text-xs text-slate-900 font-neue">
                           {item.icon ? <item.icon className="w-5 h-5" /> : null}
                           <span>{item.value}</span>
                         </div>
