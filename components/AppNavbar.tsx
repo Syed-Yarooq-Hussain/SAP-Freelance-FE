@@ -28,7 +28,7 @@ import ProfileAvatar from "./ProfileAvatar";
 import ProfileMenu from "./ProfileMenu";
 import { APP_ROUTES } from "@/utils/app_routes";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
-import { LogOutIcon, ChevronDown } from "lucide-react";
+import { LogOutIcon, ChevronDown, SettingsIcon, LockIcon } from "lucide-react";
 import { Roles } from "@/constants/roles";
 import { ConfirmDeleteModal } from "@/components/common/ConfirmDeleteModal";
 import { useToast } from "@/providers/ToastProvider";
@@ -85,6 +85,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
       onSuccess: () => {
         toast("Account deleted successfully", "success");
         setDeleteAccountOpen(false);
+        dispatch(logoutUser());
         logout();
       },
       onError: (error: any) => {
@@ -104,6 +105,8 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
         dashboard: APP_ROUTES.CONSULTANT.DASHBOARD,
         profile: APP_ROUTES.CONSULTANT.PROFILE,
         calendar: APP_ROUTES.CONSULTANT.CALENDAR,
+        account: APP_ROUTES.CONSULTANT.ACCOUNT,
+        changePassword: APP_ROUTES.CONSULTANT.CHANGE_PASSWORD,
       };
     // if (role === Roles.CLIENT)
     //   return {
@@ -128,7 +131,13 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
     { label: "My Profile", path: navRoutes.profile, icon: ProfileIcon },
     { label: "Calendar", path: navRoutes.calendar, icon: CalendarMonthIcon },
   ] as const;
-
+  
+  const navItemsMobile = [
+    { label: "My Profile", path: navRoutes.profile, icon: ProfileIcon },
+    { label: "Calendar", path: navRoutes.calendar, icon: CalendarMonthIcon },
+    { label: "Account Settings", path: navRoutes.account, icon: SettingsIcon },
+    { label: "Change Password", path: navRoutes.changePassword, icon: LockIcon }
+  ]
   const handleNavClick = (path: string) => {
     router.push(path);
     handleMobileMenuClose();
@@ -262,6 +271,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
               size="large"
               color="inherit"
               onClick={handleMobileMenuOpen}
+              sx={{ p: 0 }}
             >
               <MoreVertIcon />
             </IconButton>
@@ -276,7 +286,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
           transformOrigin={{ vertical: "top", horizontal: "right" }}
           slotProps={{ paper: { sx: { minWidth: 200 } } }}
         >
-          {navItems.map(({ label, path, icon: Icon }) => {
+          {navItemsMobile.map(({ label, path, icon: Icon }) => {
             const isActive = pathname === path;
             // const isProfileItem = path === APP_ROUTES.CONSULTANT.PROFILE;
             // const isCalendarItem = path === APP_ROUTES.CONSULTANT.CALENDAR;

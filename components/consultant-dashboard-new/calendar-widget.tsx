@@ -101,7 +101,7 @@ export const CalendarWidget: React.FC<{ data: DashboardData }> = ({ data }) => {
         viewDetailsHref={APP_ROUTES.CONSULTANT.CALENDAR}
       />
 
-      <div className="my-2 border-none md:border border-gray-200 md:bg-none bg-white md:rounded-none rounded-box-xl md:p-0 p-3">
+      <div className="my-2 md:border-none border md:border-gray-200 md:bg-transparent bg-[#FAF9F7] md:rounded-none rounded-box-xl md:p-0 p-3">
         <StatsCards data={data} />
       </div>
 
