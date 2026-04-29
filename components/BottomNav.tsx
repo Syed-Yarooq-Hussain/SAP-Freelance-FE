@@ -83,7 +83,7 @@ const BottomNav: FC = () => {
   return (
     <>
       <nav className="fixed bottom-0 left-0 right-0 md:hidden z-40">
-        <div className="rounded-t-2xl bg-brand-blue-light px-2 py-2 shadow-lg">
+        <div className="rounded-t-2xl bg-[#F0F1F3] border border-t border-slate-300 px-2 py-2 shadow-lg">
           <div className="flex items-stretch justify-around">
             {primaryItems.map((item, index) => {
               const isActive =
@@ -93,18 +93,18 @@ const BottomNav: FC = () => {
                 <div key={item.link} className="flex flex-1 items-stretch">
                   <Link
                     href={item.link}
-                    className="flex flex-col items-center justify-center gap-1.5 py-2 flex-1 relative group"
+                    className={`flex flex-col items-center justify-center gap-1.5 py-2 flex-1 relative groups`}
                   >
                     <div
                       className={`transition-colors ${
-                        isActive ? 'text-white' : 'text-white/80 group-hover:text-white'
+                        isActive ? 'text-brand-blue font-black' : 'font-medium text-brand-blue/90 group-hover:text-brand-blue'
                       }`}
                     >
                       {item.icon}
                     </div>
                     <span
-                      className={`text-xs leading-none font-medium text-center ${
-                        isActive ? 'text-white' : 'text-white/80 group-hover:text-white'
+                      className={`text-xs leading-none  text-center ${
+                        isActive ? 'text-brand-blue font-black' : 'font-medium text-brand-blue/90 group-hover:text-brand-blue'
                       }`}
                     >
                       {item.label}
@@ -125,11 +125,11 @@ const BottomNav: FC = () => {
               >
                 <Menu
                   size={14}
-                  className={`transition-colors ${isMoreActive ? 'text-white' : 'text-white/80'}`}
+                  className={`transition-colors ${isMoreActive ? 'text-brand-blue' : 'text-brand-blue/90'}`}
                 />
                 <span
                   className={`text-xs leading-none font-medium text-center ${
-                    isMoreActive ? 'text-white' : 'text-white/80'
+                    isMoreActive ? 'text-brand-blue' : 'text-brand-blue/90'
                   }`}
                 >
                   More
