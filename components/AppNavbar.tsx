@@ -79,6 +79,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
     const route = getProfileRouteByRole(role);
     router.push(route);
   };
+  
 
   const handleDeleteAccount = () => {
     deleteProfile.mutate(undefined, {
