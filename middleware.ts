@@ -41,9 +41,9 @@ export default auth((req) => {
           new URL(APP_ROUTES.ADMIN.DASHBOARD, nextUrl)
         );
       default:
-        return NextResponse.redirect(new URL(APP_ROUTES.HOME, nextUrl));
+        return NextResponse.next(); // ✅ HOME pe loop nahi hoga
     }
-  }
+}
 
   if (session) {
     const role = session.user?.role;
