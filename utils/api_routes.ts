@@ -44,6 +44,7 @@ export const API_ROUTES = {
   CONSULTANT_DASHBOARD: "/consultants/dashboard",
   CONSULTANT_DASHBOARD_V2: "/consultants/v2/dashboard",
   SAP_MODULES: "/common/sap-modules",
+  SAP_OTHER_MODULES: "/common/module/tree",
   COMMON_MEETINGS: "/common/meetings",
   ADMIN_STATS: "/admin/stats",
   ADMIN_PROJECTS: "/admin/projects",

@@ -85,7 +85,7 @@ export function WorkExperienceModal({
   const modalContent = (
     <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/50 px-4" onClick={handleClose}>
       <div 
-        className="relative w-full max-w-lg rounded-2xl bg-white p-8 shadow-2xl z-[100000]"
+        className="relative w-full max-w-lg rounded-2xl bg-white md:p-8 p-6 shadow-2xl z-[100000]"
         onClick={(e) => e.stopPropagation()}
       >
 

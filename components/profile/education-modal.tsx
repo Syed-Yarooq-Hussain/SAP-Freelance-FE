@@ -89,7 +89,7 @@ export function EducationModal({
       onClick={handleClose}
     >
       <div
-        className="relative w-full max-w-4xl rounded-2xl bg-white p-8 shadow-2xl z-[100000]"
+        className="relative w-full max-w-4xl rounded-2xl bg-white md:p-8 p-6 shadow-2xl z-[100000]"
         onClick={(e) => e.stopPropagation()}
       >
         <ProfileFormModalHeader
