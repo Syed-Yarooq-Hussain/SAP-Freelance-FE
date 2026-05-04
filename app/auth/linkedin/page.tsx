@@ -7,9 +7,13 @@ import { APP_ROUTES } from '@/utils/app_routes';
 import Image from 'next/image';
 import { Loader2, XCircle } from 'lucide-react';
 import "@/utils/styles/index.css";
+import { getConsultantMeService } from '@/services/getConsultantProfile';
+import { updateUser } from '@/lib/store/features/user/userSlice';
+import { useAppDispatch } from '@/lib/store/hook';
 
 export default function LinkedInCallback() {
   const router = useRouter();
+  const dispatch = useAppDispatch()
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
   
@@ -55,6 +59,16 @@ export default function LinkedInCallback() {
             dashboardRoute = APP_ROUTES.HOME;
         }
 
+        if (role === 2) {
+          try {
+            const consultantData = await getConsultantMeService();
+            if (consultantData?.data) {
+              dispatch(updateUser({ user: consultantData.data }));
+            }
+          } catch (error) {
+            console.error('Failed to fetch consultant profile:', error);
+          }
+        }
         // Redirect to appropriate dashboard
         router.push(dashboardRoute);
       } catch (err: any) {
