@@ -176,8 +176,7 @@ export const profileEditSchema = yup.object().shape({
   // Key Locations - from user object
   city: yup
     .string()
-    .nullable()
-    .min(2, 'City must be at least 2 characters'),
+    .nullable(),
   country: yup.string().nullable(),
   // Professional Summary - from clients_summary
   clients_summary: yup

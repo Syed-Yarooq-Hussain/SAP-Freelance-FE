@@ -104,7 +104,7 @@ function flattenFormErrors(
   if (!obj || typeof obj !== "object") return [];
   const list: { path: string; message: string }[] = [];
   for (const [key, val] of Object.entries(obj)) {
-    const path = prefix ? `${prefix}.${key}` : key;
+    const path = prefix ? `${key}` : key;
     if (val && typeof val === "object") {
       const msg = (val as { message?: unknown }).message;
       if (typeof msg === "string" && msg.trim()) {
