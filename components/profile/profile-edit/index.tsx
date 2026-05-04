@@ -973,7 +973,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4">
                     <div>
                       <label className="block text-xs font-manrope font-medium text-slate-700 mb-2">
                         City
@@ -981,12 +981,16 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                       </label>
                       <LocationAutocomplete
                         value={watch("city") || ""}
-                        onChange={(value) => setValue("city", value)}
+                        onChange={(value) => {
+                          let [city, country] = value.split(',')
+                          setValue("city", city)
+                          setValue("country", country)
+                        }}
                         placeholder="Select city"
                         className="bg-brand-yellow"
                       />
                     </div>
-                    <div>
+                    {/* <div>
                         <label className="block text-xs font-manrope font-medium text-slate-700 mb-2">
                           Country
                           <span className="text-red-500 ml-1">*</span>
@@ -997,7 +1001,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                         placeholder="Select country"
                         className="bg-brand-yellow"
                       /> 
-                    </div>
+                    </div> */}
                   </div>
                   <div className="md:grid hidden grid-cols-1 md:grid-cols-2 gap-4">
                     <InputField
