@@ -982,7 +982,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                       <LocationAutocomplete
                         value={watch("city") || ""}
                         onChange={(value) => {
-                          let [city, country] = value.split(',')
+                          const [city, country] = value.split(',')
                           setValue("city", city)
                           setValue("country", country)
                         }}
