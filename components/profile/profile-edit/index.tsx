@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   useForm,
   useFieldArray,
+  type FieldErrors,
+  type FieldPath,
   type Resolver,
   type SubmitHandler,
 } from "react-hook-form";
@@ -92,6 +94,37 @@ function formatDateRange(start?: string | null, end?: string | null) {
     return right === "Present" ? "" : right;
   }
   return `${left} – ${right}`;
+}
+
+/** Flatten react-hook-form / yup error tree for logging and user feedback */
+function flattenFormErrors(
+  obj: Record<string, unknown> | null | undefined,
+  prefix = "",
+): { path: string; message: string }[] {
+  if (!obj || typeof obj !== "object") return [];
+  const list: { path: string; message: string }[] = [];
+  for (const [key, val] of Object.entries(obj)) {
+    const path = prefix ? `${prefix}.${key}` : key;
+    if (val && typeof val === "object") {
+      const msg = (val as { message?: unknown }).message;
+      if (typeof msg === "string" && msg.trim()) {
+        list.push({ path, message: msg });
+        continue;
+      }
+      if (Array.isArray(val)) {
+        val.forEach((item, i) => {
+          if (item && typeof item === "object") {
+            list.push(
+              ...flattenFormErrors(item as Record<string, unknown>, `${path}.${i}`),
+            );
+          }
+        });
+      } else {
+        list.push(...flattenFormErrors(val as Record<string, unknown>, path));
+      }
+    }
+  }
+  return list;
 }
 
 function mapModalProjectToProfileRow(
@@ -226,6 +259,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
     register,
     handleSubmit,
     reset,
+    setFocus,
     formState: { errors },
     watch,
     control,
@@ -237,6 +271,42 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
     defaultValues,
     mode: "onBlur",
   });
+
+  const onInvalidSubmit = useCallback(
+    (formErrors: FieldErrors<ProfileEditFormData>) => {
+      const flat = flattenFormErrors(formErrors as unknown as Record<string, unknown>);
+      console.error("[ProfileEdit] validation failed", {
+        errorCount: flat.length,
+        fields: flat,
+        rawErrors: formErrors,
+      });
+      if (flat.length === 0) {
+        toast.error("Unable to save. Check the form for invalid values.", {
+          description: "Open the browser console for details.",
+        });
+        return;
+      }
+      const description = flat
+        .slice(0, 10)
+        .map((f) => `• ${f.path}: ${f.message}`)
+        .join("\n");
+      const extra =
+        flat.length > 10 ? `\n… and ${flat.length - 10} more (see console)` : "";
+      toast.error("Please fix the errors below, then save again.", {
+        description: `${description}${extra}`,
+        duration: 12_000,
+      });
+      const first = flat[0]?.path;
+      if (first) {
+        try {
+          setFocus(first as FieldPath<ProfileEditFormData>);
+        } catch {
+          /* field may not be registered */
+        }
+      }
+    },
+    [setFocus],
+  );
 
   useEffect(() => {
     reset(buildProfileEditDefaults(consultant));
@@ -714,7 +784,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
         </div>
         <div className="md:col-span-6 col-span-full">
           <form
-            onSubmit={handleSubmit(onSubmit)}
+            onSubmit={handleSubmit(onSubmit, onInvalidSubmit)}
             className="flex flex-col gap-2"
           >
             {/* My Information */}
@@ -1114,7 +1184,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                         />
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-2 col-span-full gap-4">
                         <InputField
                           name="experience"
                           label="Experience (in years)"
@@ -1655,8 +1725,13 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
               variant="primary"
               onCancel={() => setSaveConfirmOpen(false)}
               onConfirm={() => {
-                setSaveConfirmOpen(false);
-                handleSubmit(onSubmit)();
+                void handleSubmit(
+                  (data) => {
+                    setSaveConfirmOpen(false);
+                    return onSubmit(data);
+                  },
+                  onInvalidSubmit,
+                )();
               }}
             />
           </form>
