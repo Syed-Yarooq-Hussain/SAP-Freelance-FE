@@ -22,6 +22,7 @@ import { request } from "@/utils/request";
 import { sanitizeUrl } from "@/utils/common";
 import {
   AlignLeft,
+  ArrowRight,
   Award,
   Briefcase,
   Camera,
@@ -44,7 +45,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 import { ProfileAvatarUpload } from "./profile-avatar-upload";
 import { MultiSelect } from "@/components/homepage/ui/multi-select";
-import { useSapModules } from "@/actions/common/useSapModules";
+import { useSapModules, useSapOtherModules } from "@/actions/common/useSapModules";
 import { WorkExperienceModal } from "@/components/profile/work-experience-modal";
 import { CertificationModal } from "@/components/profile/certification-modal";
 import { EducationModal } from "@/components/profile/education-modal";
@@ -62,6 +63,7 @@ import { LocationAutocomplete } from "@/components/account-settings/LocationAuto
 import { toast } from "sonner";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
+import SapModulesDropdown from "./SapModulesDropdown";
 
 const inputSurfaceClass =
   "bg-background-main border-slate-200 focus:ring-[#3088B7] focus:border-[#3088B7]";
@@ -266,6 +268,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
   const usernameW = watch("username");
   const emailW = watch("email");
   const { data: sapModulesData } = useSapModules();
+  const { data: sapOtherModulesData } = useSapOtherModules();
   const modules: any = sapModulesData?.data;
   const serverAvatar = sanitizeUrl(nestedUser?.avatar);
   const headerAvatarSrc = photoPreview || serverAvatar;
@@ -273,6 +276,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
     (usernameW || nestedUser?.username || "?").trim().charAt(0).toUpperCase() ||
     "?";
 
+    console.log(sapOtherModulesData,'sapOtherModulesData');
   // const handlePhotoSelected = async (
   //   e: React.ChangeEvent<HTMLInputElement>,
   // ) => {
@@ -645,12 +649,12 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
       onClick={() => toggleSection(section)}
       className="w-full bg-background-main px-6 py-4 flex items-center justify-between hover:bg-slate-100/80 transition"
     >
-      <div className="flex items-center gap-3">
-        {icon && <div className="bg-[#EAF1FB] p-2 rounded-xl">{icon}</div>}
+      <div className="flex items-start md:items-center gap-3">
+        {icon && <div className="bg-[#EAF1FB] text-start p-2 rounded-xl">{icon}</div>}
         <div className="font-manrope flex flex-col gap-0.5 items-start">
-          <h2 className="text-sm font-manrope text-black">{title}</h2>
+          <h2 className="text-sm text-left font-manrope text-black">{title}</h2>
           {description && (
-            <p className="text-xs font-manrope text-light-grey">
+            <p className="text-xs text-left font-manrope text-light-grey">
               {description}
             </p>
           )}
@@ -665,11 +669,11 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
   );
 
   return (
-    <div className="min-h-screen bg-white  pb-12 font-manrope">
+    <div className="min-h-screen bg-[#F0EDE8EB] pb-28 font-manrope md:bg-white md:pb-12">
       {/* Header */}
-      <div className="sticky top-14 z-20 border-b border-slate-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/85">
+      <div className="sticky top-14 z-20 border-b border-slate-200 bg-transparent md:bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-transparent  md:supports-[backdrop-filter]:bg-white/85">
         <div className="mx-auto px-6 py-4 flex items-center justify-between shadow-sm">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 md:gap-4">
             <div className="flex items-center">
               <div
                 onClick={goBack}
@@ -679,15 +683,15 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
               </div>
             </div>
             <div>
-              <h1 className="text-2xl font-neue text-slate-900">
+              <h1 className="text-base md:text-2xl font-neue text-slate-900">
                 Setup Your Profile
               </h1>
-              <p className="text-sm font-manrope text-light-grey">
+              <p className="text-xs md:text-sm font-manrope text-light-grey">
                 Keep your profile accurate to attract the right clients
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="md:flex hidden items-center gap-2">
             <button
               onClick={goBack}
               className="px-6 py-2 text-sm bg-background-main border border-slate-200 text-black rounded-xl transition font-medium hover:bg-slate-100"
@@ -705,10 +709,10 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
       </div>
 
       <div className="grid grid-cols-8 w-full gap-3 mt-4 px-4">
-        <div className="col-span-2">
+        <div className="col-span-full md:col-span-2">
           <ProfileAvatarUpload />
         </div>
-        <div className="col-span-6">
+        <div className="md:col-span-6 col-span-full">
           <form
             onSubmit={handleSubmit(onSubmit)}
             className="flex flex-col gap-2"
@@ -791,6 +795,13 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                         }}
                         placeholder="Select core modules"
                       />
+                      {/* <SapModulesDropdown
+                        data={sapOtherModulesData?.data || []}
+                        values={coreModules || []}
+                        onChange={(selected) => {
+                          setValue("core", selected, { shouldValidate: true });
+                        }}
+                      /> */}
                       <p className="text-xs text-light-grey mt-2">
                         Only 2 modules allowed.{" "}
                       </p>
@@ -843,7 +854,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                         <label className="block text-xs font-manrope font-medium text-slate-700 mb-2">
                           Other Modules
                         </label>
-                        <MultiSelect
+                        {/* <MultiSelect
                           options={
                             modules?.others?.length > 0
                               ? modules.others.map((module: any) => ({
@@ -859,12 +870,40 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                             });
                           }}
                           placeholder="Select other modules"
+                        /> */}
+                        <SapModulesDropdown
+                          data={sapOtherModulesData?.data || []}
+                          values={otherModules || []}
+                          onChange={(selected) => {
+                            setValue("others", selected, {
+                              shouldValidate: true,
+                            });
+                          }}
                         />
                       </div>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid md:hidden grid-cols-1 md:grid-cols-2 gap-4">
+                    <InputField
+                      label="Email Address"
+                      type="text"
+                      disabled
+                      required
+                      cl
+                      error={errors.email?.message}
+                      {...register("email")}
+                    />
+                    <InputField
+                      label="Phone Number"
+                      type="text"
+                      optional
+                      error={errors.phone?.message}
+                      {...register("phone")}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-manrope font-medium text-slate-700 mb-2">
                         City
@@ -890,7 +929,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                       /> 
                     </div>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="md:grid hidden grid-cols-1 md:grid-cols-2 gap-4">
                     <InputField
                       label="Email Address"
                       type="text"
@@ -1075,33 +1114,35 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                         />
                       </div>
 
-                      <InputField
-                        name="experience"
-                        label="Experience (in years)"
-                        type="number"
-                        required
-                        value={watch("experience") || ""}
-                        error={errors.experience?.message}
-                        onChange={(e: any) =>
-                          setValue("experience", Number(e.target.value))
-                        }
-                      />
+                      <div className="grid grid-cols-2 gap-4">
+                        <InputField
+                          name="experience"
+                          label="Experience (in years)"
+                          type="number"
+                          required
+                          value={watch("experience") || ""}
+                          error={errors.experience?.message}
+                          onChange={(e: any) =>
+                            setValue("experience", Number(e.target.value))
+                          }
+                        />
 
-                      <SelectField
-                        label="Expertise Level"
-                        required
-                        placeholder="Select level"
-                        error={errors.expertise_level?.message}
-                        options={
-                          expertiseLevels?.length > 0
-                            ? expertiseLevels.map((level: any) => ({
-                                label: level,
-                                value: level,
-                              }))
-                            : []
-                        }
-                        {...register("expertise_level")}
-                      />
+                        <SelectField
+                          label="Expertise Level"
+                          required
+                          placeholder="Select level"
+                          error={errors.expertise_level?.message}
+                          options={
+                            expertiseLevels?.length > 0
+                              ? expertiseLevels.map((level: any) => ({
+                                  label: level,
+                                  value: level,
+                                }))
+                              : []
+                          }
+                          {...register("expertise_level")}
+                        />
+                      </div>
                     </div>
                     {/* <InputField
                       name="linkedin_url"
@@ -1211,7 +1252,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                                 )}
                               </p>
                             </div>
-                            <div className="flex shrink-0 gap-2">
+                            <div className="flex md:flex-row flex-col shrink-0 gap-2">
                               <button
                                 type="button"
                                 onClick={() => openWorkEdit(index)}
@@ -1292,7 +1333,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                                 )}
                               </p>
                             </div>
-                            <div className="flex shrink-0 gap-2">
+                            <div className="flex md:flex-row flex-col shrink-0 gap-2">
                               <button
                                 type="button"
                                 onClick={() => openEduEdit(index)}
@@ -1373,7 +1414,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                                 )}
                               </p>
                             </div>
-                            <div className="flex shrink-0 gap-2">
+                            <div className="flex md:flex-row flex-col shrink-0 gap-2">
                               <button
                                 type="button"
                                 onClick={() => openProjEdit(index)}
@@ -1454,7 +1495,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                                 )}
                               </p>
                             </div>
-                            <div className="flex shrink-0 gap-2">
+                            <div className="flex md:flex-row flex-col shrink-0 gap-2">
                               <button
                                 type="button"
                                 onClick={() => openCertEdit(index)}
@@ -1494,6 +1535,24 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
               )}
             </div>
 
+            <div className="pointer-events-none fixed inset-x-0 bottom-14 z-30 flex justify-center px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-2 md:hidden">
+              <div className="pointer-events-auto flex w-full max-w-lg items-center gap-2 rounded-2xl border border-slate-200 bg-white p-3 shadow-lg">
+                <button
+                  type="button"
+                  onClick={goBack}
+                  className="flex-1 rounded-xl border border-slate-200 bg-white py-2.5 text-sm font-medium text-light-grey transition hover:bg-slate-50"
+                >
+                  Discard
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSaveConfirmOpen(true)}
+                  className="flex items-center justify-center gap-1 flex-1 rounded-xl bg-brand-blue py-2.5 text-sm font-medium text-white transition hover:opacity-95"
+                >
+                  Save Changes <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
             <WorkExperienceModal
               isOpen={workModalOpen}
               onClose={() => {

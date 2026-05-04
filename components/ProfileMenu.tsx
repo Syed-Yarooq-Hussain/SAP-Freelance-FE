@@ -153,9 +153,9 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({
           <Typography variant="body2">Change password</Typography>
         </MenuItem>
 
-        <Divider />
+        {/* <Divider /> */}
 
-        <MenuItem
+        {/* <MenuItem
           onClick={handleDeleteClick}
           sx={{
             py: 0.75,
@@ -170,7 +170,7 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({
           <Typography variant="body2" sx={{ color: "#d32f2f" }}>
             Delete Account
           </Typography>
-        </MenuItem>
+        </MenuItem> */}
 
         <Divider />
 
