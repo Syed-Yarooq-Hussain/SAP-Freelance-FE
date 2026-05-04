@@ -111,7 +111,7 @@ export function ProfileAvatarUpload() {
               className="md:w-full md:h-full w-24 h-24 rounded-3xl object-cover"
             />
           ) : (
-            <div className="w-full h-full rounded-3xl shadow-xl bg-brand-blue flex flex-col items-center justify-center">
+            <div className="md:w-full md:h-full w-24 h-24 rounded-3xl shadow-xl bg-brand-blue flex flex-col items-center justify-center">
               <Camera className="w-8 h-8 text-white" />
             </div>
           )}
