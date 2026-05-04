@@ -22,6 +22,7 @@ import { request } from "@/utils/request";
 import { sanitizeUrl } from "@/utils/common";
 import {
   AlignLeft,
+  ArrowRight,
   Award,
   Briefcase,
   Camera,
@@ -668,7 +669,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
   );
 
   return (
-    <div className="min-h-screen bg-[#F0EDE8EB] md:bg-white  pb-12 font-manrope">
+    <div className="min-h-screen bg-[#F0EDE8EB] pb-28 font-manrope md:bg-white md:pb-12">
       {/* Header */}
       <div className="sticky top-14 z-20 border-b border-slate-200 bg-transparent md:bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-transparent  md:supports-[backdrop-filter]:bg-white/85">
         <div className="mx-auto px-6 py-4 flex items-center justify-between shadow-sm">
@@ -702,14 +703,6 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
               className="px-6 py-2 text-sm bg-brand-blue text-white rounded-xl transition font-medium"
             >
               Save Changes
-            </button>
-          </div>
-          <div className="md:hidden block">
-            <button
-              onClick={() => setSaveConfirmOpen(true)}
-              className="ml-2 py-2 text-sm  rounded-xl transition font-medium"
-            >
-              Discard
             </button>
           </div>
         </div>
@@ -802,6 +795,13 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                         }}
                         placeholder="Select core modules"
                       />
+                      {/* <SapModulesDropdown
+                        data={sapOtherModulesData?.data || []}
+                        values={coreModules || []}
+                        onChange={(selected) => {
+                          setValue("core", selected, { shouldValidate: true });
+                        }}
+                      /> */}
                       <p className="text-xs text-light-grey mt-2">
                         Only 2 modules allowed.{" "}
                       </p>
@@ -1535,6 +1535,24 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
               )}
             </div>
 
+            <div className="pointer-events-none fixed inset-x-0 bottom-14 z-30 flex justify-center px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-2 md:hidden">
+              <div className="pointer-events-auto flex w-full max-w-lg items-center gap-2 rounded-2xl border border-slate-200 bg-white p-3 shadow-lg">
+                <button
+                  type="button"
+                  onClick={goBack}
+                  className="flex-1 rounded-xl border border-slate-200 bg-white py-2.5 text-sm font-medium text-light-grey transition hover:bg-slate-50"
+                >
+                  Discard
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSaveConfirmOpen(true)}
+                  className="flex items-center justify-center gap-1 flex-1 rounded-xl bg-brand-blue py-2.5 text-sm font-medium text-white transition hover:opacity-95"
+                >
+                  Save Changes <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
             <WorkExperienceModal
               isOpen={workModalOpen}
               onClose={() => {

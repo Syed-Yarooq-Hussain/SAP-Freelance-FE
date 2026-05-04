@@ -339,7 +339,7 @@ export default function SapModulesDropdown({
               return (
                 <span
                   key={id}
-                  className="inline-flex max-w-[min(100%,220px)] items-center gap-1.5 rounded-2xl border border-[#c9dced] bg-[#eef5fb] px-2 py-1 text-[11px] leading-none text-slate-800 sm:px-2.5 sm:py-1 sm:text-xs"
+                  className="inline-flex max-w-[min(100%,220px)] items-center gap-1.5 rounded-md md:rounded-lg  bg-light-grey p-1.5 text-[11px] leading-none text-white sm:px-1 sm:py-0.5 sm:text-xs"
                 >
                   <span
                     style={{
@@ -356,7 +356,7 @@ export default function SapModulesDropdown({
                       e.stopPropagation();
                       removeModule(id);
                     }}
-                    className="cursor-pointer border-0 bg-transparent p-0 text-xs leading-none text-slate-600 hover:text-slate-800 sm:text-sm"
+                    className="cursor-pointer border-0 bg-transparent p-0 text-xs leading-none text-white sm:text-base"
                   >
                     ×
                   </button>
