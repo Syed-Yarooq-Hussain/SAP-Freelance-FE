@@ -46,7 +46,9 @@ export default auth((req) => {
 }
 
   if (session) {
+    
     const role = session.user?.role;
+
     const isConsultantRoute = pathname.startsWith("/consultant");
     const isClientRoute = pathname.startsWith("/client");
     const isAdminRoute = pathname.startsWith("/admin");

@@ -19,7 +19,6 @@ export const useUpdateConsultantStatus = () => {
       queryClient.invalidateQueries({
         queryKey: ["admin-pending-consultants"],
       });
-
       queryClient.refetchQueries({
         queryKey: ["admin-consultants"],
         type: "active",
