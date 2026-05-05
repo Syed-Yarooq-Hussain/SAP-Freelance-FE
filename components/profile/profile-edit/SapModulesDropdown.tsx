@@ -10,82 +10,11 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 
-// ── Types ──────────────────────────────────────────────────────────────────────
-
-
-
-
 interface SapModulesDropdownProps {
-  /** The full groups + modules data */
   data: SapModuleGroup[];
-  /** Currently selected module IDs */
   values: string[];
-  /** Called with the new full array of selected IDs whenever selection changes */
   onChange: (ids: string[]) => void;
 }
-
-// ── Custom Checkbox ────────────────────────────────────────────────────────────
-
-function Checkbox({
-  checked,
-  onChange,
-}: {
-  checked: boolean;
-  onChange: (checked: boolean) => void;
-}) {
-  return (
-    <span
-      role="checkbox"
-      aria-checked={checked}
-      tabIndex={0}
-      onClick={(e) => {
-        e.preventDefault();
-        onChange(!checked);
-      }}
-      onKeyDown={(e) => {
-        if (e.key === " " || e.key === "Enter") {
-          e.preventDefault();
-          onChange(!checked);
-        }
-      }}
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        justifyContent: "center",
-        width: 14,
-        height: 14,
-        minWidth: 14,
-        borderRadius: 4,
-        border: `2px solid ${checked ? "#4A7AB5" : "#cfd8dc"}`,
-        background: checked ? "#4A7AB5" : "#fff",
-        cursor: "pointer",
-        marginTop: 2,
-        flexShrink: 0,
-        transition: "border-color 0.15s, background 0.15s",
-      }}
-    >
-      {checked && (
-        <svg
-          viewBox="0 0 10 8"
-          width="8"
-          height="7"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M1 4L3.8 7L9 1"
-            stroke="white"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      )}
-    </span>
-  );
-}
-
-// ── Main Component ─────────────────────────────────────────────────────────────
 
 export default function SapModulesDropdown({
   data,
@@ -104,7 +33,6 @@ export default function SapModulesDropdown({
     maxHeight: 520,
   });
 
-  // Flat list of all modules (only groups that have modules)
   const allModules = data.flatMap((g) => g.modules);
   const selectedSet = new Set(values);
 
@@ -147,7 +75,6 @@ export default function SapModulesDropdown({
     };
   }, [open, updatePanelPosition]);
 
-  // Close panel when clicking outside trigger + portaled panel
   useEffect(() => {
     if (!open) return;
     const handler = (e: MouseEvent) => {
@@ -161,7 +88,6 @@ export default function SapModulesDropdown({
     return () => document.removeEventListener("mousedown", handler);
   }, [open]);
 
-  // Auto-focus search when panel opens
   useEffect(() => {
     if (open) {
       const t = setTimeout(() => searchRef.current?.focus(), 50);
@@ -169,7 +95,6 @@ export default function SapModulesDropdown({
     }
   }, [open]);
 
-  // Toggle a single module on/off
   const toggleModule = useCallback(
     (id: string, checked: boolean) => {
       const next = new Set(values);
@@ -180,12 +105,10 @@ export default function SapModulesDropdown({
     [values, onChange]
   );
 
-  // Remove a tag from the trigger box
   const removeModule = (id: string) => {
     onChange(values.filter((v) => v !== id));
   };
 
-  // Select all / clear all
   const allIds = allModules.map((m) => m.id);
   const allSelected =
     allIds.length > 0 && allIds.every((id) => selectedSet.has(id));
@@ -194,7 +117,6 @@ export default function SapModulesDropdown({
     onChange(allSelected ? [] : allIds);
   };
 
-  // Filter groups + modules based on search query
   const lowerSearch = search.toLowerCase().trim();
   const filteredGroups = data
     .map((group) => ({
@@ -221,14 +143,12 @@ export default function SapModulesDropdown({
           width: panelRect.width,
         }}
       >
-        {/* Panel Header */}
         <div className="mb-3 flex flex-col gap-3 sm:mb-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-4">
           <h2 className="m-0 shrink-0 text-base font-semibold text-slate-800 sm:text-lg">
             SAP Modules
           </h2>
 
           <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
-            {/* Search */}
             <div className="relative w-full min-w-0 sm:w-52 md:w-56">
               <input
                 ref={searchRef}
@@ -244,7 +164,6 @@ export default function SapModulesDropdown({
               </span>
             </div>
 
-            {/* Select All / Clear All */}
             <button
               type="button"
               onClick={(e) => {
@@ -258,7 +177,6 @@ export default function SapModulesDropdown({
           </div>
         </div>
 
-        {/* Panel Body */}
         <div
           className="overflow-y-auto pr-1"
           style={{
@@ -280,18 +198,18 @@ export default function SapModulesDropdown({
                   {group.modules.map((mod) => {
                     const checked = selectedSet.has(mod.id);
                     return (
-                      <label
+                      <button
                         key={mod.id}
-                        className="mb-1.5 flex cursor-pointer select-none items-start gap-2 text-xs leading-snug text-slate-600 sm:mb-2 sm:gap-2.5 sm:text-sm"
+                        type="button"
+                        onClick={() => toggleModule(mod.id, !checked)}
+                        className={`mb-1.5 flex w-full cursor-pointer items-start gap-2 rounded-md border px-2.5 py-2 text-left text-xxs leading-snug transition sm:mb-2 sm:gap-2.5 sm:text-xs ${
+                          checked
+                            ? "border-brand-blue/45 bg-brand-blue/10 text-brand-blue"
+                            : "border-slate-200 bg-white text-slate-600 hover:border-brand-blue/25 hover:bg-slate-50"
+                        }`}
                       >
-                        <Checkbox
-                          checked={checked}
-                          onChange={(c) => toggleModule(mod.id, c)}
-                        />
-                        <span className="min-w-0 flex-1 break-words">
-                          {mod.name}
-                        </span>
-                      </label>
+                        <span className="min-w-0 flex-1 break-words">{mod.name}</span>
+                      </button>
                     );
                   })}
                 </div>
@@ -305,29 +223,12 @@ export default function SapModulesDropdown({
 
   return (
     <div className="relative w-full font-manrope text-slate-800">
-      {/* ── Trigger Box ── */}
       <div
         ref={triggerRef}
         onClick={() => setOpen((o) => !o)}
         className="flex min-h-[42px] cursor-pointer items-center justify-between gap-2 rounded-lg border border-slate-200 bg-brand-yellow px-3 py-2 sm:min-h-[44px] sm:gap-3 sm:px-3.5 sm:py-2.5"
-        style={{
-        //   borderColor: open ? "#4A7AB5" : "#cfd8dc",
-        //   boxShadow: open ? "0 0 0 2px rgba(74, 122, 181, 0.12)" : "none",
-        //   transition: "border-color 0.2s, box-shadow 0.2s",
-        }}
-        // onMouseEnter={(e) => {
-        //   if (!open)
-        //     (e.currentTarget as HTMLDivElement).style.borderColor = "#99a9b5";
-        // }}
-        // onMouseLeave={(e) => {
-        //   if (!open)
-        //     (e.currentTarget as HTMLDivElement).style.borderColor = "#cfd8dc";
-        // }}
       >
-        {/* Tags / placeholder */}
-        <div
-          className="flex min-h-[26px] flex-1 flex-wrap items-center gap-1.5 sm:min-h-[28px]"
-        >
+        <div className="flex min-h-[26px] flex-1 flex-wrap items-center gap-1.5 sm:min-h-[28px]">
           {values.length === 0 ? (
             <span className="text-xs text-slate-500 sm:text-sm">
               Select SAP modules
@@ -339,7 +240,7 @@ export default function SapModulesDropdown({
               return (
                 <span
                   key={id}
-                  className="inline-flex max-w-[min(100%,220px)] items-center gap-1.5 rounded-md md:rounded-lg  bg-light-grey p-1.5 text-[11px] leading-none text-white sm:px-1 sm:py-0.5 sm:text-xs"
+                  className="inline-flex max-w-[min(100%,220px)] items-center gap-1.5 rounded-md bg-light-grey p-1.5 text-[11px] leading-none text-white sm:px-1 sm:py-0.5 sm:text-xs"
                 >
                   <span
                     style={{
@@ -366,7 +267,6 @@ export default function SapModulesDropdown({
           )}
         </div>
 
-        {/* Caret arrow */}
         <span
           style={{
             width: 10,
