@@ -24,6 +24,5 @@ export const useUpdateConsultantStatus = () => {
         type: "active",
       });
     },
-    
   });
 };
