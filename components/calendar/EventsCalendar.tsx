@@ -262,11 +262,20 @@ export default function EventsCalendar() {
   }
 
   return (
-    <div className="relative fc-shell h-[80vh] pr-2">
+    <div className="relative fc-shell md:h-[80vh] h-auto pr-0 md:pr-0">
       <style>{`
 
         /* ─── Reset / base ─────────────────────────────────── */
-        .fc-shell .fc-scrollgrid          { border: '1px solid rgba(241, 245, 249, 0.5)' !important; }
+        .fc-shell .fc {
+          border-radius: 12px !important;
+          overflow: hidden !important;
+        }
+        .fc-shell .fc-scrollgrid {
+          border: 1px solid rgba(241, 245, 249, 0.9) !important;
+          border-radius: 12px !important;
+          overflow: hidden !important;
+          background: #fff !important;
+        }
         .fc-shell td, .fc-shell th        { border-color: #e2e8f0 !important; }
         .fc-shell .fc-scrollgrid-section > td { border: none !important; }
 
@@ -326,8 +335,17 @@ export default function EventsCalendar() {
         //   margin: 0 auto !important;
         //   padding: 0 !important;
         }
-        tbody{
-            background-color: #F0EDE8 !important;
+        tbody { background-color: #F0EDE8 !important; }
+
+        @media (max-width: 767px) {
+          .fc-shell tbody,
+          .fc-shell .fc-daygrid-body,
+          .fc-shell .fc-daygrid-day,
+          .fc-shell .fc-daygrid-day-frame,
+          .fc-shell .fc-daygrid-day-bg,
+          .fc-shell .fc-daygrid-day-top {
+            background-color: #fff !important;
+          }
         }
 
         /* ─── "more" link ───────────────────────────────────── */

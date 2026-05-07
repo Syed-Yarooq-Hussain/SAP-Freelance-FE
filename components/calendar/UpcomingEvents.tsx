@@ -99,7 +99,7 @@ export function UpcomingEvents({ events = defaultEvents, maxItems = 4 }: Upcomin
   }
 
   return (
-    <div className="bg-white rounded-xl ">
+    <div className="bg-white rounded-xl md:p-0 p-3">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">

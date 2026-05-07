@@ -36,13 +36,13 @@ export function CalendarHeader({
   }
 
   const viewSegment = (fullWidth?: boolean) => (
-    <div className={`inline-flex gap-2 items-center bg-white p-0.5 ${fullWidth ? 'w-full' : ''}`}>
+    <div className={`inline-flex gap-2 items-center rounded-lg bg-white p-0.5 ${fullWidth ? 'w-full' : ''}`}>
       {views.map((v) => (
         <button
           key={v.value}
           type="button"
           onClick={() => changeView(v.value)}   // ✅ calls context directly
-          className={`${fullWidth ? 'flex-1' : ''} rounded-xl text-xs border border-slate-200 px-3 md:px-4 py-1.5 font-medium font-manrope transition-colors ${
+          className={`${fullWidth ? 'flex-1' : ''} rounded-lg text-xs md:border md:border-slate-200  px-3 md:px-4 py-1.5 font-medium font-manrope transition-colors ${
             activeView === v.value
               ? 'bg-brand-blue text-white '
               : 'text-slate-600 hover:bg-slate-50'
@@ -98,7 +98,7 @@ export function CalendarHeader({
             <div className="justify-self-center">{viewSegment()}</div>
 
             {/* Right: actions */}
-            <div className="flex items-center justify-end gap-2 flex-wrap justify-self-end">
+            <div className="md:flex hidden items-center justify-end gap-2 flex-wrap justify-self-end">
               {/* <button
                 type="button"
                 onClick={onNewMeeting}
@@ -159,23 +159,25 @@ export function CalendarHeader({
           </div>
 
           {/* ── Mobile ── */}
-          <div className="flex md:hidden flex-col gap-3">
-            <div className="flex items-center gap-2">
-              <div className="flex flex-1 items-center gap-0.5 rounded-lg bg-slate-100 p-1 border border-slate-200/80 min-w-0">
-                <button type="button" onClick={goPrev} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-white border border-slate-200 text-slate-600" aria-label="Previous">
-                  <ChevronLeft className="w-4 h-4" />
-                </button>
-                <button type="button" onClick={goToday} className="flex-1 px-2 py-1.5 text-xs font-medium text-slate-800 rounded-md bg-white border border-slate-200">
-                  Today
-                </button>
-                <button type="button" onClick={goNext} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-white border border-slate-200 text-slate-600" aria-label="Next">
-                  <ChevronRight className="w-4 h-4" />
-                </button>
+          <div className="flex md:hidden flex-col gap-1 md:gap-3">
+            <div className="flex items-center md:flex-col flex-row-reverse justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <div className="flex flex-1 items-center gap-0.5 rounded-lg bg-transparent md:bg-slate-100 p-1 border border-slate-200/80 min-w-0">
+                  <button type="button" onClick={goPrev} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-white border border-slate-200 text-slate-600" aria-label="Previous">
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  <button type="button" onClick={goToday} className="flex-1 px-2 py-1.5 text-xs font-medium text-slate-800 rounded-md bg-white border border-slate-200">
+                    Today
+                  </button>
+                  <button type="button" onClick={goNext} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-white border border-slate-200 text-slate-600" aria-label="Next">
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
+              <span className="text-sm font-semibold text-slate-900 truncate">{currentTitle}</span>
             </div>
-            <span className="text-sm font-semibold text-slate-900 truncate">{currentTitle}</span>
             {viewSegment(true)}
-            <div className="flex flex-col gap-2">
+            <div className="md:flex hidden flex-col gap-2">
               {/* <button type="button" onClick={onNewMeeting} className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-slate-900 bg-white py-2 text-xs font-medium text-slate-900">
                 <Plus className="w-4 h-4" /> New Meeting
               </button> */}
@@ -190,7 +192,7 @@ export function CalendarHeader({
         </div>
 
         {/* Filter chips */}
-        <div className="flex flex-wrap py-4 items-center border-y border-slate-100">
+        <div className="flex flex-wrap md:py-4 py-0 items-center border-y border-slate-100">
           <div className='px-2 flex gap-2'>
             {(['all', 'client', 'interviews'] as const).map((filter) => (
               <button
@@ -200,7 +202,7 @@ export function CalendarHeader({
                 className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs md:text-sm font-medium transition whitespace-nowrap ${
                   activeFilter === filter
                     ? 'bg-brand-blue text-white'
-                    : 'bg-brand-yellow text-slate-700 hover:bg-slate-200 border border-transparent'
+                    : 'md:bg-brand-yellow bg-white text-slate-700 hover:bg-slate-200 border border-transparent'
                 }`}
               >
                 {filter === 'all' && (

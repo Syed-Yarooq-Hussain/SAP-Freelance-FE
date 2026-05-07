@@ -565,7 +565,7 @@ export default function AvailabilityCalendar({ onSave }: AvailabilityCalendarPro
 
         <div className="col-span-1 md:col-span-7 flex-1 min-w-0 flex flex-col gap-3">
           <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex gap-2 items-center justify-between mb-4">
               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">
                 Time Slots — click or drag to select
               </p>
@@ -574,7 +574,7 @@ export default function AvailabilityCalendar({ onSave }: AvailabilityCalendarPro
                   type="button"
                   onClick={handleSave}
                   disabled={payload.length === 0}
-                  className="px-6 py-2.5 bg-brand-blue hover:bg-brand-blue-dark disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed text-white text-xs font-semibold rounded-xl transition-colors shadow-sm"
+                  className="px-6 py-2.5 bg-brand-blue hover:bg-brand-blue-dark disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed text-white md:text-xs text-xxs font-semibold rounded-xl transition-colors shadow-sm"
                 >
                   Save Availability
                 </button>

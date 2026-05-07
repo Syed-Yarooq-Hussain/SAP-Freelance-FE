@@ -488,7 +488,7 @@ export function DashboardCalendar({
       </div>
       )}
 
-      <div className="mb-6 md:bg-transparent bg-white md:rounded-none rounded-box-xl md:p-0 p-3">
+      <div className="md:mb-6 mb-2 md:bg-transparent bg-white md:rounded-none rounded-xl md:p-0 p-3">
         {pathname.includes('dashboard') && (
           <div className='md:hidden flex justify-between items-center mb-4'>
             <div className="flex items-center gap-2">
