@@ -841,16 +841,9 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                         Core Modules
                         <span className="text-red-500 ml-1">*</span>
                       </label>
-                      <MultiSelect
-                        options={
-                          modules?.core?.length > 0
-                            ? modules.core.map((module: any) => ({
-                                label: module.name,
-                                value: String(module.id),
-                              }))
-                            : []
-                        }
-                        value={coreModules || []}
+                      <SapModulesDropdown
+                        data={sapOtherModulesData?.data || []}
+                        values={coreModules || []}
                         onChange={(selected) => {
                           if (selected.length > 2) {
                             setError("core", {
@@ -863,15 +856,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                           clearErrors("core");
                           setValue("core", selected, { shouldValidate: true });
                         }}
-                        placeholder="Select core modules"
                       />
-                      {/* <SapModulesDropdown
-                        data={sapOtherModulesData?.data || []}
-                        values={coreModules || []}
-                        onChange={(selected) => {
-                          setValue("core", selected, { shouldValidate: true });
-                        }}
-                      /> */}
                       <p className="text-xs text-light-grey mt-2">
                         Only 2 modules allowed.{" "}
                       </p>
