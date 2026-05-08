@@ -277,6 +277,10 @@ export default function TeamCreation({
     );
   };
 
+  const handleFilter = (filters:any) => {
+    console.log(filters,'filters');
+  };
+
   return (
     <>
       <Box
@@ -320,7 +324,7 @@ export default function TeamCreation({
           </Button>
         </Box>
 
-        <FilterDrawer open={filterOpen} onClose={() => setFilterOpen(false)} />
+        <FilterDrawer open={filterOpen} onClose={() => setFilterOpen(false)} onApply={(filters:any) => handleFilter(filters)} />
 
         <Grid container spacing={2} mt={3}>
           {teamBuilderStats.map((s, index) => (

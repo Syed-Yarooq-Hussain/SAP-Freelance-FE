@@ -346,7 +346,6 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
     (usernameW || nestedUser?.username || "?").trim().charAt(0).toUpperCase() ||
     "?";
 
-    console.log(sapOtherModulesData,'sapOtherModulesData');
   // const handlePhotoSelected = async (
   //   e: React.ChangeEvent<HTMLInputElement>,
   // ) => {
