@@ -26,8 +26,8 @@ interface FilterDrawerProps {
 }
 
 export default function FilterDrawer({ open, onClose, onApply }: FilterDrawerProps) {
-  const [filters] = useState({
-    experience: "9 years",
+  const [filters, setFilters] = useState({
+    experience: "9",
     availability: "20",
     budgetMax: "",
     budgetMin: "",
@@ -37,6 +37,13 @@ export default function FilterDrawer({ open, onClose, onApply }: FilterDrawerPro
   const { data: sapOtherModulesData } = useSapOtherModules();
   const moduleDropdownData = sapOtherModulesData?.data || [];
   const [modulesModalOpen, setModulesModalOpen] = useState(false);
+
+  const handleApply = () => {
+    onApply({
+      ...filters,
+      modules: selectedModules,
+    });
+  };
 
   return (
     <Drawer
@@ -154,7 +161,10 @@ export default function FilterDrawer({ open, onClose, onApply }: FilterDrawerPro
         size="small"
         fullWidth
         type="number"
-        defaultValue={filters.experience}
+        value={filters.experience}
+        onChange={(e) =>
+          setFilters((prev) => ({ ...prev, experience: e.target.value }))
+        }
         placeholder="Enter experience (years)"
         inputProps={{ min: 0 }}
         sx={{ mb: 2 }}
@@ -167,7 +177,10 @@ export default function FilterDrawer({ open, onClose, onApply }: FilterDrawerPro
         size="small"
         fullWidth
         type="number"
-        defaultValue={filters.availability}
+        value={filters.availability}
+        onChange={(e) =>
+          setFilters((prev) => ({ ...prev, availability: e.target.value }))
+        }
         placeholder="Enter availability (hr/week)"
         inputProps={{ min: 0 }}
         sx={{ mb: 2 }}
@@ -177,8 +190,26 @@ export default function FilterDrawer({ open, onClose, onApply }: FilterDrawerPro
         Budget
       </Typography>
       <Box display="flex" gap={1} mb={2}>
-        <TextField size="small" placeholder="Min" fullWidth />
-        <TextField size="small" placeholder="Max" fullWidth />
+        <TextField
+          size="small"
+          placeholder="Min"
+          fullWidth
+          type="number"
+          value={filters.budgetMin}
+          onChange={(e) =>
+            setFilters((prev) => ({ ...prev, budgetMin: e.target.value }))
+          }
+        />
+        <TextField
+          size="small"
+          placeholder="Max"
+          fullWidth
+          type="number"
+          value={filters.budgetMax}
+          onChange={(e) =>
+            setFilters((prev) => ({ ...prev, budgetMax: e.target.value }))
+          }
+        />
       </Box>
 
       <Typography variant="subtitle2" fontWeight={600} mb={0.5}>
@@ -189,6 +220,9 @@ export default function FilterDrawer({ open, onClose, onApply }: FilterDrawerPro
         size="small"
         fullWidth
         value={filters.country}
+        onChange={(e) =>
+          setFilters((prev) => ({ ...prev, country: e.target.value }))
+        }
         SelectProps={{
           displayEmpty: true,
           renderValue: (value) =>
@@ -203,7 +237,7 @@ export default function FilterDrawer({ open, onClose, onApply }: FilterDrawerPro
           ))
         }
       </TextField>
-      <Button variant="contained" onClick={() => onApply(filters)}>Apply</Button>
+      <Button variant="contained" onClick={handleApply}>Apply</Button>
     </Drawer>
   );
 }

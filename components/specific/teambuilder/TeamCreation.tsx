@@ -101,7 +101,6 @@ export default function TeamCreation({
             avatar: `/img/u${((index % 5) + 1).toString()}.png`,
             working_schedule: item.working_schedule || undefined,
           })) ?? [];
-
         setRows(mapped);
       },
       onError: (error) => {
@@ -279,6 +278,30 @@ export default function TeamCreation({
 
   const handleFilter = (filters:any) => {
     console.log(filters,'filters');
+    loadConsultants(filters, {
+      onSuccess: (res) => {
+        const mapped: TeamBuilderRow[] =
+          res.data?.map((item: ClientConsultantDTO, index: number) => ({
+            id: item.id,
+            coremodules: item.modules?.core || "N/A",
+            othersmodules: item.modules?.others || "N/A",
+            experience: item.experience ? `${item.experience} Years` : "N/A",
+            rate: item.rate ? `$${item.rate}/hour` : "N/A",
+            avail: item.weekly_available_hours ?? 0,
+            request: shortlistedMap[String(item.id)] ?? 0,
+            error: "",
+            avatar: `/img/u${((index % 5) + 1).toString()}.png`,
+            working_schedule: item.working_schedule || undefined,
+          })) ?? [];
+        setRows(mapped);
+        setFilterOpen(false);
+      },
+      onError: (error) => {
+        const msg =
+          error instanceof Error ? error.message : "Failed to load consultants";
+        toast(msg, "error");
+      },
+    });
   };
 
   return (
