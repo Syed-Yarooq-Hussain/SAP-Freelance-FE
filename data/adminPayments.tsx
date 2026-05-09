@@ -65,6 +65,7 @@ export const createClientPaymentColumns = (
     renderCell: (params: GridRenderCellParams<IClientPaymentDTO>) => (
       <StatusChip
         label={params.row.is_paid ? "Paid" : "Unpaid"}
+        color="BLUE"
         status={params.row.is_paid ? "success" : "warning"}
       />
     ),
@@ -73,7 +74,7 @@ export const createClientPaymentColumns = (
     field: "document",
     headerName: "Receipt",
     width: 150,
-    renderCell: (params: GridRenderCellParams<IClientPaymentDTO>) => {
+    renderCell: (params: any) => {
       if (params.row.document?.url) {
         return (
           <AppButton
@@ -177,6 +178,7 @@ export const createConsultantPaymentColumns = (
     renderCell: (params: GridRenderCellParams<IAdminConsultantMonthlyBill>) => (
       <StatusChip
         label={params.row.is_paid ? "Paid" : "Unpaid"}
+        color={params.row.is_paid ? "GREEN" : "BLUE"}
         status={params.row.is_paid ? "success" : "warning"}
       />
     ),
@@ -185,7 +187,7 @@ export const createConsultantPaymentColumns = (
     field: "pdf",
     headerName: "Invoice",
     width: 150,
-    renderCell: (params: GridRenderCellParams<IAdminConsultantMonthlyBill>) => {
+    renderCell: (params: any) => {
       if (params.row.pdf_url) {
         return (
           <AppButton

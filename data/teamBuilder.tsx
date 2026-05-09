@@ -504,6 +504,7 @@ export const createTeamBuilderPaymentMilestoneColumns = (
     renderCell: (params: GridRenderCellParams<PaymentTableRow>) => (
       <StatusChip
         label={params.row.is_paid ? "Paid" : "Unpaid"}
+        color="BLUE"
         status={params.row.is_paid ? "success" : "warning"}
       />
     ),
@@ -639,6 +640,7 @@ export const createTeamBuilderPaymentCustomRangeColumns = (
     renderCell: (params: GridRenderCellParams<PaymentTableRow>) => (
       <StatusChip
         label={params.row.is_paid ? "Paid" : "Unpaid"}
+        color="BLUE"
         status={params.row.is_paid ? "success" : "warning"}
       />
     ),

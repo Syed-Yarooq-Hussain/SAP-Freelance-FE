@@ -98,8 +98,8 @@ export default function MarkPaidDialog({
           type: paymentType === "client" ? "client_payment" : "consultant_payment",
         });
 
-        if (uploadResult.doc_id) {
-          docId = uploadResult.doc_id;
+        if (uploadResult.data?.doc_id) {
+          docId = uploadResult.data.doc_id;
         }
       }
 
@@ -245,7 +245,7 @@ export default function MarkPaidDialog({
       <DialogActions sx={{ p: 2 }}>
         <AppButton
           label="Cancel"
-          colorKey="GRAY"
+          colorKey="GREY"
           onClick={onClose}
           disabled={isLoading}
           width={100}
