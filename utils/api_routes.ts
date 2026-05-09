@@ -40,7 +40,7 @@ export const API_ROUTES = {
   MEETING_STATUS: "/common/meeting-status",
   GET_PROJECT_DETAILS: "/projects",
   CONSULTANT_PROJECTS: "/consultants/projects",
-  CONSULTANT_PAYMENTS: "/consultants/payments",
+  CONSULTANT_PAYMENTS: "/consultants/monthly-bills",
   CONSULTANT_DASHBOARD: "/consultants/dashboard",
   CONSULTANT_DASHBOARD_V2: "/consultants/v2/dashboard",
   SAP_MODULES: "/common/sap-modules",
@@ -53,6 +53,7 @@ export const API_ROUTES = {
   ADMIN_CLIENTS: "/admin/clients/all",
   UPDATE_ADMIN_CLIENT_STATUS: "/admin/clients",
   PDF_READER: "/common/pdf-reader",
+  COMMON_UPLOAD: "/common/upload",
   CONSULTANT_PROFILE: "/consultants/me",
   UPDATE_CONSULTANT_PROFILE: `/consultants/`,
   DELETE_CONSULTANT_PROFILE: "/consultants/profile",
@@ -67,4 +68,6 @@ export const API_ROUTES = {
   ADMIN_INDUSTRIES: "/admin/industries",
   GET_INDUSTRIES: "/common/industry",
   GET_EXPERTISE_LEVELS: "/consultants/experience-levels",
+  ADMIN_PAYMENTS: "/admin/payments",
+
 };

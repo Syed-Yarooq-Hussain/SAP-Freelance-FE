@@ -34,7 +34,12 @@ import {
 } from "@/types/teamBuilder";
 import { mapInterviewFieldsToPopup } from "@/utils/mapFormToPopup";
 import { useProjectProgress } from "@/utils/useProjectProgress";
-import { Box, Typography } from "@mui/material";
+import BlockIcon from "@mui/icons-material/Block";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CodeIcon from "@mui/icons-material/Code";
+import DescriptionIcon from "@mui/icons-material/Description";
+import FlagIcon from "@mui/icons-material/Flag";
+import { Box, Chip, Paper, Stack, Typography } from "@mui/material";
 import { useSession } from "next-auth/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -620,6 +625,30 @@ export default function TeamProjects({
 
   const canProceed = hasCompleteMilestone || step3Completed;
 
+  const scopeCards = [
+    {
+      kind: "functional" as const,
+      title: "Functional Scope",
+      description: "Capture business requirements, process flows, and expected outcomes.",
+      icon: <DescriptionIcon fontSize="small" />,
+      buttonLabel: "Add Functional Scope",
+    },
+    {
+      kind: "technical" as const,
+      title: "Technical Scope",
+      description: "Add systems, integrations, data needs, and technical constraints.",
+      icon: <CodeIcon fontSize="small" />,
+      buttonLabel: "Add Technical Scope",
+    },
+    {
+      kind: "out" as const,
+      title: "Out of Scope",
+      description: "Define exclusions early so delivery expectations stay clear.",
+      icon: <BlockIcon fontSize="small" />,
+      buttonLabel: "Add Out of Scope",
+    },
+  ];
+
   const loadAllMilestones = useCallback(() => {
     if (!projectId) return;
 
@@ -661,67 +690,198 @@ export default function TeamProjects({
   return (
     <Box
       sx={{
-        p: 2,
-        boxShadow: 2,
-        bgcolor: "background.paper",
         mt: 3,
+        display: "flex",
+        flexDirection: "column",
+        gap: 2.5,
       }}
     >
-      <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
-        Basic Details
-      </Typography>
-
-      {!projectData ? (
-        <Typography>Loading Basic Details...</Typography>
-      ) : (
-        <CreateForm
-          key={projectData.id}
-          elements={mappedProjectFormFields}
-          onSuccess={handleSubmit}
-          actionsContainerProps={{
-            sx: { mt: 2, justifyContent: "flex-start" },
-          }}
-          submitButton={{ children: "Add" }}
-        />
-      )}
-
-      <Box sx={{ borderTop: "1px solid #eee", my: 2 }} />
-
-      <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
-        Project Scope
-      </Typography>
-
-      <Box
+      <Paper
+        elevation={0}
         sx={{
-          display: "grid",
-          gap: 2,
-          gridTemplateColumns: { xs: "1fr", md: "1fr 1fr 1fr" },
+          p: { xs: 2, md: 2.5 },
+          border: "1px solid",
+          borderColor: "divider",
+          borderRadius: 1,
+          bgcolor: "background.paper",
         }}
       >
-        <AppButton
-          label="Add Functional Scope"
-          colorKey="BLUE"
-          onClick={() => openPopup("functional")}
-          sx={{ width: "100%" }}
-        />
-        <AppButton
-          label="Add Technical Scope"
-          colorKey="BLUE"
-          onClick={() => openPopup("technical")}
-          sx={{ width: "100%" }}
-        />
-        <AppButton
-          label="Add Out of Scope"
-          colorKey="BLUE"
-          onClick={() => openPopup("out")}
-          sx={{ width: "100%" }}
-        />
-      </Box>
+        <Stack
+          direction={{ xs: "column", md: "row" }}
+          justifyContent="space-between"
+          alignItems={{ xs: "flex-start", md: "center" }}
+          spacing={1}
+          sx={{ mb: 2 }}
+        >
+          <Box>
+            <Typography variant="h6" sx={{ fontWeight: 700 }}>
+              Basic Details
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Confirm the project information before planning delivery.
+            </Typography>
+          </Box>
 
-      <Box sx={{ borderTop: "1px solid #eee", my: 2 }}>
-        <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
-          Milestones
-        </Typography>
+          <Chip
+            size="small"
+            icon={projectData ? <CheckCircleIcon /> : undefined}
+            label={projectData ? "Loaded" : "Loading"}
+            color={projectData ? "success" : "default"}
+            variant={projectData ? "filled" : "outlined"}
+          />
+        </Stack>
+
+        {!projectData ? (
+          <Typography>Loading Basic Details...</Typography>
+        ) : (
+          <CreateForm
+            key={projectData.id}
+            elements={mappedProjectFormFields}
+            onSuccess={handleSubmit}
+            actionsContainerProps={{
+              sx: { mt: 2, justifyContent: "flex-start" },
+            }}
+            submitButton={{ children: "Save Basic Details" }}
+          />
+        )}
+      </Paper>
+
+      <Paper
+        elevation={0}
+        sx={{
+          p: { xs: 2, md: 2.5 },
+          border: "1px solid",
+          borderColor: "divider",
+          borderRadius: 1,
+          bgcolor: "background.paper",
+        }}
+      >
+        <Stack
+          direction={{ xs: "column", md: "row" }}
+          justifyContent="space-between"
+          alignItems={{ xs: "flex-start", md: "center" }}
+          spacing={1}
+          sx={{ mb: 2 }}
+        >
+          <Box>
+            <Typography variant="h6" sx={{ fontWeight: 700 }}>
+              Project Scope
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Add scope notes or upload documents for each area.
+            </Typography>
+          </Box>
+
+          <Chip size="small" label="Optional but recommended" variant="outlined" />
+        </Stack>
+
+        <Box
+          sx={{
+            display: "grid",
+            gap: 2,
+            gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" },
+          }}
+        >
+          {scopeCards.map((scope) => (
+            <Paper
+              key={scope.kind}
+              elevation={0}
+              sx={{
+                p: 2,
+                minHeight: 180,
+                border: "1px solid",
+                borderColor: "divider",
+                borderRadius: 1,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                gap: 2,
+                transition: "border-color 0.2s, box-shadow 0.2s",
+                "&:hover": {
+                  borderColor: "primary.main",
+                  boxShadow: "0 8px 24px rgba(70, 128, 255, 0.12)",
+                },
+              }}
+            >
+              <Box>
+                <Stack direction="row" spacing={1.25} alignItems="center" mb={1}>
+                  <Box
+                    sx={{
+                      width: 34,
+                      height: 34,
+                      borderRadius: 1,
+                      display: "grid",
+                      placeItems: "center",
+                      color: "primary.main",
+                      bgcolor: "primary.main",
+                      backgroundColor: "rgba(70, 128, 255, 0.1)",
+                    }}
+                  >
+                    {scope.icon}
+                  </Box>
+                  <Typography variant="subtitle1" fontWeight={700}>
+                    {scope.title}
+                  </Typography>
+                </Stack>
+
+                <Typography variant="body2" color="text.secondary">
+                  {scope.description}
+                </Typography>
+              </Box>
+
+              <AppButton
+                label={scope.buttonLabel}
+                colorKey="BLUE"
+                onClick={() => openPopup(scope.kind)}
+                sx={{ width: "100%" }}
+              />
+            </Paper>
+          ))}
+        </Box>
+      </Paper>
+
+      <Paper
+        elevation={0}
+        sx={{
+          p: { xs: 2, md: 2.5 },
+          border: "1px solid",
+          borderColor: "divider",
+          borderRadius: 1,
+          bgcolor: "background.paper",
+        }}
+      >
+        <Stack
+          direction={{ xs: "column", md: "row" }}
+          justifyContent="space-between"
+          alignItems={{ xs: "flex-start", md: "center" }}
+          spacing={1}
+          sx={{ mb: 2 }}
+        >
+          <Box>
+            <Typography variant="h6" sx={{ fontWeight: 700 }}>
+              Milestones & Tasks
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Create at least one complete milestone, then expand it to add tasks.
+            </Typography>
+          </Box>
+
+          <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+            <Chip
+              size="small"
+              icon={<FlagIcon />}
+              label={`${rows.length} milestone${rows.length === 1 ? "" : "s"}`}
+              variant="outlined"
+            />
+            <Chip
+              size="small"
+              icon={canProceed ? <CheckCircleIcon /> : undefined}
+              label={canProceed ? "Ready to continue" : "One milestone required"}
+              color={canProceed ? "success" : "default"}
+              variant={canProceed ? "filled" : "outlined"}
+            />
+          </Stack>
+        </Stack>
 
         <MilestoneExpandableTable
           milestones={rows}
@@ -739,10 +899,18 @@ export default function TeamProjects({
               actionsContainerProps={{
                 sx: { mt: 2, justifyContent: "flex-start" },
               }}
-              submitButton={{ children: editingTask ? "Update" : "Add" }}
+              submitButton={{ children: editingTask ? "Update Task" : "Add Task" }}
             />
           }
         />
+
+        <Box sx={{ mt: 2.5, pt: 2.5, borderTop: "1px solid", borderColor: "divider" }}>
+          <Typography variant="subtitle1" fontWeight={700}>
+            {editingMilestone ? "Edit Milestone" : "Add Milestone"}
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+            Add delivery checkpoints with dates and a clear description.
+          </Typography>
 
         <CreateForm
           key={milestoneFormKey}
@@ -753,13 +921,21 @@ export default function TeamProjects({
           actionsContainerProps={{
             sx: { mt: 2, justifyContent: "flex-start" },
           }}
-          submitButton={{ children: editingMilestone ? "Update" : "Add" }}
+          submitButton={{
+            children: editingMilestone ? "Update Milestone" : "Add Milestone",
+          }}
         />
-      </Box>
+        </Box>
+      </Paper>
 
-      <Box
+      <Paper
+        elevation={0}
         sx={{
-          mt: 3,
+          p: 2,
+          border: "1px solid",
+          borderColor: "divider",
+          borderRadius: 1,
+          bgcolor: "background.paper",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
@@ -769,12 +945,16 @@ export default function TeamProjects({
       >
         <Typography
           variant="body2"
-          sx={{ color: "text.secondary", fontWeight: 500 }}
+          sx={{
+            color: canProceed ? "success.main" : "text.secondary",
+            fontWeight: 600,
+          }}
         >
-          Complete at least one milestone to continue
+          {canProceed
+            ? "Milestone requirement completed"
+            : "Complete at least one milestone to continue"}
         </Typography>
 
-        <Box />
         <Box sx={{ display: "flex", gap: 1.5 }}>
           <AppButton label="Back" colorKey="RED" onClick={onBack} width={180} />
           <AppButton
@@ -785,7 +965,7 @@ export default function TeamProjects({
             onClick={() => onNext?.(projectId!)}
           />
         </Box>
-      </Box>
+      </Paper>
 
       <DynamicPopup
         open={popupKind !== null}

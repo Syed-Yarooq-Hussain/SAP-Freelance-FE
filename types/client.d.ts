@@ -26,16 +26,37 @@ export interface IClientPaymentProject {
   deleted_at: string | null;
 }
 
+export interface IClientPaymentMilestone {
+  id: string;
+  name: string;
+  description: string | null;
+  start_date: string;
+  due_date: string;
+  status: string;
+  required_hours: number;
+  project_id: string;
+  deleted_at: string | null;
+}
+
+export interface IClientPaymentDocument {
+  id: string | null;
+  url: string | null;
+  type: string | null;
+  deleted_at: string | null;
+}
+
 export interface IClientPaymentDTO {
   id: string;
   project_id: string;
   project_milestone_id: string;
-  doc_id: string;
+  doc_id: string | null;
   amount: number;
   payment_module: string;
   is_paid: boolean | null;
   deleted_at: string | null;
   project: IClientPaymentProject;
+  milestone?: IClientPaymentMilestone | null;
+  document?: IClientPaymentDocument | null;
   due_date: string;
 }
 
@@ -45,7 +66,9 @@ export interface ClientPaymentRow {
   duedates: string;
   amount: string;
   status: string;
-  invoice: string;
+  receiptUrl: string;
+  is_paid: boolean;
+  payment_module: string;
 }
 
 export interface IClientProjectDTO {
@@ -138,4 +161,25 @@ export interface IClientMeetingsStats {
   upcoming_interviews: number;
   rescheduled_interviews: number;
   cancelled_interviews: number;
+}
+
+export interface IClientPaymentProjectClient {
+  id: number;
+  username: string;
+  email: string;
+  status: string;
+}
+export interface IClientPaymentProject {
+  id: string;
+  name: string;
+  client_id: string;
+  company_name: string;
+  status: string;
+  deleted_at: string | null;
+  client?: IClientPaymentProjectClient | null;
+}
+
+export interface IClientPaymentDTO {
+  project_milestone_id: string | null;
+  milestone?: IClientPaymentMilestone | null;
 }

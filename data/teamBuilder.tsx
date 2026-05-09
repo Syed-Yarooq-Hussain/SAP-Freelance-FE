@@ -1,7 +1,9 @@
 import { StatCardProps } from "@/components/StatCard";
 import StatusChip from "@/components/StatusChip";
-import type { CandidateRow, TaskRow } from "@/types/teamBuilder";
+import AppButton from "@/components/Button";
+import type { CandidateRow, TaskRow, PaymentTableRow } from "@/types/teamBuilder";
 import { formatDateTimeAmPm } from "@/utils/dateTime";
+import { formatCurrencyValue } from "@/utils/payments";
 import { colors, statusColors } from "@/utils/styles/colors";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
@@ -10,7 +12,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import EventSeatIcon from "@mui/icons-material/EventSeat";
 import Groups2Icon from "@mui/icons-material/Groups2";
-import { Box, IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import { Box, Checkbox, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import {
   GridColDef,
   GridRenderCellParams,
@@ -418,10 +420,111 @@ export const teamBuilderPaymentStats = [
     icon: "EventAvailableIcon" as const,
   },
   {
-    title: "Monthly Milestone",
-    subtitle: "$5,000",
+    title: "Taxes Applied",
+    subtitle: "$0",
     color: colors.BLUE,
     icon: "BallotIcon" as const,
+  },
+];
+
+export const createTeamBuilderPaymentMilestoneColumns = (
+  onCheckboxChange: (id: string, checked: boolean) => void,
+  onPaidClick: (id: string) => void
+): GridColDef<PaymentTableRow>[] => [
+  {
+    field: "selected",
+    headerName: "",
+    width: 50,
+    sortable: false,
+    filterable: false,
+    renderCell: (params: GridRenderCellParams<PaymentTableRow>) => (
+      <Checkbox
+        checked={params.row.selected || false}
+        onClick={(e) => e.stopPropagation()}
+        onChange={(e) =>
+          onCheckboxChange(String(params.row.id), e.target.checked)
+        }
+        size="small"
+      />
+    ),
+  },
+  {
+    field: "milestone",
+    headerName: "Milestone",
+    flex: 2,
+    renderCell: (params: GridRenderCellParams<PaymentTableRow>) => (
+      <strong style={{ textDecoration: "underline" }}>
+        {params.row.milestone?.name || params.row.project_milestone_id}
+      </strong>
+    ),
+  },
+  {
+    field: "payment_module",
+    headerName: "Type",
+    flex: 1.5,
+    renderCell: (params: GridRenderCellParams<PaymentTableRow>) => (
+      <span style={{ textTransform: "capitalize" }}>
+        {params.row.payment_module?.toLowerCase() || "N/A"}
+      </span>
+    ),
+  },
+  {
+    field: "baseAmount",
+    headerName: "Base Amount",
+    flex: 1.2,
+    renderCell: (params: GridRenderCellParams<PaymentTableRow>) =>
+      formatCurrencyValue(params.row.baseAmount),
+  },
+  {
+    field: "vat",
+    headerName: "VAT (10%)",
+    flex: 1,
+    renderCell: (params: GridRenderCellParams<PaymentTableRow>) =>
+      formatCurrencyValue(params.row.vat),
+  },
+  {
+    field: "serviceCharge",
+    headerName: "Service Charge (10%)",
+    flex: 1.5,
+    renderCell: (params: GridRenderCellParams<PaymentTableRow>) =>
+      formatCurrencyValue(params.row.serviceCharge),
+  },
+  {
+    field: "totalAmount",
+    headerName: "Total",
+    flex: 1,
+    renderCell: (params: GridRenderCellParams<PaymentTableRow>) => (
+      <strong>{formatCurrencyValue(params.row.totalAmount)}</strong>
+    ),
+  },
+  {
+    field: "is_paid",
+    headerName: "Status",
+    flex: 1,
+    renderCell: (params: GridRenderCellParams<PaymentTableRow>) => (
+      <StatusChip
+        label={params.row.is_paid ? "Paid" : "Unpaid"}
+        status={params.row.is_paid ? "success" : "warning"}
+      />
+    ),
+  },
+  {
+    field: "actions",
+    headerName: "Actions",
+    width: 220,
+    sortable: false,
+    filterable: false,
+    renderCell: (params: GridRenderCellParams<PaymentTableRow>) => (
+      <Stack direction="row" spacing={1}>
+        <AppButton
+          label="Mark Paid"
+          colorKey="BLUE"
+          width={100}
+          disabled={params.row.is_paid}
+          onClick={() => onPaidClick(String(params.row.id))}
+        />
+      </Stack>
+    ),
   },
 ];
 
@@ -456,6 +559,107 @@ export const teamBuilderPaymentMilestoneRows = [
     milestone: "Milestone 3",
     duedate: "10.11.2025",
     amount: "$3,500",
+  },
+];
+
+export const createTeamBuilderPaymentCustomRangeColumns = (
+  onCheckboxChange: (id: string, checked: boolean) => void,
+  onPaidClick: (id: string) => void
+): GridColDef<PaymentTableRow>[] => [
+  {
+    field: "selected",
+    headerName: "",
+    width: 50,
+    sortable: false,
+    filterable: false,
+    renderCell: (params: GridRenderCellParams<PaymentTableRow>) => (
+      <Checkbox
+        checked={params.row.selected || false}
+        onClick={(e) => e.stopPropagation()}
+        onChange={(e) =>
+          onCheckboxChange(String(params.row.id), e.target.checked)
+        }
+        size="small"
+      />
+    ),
+  },
+  {
+    field: "milestone",
+    headerName: "Milestone",
+    flex: 2,
+    renderCell: (params: GridRenderCellParams<PaymentTableRow>) => (
+      <strong style={{ textDecoration: "underline" }}>
+        {params.row.milestone?.name || params.row.project_milestone_id}
+      </strong>
+    ),
+  },
+  {
+    field: "payment_module",
+    headerName: "Type",
+    flex: 1.5,
+    renderCell: (params: GridRenderCellParams<PaymentTableRow>) => (
+      <span style={{ textTransform: "capitalize" }}>
+        {params.row.payment_module?.toLowerCase() || "N/A"}
+      </span>
+    ),
+  },
+  {
+    field: "baseAmount",
+    headerName: "Base Amount",
+    flex: 1.2,
+    renderCell: (params: GridRenderCellParams<PaymentTableRow>) =>
+      formatCurrencyValue(params.row.baseAmount),
+  },
+  {
+    field: "vat",
+    headerName: "VAT (10%)",
+    flex: 1,
+    renderCell: (params: GridRenderCellParams<PaymentTableRow>) =>
+      formatCurrencyValue(params.row.vat),
+  },
+  {
+    field: "serviceCharge",
+    headerName: "Service Charge (10%)",
+    flex: 1.5,
+    renderCell: (params: GridRenderCellParams<PaymentTableRow>) =>
+      formatCurrencyValue(params.row.serviceCharge),
+  },
+  {
+    field: "totalAmount",
+    headerName: "Total",
+    flex: 1,
+    renderCell: (params: GridRenderCellParams<PaymentTableRow>) => (
+      <strong>{formatCurrencyValue(params.row.totalAmount)}</strong>
+    ),
+  },
+  {
+    field: "is_paid",
+    headerName: "Status",
+    flex: 1,
+    renderCell: (params: GridRenderCellParams<PaymentTableRow>) => (
+      <StatusChip
+        label={params.row.is_paid ? "Paid" : "Unpaid"}
+        status={params.row.is_paid ? "success" : "warning"}
+      />
+    ),
+  },
+  {
+    field: "actions",
+    headerName: "Actions",
+    width: 220,
+    sortable: false,
+    filterable: false,
+    renderCell: (params: GridRenderCellParams<PaymentTableRow>) => (
+      <Stack direction="row" spacing={1}>
+        <AppButton
+          label="Mark Paid"
+          colorKey="BLUE"
+          width={100}
+          disabled={params.row.is_paid}
+          onClick={() => onPaidClick(String(params.row.id))}
+        />
+      </Stack>
+    ),
   },
 ];
 
