@@ -299,3 +299,43 @@ type ClientMilestoneRow = {
   onEdit?: () => void;
   onDelete?: () => void;
 };
+
+export interface IProjectPaymentDTO {
+  id: string;
+  project_id: string;
+  project_milestone_id: string;
+  doc_id: string | null;
+  amount: number;
+  payment_module: string;
+  is_paid: boolean;
+  deleted_at: string | null;
+  project?: {
+    id: string;
+    name: string;
+    client_id: string;
+    company_name: string;
+    status: string;
+    deleted_at: string | null;
+  };
+  milestone?: {
+    id: string;
+    name: string;
+    description: string | null;
+    start_date: string;
+    due_date: string;
+    status: string;
+    required_hours: number;
+    project_id: string;
+    deleted_at: string | null;
+  };
+  due_date?: string;
+}
+
+export interface PaymentTableRow extends IProjectPaymentDTO {
+  selected: boolean;
+  showUpload: boolean;
+  baseAmount: number;
+  vat: number;
+  serviceCharge: number;
+  totalAmount: number;
+}

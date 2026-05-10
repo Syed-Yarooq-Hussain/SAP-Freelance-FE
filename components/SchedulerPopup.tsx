@@ -591,9 +591,11 @@ export default function SchedulerLauncher() {
                 value={active === "default" ? dayPreset : customDayPreset}
                 onChange={(e) => {
                   const value = e.target.value as DayPreset;
-                  active === "default"
-                    ? setDayPreset(value)
-                    : setCustomDayPreset(value);
+                  if (active === "default") {
+                    setDayPreset(value);
+                  } else {
+                    setCustomDayPreset(value);
+                  }
                 }}
                 sx={{
                   "& .MuiInputBase-root": {

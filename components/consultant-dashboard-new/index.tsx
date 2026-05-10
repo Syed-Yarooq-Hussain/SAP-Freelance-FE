@@ -36,7 +36,7 @@ export default function DashboardPage({ data }: { data: DashboardData }) {
               <div className='col-span-1 shadow-custom md:col-span-2 rounded-xl md:mt-0 mt-3'>
                     <div className=' bg-white p-4 md:p-2 flex justify-center items-start md:items-center flex-col gap-3 rounded-xl h-full'>
                       <p className='text-xs font-bold font-manrope'>My Total Earnings</p>
-                      <p className='text-3xl md:text-4xl font-bold font-manrope'>$ {data?.payment?.projected_earning || 0}</p>
+                      <p className='text-3xl md:text-4xl font-bold font-manrope'>$ {data?.payment?.total_earnings || 0}</p>
                     </div>
                   </div>
             </div>
@@ -56,7 +56,7 @@ export default function DashboardPage({ data }: { data: DashboardData }) {
                   {/* 0 0px 4px 1px rgba(0, 0, 0, .1), 0 2px 4px -2px rgba(0, 0, 0, .1) */}
                   <div className='col-span-1 md:block hidden shadow-custom md:col-span-2 rounded-xl md:mt-0 mt-3'>
                     <div className=' bg-white text-  p-2 flex justify-center items-center flex-col gap-3 rounded-xl h-full'>
-                      <p className='text-xl md:text-4xl font-bold font-manrope'>$ {data?.payment?.projected_earning || 0}</p>
+                      <p className='text-xl md:text-4xl font-bold font-manrope'>$ {data?.payment?.total_earnings || 0}</p>
                       <p className='text-sm font-bold font-manrope'>My Total Earnings</p>
                     </div>
                   </div>

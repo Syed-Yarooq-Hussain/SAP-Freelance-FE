@@ -1,12 +1,14 @@
 "use client";
 
 import AppButton from "@/components/Button";
-import StatusDropdown from "@/components/StatusDropdown";
-import { buttonColors } from "@/utils/styles/colors";
-import { Box } from "@mui/material";
+import type { ClientPaymentRow } from "@/types/client";
+import { Box, Chip } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 
-export const clientPaymentColumns: GridColDef[] = [
+export const createClientPaymentColumns = (
+  onMarkPaid: (row: ClientPaymentRow) => void,
+  isUpdating = false
+): GridColDef<ClientPaymentRow>[] => [
   { field: "project", headerName: "Project", flex: 2 },
   {
     field: "duedates",
@@ -19,28 +21,61 @@ export const clientPaymentColumns: GridColDef[] = [
     field: "status",
     headerName: "Status",
     flex: 2,
-    renderCell: (params) => <StatusDropdown value={params.value} />,
+    renderCell: (params) => (
+      <Chip
+        size="small"
+        label={params.row.is_paid ? "Paid" : "Unpaid"}
+        color={params.row.is_paid ? "success" : "warning"}
+        variant={params.row.is_paid ? "filled" : "outlined"}
+      />
+    ),
   },
   {
-    field: "invoice",
-    headerName: "Invoice",
+    field: "payment",
+    headerName: "Payment",
+    flex: 2,
+    sortable: false,
+    filterable: false,
+    renderCell: (params) => (
+      <AppButton
+        label="Mark Paid"
+        colorKey="BLUE"
+        width={110}
+        disabled={params.row.is_paid || isUpdating}
+        onClick={() => onMarkPaid(params.row)}
+      />
+    ),
+  },
+  {
+    field: "receiptUrl",
+    headerName: "View Receipt",
     flex: 2,
     renderCell: (params) => {
-      const label = params.value;
-      if (label === "-") {
+      const receiptUrl = params.row.receiptUrl;
+
+      if (!receiptUrl) {
         return (
           <Box
             component="span"
             sx={{ color: "text.secondary", fontSize: "0.875rem" }}
           >
-            {label}
+            {" "}
           </Box>
         );
       }
 
-      const colorKey = buttonColors[label] || "GREY";
-      return <AppButton label={label} colorKey={colorKey} />;
+      return (
+        <AppButton
+          label="View Receipt"
+          colorKey="BLUE"
+          variant="outlined"
+          width={120}
+          onClick={() => window.open(receiptUrl, "_blank", "noopener,noreferrer")}
+        />
+      );
     },
   },
 ];
+
+export const clientPaymentColumns = createClientPaymentColumns(() => undefined);
 

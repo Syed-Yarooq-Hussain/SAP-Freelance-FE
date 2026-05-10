@@ -384,7 +384,6 @@ export default function ProfileEditPage({
     (usernameW || nestedUser?.username || "?").trim().charAt(0).toUpperCase() ||
     "?";
 
-    console.log(sapOtherModulesData,'sapOtherModulesData');
   // const handlePhotoSelected = async (
   //   e: React.ChangeEvent<HTMLInputElement>,
   // ) => {

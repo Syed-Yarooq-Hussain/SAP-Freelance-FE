@@ -4,11 +4,12 @@ import { useConsultantPayments } from "@/actions/payments/useConsultantPayments"
 import Sidebar from "@/components/Sidebar";
 import Payment from "@/components/specific/Payment";
 import { consultantPaymentColumns } from "@/data/consultantPayment";
+import { useToast } from "@/providers/ToastProvider";
 import type {
   ConsultantPaymentRow,
   IConsultantPaymentDTO,
 } from "@/types/consultant";
-import { formatYMD } from "@/utils/dateTime";
+import { formatCurrency } from "@/utils/payments";
 import { useCallback, useEffect, useState } from "react";
 
 export default function ConsultantPaymentPage() {
@@ -16,25 +17,41 @@ export default function ConsultantPaymentPage() {
     ConsultantPaymentRow[]
   >([]);
   const { mutate: loadPayments } = useConsultantPayments();
+  const { toast } = useToast();
+
+  const getPdfUrl = (item: IConsultantPaymentDTO) => {
+    return (
+      item.bills?.find((bill) => bill.pdf_url)?.pdf_url ||
+      item.pdf_url ||
+      item.pdfUrl ||
+      item.invoice_url ||
+      item.bill_pdf_url ||
+      item.document?.url ||
+      ""
+    );
+  };
 
   const fetchPayments = useCallback(() => {
     loadPayments(undefined, {
       onSuccess: (res) => {
         const mapped: ConsultantPaymentRow[] =
           res.data?.map((item: IConsultantPaymentDTO) => ({
-            id: item.id,
-            project: item.project?.name ?? "N/A",
-            duedates: formatYMD(item.due_date),
-            amount: `$${item.amount}`,
-            status: item.payment_module ?? "Pending",
-            invoice: "-",
+            id: item.id || `${item.project?.id ?? "project"}-${item.month}`,
+            project: item.project?.name || item.project_name || "N/A",
+            duedates: item.month || "N/A",
+            totalHours: `${item.total_hours ?? 0}`,
+            amount: formatCurrency(item.total_amount ?? 0),
+            status: item.is_paid ? "Paid" : item.status || "Pending",
+            pdfUrl: getPdfUrl(item),
           })) ?? [];
 
         setPaymentRows(mapped);
       },
-      onError: (err) => console.error(err),
+      onError: (err) => {
+        toast(err.message || "Failed to load monthly bills", "error");
+      },
     });
-  }, [loadPayments]);
+  }, [loadPayments, toast]);
 
   useEffect(() => {
     fetchPayments();
@@ -43,7 +60,7 @@ export default function ConsultantPaymentPage() {
   return (
     <Sidebar>
       <Payment
-        title="Payment"
+        title="Payments"
         columns={consultantPaymentColumns}
         rows={consultantPaymentRows}
       />

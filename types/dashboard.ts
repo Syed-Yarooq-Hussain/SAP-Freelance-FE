@@ -16,6 +16,7 @@ export interface DashboardData {
     payment: {
       next_payment: number;
       projected_earning: number;
+      total_earnings: number;
     };
     documents: {
       pending: number;

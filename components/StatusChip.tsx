@@ -8,9 +8,10 @@ import { DIMENSIONS } from "@/constants/dimensions";
 interface StatusChipProps {
   label: string;
   color: keyof typeof colors;
+  status?: "success" | "warning" | "error" | "info" | null;
 }
 
-export default function StatusChip({ label, color }: StatusChipProps) {
+export default function StatusChip({ label, color, status }: StatusChipProps) {
   const borderColor = colors[color] || colors.GREY;
 
   return (

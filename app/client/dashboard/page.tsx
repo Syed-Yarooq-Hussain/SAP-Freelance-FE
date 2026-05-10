@@ -109,6 +109,9 @@ export default function ClientDashboardPage() {
             amount: `$${item.amount}`,
             status: item.payment_module ?? "Pending",
             invoice: "-",
+            receiptUrl: item.document?.url ?? "",
+            is_paid: item.is_paid ?? false,
+            payment_module: item.payment_module ?? "",
           })) ?? [];
 
         setPaymentRows(mapped);
