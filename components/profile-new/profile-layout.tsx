@@ -24,13 +24,14 @@ import ProfileSpecification from "./profile-specification";
 interface ProfileLayoutProps {
   consultant: any;
   setCvModalOpen: (open: boolean) => void;
-  setIsEditing: (editing: boolean) => void;
+  /** Opens profile edit; optional scroll target for the professional headline (clients summary) field */
+  onEnterEdit: (opts?: { scrollToClientsSummary?: boolean }) => void;
 }
 
 export function ProfileLayout({
   consultant,
   setCvModalOpen,
-  setIsEditing,
+  onEnterEdit,
 }: ProfileLayoutProps) {
   const user = consultant?.user;
   const profileBadges: string[] = consultant?.badges || [];
@@ -106,7 +107,7 @@ export function ProfileLayout({
             <File className="w-4 h-4" />
             Autofill by Resume
           </button>
-          <button onClick={() => setIsEditing(true)} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-blue text-white hover:shadow-lg transition font-medium text-sm">
+          <button onClick={() => onEnterEdit()} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-blue text-white hover:shadow-lg transition font-medium text-sm">
             <Edit className="w-4 h-4" />
             Edit Profile
           </button>
@@ -126,7 +127,7 @@ export function ProfileLayout({
                 <span className="hidden md:block">Autofill by Resume</span>
               </button>
               <button
-                onClick={() => setIsEditing(true)}
+                onClick={() => onEnterEdit()}
                 className="flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-blue text-white hover:shadow-lg transition font-medium text-xs"
               >
                 <Edit className="w-3 h-3" />
@@ -145,7 +146,6 @@ export function ProfileLayout({
                 </div>
                 <div className="md:block hidden">
                   <ContactInfo
-                    linkedin_url={user?.linkedin_url}
                     email={user?.email}
                     phone={user?.phone}
                   />
@@ -159,7 +159,7 @@ export function ProfileLayout({
                       <File className="w-4 h-4" />
                     </button>
                     <button
-                      onClick={() => setIsEditing(true)}
+                      onClick={() => onEnterEdit()}
                       className="h-10 w-10 flex items-center justify-center rounded-xl bg-brand-blue text-white"
                     >
                       <Edit className="w-4 h-4" />
@@ -219,7 +219,7 @@ export function ProfileLayout({
                 </div>
               </div>
             </div>
-            <ProfileHeader setIsEditing={setIsEditing} />
+            <ProfileHeader onEnterEdit={onEnterEdit} />
           </div>
         </div>
 
@@ -230,7 +230,7 @@ export function ProfileLayout({
             {otherModules.length > 0 && <OtherModulesSection />}
             <CompletionCard
               completionPercentage={completionPercentage}
-              onEdit={() => setIsEditing(true)}
+              onEdit={() => onEnterEdit()}
             />
           </div>
 

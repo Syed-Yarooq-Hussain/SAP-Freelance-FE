@@ -224,7 +224,14 @@ const SelectField = ({
   </div>
 );
 
-export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
+export default function ProfileEditPage({
+  goBack,
+  scrollToClientsSummary = false,
+}: {
+  goBack: () => void;
+  /** When true on mount (e.g. from “Write Summary”), expand Basic Information and scroll to the headline editor */
+  scrollToClientsSummary?: boolean;
+}) {
   const dispatch = useAppDispatch();
   const { user: consultant } = useAppSelector((state) => state.user);
   const [industries, setIndustries] = useState<any[]>([]);
@@ -329,6 +336,37 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
       setExpertiseLevels(expertiseLevels);
     });
   }, []);
+
+  const clientsSummaryScrollDoneRef = useRef(false);
+
+  useEffect(() => {
+    if (!scrollToClientsSummary) {
+      clientsSummaryScrollDoneRef.current = false;
+      return;
+    }
+    setExpandedSections((prev) => ({ ...prev, keyLocations: true }));
+  }, [scrollToClientsSummary]);
+
+  useEffect(() => {
+    if (
+      !scrollToClientsSummary ||
+      !expandedSections.keyLocations ||
+      clientsSummaryScrollDoneRef.current
+    ) {
+      return;
+    }
+    const scroll = () => {
+      const el = document.getElementById("profile-edit-clients-summary");
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+        clientsSummaryScrollDoneRef.current = true;
+      }
+    };
+    const frame = requestAnimationFrame(() => {
+      requestAnimationFrame(scroll);
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [scrollToClientsSummary, expandedSections.keyLocations]);
 
   // console.log(industries, expertiseLevels,'levellll');
 
@@ -1217,7 +1255,10 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                       outcomes. Use numbers — e.g. &quot;reduced close cycle by
                       60%&quot;. Max 500 characters.
                     </p>
-                    <div>
+                    <div
+                      id="profile-edit-clients-summary"
+                      className="scroll-mt-28"
+                    >
                       <label className="block text-xs font-manrope font-medium text-slate-700 mb-2">
                         Professional Headline
                         <span className="text-red-500 ml-1">*</span>

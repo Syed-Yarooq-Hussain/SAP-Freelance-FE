@@ -17,10 +17,7 @@ const Banner = ({ onLoginClick, onSignUpClick }: BannerProps) => {
               {/* Left Content */}
               <div className="flex-1 max-w-2xl mb:0 md:mb:32 xl:mb-44 text-center lg:text-left">
                 <h1 className="text-3xl sm:text-3xl md:text-6xl xl:text-7xl font-bold text-slate-900 leading-normal tracking-tight text-balance">
-                  Build Your SAP{" "}
-                  <br className="hidden sm:block" />
-                  Dream Team —{" "}
-                  <br className="hidden sm:block" />
+                  Build Your Perfect Team —{" "}
                   <span className="text-brand-blue">Faster Than Ever</span>
                 </h1>
                 
