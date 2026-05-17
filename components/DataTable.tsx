@@ -17,6 +17,7 @@ import type {
 import {
   DataGrid,
   GridColDef,
+  GridPaginationModel,
   GridRenderCellParams,
   GridRowParams,
   GridValidRowModel,
@@ -48,6 +49,10 @@ export type DataTableProps<T extends GridValidRowModel> = {
   onSelectionChange?: (selectedIds: string[]) => void;
   hidePagination?: boolean;
   selectedIds?: string[];
+  paginationMode?: "client" | "server";
+  rowCount?: number;
+  paginationModel?: GridPaginationModel;
+  onPaginationModelChange?: (model: GridPaginationModel) => void;
 };
 
 export default function DataTable<T extends GridValidRowModel>({
@@ -71,6 +76,10 @@ export default function DataTable<T extends GridValidRowModel>({
   hidePagination = false,
   rowClickable = true,
   selectedIds = [],
+  paginationMode = "client",
+  rowCount,
+  paginationModel,
+  onPaginationModelChange,
 }: DataTableProps<T>) {
   const [selectedRows, setSelectedRows] = React.useState<Set<string>>(
     new Set()
@@ -105,14 +114,25 @@ export default function DataTable<T extends GridValidRowModel>({
     [onSelectionChange]
   );
 
+  const currentRowIds = React.useMemo(
+    () => rows.map((row) => row.id.toString()),
+    [rows]
+  );
+  const currentSelectedCount = currentRowIds.filter((id) =>
+    selectedRows.has(id)
+  ).length;
+
   const handleSelectAll = React.useCallback(() => {
     setSelectedRows((prev) => {
-      let updated: Set<string>;
+      const updated = new Set(prev);
+      const allCurrentRowsSelected =
+        currentRowIds.length > 0 &&
+        currentRowIds.every((id) => updated.has(id));
 
-      if (prev.size === rows.length) {
-        updated = new Set();
+      if (allCurrentRowsSelected) {
+        currentRowIds.forEach((id) => updated.delete(id));
       } else {
-        updated = new Set(rows.map((r) => r.id.toString()));
+        currentRowIds.forEach((id) => updated.add(id));
       }
 
       queueMicrotask(() => {
@@ -121,7 +141,7 @@ export default function DataTable<T extends GridValidRowModel>({
 
       return updated;
     });
-  }, [rows, onSelectionChange]);
+  }, [currentRowIds, onSelectionChange]);
 
   const updatedColumns = React.useMemo(() => {
     if (!showAvatar || !avatarField) return columns;
@@ -136,9 +156,9 @@ export default function DataTable<T extends GridValidRowModel>({
         ? () => (
             <Checkbox
               indeterminate={
-                selectedRows.size > 0 && selectedRows.size < rows.length
+                currentSelectedCount > 0 && currentSelectedCount < rows.length
               }
-              checked={selectedRows.size === rows.length && rows.length > 0}
+              checked={currentSelectedCount === rows.length && rows.length > 0}
               onChange={handleSelectAll}
               sx={{
                 color: colors.BLUE,
@@ -183,10 +203,13 @@ export default function DataTable<T extends GridValidRowModel>({
     columns,
     enableSelection,
     selectedRows,
+    currentSelectedCount,
     rows.length,
     handleSelect,
     handleSelectAll,
   ]);
+
+  const showGrid = rows?.length > 0 || paginationMode === "server";
 
   return (
     <>
@@ -215,14 +238,20 @@ export default function DataTable<T extends GridValidRowModel>({
       </Stack>
 
       <Box sx={{ width: "100%" }}>
-        {rows && rows?.length > 0 ? <DataGrid
+        {showGrid ? <DataGrid
           rows={rows}
           columns={updatedColumns}
-          initialState={{
-            pagination: { paginationModel: { pageSize } },
-          }}
+          initialState={
+            paginationModel
+              ? undefined
+              : { pagination: { paginationModel: { pageSize } } }
+          }
           pageSizeOptions={hidePagination ? [] : [pageSize]}
           {...(hidePagination ? {} : { pagination: true })}
+          paginationMode={paginationMode}
+          rowCount={rowCount}
+          paginationModel={paginationModel}
+          onPaginationModelChange={onPaginationModelChange}
           hideFooter={hidePagination}
           hideFooterPagination={hidePagination}
           hideFooterSelectedRowCount={hidePagination}

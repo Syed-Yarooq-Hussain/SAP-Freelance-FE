@@ -27,8 +27,8 @@ interface FilterDrawerProps {
 
 export default function FilterDrawer({ open, onClose, onApply }: FilterDrawerProps) {
   const [filters, setFilters] = useState({
-    experience: "9",
-    availability: "20",
+    experience: "",
+    availability: "",
     budgetMax: "",
     budgetMin: "",
     country: "",

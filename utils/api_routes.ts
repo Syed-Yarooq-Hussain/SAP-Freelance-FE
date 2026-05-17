@@ -54,6 +54,7 @@ export const API_ROUTES = {
   UPDATE_ADMIN_CLIENT_STATUS: "/admin/clients",
   PDF_READER: "/common/pdf-reader",
   COMMON_UPLOAD: "/common/upload",
+  PROJECT_DOCUMENT_UPLOAD: "/projects/documents/upload",
   CONSULTANT_PROFILE: "/consultants/me",
   UPDATE_CONSULTANT_PROFILE: `/consultants/`,
   DELETE_CONSULTANT_PROFILE: "/consultants/profile",

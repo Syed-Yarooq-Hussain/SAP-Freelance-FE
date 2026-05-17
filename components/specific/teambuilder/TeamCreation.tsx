@@ -18,12 +18,12 @@ import type {
   TeamCreationProps,
   Weekday,
 } from "@/types/teamBuilder";
+import type { ClientConsultantsQuery } from "@/services/consultants";
 import colors from "@/utils/styles/colors";
 import {
   calculateTeamStats,
 } from "@/utils/teamBuilderCalculations";
 import { useAnimatedCounter } from "@/utils/useAnimatedCounter";
-import { useProjectProgress } from "@/utils/useProjectProgress";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import {
   Alert,
@@ -35,7 +35,10 @@ import {
   Snackbar,
   Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import type { GridPaginationModel } from "@mui/x-data-grid";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
+const TEAM_BUILDER_PAGE_SIZE = 10;
 
 export default function TeamCreation({
   onNext,
@@ -55,23 +58,47 @@ export default function TeamCreation({
   const { toast } = useToast();
   const addConsultants = useAddConsultants();
   const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
-  const stats = calculateTeamStats(rows, selectedIds);
   const isProjectAlreadyCreated = Boolean(projectId);
 
+  const [addedIds, setAddedIds] = useState<number[]>([]);
+  const getProjectConsultants = useGetProjectConsultants();
+  const [hydrationReady, setHydrationReady] = useState(false);
+  const [shortlistedMap, setShortlistedMap] = useState<Record<string, number>>(
+    {}
+  );
+  const shortlistedMapRef = useRef(shortlistedMap);
+  shortlistedMapRef.current = shortlistedMap;
+  const [scheduleData, setScheduleData] = useState<
+    TeamBuilderRow["working_schedule"] | null
+  >(null);
+  const [filters, setFilters] = useState<ClientConsultantsQuery>({});
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
+    page: 0,
+    pageSize: TEAM_BUILDER_PAGE_SIZE,
+  });
+  const [rowCount, setRowCount] = useState(0);
+  const [selectedRowsById, setSelectedRowsById] = useState<
+    Record<string, TeamBuilderRow>
+  >({});
+
+  const statsRows = useMemo(() => {
+    const rowsById = new Map<string, TeamBuilderRow>();
+
+    Object.values(selectedRowsById).forEach((row) => {
+      rowsById.set(String(row.id), row);
+    });
+
+    rows.forEach((row) => {
+      rowsById.set(String(row.id), row);
+    });
+
+    return Array.from(rowsById.values());
+  }, [rows, selectedRowsById]);
+  const stats = calculateTeamStats(statsRows, selectedIds);
   const animatedHoursPerWeek = useAnimatedCounter(stats.hoursPerWeek);
   const animatedAvgRatePerHour = useAnimatedCounter(stats.avgRatePerHour);
   const animatedHoursPerMonth = useAnimatedCounter(stats.hoursPerMonth);
   const animatedPerMonthCost = useAnimatedCounter(stats.perMonthCost);
-  const [addedIds, setAddedIds] = useState<number[]>([]);
-  const getProjectConsultants = useGetProjectConsultants();
-  const [hydrationReady, setHydrationReady] = useState(false);
-  const { persistRequestedHours } = useProjectProgress();
-  const [shortlistedMap, setShortlistedMap] = useState<Record<string, number>>(
-    {}
-  );
-  const [scheduleData, setScheduleData] = useState<
-    TeamBuilderRow["working_schedule"] | null
-  >(null);
 
   const openSchedule = (row: TeamBuilderRow) => {
     setScheduleData(row.working_schedule);
@@ -82,40 +109,62 @@ export default function TeamCreation({
     openSchedule,
   }));
 
+  const mapConsultants = useCallback(
+    (consultants: ClientConsultantDTO[] = []) =>
+      consultants.map((item: ClientConsultantDTO, index: number) => ({
+        id: item.id,
+        coremodules: item.modules?.core || "N/A",
+        othersmodules: item.modules?.others || "N/A",
+        experience: item.experience ? `${item.experience} Years` : "N/A",
+        rate: item.rate ? `$${item.rate}/hour` : "N/A",
+        avail: item.weekly_available_hours ?? 0,
+        request: shortlistedMapRef.current[String(item.id)] ?? 0,
+        error: "",
+        avatar: `/img/u${((index % 5) + 1).toString()}.png`,
+        working_schedule: item.working_schedule || undefined,
+      })),
+    []
+  );
+
+  const fetchConsultants = useCallback(
+    (
+      nextFilters: ClientConsultantsQuery = filters,
+      nextPagination: GridPaginationModel = paginationModel
+    ) => {
+      loadConsultants(
+        {
+          ...nextFilters,
+          page: nextPagination.page + 1,
+          limit: nextPagination.pageSize,
+        },
+        {
+          onSuccess: (res) => {
+            const mapped: TeamBuilderRow[] = mapConsultants(res.data ?? []);
+            setRows(mapped);
+            setRowCount(res.pagination?.total ?? mapped.length);
+          },
+          onError: (error) => {
+            const msg =
+              error instanceof Error
+                ? error.message
+                : "Failed to load consultants";
+            toast(msg, "error");
+          },
+        }
+      );
+    },
+    [filters, loadConsultants, mapConsultants, paginationModel, setRows, toast]
+  );
+
   useEffect(() => {
     if (!hydrationReady) return;
-    if (rows.length > 0) return;
 
-    loadConsultants(undefined, {
-      onSuccess: (res) => {
-        const mapped: TeamBuilderRow[] =
-          res.data?.map((item: ClientConsultantDTO, index: number) => ({
-            id: item.id,
-            coremodules: item.modules?.core || "N/A",
-            othersmodules: item.modules?.others || "N/A",
-            experience: item.experience ? `${item.experience} Years` : "N/A",
-            rate: item.rate ? `$${item.rate}/hour` : "N/A",
-            avail: item.weekly_available_hours ?? 0,
-            request: shortlistedMap[String(item.id)] ?? 0,
-            error: "",
-            avatar: `/img/u${((index % 5) + 1).toString()}.png`,
-            working_schedule: item.working_schedule || undefined,
-          })) ?? [];
-        setRows(mapped);
-      },
-      onError: (error) => {
-        const msg =
-          error instanceof Error ? error.message : "Failed to load consultants";
-        toast(msg, "error");
-      },
-    });
+    fetchConsultants();
   }, [
     hydrationReady,
-    rows.length,
-    shortlistedMap,
-    loadConsultants,
-    toast,
-    setRows,
+    filters,
+    paginationModel,
+    fetchConsultants,
   ]);
 
   useEffect(() => {
@@ -166,7 +215,7 @@ export default function TeamCreation({
           return;
         }
 
-        persistRequestedHours(projectId, rows, selectedIds);
+        persistSelectedHours(projectId);
 
         const newProject = {
           id: projectId,
@@ -184,13 +233,7 @@ export default function TeamCreation({
         window.dispatchEvent(new Event("tb_projects_updated"));
         toast("Project created!", "success");
 
-        const payload = selectedIds.map((id) => {
-          const row = rows.find((c) => c.id.toString() === id);
-          return {
-            consultant_id: Number(id),
-            requested_hours: Number(row?.request ?? 0),
-          };
-        });
+        const payload = buildConsultantPayload(false);
 
         addConsultants.mutate(
           { projectId, body: payload },
@@ -209,21 +252,33 @@ export default function TeamCreation({
     });
   };
 
-  const buildConsultantPayload = () =>
+  const persistSelectedHours = (projectId: string) => {
+    const map = selectedIds.reduce<Record<string, number>>((acc, id) => {
+      const row = rows.find((c) => String(c.id) === String(id));
+      acc[id] = Number(row?.request ?? shortlistedMap[String(id)] ?? 0);
+      return acc;
+    }, {});
+
+    localStorage.setItem(`tb_requested_hours_${projectId}`, JSON.stringify(map));
+  };
+
+  const buildConsultantPayload = (excludeAlreadyAdded = true) =>
     selectedIds
-      .filter((id) => !addedIds.includes(Number(id)))
+      .filter((id) => !excludeAlreadyAdded || !addedIds.includes(Number(id)))
       .map((id) => {
         const row = rows.find((c) => String(c.id) === String(id));
         return {
           consultant_id: Number(id),
-          requested_hours: Number(row?.request ?? 0),
+          requested_hours: Number(
+            row?.request ?? shortlistedMap[String(id)] ?? 0
+          ),
         };
       });
 
   const handleProceedNext = () => {
     if (!projectId) return;
 
-    persistRequestedHours(projectId, rows, selectedIds);
+    persistSelectedHours(projectId);
 
     const payload = buildConsultantPayload();
 
@@ -255,7 +310,8 @@ export default function TeamCreation({
     rows.length === 0 ||
     selectedIds.some((id) => {
       const row = rows.find((r) => String(r.id) === String(id));
-      return !row || row.request <= 0 || row.request > row.avail;
+      if (row) return row.request <= 0 || row.request > row.avail;
+      return Number(shortlistedMap[String(id)] ?? 0) <= 0;
     });
 
   const handleRequestChange = (
@@ -274,34 +330,61 @@ export default function TeamCreation({
           : row
       )
     );
+    setSelectedRowsById((prev) => {
+      const idKey = String(id);
+      if (!prev[idKey] && !selectedIds.includes(idKey)) return prev;
+
+      const source = prev[idKey] ?? rows.find((row) => String(row.id) === idKey);
+      if (!source) return prev;
+
+      return {
+        ...prev,
+        [idKey]: {
+          ...source,
+          request: value,
+          error: value > avail ? `Max: ${avail} hours` : "",
+        },
+      };
+    });
+    setShortlistedMap((prev) => ({
+      ...prev,
+      [String(id)]: value,
+    }));
   };
 
-  const handleFilter = (filters:any) => {
-    console.log(filters,'filters');
-    loadConsultants(filters, {
-      onSuccess: (res) => {
-        const mapped: TeamBuilderRow[] =
-          res.data?.map((item: ClientConsultantDTO, index: number) => ({
-            id: item.id,
-            coremodules: item.modules?.core || "N/A",
-            othersmodules: item.modules?.others || "N/A",
-            experience: item.experience ? `${item.experience} Years` : "N/A",
-            rate: item.rate ? `$${item.rate}/hour` : "N/A",
-            avail: item.weekly_available_hours ?? 0,
-            request: shortlistedMap[String(item.id)] ?? 0,
-            error: "",
-            avatar: `/img/u${((index % 5) + 1).toString()}.png`,
-            working_schedule: item.working_schedule || undefined,
-          })) ?? [];
-        setRows(mapped);
-        setFilterOpen(false);
-      },
-      onError: (error) => {
-        const msg =
-          error instanceof Error ? error.message : "Failed to load consultants";
-        toast(msg, "error");
-      },
+  const handleSelectionChange = (ids: string[]) => {
+    setSelectedIds(ids);
+    setSelectedRowsById((prev) => {
+      const next: Record<string, TeamBuilderRow> = {};
+
+      ids.forEach((id) => {
+        const row = rows.find((item) => String(item.id) === id);
+        if (row) next[id] = row;
+        else if (prev[id]) next[id] = prev[id];
+      });
+
+      return next;
     });
+    setShortlistedMap((prev) => {
+      const next = { ...prev };
+
+      Object.keys(next).forEach((id) => {
+        if (!ids.includes(id)) delete next[id];
+      });
+
+      rows.forEach((row) => {
+        const id = String(row.id);
+        if (ids.includes(id)) next[id] = Number(row.request ?? 0);
+      });
+
+      return next;
+    });
+  };
+
+  const handleFilter = (nextFilters: ClientConsultantsQuery) => {
+    setFilters(nextFilters);
+    setPaginationModel((prev) => ({ ...prev, page: 0 }));
+    setFilterOpen(false);
   };
 
   return (
@@ -388,11 +471,15 @@ export default function TeamCreation({
               columns={teamBuilderColumns(handleRequestChange)}
               rows={rowsWithSchedule}
               pageSize={10}
+              paginationMode="server"
+              rowCount={rowCount}
+              paginationModel={paginationModel}
+              onPaginationModelChange={setPaginationModel}
               showAvatar
               avatarField="avatar"
               enableSelection
               selectedIds={selectedIds}
-              onSelectionChange={(ids) => setSelectedIds(ids)}
+              onSelectionChange={handleSelectionChange}
             />
           )}
 
