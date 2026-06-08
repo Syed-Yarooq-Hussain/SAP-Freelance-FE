@@ -41,6 +41,7 @@ export const API_ROUTES = {
   GET_PROJECT_DETAILS: "/projects",
   CONSULTANT_PROJECTS: "/consultants/projects",
   CONSULTANT_PAYMENTS: "/consultants/monthly-bills",
+  CONSULTANT_HOUR_LOGS: "/consultants/hour-logs",
   CONSULTANT_DASHBOARD: "/consultants/dashboard",
   CONSULTANT_DASHBOARD_V2: "/consultants/v2/dashboard",
   SAP_MODULES: "/common/sap-modules",
@@ -70,5 +71,7 @@ export const API_ROUTES = {
   GET_INDUSTRIES: "/common/industry",
   GET_EXPERTISE_LEVELS: "/consultants/experience-levels",
   ADMIN_PAYMENTS: "/admin/payments",
+  ADMIN_CONSULTANT_PAYMENTS: "/admin/consultant/payments",
+  ADMIN_CONSULTANT_PAYMENT: "/admin/consultant/payment",
 
 };

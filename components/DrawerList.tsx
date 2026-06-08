@@ -5,6 +5,8 @@ import { APP_ROUTES } from "@/utils/app_routes";
 import colors from "@/utils/styles/colors";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import CalendarMonthIconOutline from "@mui/icons-material/CalendarMonthOutlined";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import AccessTimeIconOutline from "@mui/icons-material/AccessTimeOutlined";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import DashboardIconOutline from "@mui/icons-material/DashboardOutlined";
 import DescriptionIcon from "@mui/icons-material/Description";
@@ -70,6 +72,7 @@ const DrawerList: FC<DrawerListProps> = ({ open }) => {
         { icon: <WorkIcon />, outlined: <WorkIconOutline />, label: "Projects", link: r.PROJECTS },
         { icon: <EventNoteIcon />, outlined: <EventNoteIconOutline />, label: "Meetings", link: r.INTERVIEWS },
         { icon: <PaymentIcon />, outlined: <PaymentIconOutline />, label: "Payments", link: r.PAYMENTS },
+        { icon: <PaymentIcon />, outlined: <PaymentIconOutline />, label: "Consultant Payments", link: r.CONSULTANT_PAYMENTS },
         { icon: <NotificationsIcon />, outlined: <NotificationsIconOutline />, label: "Notifications", link: r.NOTIFICATIONS },
       ];
     }
@@ -97,6 +100,7 @@ const DrawerList: FC<DrawerListProps> = ({ open }) => {
       // { icon: <WorkIcon />, label: "Projects", link: r.PROJECTS },
       // { icon: <EventNoteIcon />, label: "Meetings", link: r.INTERVIEWS },
       { icon: <DescriptionIcon />, outlined: <DescriptionIconOutline />, label: "Documents", link: r.DOCUMENTS },
+      { icon: <AccessTimeIcon />, outlined: <AccessTimeIconOutline />, label: "Hour Logs", link: r.HOUR_LOGS },
       { icon: <PaymentIcon />, outlined: <PaymentIconOutline />, label: "Payments", link: r.PAYMENTS },
     ];
   }, [role]);

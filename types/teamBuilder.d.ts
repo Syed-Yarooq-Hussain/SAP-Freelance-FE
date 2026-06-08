@@ -82,8 +82,8 @@ export interface ICreateMilestonePayload {
   due_date: string;
   start_date: string;
   status: string;
-  required_hours: number;
-  project_id: string | number;
+  required_hours?: number;
+  project_id?: string | number;
 }
 
 export interface ICreateTaskPayload {
@@ -91,8 +91,9 @@ export interface ICreateTaskPayload {
   description: string;
   assignee_id: number | string;
   required_hours: number;
-  project_milestone_id: number | string;
-  project_id: number | string;
+  due_date?: string;
+  project_milestone_id?: number | string;
+  project_id?: number | string;
 }
 
 export interface IUpdateTaskPayload {

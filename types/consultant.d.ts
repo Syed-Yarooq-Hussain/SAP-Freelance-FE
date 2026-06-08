@@ -66,6 +66,18 @@ export interface IConsultantPaymentDocument {
 export interface IConsultantMonthlyBillItem {
   id: number | string;
   milestone_id: number | string;
+  milestone?: {
+    id?: string | number;
+    name?: string | null;
+  } | null;
+  task_id?: number | string | null;
+  task?: {
+    id?: string | number;
+    name?: string | null;
+  } | null;
+  log_date?: string | null;
+  description?: string | null;
+  bill_type?: "logged" | "auto" | string;
   hours: number;
   amount: number;
   is_paid: boolean | null;
@@ -99,6 +111,33 @@ export interface IConsultantPaymentDTO {
   document?: IConsultantPaymentDocument | null;
   total_hours?: number;
   bills?: IConsultantMonthlyBillItem[];
+}
+
+export interface IConsultantHourLog {
+  id: string | number;
+  project_id?: string | number;
+  milestone_id?: string | number;
+  task_id?: string | number | null;
+  project?: { id?: string | number; name?: string | null } | null;
+  milestone?: { id?: string | number; name?: string | null } | null;
+  task?: { id?: string | number; name?: string | null } | null;
+  project_name?: string | null;
+  milestone_name?: string | null;
+  task_name?: string | null;
+  log_date?: string | null;
+  hours: number;
+  amount?: number | null;
+  description?: string | null;
+  is_paid?: boolean | null;
+}
+
+export interface ICreateHourLogPayload {
+  project_id: number | string;
+  milestone_id: number | string;
+  task_id?: number | string;
+  hours: number;
+  log_date?: string;
+  description?: string;
 }
 
 export interface ConsultantPaymentRow {
