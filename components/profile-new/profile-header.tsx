@@ -89,9 +89,9 @@ const badgeConfig = {
 };
 
 export function ProfileHeader({
-  setIsEditing,
+  onEnterEdit,
 }: {
-  setIsEditing: (editing: boolean) => void;
+  onEnterEdit: (opts?: { scrollToClientsSummary?: boolean }) => void;
 }) {
   const [viewMore, setViewMore] = useState(false);
   const user = useAppSelector((state) => state?.user?.user);
@@ -160,7 +160,7 @@ export function ProfileHeader({
     </div>
 
       <div className="md:order-3 order-2">
-        {user?.clients_summary ? (
+        {user?.clients_summary && user?.clients_summary !== '<p></p>' ? (
           <div className="mb-4 bg-background-main md:bg-[#F5F3EF] border border-slate-200 rounded-lg p-4">
             <p className="font-bold mb-4 flex items-center gap-2 font-manrope text-sm">
               <span className="bg-brand-blue text-white rounded-md p-1 w-6 h-6 flex items-center justify-center font-manrope">
@@ -217,7 +217,10 @@ export function ProfileHeader({
                 by 3×.
               </p>
               <Button
-                onClick={() => setIsEditing(true)}
+                type="button"
+                onClick={() =>
+                  onEnterEdit({ scrollToClientsSummary: true })
+                }
                 className="bg-white w-fit flex items-center gap-1 px-4 py-2 rounded-xl text-xs border border-slate-300 text-brand-blue"
               >
                 <Plus className="w-4 h-4 text-black" /> Write Summary

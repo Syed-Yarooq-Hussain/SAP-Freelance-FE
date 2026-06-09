@@ -22,6 +22,8 @@ export default function ProfilePage() {
   const user = useAppSelector((state:any) => state?.user?.user)
   const dispatch = useAppDispatch()
   const [isEditing, setIsEditing] = useState(false)
+  const [scrollToClientsSummaryOnEdit, setScrollToClientsSummaryOnEdit] =
+    useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isCVModalOpen, setIsCVModalOpen] = useState(false)
   const handleCloseCVModal = () => setIsCVModalOpen(false)
@@ -126,11 +128,26 @@ export default function ProfilePage() {
                 isLoading={isLoading}
                 onCancel={() => setIsEditing(false)}
               /> */}
-              <ProfileEditPage goBack={() => setIsEditing(false)}/>
+              <ProfileEditPage
+                goBack={() => {
+                  setScrollToClientsSummaryOnEdit(false)
+                  setIsEditing(false)
+                }}
+                scrollToClientsSummary={scrollToClientsSummaryOnEdit}
+              />
             </div>
           ) : (
             <div className=' py-4 px-4'>
-              <ProfileLayout consultant={user} setIsEditing={setIsEditing} setCvModalOpen={setIsCVModalOpen}/>
+              <ProfileLayout
+                consultant={user}
+                setCvModalOpen={setIsCVModalOpen}
+                onEnterEdit={(opts) => {
+                  setScrollToClientsSummaryOnEdit(
+                    Boolean(opts?.scrollToClientsSummary),
+                  )
+                  setIsEditing(true)
+                }}
+              />
             </div>
             // <>
             //   <ProfileHero
