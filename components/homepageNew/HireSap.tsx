@@ -13,17 +13,17 @@ export default function HireSap({ onSignUpClick }: { onSignUpClick: () => void }
 
           {/* Heading */}
           <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight text-balance">
-            Hire SAP consultants or join as a verified expert.
+          Join as a verified expert
           </h2>
 
           {/* Subtitle */}
           <p className="text-muted-foreground text-2xl mb-8 max-w-2xl">
-            Our platform connects businesses with vetted SAP professionals worldwide.
+            Our platform connects businesses with vetted professionals worldwide
           </p>
 
           {/* CTA Text */}
           <p className="text-brand-blue font-semibold text-lg mb-6">
-            Book a demo to explore the SAP Freelance Portal
+            Book a demo to explore the Consultcrew
           </p>
 
           {/* Button */}

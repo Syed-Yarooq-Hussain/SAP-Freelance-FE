@@ -32,7 +32,7 @@ export function Footer({ onNavigate }: FooterProps) {
               </div>
             </div>
             <p className="mb-6 text-gray-400 max-w-md">
-              Premium marketplace for pre-vetted SAP consultants. Build SAP teams in days, not months. Transform your SAP projects with elite talent.
+              Premium marketplace for pre-vetted consultants. Build teams in days, not months. Transform your projects with elite talent.
             </p>
             <div className="flex gap-4">
               <a href="#" className="p-3 bg-white/5 hover:bg-blue-600 rounded-lg transition-all transform hover:scale-110 hover:shadow-lg">
@@ -127,7 +127,7 @@ export function Footer({ onNavigate }: FooterProps) {
         <div className="border-t border-gray-800 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
             <p className="text-gray-400">
-              &copy; 2025 Vertex9 SAP Talent Network. All rights reserved.
+              &copy; 2025 Vertex9 Talent Network. All rights reserved.
             </p>
             <div className="flex gap-6">
               <a href="#" className="hover:text-blue-400 transition-colors">Privacy Policy</a>

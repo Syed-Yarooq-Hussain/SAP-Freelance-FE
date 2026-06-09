@@ -71,7 +71,7 @@ export default function ContactUsPage({
           Get in Touch with Our Team
         </p>
         <p className="max-w-2xl mx-auto text-white/90 text-sm md:text-base">
-          Have questions about our SAP talent network? We&apos;re here to help
+          Have questions about our talent network? We&apos;re here to help
           you build exceptional teams.
         </p>
       </section>

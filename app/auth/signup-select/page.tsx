@@ -103,7 +103,7 @@ export default function SignUpSelectionPage() {
               </Typography>
 
               <Typography fontSize="0.85rem" color="text.secondary" mt={1}>
-                Looking to hire SAP consultants for my projects
+                Looking to hire consultants for my projects
               </Typography>
             </Box>
 

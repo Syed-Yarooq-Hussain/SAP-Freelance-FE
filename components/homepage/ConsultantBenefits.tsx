@@ -77,13 +77,13 @@ export function ConsultantBenefits({ onRegister }: ConsultantBenefitsProps) {
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm text-purple-700 px-4 py-2 rounded-full mb-6 border border-purple-200">
             <Rocket className="w-4 h-4 animate-pulse" />
-            <span className="text-sm">For SAP Consultants</span>
+            <span className="text-sm">For Consultants</span>
           </div>
           <h2 className="mb-4 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-            Why Consultants Love the SAP Freelance Portal
+            Why Consultants Love the Consultcrew
           </h2>
           <p className="text-gray-700 max-w-2xl mx-auto text-lg">
-            Join a thriving community of SAP professionals and unlock unlimited
+            Join a thriving community of professionals and unlock unlimited
             opportunities
           </p>
         </div>
@@ -149,7 +149,7 @@ export function ConsultantBenefits({ onRegister }: ConsultantBenefitsProps) {
           >
             <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
             <Rocket className="w-5 h-5 relative z-10 group-hover:rotate-12 transition-transform" />
-            <span className="relative z-10">Join as SAP Consultant</span>
+            <span className="relative z-10">Join as Consultant</span>
           </button>
           <p className="text-sm text-gray-600 mt-4 flex items-center justify-center gap-2">
             <svg

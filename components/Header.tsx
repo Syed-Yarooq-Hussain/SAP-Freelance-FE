@@ -15,7 +15,7 @@ const navLinks = [
   // { label: "Join as consultant", href: "#join-consultant" },
   { label: "Elite Talent Pool", href: "#elite-talent" },
   { label: "How We're different", href: "#how-different" },
-  { label: "Expert Team Builder", href: "#team-builder" },
+  { label: "Expert Profile Builder", href: "#team-builder" },
   { label: "Why Choose Us", href: "#why-choose" },
   { label: "Book a Demo", href: "#book-demo" },
 ]
