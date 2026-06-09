@@ -8,7 +8,7 @@ const steps = [
     number: 1,
     icon: Users,
     title: "Sign Up in Seconds",
-    description: "Create your account or continue with Google — no lengthy forms to start",
+    description: "Create your account or continue with LinkedIn — no lengthy forms to start",
   },
   {
     number: 2,
