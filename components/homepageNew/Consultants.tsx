@@ -14,7 +14,7 @@ const consultants = [
   {
     rank: 2,
     rating: 4.9,
-    module: "SAP ABAP",
+    module: "ABAP",
     yearsExp: 12,
     projects: 38,
     successRate: 98,
@@ -24,7 +24,7 @@ const consultants = [
   {
     rank: 3,
     rating: 4.9,
-    module: "SAP SD",
+    module: "SD",
     yearsExp: 13,
     projects: 42,
     successRate: 98,
@@ -34,7 +34,7 @@ const consultants = [
   {
     rank: 4,
     rating: 4.8,
-    module: "SAP MM",
+    module: "MM",
     yearsExp: 11,
     projects: 35,
     successRate: 98,
@@ -44,7 +44,7 @@ const consultants = [
   {
     rank: 5,
     rating: 4.8,
-    module: "SAP HANA",
+    module: "HANA",
     yearsExp: 10,
     projects: 30,
     successRate: 98,
@@ -54,7 +54,7 @@ const consultants = [
   {
     rank: 6,
     rating: 4.8,
-    module: "SAP HCM",
+    module: "HCM",
     yearsExp: 14,
     projects: 40,
     successRate: 98,
@@ -64,7 +64,7 @@ const consultants = [
   {
     rank: 7,
     rating: 4.7,
-    module: "SAP FICO",
+    module: "FICO",
     yearsExp: 9,
     projects: 28,
     successRate: 97,
@@ -74,7 +74,7 @@ const consultants = [
   {
     rank: 8,
     rating: 4.7,
-    module: "SAP BW",
+    module: "BW",
     yearsExp: 11,
     projects: 33,
     successRate: 97,
@@ -182,7 +182,7 @@ export default function Consultants({ onSignUpClick }: { onSignUpClick: () => vo
         {/* Header */}
         <div className="flex flex-col items-center text-center mb-12">
           <h2 className="text-xl md:text-4xl lg:text-5xl font-bold text-foreground text-balance">
-            Meet our highest-rated SAP experts, ready to accelerate your projects with proven expertise and exceptional delivery.
+            Meet our highest-rated experts, ready to accelerate your projects with proven expertise and exceptional delivery
           </h2>
         </div>
 
@@ -235,7 +235,7 @@ export default function Consultants({ onSignUpClick }: { onSignUpClick: () => vo
           </button>
           {/* <button className="group inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-white text-foreground font-semibold rounded-lg border border-slate-200 shadow-sm transition-all duration-300 ease-out hover:border-brand-blue hover:text-brand-blue hover:scale-105 active:scale-95">
             <Search className="w-5 h-5" />
-            Hire SAP Consultants
+            Hire Consultants
           </button> */}
         </div>
       </div>

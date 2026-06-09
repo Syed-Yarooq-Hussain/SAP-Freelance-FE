@@ -16,13 +16,13 @@ const Banner = ({ onLoginClick, onSignUpClick }: BannerProps) => {
             <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
               {/* Left Content */}
               <div className="flex-1 max-w-2xl mb:0 md:mb:32 xl:mb-44 text-center lg:text-left">
-                <h1 className="text-3xl sm:text-3xl md:text-6xl xl:text-7xl font-bold text-slate-900 leading-normal tracking-tight text-balance">
-                  Build Your Perfect Team —{" "}
+                <h1 className="text-3xl sm:text-3xl md:text-5xl xl:text-6xl font-bold text-slate-900 leading-normal tracking-tight text-balance">
+                 Land Your Next Project —{" "}
                   <span className="text-brand-blue">Faster Than Ever</span>
                 </h1>
                 
                 <p className="mt-6 text-lg sm:text-xl text-slate-600 leading-relaxed max-w-xl mx-auto lg:mx-0 text-pretty">
-                  Discover verified SAP experts, schedule calls instantly, and build high-performing SAP teams worldwide.
+                  Create your profile, set your availability, and let the right opportunities come to you
                 </p>
                 
                 {/* Buttons */}
@@ -50,7 +50,7 @@ const Banner = ({ onLoginClick, onSignUpClick }: BannerProps) => {
                 <div className="relative">
                   <Image
                     src="/images/homepage/banner.png"
-                    alt="SAP Dashboard and Team Management Interface showcasing project highlights, expert consultants, interview scheduling, and payment tracking"
+                    alt=" Dashboard and Team Management Interface showcasing project highlights, expert consultants, interview scheduling, and payment tracking"
                     width={800}
                     height={600}
                     className="w-full h-auto object-contain z-10 relative scale-110"

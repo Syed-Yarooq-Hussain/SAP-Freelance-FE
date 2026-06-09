@@ -15,65 +15,65 @@ import { cn } from "../homepage/ui/utils"
 
 const slides = [
   {
-    tag: "Why Consultants Love the SAP Freelance Portal",
+    tag: "Why Consultants Love the Consultcrew",
     title: "Global Reach & Opportunities",
     benefits: [
       {
         number: 1,
         title: "Global Exposure",
-        description: "Work with top-tier clients across 50+ countries.",
+        description: "Work with top-tier clients across 50+ countries",
       },
       {
         number: 2,
         title: "Endless Opportunities",
-        description: "Access 1,000+ live SAP projects worldwide.",
+        description: "Access 1,000+ live projects worldwide",
       },
       {
         number: 3,
-        title: "Diverse SAP Projects",
-        description: "Work across modules, industries, and business sizes.",
+        title: "Diverse Projects",
+        description: "Work across modules, industries, and business sizes",
       },
     ],
   },
   {
-    tag: "Why Consultants Love the SAP Freelance Portal",
+    tag: "Why Consultants Love the Consultcrew",
     title: "Flexible Work & Fair Pay",
     benefits: [
       {
         number: 1,
         title: "Work on Your Terms",
-        description: "Choose projects that match your schedule and expertise.",
+        description: "Choose projects that match your schedule and expertise",
       },
       {
         number: 2,
         title: "Competitive Rates",
-        description: "Get paid fairly with transparent pricing models.",
+        description: "Get paid fairly with transparent pricing models",
       },
       {
         number: 3,
         title: "Secure Payments",
-        description: "Receive timely payments through our secure platform.",
+        description: "Receive timely payments through our secure platform",
       },
     ],
   },
   {
-    tag: "Why Consultants Love the SAP Freelance Portal",
+    tag: "Why Consultants Love the Consultcrew",
     title: "Career Growth & Support",
     benefits: [
       {
         number: 1,
         title: "Skill Development",
-        description: "Access training resources and certifications.",
+        description: "Access training resources and certifications",
       },
       {
         number: 2,
         title: "Community Network",
-        description: "Connect with 1,200+ SAP professionals worldwide.",
+        description: "Connect with 1,200+ professionals worldwide",
       },
       {
         number: 3,
         title: "Dedicated Support",
-        description: "Get help from our consultant success team.",
+        description: "Get help from our consultant success team",
       },
     ],
   },
@@ -114,7 +114,7 @@ export default function Careers({ onSignUpClick }: CareersProps) {
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         <div className="flex flex-col items-center text-center mb-12">
           <h2 className="text-xl md:text-3xl lg:text-5xl font-bold text-foreground text-balance">
-            Why Consultants Love the SAP Freelance Portal
+            Why Consultants Love the Consultcrew
           </h2>
         </div>
         {/* Header */}
@@ -214,7 +214,7 @@ export default function Careers({ onSignUpClick }: CareersProps) {
             <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
           </button>
           <p className="mt-4 text-center text-xs md:text-sm text-muted-foreground flex items-center gap-1">
-            <span className=" text-xs md:text-base">💪 Join 1,200+ SAP experts already on the platform</span>
+            <span className=" text-xs md:text-base">💪 Join 1,200+ experts already on the platform</span>
             
           </p>
         </div>

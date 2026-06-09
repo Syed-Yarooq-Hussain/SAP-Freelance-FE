@@ -17,7 +17,7 @@ const benefits = [
     icon: Award,
     title: 'Talent & Quality',
     features: [
-      '1,000+ SAP Experts',
+      '1,000+ Experts',
       'Top-tier, pre-vetted consultants',
       'Verified solutions',
       'Niche module expertise'
@@ -65,10 +65,10 @@ export function ClientBenefits() {
             <span className="text-sm">Client Benefits</span>
           </div>
           <h2 className="mb-4 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-            Why Choose the SAP Freelance Portal?
+            Why Choose the Consultcrew?
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto text-lg">
-            Everything you need to build, manage, and scale your SAP teams efficiently
+            Everything you need to build, manage, and scale your teams efficiently
           </p>
         </div>
 
