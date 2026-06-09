@@ -129,7 +129,6 @@ export function AssignedRolePopup({
       <Typography sx={{ fontWeight: 700, fontSize: "1rem", mb: 1 }}>
         Role
       </Typography>
-
       <TextField
         select
         fullWidth
