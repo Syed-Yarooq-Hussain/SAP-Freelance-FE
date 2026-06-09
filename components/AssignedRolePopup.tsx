@@ -126,7 +126,6 @@ export function AssignedRolePopup({
           />
         ))}
       </Box>
-
       <Typography sx={{ fontWeight: 700, fontSize: "1rem", mb: 1 }}>
         Role
       </Typography>
