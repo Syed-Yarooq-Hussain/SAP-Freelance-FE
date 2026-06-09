@@ -135,11 +135,11 @@ export function WelcomeHeader() {
           </div>
         </div>
 
-        <div className="flex shadow-custom items-center justify-center gap-2 bg-brand-blue rounded-[7px] px-4 md:px-7 py-2 border border-gray-200 w-full lg:w-auto">
-          <Clock className="w-8 h-8 flex-shrink-0 text-white" />
+        <div className="flex shadow-custom items-center justify-center gap-2 bg-[#00000005] border border-brand-blue rounded-[7px] px-4 md:px-7 py-2 w-full lg:w-auto">
+          <Clock className="w-8 h-8 flex-shrink-0 text-brand-blue" />
           <div className="text-center">
-            <p className="text-xxs font-thin text-white tracking-wide">GMT TIME ZONE</p>
-            <p className="text-lg sm:text-lg md:text-lg font-neue text-white tabular-nums">{time}</p>
+            <p className="text-xxs font-thin text-brand-blue tracking-wide">GMT TIME ZONE</p>
+            <p className="text-lg sm:text-lg md:text-lg font-neue text-brand-blue tabular-nums">{time}</p>
           </div>
         </div>
       </div>

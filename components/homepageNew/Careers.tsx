@@ -112,11 +112,11 @@ export default function Careers({ onSignUpClick }: CareersProps) {
         />
       </div>
       <div className="container mx-auto px-4 md:px-6 relative z-10">
-        <div className="flex flex-col items-center text-center mb-12">
+        {/* <div className="flex flex-col items-center text-center mb-12">
           <h2 className="text-xl md:text-3xl lg:text-5xl font-bold text-foreground text-balance">
             Why Consultants Love the Consultcrew
           </h2>
-        </div>
+        </div> */}
         {/* Header */}
         {/* <div className="flex flex-col items-center text-center mb-12 relative z-10">
           <button className="inline-flex items-center gap-2 px-4 py-2 btn-gradient-blue text-white text-sm font-medium rounded-full mb-4 transition-all duration-300 hover:scale-105 active:scale-95">
