@@ -46,8 +46,8 @@ export function ProfileLayout({
   const mobileTitle = coreModulesStr.length
     ? `${coreModulesStr.join(" · ")}`
     : "SAP Consultant";
-  const experienceText =
-    consultant?.experience || consultant?.years_of_experience || "-";
+  const experienceText = 0
+    // consultant?.experience || consultant?.years_of_experience || "";
   const locationText = [user?.city].filter(Boolean).join(", ");
   const memberSince = (() => {
     const rawDate =
@@ -121,17 +121,17 @@ export function ProfileLayout({
             <div className="max-w-7xl mx-auto  flex justify-end gap-3 ">
               <button
                 onClick={() => setCvModalOpen(true)}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-200 transition font-medium text-xs"
+                className="flex items-center gap-2 px-3 md:px-4 md:py-2 py-1 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-200 transition font-medium text-xs"
               >
-                <File className="w-3 h-3" />
-                <span className="hidden md:block">Autofill by Resume</span>
+                <File className="md:w-4 md:h-4 w-3 h-3" />
+                <span>Autofill by Resume</span>
               </button>
               <button
                 onClick={() => onEnterEdit()}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-blue text-white hover:shadow-lg transition font-medium text-xs"
+                className="flex items-center gap-2 px-3 md:px-4 md:py-2 py-1 rounded-xl bg-brand-blue text-white hover:shadow-lg transition font-medium text-xs"
               >
-                <Edit className="w-3 h-3" />
-                <span className="hidden md:block">Edit Profile</span>
+                <Edit className="md:w-4 md:h-4 w-3 h-3" />
+                <span>Edit Profile</span>
               </button>
             </div>
           </div>
@@ -151,18 +151,20 @@ export function ProfileLayout({
                   />
                 </div>
                 <div className="md:hidden block rounded-3xl border border-slate-200 bg-[#f5f5f5] p-4">
-                  <div className="flex justify-end gap-2 mb-3">
+                  <div className="grid grid-cols-2 gap-2 mb-3">
                     <button
                       onClick={() => setCvModalOpen(true)}
-                      className="h-10 w-10 flex items-center justify-center rounded-xl bg-white text-slate-600 border border-slate-200"
+                      className="flex min-w-0 items-center justify-center gap-1  rounded-xl border border-slate-200 bg-white px-2 py-2.5 text-xs font-medium leading-tight text-slate-600"
                     >
-                      <File className="w-4 h-4" />
+                      <File className="h-4 w-4 shrink-0" />
+                      <span className="text-center">Autofill by Resume</span>
                     </button>
                     <button
                       onClick={() => onEnterEdit()}
-                      className="h-10 w-10 flex items-center justify-center rounded-xl bg-brand-blue text-white"
+                      className="flex min-w-0 items-center justify-center gap-1 rounded-xl bg-brand-blue px-2 py-2.5 text-xs font-medium leading-tight text-white"
                     >
-                      <Edit className="w-4 h-4" />
+                      <Edit className="h-4 w-4 shrink-0" />
+                      <span className="text-center">Edit Profile</span>
                     </button>
                   </div>
                   <div className="md:hidden block">
@@ -195,12 +197,12 @@ export function ProfileLayout({
 
                   <p className="mt-4 text-center text-xs font-neue text-slate-900">
                     {mobileTitle}{" "}
-                    <span className="font-normal">
+                    {experienceText ? <span className="font-normal">
                       · {experienceText} yrs experience
-                    </span>
+                    </span> : ''}
                   </p>
 
-                <div className="mt-5 grid grid-cols-6 gap-3">
+                <div className="mt-5 grid grid-cols-6 gap-1 md:gap-3">
                     {mobileStats.map((item, index) => (
                       <div
                         key={item.label}
@@ -208,9 +210,9 @@ export function ProfileLayout({
                           index < 3 ? "col-span-2" : "col-span-3"
                         }`}
                       >
-                        <p className="text-xs text-slate-500">{item.label}</p>
-                        <div className="mt-1 flex items-center gap-1.5 text-xs text-slate-900 font-neue">
-                          {item.icon ? <item.icon className="w-5 h-5" /> : null}
+                        <p className="md:text-xs text-xxs text-slate-500">{item.label}</p>
+                        <div className="mt-1 flex items-center gap-1.5 md:text-xs text-xxs text-slate-900 font-neue">
+                          {item.icon ? <item.icon className="md:w-5 md:h-5 w-4 h-4" /> : null}
                           <span>{item.value}</span>
                         </div>
                       </div>

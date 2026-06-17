@@ -150,13 +150,10 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
         position="fixed"
         elevation={0}
         sx={{
-          //width: showSidebar
-//             ? { md: `calc(100% - ${240}px)` }
-//             :  {md: "96%", sm: "85%"},
-//        ml: showSidebar ? { md: `${DESKTOP_DRAWER_WIDTH}px` } : 0,
+          position: { xs: "static", md: "fixed" },
           width: { xs: "100%", md: showSidebar ? `calc(100% - 240px)` : "96%" },
           backgroundColor: "#F0F1F3",
-          paddingY:0.2,
+          paddingY: 0.2,
           borderBottom: "1px solid #D9D9D9",
           transition: "all 0.3s ease",
         }}
@@ -267,7 +264,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
             </Tooltip>
           </Box>
 
-          <Box sx={{ display: { xs: "flex", md: "none" } }}>
+          {/* <Box sx={{ display: { xs: "flex", md: "none" } }}>
             <IconButton
               size="large"
               color="inherit"
@@ -276,7 +273,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
             >
               <MoreVertIcon />
             </IconButton>
-          </Box>
+          </Box> */}
         </Toolbar>
 
         <Menu
