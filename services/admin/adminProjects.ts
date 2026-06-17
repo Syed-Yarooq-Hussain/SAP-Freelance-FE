@@ -14,6 +14,5 @@ export async function fetchAdminProjects(): Promise<
   if (res.status !== "success") {
     throw new Error(res.message || "Failed to load admin projects");
   }
-
   return res;
 }
