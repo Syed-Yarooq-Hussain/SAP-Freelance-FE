@@ -778,7 +778,7 @@ export default function ProfileEditPage({
   return (
     <div className="min-h-screen bg-[#F0EDE8EB] pb-28 font-manrope md:bg-white md:pb-12">
       {/* Header */}
-      <div className="sticky top-14 z-20 border-b border-slate-200 bg-transparent md:bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-transparent  md:supports-[backdrop-filter]:bg-white/85">
+      <div className="sticky top-0 md:top-14 z-20 border-b border-slate-200 bg-transparent md:bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-transparent  md:supports-[backdrop-filter]:bg-white/85">
         <div className="mx-auto px-6 py-4 flex items-center justify-between shadow-sm">
           <div className="flex items-center gap-2 md:gap-4">
             <div className="flex items-center">

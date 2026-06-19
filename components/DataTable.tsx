@@ -238,12 +238,25 @@ export default function DataTable<T extends GridValidRowModel>({
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
-                  height: 100,
-                  color: "text.secondary",
-                  fontWeight: 500,
+                  height: "100%",
+                  minHeight: 80,
+                  m: 1,
+                  borderRadius: "12px",
+                  border: "1px dashed",
+                  borderColor: "#cbd5e1",
+                  bgcolor: "#F0EDE8",
                 }}
               >
-                No data available
+                <Typography
+                  sx={{
+                    color: "#334155",
+                    fontWeight: 500,
+                    fontSize: "0.875rem",
+                    fontFamily: "var(--font-manrope), sans-serif",
+                  }}
+                >
+                  No data available
+                </Typography>
               </Box>
             ),
             ...slots,
@@ -279,8 +292,10 @@ export default function DataTable<T extends GridValidRowModel>({
             },
           }}
         /> : (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-gray-500">No {title} available</p>
+          <div className="w-full flex flex-col items-center justify-center py-8 min-h-[80px] bg-brand-yellow rounded-xl border border-dashed border-slate-300">
+            <p className="text-slate-700 text-sm font-manrope font-medium">
+              No {title} available
+            </p>
           </div>
         )}
       </Box>

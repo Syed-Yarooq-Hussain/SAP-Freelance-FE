@@ -11,7 +11,7 @@ const Banner = ({ onSignUpClick }: BannerProps) => {
   return (
     <section
       style={{ background: 'linear-gradient(135deg, #F8FAFC 0%, #FFFFFF 50%, #EFF6FF 100%)' }}
-      className="flex flex-col h-[80vh] max-h-[80vh] overflow-hidden"
+      className="flex flex-col h-[80vh] md:h-[88vh] min-h-[80vh] overflow-hidden"
     >
       <div className="container relative z-10 mx-auto flex-shrink-0 px-4 sm:px-6 pt-8 sm:pt-10 md:pt-12 lg:pt-14">
         <div className="flex flex-col items-center text-center max-w-4xl mx-auto">

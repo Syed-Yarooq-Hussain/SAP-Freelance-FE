@@ -62,23 +62,23 @@ export default function ProfilePage() {
     }
   }
 
-  const handleSave = async (data: unknown, apiPayload?: any) => {
-    setIsLoading(true)
-    try {
-      const res = await updateConsultantProfile(user?.id, apiPayload)
-      if (res.status === 'success') {
-        const consultantData = await getConsultantMeService()
-        if (consultantData?.data) {
-          dispatch(updateUser({ user: consultantData.data }))
-        }
-      }
-      setIsEditing(false)
-    } catch (error) {
-      console.error('Error saving profile:', error)
-    } finally {
-      setIsLoading(false)
-    }
-  }
+  // const handleSave = async (data: unknown, apiPayload?: any) => {
+  //   setIsLoading(true)
+  //   try {
+  //     const res = await updateConsultantProfile(user?.id, apiPayload)
+  //     if (res.status === 'success') {
+  //       const consultantData = await getConsultantMeService()
+  //       if (consultantData?.data) {
+  //         dispatch(updateUser({ user: consultantData.data }))
+  //       }
+  //     }
+  //     setIsEditing(false)
+  //   } catch (error) {
+  //     console.error('Error saving profile:', error)
+  //   } finally {
+  //     setIsLoading(false)
+  //   }
+  // }
 
    // Handle CV autofill data
    const handleCVAutofill = (cvData: any) => {

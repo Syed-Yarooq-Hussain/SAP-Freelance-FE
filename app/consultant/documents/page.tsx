@@ -19,13 +19,13 @@ export default function ConsultantDocumentsPage() {
           rows={consultantDocsRows}
         />
 
-        <div style={{ marginTop: 16 }} />
-        <Document
+        {/* <div style={{ marginTop: 16 }} /> */}
+        {/* <Document
           title="Contracts"
           columns={consultantDocumentColumns}
           rows={consultantDocumentRows}
           showRejectPopup
-        />
+        /> */}
       </div>
     </Sidebar>
   );
