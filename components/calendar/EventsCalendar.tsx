@@ -452,16 +452,20 @@ export default function EventsCalendar() {
                 borderRadius: '4px',
                 padding:    '1px 6px',
                 fontSize:   11,
+                minWidth:   0,
+                width:      '100%',
+                overflow:   'hidden',
               }}>
                 {showTopBar ? (
                   <div className='w-full absolute top-[-180%] left-0 h-[2px] rounded-xl bg-success'/>
                 ) : null}
-                {/* <span style={{
-                  width: 6, height: 6, borderRadius: '50%',
-                  background: '#22c55e', flexShrink: 0,
-                }} /> */}
-                <span style={{ color: '#16a34a', fontWeight: 500 }}>
-                  {formatCompactAvailabilityTime(slotStart)} - {formatCompactAvailabilityTime(slotEnd)} available
+                <span
+                  className="min-w-0 truncate font-medium text-[#16a34a]"
+                  style={{ fontSize: 11 }}
+                >
+                  {formatCompactAvailabilityTime(slotStart)} - {formatCompactAvailabilityTime(slotEnd)}
+                  <span className="hidden sm:inline"> available</span>
+                  <span className="inline sm:hidden"> Avl</span>
                 </span>
               </div>
             )

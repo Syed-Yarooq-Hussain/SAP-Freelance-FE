@@ -194,7 +194,7 @@ export function CalendarHeader({
         {/* Filter chips */}
         <div className="flex flex-wrap md:py-4 py-0 items-center border-y border-slate-100">
           <div className='px-2 flex gap-2'>
-            {(['all', 'client', 'interviews'] as const).map((filter) => (
+            {(['all', 'interviews'] as const).map((filter) => (
               <button
                 key={filter}
                 type="button"
@@ -208,9 +208,9 @@ export function CalendarHeader({
                 {filter === 'all' && (
                   <Filter className={`h-3.5 w-3.5 shrink-0 ${activeFilter === 'all' ? 'text-white' : 'text-brand-blue'}`} aria-hidden />
                 )}
-                {filter === 'client' && (
+                {/* {filter === 'client' && (
                   <span className={`h-2 w-2 shrink-0 rounded-full ${activeFilter === 'client' ? 'bg-white' : 'bg-brand-blue'}`} aria-hidden />
-                )}
+                )} */}
                 {filter === 'interviews' && (
                   <span className={`h-2 w-2 shrink-0 rounded-full ${activeFilter === 'interviews' ? 'bg-white' : 'bg-orange-500'}`} aria-hidden />
                 )}

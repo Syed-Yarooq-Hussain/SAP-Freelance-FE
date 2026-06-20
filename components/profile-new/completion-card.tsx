@@ -3,16 +3,12 @@
 import { CheckCircle2, Clock, Lock } from 'lucide-react'
 
 interface CompletionCardProps {
-  completionPercentage: number
+  completionPercentage: string
   onEdit: () => void
 }
 
 export function CompletionCard({ completionPercentage, onEdit }: CompletionCardProps) {
-  const tasks = [
-    { label: 'Profile Picture', completed: completionPercentage > 25 },
-    { label: 'Professional Summary', completed: completionPercentage > 50 },
-    { label: 'Work Experience', completed: completionPercentage > 75 },
-  ]
+  const completionPercentageNumber = Number(completionPercentage.replace('%', ''));
 
   return (
     <div className="bg-[#FFFDF5] rounded-xl border border-brand-blue p-4 sticky top-20">
@@ -29,13 +25,13 @@ export function CompletionCard({ completionPercentage, onEdit }: CompletionCardP
             Profile Completion
           </span>
           <span className="text-xl font-neue">
-            {completionPercentage}%
+            {completionPercentageNumber}%
           </span>
         </div>
         <div className="w-full bg-slate-200 rounded-full h-1 overflow-hidden">
           <div
             className="h-full bg-[#4A7AB5] transition-all duration-500"
-            style={{ width: `${completionPercentage}%` }}
+            style={{ width: `${completionPercentageNumber}%` }}
           />
         </div>
       </div>

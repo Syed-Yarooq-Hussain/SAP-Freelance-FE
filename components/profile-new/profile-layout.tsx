@@ -20,6 +20,7 @@ import ContactInfo from "./contactInfo";
 import UserInfo from "./userInfo";
 import CoreModules from "./coreModules";
 import ProfileSpecification from "./profile-specification";
+import { useConsultantDashboard } from "@/actions/consultants/useConsultantDashboard";
 
 interface ProfileLayoutProps {
   consultant: any;
@@ -33,6 +34,8 @@ export function ProfileLayout({
   setCvModalOpen,
   onEnterEdit,
 }: ProfileLayoutProps) {
+  const { data: dashboardData } = useConsultantDashboard();
+  const profileStrength = dashboardData?.profile?.profile_strength || 0;
   const user = consultant?.user;
   const profileBadges: string[] = consultant?.badges || [];
   const coreModules =
@@ -231,7 +234,7 @@ export function ProfileLayout({
           <div className="lg:col-span-1">
             {otherModules.length > 0 && <OtherModulesSection />}
             <CompletionCard
-              completionPercentage={completionPercentage}
+              completionPercentage={profileStrength.toString() || '0%'}
               onEdit={() => onEnterEdit()}
             />
           </div>

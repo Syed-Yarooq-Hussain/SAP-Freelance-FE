@@ -54,7 +54,7 @@ export function WelcomeHeader() {
 
   return (
     <div className="px-0 py-0 sm:p-5 md:px-12 md:py-4 bg-white">
-      <div style={{ backgroundImage: 'linear-gradient(360deg, #134481 -18.69%, #4A7AB5 89.76%)'}} className="md:hidden px-4 pt-5 pb-10 sm:px-6 sm:py-6 text-white shadow-custom">
+      <div style={{ backgroundImage: 'linear-gradient(360deg, #134481 -18.69%, #4A7AB5 89.76%)'}} className="md:hidden px-4 pt-10 pb-12 sm:px-6 sm:py-6 text-white shadow-custom">
         <div className="mx-auto max-w-3xl">
           {/* <div className="mb-4 flex items-center justify-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#2D5C9A] font-bold">
@@ -97,7 +97,7 @@ export function WelcomeHeader() {
             </div>
           ) : null}
 
-          <div className="mt-5 rounded-xl border border-white/20 bg-white/10 p-3 sm:p-4 backdrop-blur-sm">
+          <div className="md:block hidden mt-5 rounded-xl border border-white/20 bg-white/10 p-3 sm:p-4 backdrop-blur-sm">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-3 min-w-0">
                 <div className="h-8 w-8 rounded-2xl bg-white/15 flex items-center justify-center">
@@ -135,7 +135,7 @@ export function WelcomeHeader() {
           </div>
         </div>
 
-        <div className="flex shadow-custom items-center justify-center gap-2 bg-[#00000005] border border-brand-blue rounded-[7px] px-4 md:px-7 py-2 w-full lg:w-auto">
+        <div className="md:flex hidden shadow-custom items-center justify-center gap-2 bg-[#00000005] border border-brand-blue rounded-[7px] px-4 md:px-7 py-2 w-full lg:w-auto">
           <Clock className="w-8 h-8 flex-shrink-0 text-brand-blue" />
           <div className="text-center">
             <p className="text-xxs font-thin text-brand-blue tracking-wide">GMT TIME ZONE</p>

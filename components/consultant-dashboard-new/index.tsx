@@ -76,9 +76,9 @@ export default function DashboardPage({ data }: { data: DashboardData }) {
             </div>
 
             <div className='grid grid-cols-9 gap-2'>
-              <div className='col-span-full'>
+              {/* <div className='col-span-full'>
                 <DocumentsCard data={data} />
-              </div>
+              </div> */}
               {/* <div className="md:col-span-5 col-span-full">
                     <ProfileCard data={data}/>
                   </div> */}

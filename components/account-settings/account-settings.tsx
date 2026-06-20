@@ -199,8 +199,8 @@ export default function AccountSettings({
           onSubmit={handleSubmit(onFormSubmit)}
           className="grid grid-cols-1 md:grid-cols-7 gap-6 md:gap-8"
         >
-          <div className="col-span-2">
-            <div className="flex flex-col sm:items-start gap-6">
+          <div className="md:col-span-2 min-w-0 w-full">
+            <div className="flex flex-col items-center sm:items-start gap-6">
               <div className="shrink-0">
                 {profileImage ? (
                   <img
@@ -256,7 +256,7 @@ export default function AccountSettings({
             </div>
           </div>
 
-          <div className="col-span-5 space-y-6">
+          <div className="md:col-span-5 min-w-full space-y-6">
             <h2 className="text-base font-neue text-slate-900 tracking-tight">
               Basic Information
             </h2>
