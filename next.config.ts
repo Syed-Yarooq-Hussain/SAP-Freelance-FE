@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   images: {
     domains: [
       "sap-freelancer-platform.s3.eu-central-1.amazonaws.com",

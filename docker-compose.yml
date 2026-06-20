@@ -1,0 +1,20 @@
+services:
+  sap-freelance-fe:
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+        NEXT_PUBLIC_TEST_MODE: ${NEXT_PUBLIC_TEST_MODE:-false}
+        NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: ${NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
+        NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+        NEXTAUTH_URL: ${NEXTAUTH_URL}
+    image: sap-freelance-fe:latest
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      HOSTNAME: 0.0.0.0
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      NEXTAUTH_URL: ${NEXTAUTH_URL}
+    restart: unless-stopped
