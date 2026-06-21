@@ -146,7 +146,9 @@ export const profileEditSchema = yup.object().shape({
   core: yup
     .array()
     .of(yup.string())
+    .min(1, 'Select at least one core module')
     .max(2, 'You can select maximum 2 items')
+    .required('Select at least one core module')
     .default([]),
   others: yup.array().of(yup.string()).default([]),
   linkedin_url: yup.string().nullable(),
@@ -205,14 +207,15 @@ export const profileEditSchema = yup.object().shape({
     .min(0, 'Rate cannot be negative'),
   weekly_available_hours: yup
     .number()
-    .nullable()
     .transform((value, originalValue) => {
       if (originalValue === '' || originalValue == null) return null
       const parsed = Number(originalValue)
       return Number.isNaN(parsed) ? null : parsed
     })
+    .required('Weekly availability is required')
     .typeError('Hours must be a number')
-    .min(0, 'Hours cannot be negative'),
+    .min(5, 'Minimum 5 hours required')
+    .max(60, 'Weekly hours cannot exceed 60'),
   cv_url: yup.string().nullable(),
 
   // Arrays with conditional requirements
