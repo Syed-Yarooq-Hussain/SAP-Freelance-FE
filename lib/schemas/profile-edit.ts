@@ -140,6 +140,16 @@ const projectSchema = yup.object().shape({
   status: yup.string().nullable().oneOf(['Active', 'Completed', 'Paused']),
 })
 
+const PROFESSIONAL_HEADLINE_MAX_LENGTH = 100
+
+function getPlainTextLength(value?: string | null) {
+  return (value || '')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim().length
+}
+
 // Combined Profile Edit Schema
 export const profileEditSchema = yup.object().shape({
   expertise_level: yup.string().nullable(),
@@ -152,7 +162,14 @@ export const profileEditSchema = yup.object().shape({
     .default([]),
   others: yup.array().of(yup.string()).default([]),
   linkedin_url: yup.string().nullable(),
-  professional_headline: yup.string().nullable(),
+  professional_headline: yup
+    .string()
+    .nullable()
+    .test(
+      'professional-headline-max',
+      `Professional Headline cannot exceed ${PROFESSIONAL_HEADLINE_MAX_LENGTH} characters`,
+      (value) => getPlainTextLength(value) <= PROFESSIONAL_HEADLINE_MAX_LENGTH
+    ),
   industries: yup.string().nullable(),
   // Basic Information - from user object
   username: yup
@@ -184,7 +201,11 @@ export const profileEditSchema = yup.object().shape({
   clients_summary: yup
     .string()
     .nullable()
-    .max(2000, 'Professional summary cannot exceed 2000 characters'),
+    .test(
+      'professional-headline-max',
+      `Professional Headline cannot exceed ${PROFESSIONAL_HEADLINE_MAX_LENGTH} characters`,
+      (value) => getPlainTextLength(value) <= PROFESSIONAL_HEADLINE_MAX_LENGTH
+    ),
 
   // Experience & Rate - from freelancer profile
   experience: yup

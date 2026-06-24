@@ -39,6 +39,14 @@ const WEEK_DAYS = [
 
 const DAY_SHORT = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'] as const
 
+function formatDisplayDate(date: Date) {
+  return date.toLocaleDateString('en-US', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
+}
+
 function MobileWeekStrip({
   weeklyByDay,
 }: {
@@ -123,6 +131,11 @@ const Index = () => {
   const [availOpen, setAvailOpen] = useState(false)
   const [weeklyRows, setWeeklyRows] = useState<WeeklyRow[]>(WEEKLY_ROWS_INIT)
   const [applyToAllChecked, setApplyToAllChecked] = useState(false)
+  const weeklyAvailabilityStartDate = useMemo(() => {
+    const date = new Date()
+    date.setDate(date.getDate() + 1)
+    return formatDisplayDate(date)
+  }, [])
 
   const { data: meData } = useConsultantMe()
   const { mutateAsync: saveSchedule, isPending } = useSaveConsultantSchedule()
@@ -349,9 +362,14 @@ const Index = () => {
               <div className="fixed inset-0 z-[9999999] flex items-center justify-center bg-black/40 p-4">
                 <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white shadow-2xl">
                   <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200">
-                    <h3 className="text-sm font-semibold text-slate-900">
-                      Set Weekly Availability
-                    </h3>
+                    <div>
+                      <h3 className="text-sm font-semibold text-slate-900">
+                        Set Weekly Availability
+                      </h3>
+                      <p className="mt-1 text-xs text-slate-500">
+                        Updates will apply for the next 3 months, starting from {weeklyAvailabilityStartDate}.
+                      </p>
+                    </div>
                     <button
                       type="button"
                       onClick={closeWeeklyModal}
@@ -362,6 +380,10 @@ const Index = () => {
                   </div>
 
                   <div className="p-5 space-y-3">
+                    <div className="rounded-xl border border-sky-100 bg-sky-50 px-3 py-2.5 text-xs leading-5 text-slate-700">
+                      Your marked weekly availability will reset and update your calendar slots for the next 3 months from tomorrow onward.
+                    </div>
+
                     <label className="flex items-center gap-2 px-1">
                       <input
                         type="checkbox"

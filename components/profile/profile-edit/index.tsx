@@ -69,6 +69,15 @@ import SapModulesDropdown from "./SapModulesDropdown";
 
 const inputSurfaceClass =
   "bg-background-main border-slate-200 focus:ring-[#3088B7] focus:border-[#3088B7]";
+const PROFESSIONAL_HEADLINE_MAX_LENGTH = 100;
+
+function getPlainTextLength(value?: string | null) {
+  return (value || "")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/\s+/g, " ")
+    .trim().length;
+}
 
 function formatMonthYearForCard(value?: string | null) {
   if (!value) return "";
@@ -315,6 +324,29 @@ export default function ProfileEditPage({
       }
     },
     [setFocus],
+  );
+
+  const clientsSummaryLength = getPlainTextLength(watch("clients_summary"));
+
+  const handleClientsSummaryChange = useCallback(
+    (value: string, _delta: unknown, _source: unknown, editor: { getText: () => string }) => {
+      const textLength = editor.getText().trim().length;
+
+      if (textLength > PROFESSIONAL_HEADLINE_MAX_LENGTH) {
+        setError("clients_summary", {
+          type: "maxLength",
+          message: `Professional Headline cannot exceed ${PROFESSIONAL_HEADLINE_MAX_LENGTH} characters`,
+        });
+        return;
+      }
+
+      clearErrors("clients_summary");
+      setValue("clients_summary", value, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+    },
+    [clearErrors, setError, setValue],
   );
 
   useEffect(() => {
@@ -1283,17 +1315,14 @@ export default function ProfileEditPage({
                           style={{ borderRadius: "10px" }}
                           theme="snow"
                           value={watch("clients_summary") || ""}
-                          onChange={(value) => {
-                            console.log("clients_summary", value);
-                            setValue("clients_summary", value);
-                          }}
+                          onChange={handleClientsSummaryChange}
                         />
                         <p className="text-xs text-slate-500 mt-1">
                           This appears right below your name - keep it punchy
                           and specific
                         </p>
                         <div className="absolute top-2 right-3 text-xs text-slate-500">
-                          {watch("clients_summary")?.length || 0} / 100
+                          {clientsSummaryLength} / {PROFESSIONAL_HEADLINE_MAX_LENGTH}
                         </div>
                       </div>
                       {errors.clients_summary?.message && (
