@@ -29,15 +29,15 @@ export function Header({ onLoginClick, onSignUpClick, isAuthenticated = false }:
         <nav className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-lg border border-slate-100 px-4 md:px-6 py-3">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <Link href="/" className="flex-shrink-0">
-              <Image
+            <div className="flex-shrink-0">
+              {/* <Image
                 src="/vx9-logo-02.png"
                 alt="Vertex9 Systems"
                 width={140}
                 height={40}
                 className="h-8 md:h-10 w-auto lg:hidden block"
-              />
-            </Link>
+              /> */}
+            </div>
 
             {/* Desktop Navigation */}
             <div className="hidden xl:flex items-center gap-1 2xl:gap-2">

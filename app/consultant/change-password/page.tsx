@@ -49,7 +49,7 @@ const ChangePasswordPage = () => {
   return (
     <Sidebar>
       <div className="min-h-[60vh] flex flex-col items-center justify-center bg-white  border border-slate-200 p-6 md:p-8 font-manrope">
-        <div className="w-full max-w-5xl mx-auto text-center mb-8">
+        <div className="w-full max-w-5xl mx-auto mb-8">
           <h1 className="text-2xl md:text-3xl font-neue text-slate-900 tracking-tight">
             Change Password
           </h1>
