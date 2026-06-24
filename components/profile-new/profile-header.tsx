@@ -94,7 +94,7 @@ export function ProfileHeader({
   onEnterEdit: (opts?: { scrollToClientsSummary?: boolean }) => void;
 }) {
   const [viewMore, setViewMore] = useState(false);
-  const user = useAppSelector((state) => state?.user?.user);
+  const user = useAppSelector((state:any) => state?.user?.user);
   const summaryHtml = user?.clients_summary || "";
   const summaryText = summaryHtml.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
   const shouldShowSummaryToggle = summaryText.length > 250;
@@ -111,7 +111,7 @@ export function ProfileHeader({
           user={user?.user}
           badges={badges}
         />
-        <CoreModules coreModules={coreModules} />
+        {/* <CoreModules coreModules={coreModules} /> */}
         <ProfileSpecification user={user} />
       </div>
 

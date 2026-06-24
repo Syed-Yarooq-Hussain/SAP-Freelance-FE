@@ -1,7 +1,6 @@
 import React from 'react'
 
 const CoreModules = ({ coreModules }: { coreModules: string[] }) => {
-    console.log(coreModules);
   return (
     <div>
     <div className="mb-4">

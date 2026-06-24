@@ -9,10 +9,29 @@ export const accountSettingsSchema = yup.object().shape({
   phone: yup.string().optional(),
   linkedin_profile_url: yup
     .string()
-    .transform((v) => (v === '' ? undefined : v))
-    .url('Please enter a valid URL')
-    .optional()
-    .nullable(),
+    .required('LinkedIn profile URL is required')
+    .transform((v) => {
+      const trimmed = v?.trim();
+      return trimmed ? trimmed : null;
+    })
+    .test(
+      'linkedin-url',
+      'Please enter a valid LinkedIn profile URL',
+      (value) => {
+        if (!value) return true;
+
+        const withProtocol = /^https?:\/\//i.test(value)
+          ? value
+          : `https://${value}`;
+
+        try {
+          const url = new URL(withProtocol);
+          return /(^|\.)linkedin\.com$/i.test(url.hostname);
+        } catch {
+          return false;
+        }
+      },
+    ),
 })
 
 export type AccountSettingsFormData = yup.InferType<typeof accountSettingsSchema>

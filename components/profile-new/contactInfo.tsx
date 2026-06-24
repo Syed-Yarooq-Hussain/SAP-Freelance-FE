@@ -8,10 +8,10 @@ const ContactInfo = ({ email, phone }: { email?: string, phone?: string } ) => {
       <p className="text-xs font-bod flex justify-start items-center gap-2 py-3 px-2 shadow-custom rounded-lg text-left">
         <Mail className="w-4 h-4 shrink-0" /> {email || "-"}
       </p>
-      <p className="text-xs font-bod flex justify-start items-center gap-2 py-3 px-2 shadow-custom rounded-lg text-left">
+      {phone &&<p className="text-xs font-bod flex justify-start items-center gap-2 py-3 px-2 shadow-custom rounded-lg text-left">
         <Phone className="w-4 h-4 shrink-0" />
         {phone || "-"}
-      </p>
+      </p>}
     </div>
   );
 };

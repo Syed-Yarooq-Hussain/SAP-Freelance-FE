@@ -327,7 +327,7 @@ export default function AccountSettings({
                 </label>
                 <input
                   {...register("linkedin_profile_url")}
-                  type="url"
+                  type="text"
                   placeholder="https://linkedin.com/in/yourprofile"
                   className={inputClass}
                 />
