@@ -162,6 +162,8 @@ import { useConsultantCalendar } from '@/actions/consultants/useConsultantCalend
 import { useMemo, useState } from 'react'
 import { useCalendar } from './CalendarContext'
 
+type CalendarFilter = 'all' | 'client' | 'interviews'
+
 interface Slot { start_time: string; end_time: string }
 interface CalendarEvent {
   id: number; title: string; type: string
@@ -173,14 +175,14 @@ interface Day {
   events: CalendarEvent[]
 }
 
-function transformApiData(days: Day[]) {
+function transformApiData(days: Day[], filter: CalendarFilter) {
   const fcEvents: object[] = []
 
   days?.forEach((day) => {
 
     // 1. Available slot → shows as "09:00 Available" green text event in month view
     //    AND green background band in week/day view
-    if (day.availability.available && day.availability.slots.length > 0) {
+    if (filter === 'all' && day.availability.available && day.availability.slots.length > 0) {
       day.availability.slots.forEach((slot, idx) => {
 
         // Background band for week/day view
@@ -212,6 +214,9 @@ function transformApiData(days: Day[]) {
 
     // 2. Events
     day.events.forEach((event) => {
+      if (filter === 'interviews' && event.type !== 'INTERVIEW') return
+      if (filter === 'client' && event.type === 'INTERVIEW') return
+
       const isInterview = event.type === 'INTERVIEW'
       fcEvents.push({
         id:    String(event.id),
@@ -234,7 +239,7 @@ function transformApiData(days: Day[]) {
   return fcEvents
 }
 
-export default function EventsCalendar() {
+export default function EventsCalendar({ filter }: { filter: CalendarFilter }) {
   const { calendarRef, setActiveView, setCurrentTitle } = useCalendar()
 
   const goToDayView = (date: Date, scrollTime?: string) => {
@@ -252,7 +257,19 @@ export default function EventsCalendar() {
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1)
   const [currentYear,  setCurrentYear]  = useState(new Date().getFullYear())
   const { data, isLoading } = useConsultantCalendar(currentMonth- 1, currentYear)
-  const events = useMemo(() => transformApiData(data?.days as any ?? []), [data])
+  const events = useMemo(
+    () => transformApiData(data?.days as any ?? [], filter),
+    [data, filter],
+  )
+  const hasInterviewEvents = useMemo(
+    () =>
+      Boolean(
+        (data?.days as Day[] | undefined)?.some((day) =>
+          day.events?.some((event) => event.type === 'INTERVIEW'),
+        ),
+      ),
+    [data],
+  )
 
   const formatCompactAvailabilityTime = (value?: string) => {
     if (!value) return ''
@@ -417,6 +434,12 @@ export default function EventsCalendar() {
           </div>
         </div>
       )}
+
+      {filter === 'interviews' && !isLoading && !hasInterviewEvents ? (
+        <div className="mb-3 rounded-xl border border-dashed border-slate-300 bg-white px-4 py-3 text-center text-sm font-medium text-slate-500">
+          No interviews scheduled for this month.
+        </div>
+      ) : null}
 
       <FullCalendar
         ref={calendarRef}

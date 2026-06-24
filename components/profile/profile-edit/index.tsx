@@ -180,8 +180,10 @@ const InputField = ({
 }: any) => (
   <div>
     <label className="flex text-xs font-manrope font-medium text-slate-700 mb-2 items-center justify-between">
-      <span> {label} </span>
-      {required && <span className="text-red-500 ml-1">*</span>}
+      <span>
+        {label}
+        {required && <span className="text-red-500 ml-1">*</span>}
+      </span>
       {optional && (
         <span className="text-xs text-light-grey ml-1">Optional</span>
       )}
@@ -373,6 +375,7 @@ export default function ProfileEditPage({
   const cvUrl = watch("cv_url");
   const coreModules = watch("core");
   const otherModules = watch("others");
+  const weeklyAvailableHours = watch("weekly_available_hours");
   const usernameW = watch("username");
   const emailW = watch("email");
   const { data: sapModulesData } = useSapModules();
@@ -383,6 +386,18 @@ export default function ProfileEditPage({
   const headerInitial =
     (usernameW || nestedUser?.username || "?").trim().charAt(0).toUpperCase() ||
     "?";
+  const hasWeeklyAvailabilityChanged = useMemo(() => {
+    const initial = defaultValues.weekly_available_hours;
+    const current = weeklyAvailableHours;
+    const isBlank = (value: unknown) =>
+      value === null || value === undefined || String(value).trim() === "";
+
+    if (isBlank(initial)) {
+      return !isBlank(current);
+    }
+
+    return Number(initial) !== Number(current);
+  }, [defaultValues.weekly_available_hours, weeklyAvailableHours]);
 
   // const handlePhotoSelected = async (
   //   e: React.ChangeEvent<HTMLInputElement>,
@@ -1747,12 +1762,31 @@ export default function ProfileEditPage({
             />
             <ConfirmDeleteModal
               isOpen={saveConfirmOpen}
-              title="Save changes"
-              message="Are you sure you want to save these profile changes?"
-              confirmLabel="Save"
+              title={
+                hasWeeklyAvailabilityChanged
+                  ? "Update weekly availability?"
+                  : "Save changes"
+              }
+              message={
+                hasWeeklyAvailabilityChanged
+                  ? "Changing weekly availability will reset your calendar availability. Existing calendar slots may need to be set again. Are you sure you want to continue?"
+                  : "Are you sure you want to save these profile changes?"
+              }
+              confirmLabel={
+                hasWeeklyAvailabilityChanged ? "Yes, update" : "Save"
+              }
               cancelLabel="Cancel"
               variant="primary"
-              onCancel={() => setSaveConfirmOpen(false)}
+              onCancel={() => {
+                if (hasWeeklyAvailabilityChanged) {
+                  setValue(
+                    "weekly_available_hours",
+                    defaultValues.weekly_available_hours,
+                    { shouldValidate: true, shouldDirty: true },
+                  );
+                }
+                setSaveConfirmOpen(false);
+              }}
               onConfirm={() => {
                 void handleSubmit(
                   (data) => {

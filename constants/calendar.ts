@@ -41,7 +41,7 @@ export const WEEKLY_ROWS_INIT = [
   { dow: 1, label: "MON", enabled: true, startTime: "", endTime: "" },
   { dow: 2, label: "TUE", enabled: true, startTime: "", endTime: "" },
   { dow: 3, label: "WED", enabled: true, startTime: "", endTime: "" },
-  { dow: 4, label: "THU", enabled: false, startTime: "", endTime: "" },
+  { dow: 4, label: "THU", enabled: true, startTime: "", endTime: "" },
   { dow: 5, label: "FRI", enabled: true, startTime: "", endTime: "" },
   { dow: 6, label: "SAT", enabled: false, startTime: "", endTime: "" },
   { dow: 0, label: "SUN", enabled: false, startTime: "", endTime: "" },

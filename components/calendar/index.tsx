@@ -25,6 +25,8 @@ type WeeklyRow = {
   endTime: string
 }
 
+type CalendarFilter = 'all' | 'client' | 'interviews'
+
 const WEEK_DAYS = [
   { value: 'monday', label: 'Monday' },
   { value: 'tuesday', label: 'Tuesday' },
@@ -116,6 +118,7 @@ const Index = () => {
   const router = useRouter()
   const {toast} = useToast();
   const {activeView} = useCalendar();
+  const [activeFilter, setActiveFilter] = useState<CalendarFilter>('all')
   const [showCustomAvailability, setShowCustomAvailability] = useState(false)
   const [availOpen, setAvailOpen] = useState(false)
   const [weeklyRows, setWeeklyRows] = useState<WeeklyRow[]>(WEEKLY_ROWS_INIT)
@@ -137,8 +140,11 @@ const Index = () => {
   const mapWeeklyFromMe = (meWeekly: WeeklySchedule[]): WeeklyRow[] => {
     const byDow = new Map<number, WeeklyRow>()
     meWeekly.forEach((d) => {
+      const dow = DAY_MAP.findIndex(
+        (day) => day.toLowerCase() === String(d.day || '').toLowerCase(),
+      )
       const row: WeeklyRow = {
-        dow: DAY_MAP.indexOf(d.day),
+        dow,
         label: (d.day || '').slice(0, 3).toUpperCase(),
         enabled: Boolean(d.active),
         startTime: d.slot?.[0]?.start ?? '',
@@ -178,6 +184,14 @@ const Index = () => {
 
   const canApplyToAll = Boolean(sourceTimeRow)
 
+  const getSavedWeeklyRows = () => {
+    if (weeklyFromMe.length > 0) {
+      return mapWeeklyFromMe(weeklyFromMe)
+    }
+
+    return (WEEKLY_ROWS_INIT as WeeklyRow[]).map((r) => ({ ...r }))
+  }
+
   const handleApplyToAll = (checked: boolean) => {
     setApplyToAllChecked(checked)
     if (!checked || !sourceTimeRow) return
@@ -204,13 +218,15 @@ const Index = () => {
   )
 
   const openWeeklyModal = () => {
-    if (weeklyFromMe.length > 0) {
-      setWeeklyRows(mapWeeklyFromMe(weeklyFromMe))
-    } else {
-      setWeeklyRows((WEEKLY_ROWS_INIT as WeeklyRow[]).map((r) => ({ ...r })))
-    }
+    setWeeklyRows(getSavedWeeklyRows())
     setApplyToAllChecked(false)
     setAvailOpen(true)
+  }
+
+  const closeWeeklyModal = () => {
+    setWeeklyRows(getSavedWeeklyRows())
+    setApplyToAllChecked(false)
+    setAvailOpen(false)
   }
 
   const handleAvailSubmit = async () => {
@@ -308,20 +324,21 @@ const Index = () => {
             </div>
             <div>
               <CalendarHeader
+                onFilterChange={setActiveFilter}
                 onAddAvailability={openWeeklyModal}
                 onAddCustomAvailability={() => setShowCustomAvailability(true)}
               />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-7 gap-4 md:px-2 pt-2 px-3">
               <div className="col-span-1 md:col-span-2 pt-2 pl-0 md:pl-2">
-                {activeView === 'dayGridMonth' && <CalendarEvents />}
+                {activeView === 'dayGridMonth' && <CalendarEvents filter={activeFilter} />}
                 {activeView !== 'dayGridMonth' && <MobileWeekStrip weeklyByDay={weeklyByDay}/>}
                 <div className="mt-2 md:block hidden">
                   <UpcomingEvents />
                 </div>
               </div>
               <div className="col-span-1 md:col-span-5 min-h-[50vh]">
-                <EventsCalendar />
+                <EventsCalendar filter={activeFilter} />
               </div>
               <div className="md:hidden block">
                 <UpcomingEvents />
@@ -337,7 +354,7 @@ const Index = () => {
                     </h3>
                     <button
                       type="button"
-                      onClick={() => setAvailOpen(false)}
+                      onClick={closeWeeklyModal}
                       className="rounded-md px-2 py-1 text-slate-500 hover:bg-slate-100 hover:text-slate-800"
                     >
                       ×
@@ -419,7 +436,7 @@ const Index = () => {
                   <div className="flex items-center justify-end gap-2 px-5 py-4 border-t border-slate-200">
                     <button
                       type="button"
-                      onClick={() => setAvailOpen(false)}
+                      onClick={closeWeeklyModal}
                       className="rounded-lg border border-slate-300 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50"
                     >
                       Cancel
