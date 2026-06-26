@@ -17,7 +17,6 @@ const navLinks = [
   { label: "How We're different", href: "#how-different" },
   { label: "Expert Profile Builder", href: "#team-builder" },
   { label: "Why Choose Us", href: "#why-choose" },
-  { label: "Book a Demo", href: "#book-demo" },
 ]
 
 export function Header({ onLoginClick, onSignUpClick, isAuthenticated = false }: HeaderProps) {

@@ -69,15 +69,6 @@ import SapModulesDropdown from "./SapModulesDropdown";
 
 const inputSurfaceClass =
   "bg-background-main border-slate-200 focus:ring-[#3088B7] focus:border-[#3088B7]";
-const PROFESSIONAL_HEADLINE_MAX_LENGTH = 100;
-
-function getPlainTextLength(value?: string | null) {
-  return (value || "")
-    .replace(/<[^>]*>/g, " ")
-    .replace(/&nbsp;/g, " ")
-    .replace(/\s+/g, " ")
-    .trim().length;
-}
 
 function formatMonthYearForCard(value?: string | null) {
   if (!value) return "";
@@ -326,27 +317,14 @@ export default function ProfileEditPage({
     [setFocus],
   );
 
-  const clientsSummaryLength = getPlainTextLength(watch("clients_summary"));
-
   const handleClientsSummaryChange = useCallback(
-    (value: string, _delta: unknown, _source: unknown, editor: { getText: () => string }) => {
-      const textLength = editor.getText().trim().length;
-
-      if (textLength > PROFESSIONAL_HEADLINE_MAX_LENGTH) {
-        setError("clients_summary", {
-          type: "maxLength",
-          message: `Professional Headline cannot exceed ${PROFESSIONAL_HEADLINE_MAX_LENGTH} characters`,
-        });
-        return;
-      }
-
-      clearErrors("clients_summary");
+    (value: string) => {
       setValue("clients_summary", value, {
         shouldValidate: true,
         shouldDirty: true,
       });
     },
-    [clearErrors, setError, setValue],
+    [setValue],
   );
 
   useEffect(() => {
@@ -1322,7 +1300,7 @@ export default function ProfileEditPage({
                           and specific
                         </p>
                         <div className="absolute top-2 right-3 text-xs text-slate-500">
-                          {clientsSummaryLength} / {PROFESSIONAL_HEADLINE_MAX_LENGTH}
+                          {watch("clients_summary")?.length || 0}
                         </div>
                       </div>
                       {errors.clients_summary?.message && (
