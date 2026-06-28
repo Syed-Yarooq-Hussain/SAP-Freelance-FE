@@ -906,6 +906,7 @@ export default function ProfileEditPage({
                       <SapModulesDropdown
                         data={sapOtherModulesData?.data || []}
                         values={coreModules || []}
+                        maxSelections={2}
                         onChange={(selected) => {
                           if (selected.length > 2) {
                             setError("core", {
