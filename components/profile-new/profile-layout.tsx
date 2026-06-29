@@ -236,6 +236,15 @@ export function ProfileLayout({
             <CompletionCard
               completionPercentage={profileStrength.toString() || '0%'}
               onEdit={() => onEnterEdit()}
+              profileEssentialsCompleted={
+                dashboardData?.profile?.profile_essentials_completed
+              }
+              basicInformationCompleted={
+                dashboardData?.profile?.basic_information_completed
+              }
+              professionalInformationCompleted={
+                dashboardData?.profile?.professional_information_completed
+              }
             />
           </div>
 
