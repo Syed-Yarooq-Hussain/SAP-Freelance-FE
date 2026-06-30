@@ -5,16 +5,26 @@ import { updatePassword } from "@/services/user";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
-  changePasswordSchema,
+  createChangePasswordSchema,
   type ChangePasswordFormData,
 } from "@/lib/schemas/change-password";
 import { PasswordInput } from "@/components/homepage/ui/PasswordInput";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useToast } from "@/providers/ToastProvider";
+import { useAppSelector } from "@/lib/store/hook";
 
 const ChangePasswordPage = () => {
   const { toast } = useToast();
+  const user = useAppSelector((state) => state.user.user);
+  const isLoginFromLinkedin = Boolean(
+    user?.loginWithLinkedin ?? user?.user?.loginWithLinkedin
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const validationSchema = useMemo(
+    () => createChangePasswordSchema(!isLoginFromLinkedin),
+    [isLoginFromLinkedin]
+  );
 
   const {
     control,
@@ -22,7 +32,7 @@ const ChangePasswordPage = () => {
     reset,
     formState: { errors },
   } = useForm<ChangePasswordFormData>({
-    resolver: yupResolver(changePasswordSchema) as never,
+    resolver: yupResolver(validationSchema) as never,
     defaultValues: {
       oldPassword: "",
       newPassword: "",
@@ -34,7 +44,7 @@ const ChangePasswordPage = () => {
     setIsSubmitting(true);
     try {
       await updatePassword({
-        oldPassword: data.oldPassword,
+        ...(isLoginFromLinkedin ? {} : { oldPassword: data.oldPassword }),
         newPassword: data.newPassword,
       });
       toast("Password updated successfully", "success");
@@ -63,21 +73,27 @@ const ChangePasswordPage = () => {
             onSubmit={handleSubmit(onSubmit)}
             className="space-y-5 w-full font-manrope"
           >
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
-              <Controller
-                name="oldPassword"
-                control={control}
-                render={({ field }) => (
-                  <PasswordInput
-                    {...field}
-                    label="Current password"
-                    placeholder="Enter your current password"
-                    error={errors.oldPassword?.message}
-                    required
-                    autoComplete="current-password"
-                  />
-                )}
-              />
+            <div
+              className={`grid grid-cols-1 gap-4 items-start ${
+                isLoginFromLinkedin ? "md:grid-cols-2" : "md:grid-cols-3"
+              }`}
+            >
+              {!isLoginFromLinkedin && (
+                <Controller
+                  name="oldPassword"
+                  control={control}
+                  render={({ field }) => (
+                    <PasswordInput
+                      {...field}
+                      label="Current password"
+                      placeholder="Enter your current password"
+                      error={errors.oldPassword?.message}
+                      required
+                      autoComplete="current-password"
+                    />
+                  )}
+                />
+              )}
 
               <Controller
                 name="newPassword"

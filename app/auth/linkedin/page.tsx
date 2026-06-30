@@ -63,7 +63,11 @@ export default function LinkedInCallback() {
           try {
             const consultantData = await getConsultantMeService();
             if (consultantData?.data) {
-              dispatch(updateUser({ user: consultantData.data }));
+              dispatch(
+                updateUser({
+                  user: { ...consultantData.data, loginWithLinkedin: true },
+                })
+              );
             }
           } catch (error) {
             console.error('Failed to fetch consultant profile:', error);

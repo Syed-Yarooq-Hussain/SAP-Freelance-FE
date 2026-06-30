@@ -3,9 +3,9 @@ import { getCachedSession } from "./sessionCache";
 import { request } from "@/utils/request";
 import { API_ROUTES } from "@/utils/api_routes";
 
-interface IChangePassword{
-    oldPassword: string;
-    newPassword: string;
+interface IChangePassword {
+  oldPassword?: string;
+  newPassword: string;
 }
 
 export async function updatePassword(data: IChangePassword): Promise<ApiResponse<any>> {
