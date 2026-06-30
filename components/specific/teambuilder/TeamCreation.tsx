@@ -519,6 +519,7 @@ export default function TeamCreation({
             mt={2}
             flexWrap="wrap"
             gap={2}
+            px={2}
           >
             {selectedCount > 0 ? (
               <Typography
@@ -534,7 +535,7 @@ export default function TeamCreation({
               </Typography>
             )}
 
-            <Box display="flex" alignItems="center" px={2} gap={1.5}>
+            <Box display="flex" alignItems="center" gap={1.5}>
               {!isProjectAlreadyCreated ? (
                 <AppButton
                   label="Add to Shortlist"
