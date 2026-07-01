@@ -1,14 +1,29 @@
 'use client'
 
-import { CheckCircle2, Clock, Lock } from 'lucide-react'
+import { Check, Clock, X } from 'lucide-react'
 
 interface CompletionCardProps {
   completionPercentage: string
   onEdit: () => void
+  basicInformationCompleted?: boolean
+  professionalInformationCompleted?: boolean
+  profileEssentialsCompleted?: boolean
 }
 
-export function CompletionCard({ completionPercentage, onEdit }: CompletionCardProps) {
-  const completionPercentageNumber = Number(completionPercentage.replace('%', ''));
+export function CompletionCard({
+  completionPercentage,
+  onEdit,
+  basicInformationCompleted = false,
+  professionalInformationCompleted = false,
+  profileEssentialsCompleted = false,
+}: CompletionCardProps) {
+  const completionPercentageNumber = Number(completionPercentage.replace('%', ''))
+
+  const tasks = [
+    { label: 'Profile Essentials', completed: profileEssentialsCompleted },
+    { label: 'Basic Information', completed: basicInformationCompleted },
+    { label: 'Professional Information', completed: professionalInformationCompleted },
+  ]
 
   return (
     <div className="bg-[#FFFDF5] rounded-xl border border-brand-blue p-4 sticky top-20">
@@ -36,18 +51,14 @@ export function CompletionCard({ completionPercentage, onEdit }: CompletionCardP
         </div>
       </div>
 
-      {/* <div className="space-y-2 mb-4">
+      <div className="space-y-2 mb-4">
         {tasks.map((task) => (
-          <div key={task.label} className="flex items-center gap-2">
-            <CheckCircle2
-              className={`w-4 h-4 ${
-                task.completed
-                  ? 'text-emerald-500'
-                  : 'text-slate-300'
-              }`}
-            />
+          <div
+            key={task.label}
+            className="flex items-center justify-between gap-3"
+          >
             <span
-              className={`text-sm ${
+              className={`text-xs font-manrope ${
                 task.completed
                   ? 'text-slate-900 font-medium'
                   : 'text-slate-500'
@@ -55,9 +66,18 @@ export function CompletionCard({ completionPercentage, onEdit }: CompletionCardP
             >
               {task.label}
             </span>
+            {task.completed ? (
+              <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-emerald-500">
+                <Check className="h-2 w-2 text-white" strokeWidth={3} />
+              </span>
+            ) : (
+              <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-red-400">
+                <X className="h-2 w-2 text-white" strokeWidth={3} />
+              </span>
+            )}
           </div>
         ))}
-      </div> */}
+      </div>
 
       <button onClick={onEdit} className="w-fit px-4 text-xs bg-[#4A7AB5] text-white font-semibold py-2 rounded-xl hover:shadow-lg transition-all">
         Finish Now

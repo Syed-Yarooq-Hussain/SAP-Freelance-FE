@@ -190,7 +190,7 @@ function transformApiData(days: Day[], filter: CalendarFilter) {
           start:      `${day.date}T${slot.start_time}:00`,
           end:        `${day.date}T${slot.end_time}:00`,
           display:    'background',
-          color:      '#dcfce7',
+          color:      '#BBF7D0',
           classNames: ['fc-avail-bg'],
         })
 
@@ -417,7 +417,7 @@ export default function EventsCalendar({ filter }: { filter: CalendarFilter }) {
 
         /* ─── Green background band (week/day) ──────────────── */
         .fc-shell .fc-avail-bg {
-          background-color: #dcfce7 !important;
+          background-color: #BBF7D0 !important;
           opacity: 0.6 !important;
         }
 
@@ -471,7 +471,7 @@ export default function EventsCalendar({ filter }: { filter: CalendarFilter }) {
                 display:    'flex',
                 alignItems: 'center',
                 gap:        4,
-                backgroundColor: '#E8F0E7',
+                backgroundColor: '#BBF7D0',
                 borderRadius: '4px',
                 padding:    '1px 6px',
                 fontSize:   11,
@@ -497,8 +497,6 @@ export default function EventsCalendar({ filter }: { filter: CalendarFilter }) {
           const isInterview  = type === 'INTERVIEW'
           const accentColor  = isInterview ? '#E8643A' : '#3b82f6'
           const textColor    = isInterview ? '#E8643A' : '#1e40af'
-          const labelBg      = isInterview ? '#f97316' : '#3b82f6'
-          const labelText    = isInterview ? 'Interview' : 'Client'
 
           // ── Month view pill ────────────────────────────────
           if (isMonth) {

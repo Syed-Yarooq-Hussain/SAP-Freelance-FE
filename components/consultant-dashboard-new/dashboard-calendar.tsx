@@ -551,7 +551,7 @@ export function DashboardCalendar({
                             ? "text-gray-700"
                             : "text-gray-300"
                     }
-                    ${!isSelected && hasAvailability && !hasEvent ? "bg-green-100 text-green-700 border border-green-300 hover:bg-green-200" : ""}
+                    ${!isSelected && hasAvailability && !hasEvent ? "bg-green-200 text-green-700 border border-green-300 hover:bg-green-200" : ""}
                     ${!isSelected && hasEvent ? "bg-brand-blue text-white hover:opacity-80" : ""}
                     ${
                       !isSelected && !hasEvent && onDateClick

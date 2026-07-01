@@ -31,5 +31,8 @@ export interface DashboardData {
       avatar: string;
       created_at: string | null;
       modules: string[];
+      basic_information_completed?: boolean;
+      professional_information_completed?: boolean;
+      profile_essentials_completed?: boolean;
     };
   };

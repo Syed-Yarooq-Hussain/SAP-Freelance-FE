@@ -11,7 +11,7 @@ export const NextPaymentCard: React.FC<{ data: DashboardData }> = ({ data }) => 
       <div className='flex-1 md:max-w-[80%]'>
         <p className="text-xs font-thin text-brand-blue mb-2 font-neue">Next Payment</p>
         <div className="flex items-center justify-between">
-          <h2 className="text-4xl text-brand-blue font-neue">${data?.payment?.next_payment || 0}</h2>
+          <h2 className="text-xl text-brand-blue font-neue">${data?.payment?.next_payment || 0}</h2>
         </div>
       </div>
       <CreditCard className="w-6 h-6 text-brand-blue" />

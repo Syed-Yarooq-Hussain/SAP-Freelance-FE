@@ -15,6 +15,7 @@ interface SapModulesDropdownProps {
   values: string[];
   onChange: (ids: string[]) => void;
   panelZIndex?: number;
+  maxSelections?: number;
 }
 
 export default function SapModulesDropdown({
@@ -22,6 +23,7 @@ export default function SapModulesDropdown({
   values,
   onChange,
   panelZIndex = 300,
+  maxSelections,
 }: SapModulesDropdownProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -102,9 +104,18 @@ export default function SapModulesDropdown({
       const next = new Set(values);
       if (checked) next.add(id);
       else next.delete(id);
-      onChange([...next]);
+      const nextValues = [...next];
+      onChange(nextValues);
+      if (
+        maxSelections &&
+        checked &&
+        nextValues.length === maxSelections
+      ) {
+        setOpen(false);
+        setSearch("");
+      }
     },
-    [values, onChange]
+    [values, onChange, maxSelections]
   );
 
   const removeModule = (id: string) => {
