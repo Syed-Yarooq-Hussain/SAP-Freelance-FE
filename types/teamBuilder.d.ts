@@ -42,6 +42,9 @@ export type TeamCreationProps = {
 
 export interface TeamBuilderRow {
   id: string | number;
+  name?: string;
+  country?: string;
+  projectName?: string;
   coremodules: string;
   othersmodules: string;
   experience: string;
@@ -50,7 +53,10 @@ export interface TeamBuilderRow {
   request: number;
   error?: string;
   avatar?: string;
-  working_schedule?: any
+  working_schedule?: any;
+  badges?: string[];
+  rateValue?: number;
+  experienceYears?: number | null;
 }
 
 export interface ITask {
@@ -266,12 +272,16 @@ type Weekday = NonNullable<
   NonNullable<TeamBuilderRow["working_schedule"]>["weekdays"]
 >[number];
 
-type ClientConsultantDTO = {
+export type ClientConsultantDTO = {
   id: string | number;
   name?: string;
+  country?: string;
   experience?: number;
   rate?: number;
   weekly_available_hours?: number;
+  badges?: string[];
+  project_name?: string;
+  project_id?: string | number;
   modules?: {
     core?: string;
     others?: string;

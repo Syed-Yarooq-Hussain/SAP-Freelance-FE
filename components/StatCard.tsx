@@ -1,7 +1,10 @@
 "use client";
 
+import colors from "@/utils/styles/colors";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
 import BallotIcon from "@mui/icons-material/Ballot";
+import CreditCardIcon from "@mui/icons-material/CreditCard";
 import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import GroupWorkIcon from "@mui/icons-material/GroupWork";
@@ -26,7 +29,11 @@ const icons = {
   EventAvailableIcon: <EventAvailableIcon />,
   UpdateIcon: <UpdateIcon />,
   HighlightOffIcon: <HighlightOffIcon />,
+  AccessTimeIcon: <AccessTimeIcon />,
+  CreditCardIcon: <CreditCardIcon />,
 };
+
+export type StatCardVariant = "filled" | "outlined" | "accent";
 
 export interface StatCardProps {
   title: string;
@@ -36,6 +43,7 @@ export interface StatCardProps {
   color: string;
   icon: keyof typeof icons;
   loading?: boolean;
+  variant?: StatCardVariant;
 }
 
 const StatCard: FC<StatCardProps> = ({
@@ -46,33 +54,50 @@ const StatCard: FC<StatCardProps> = ({
   color,
   icon,
   loading = false,
+  variant = "filled",
 }) => {
+  const isOutlined = variant === "outlined";
+  const isModern = isOutlined || variant === "accent";
+
   return (
     <Card
       sx={{
         minHeight: 110,
         height: "auto",
-        background: color,
-        color: "#fff",
+        background: isOutlined ? colors.LIGHT_YELLOW : color,
+        color: isOutlined ? "#1C1C1C" : "#fff",
+        border: isOutlined ? "1px solid #E8EAED" : "none",
+        borderRadius: isModern ? 2.5 : undefined,
+        boxShadow: isModern ? "none" : undefined,
         display: "flex",
         alignItems: "center",
         px: 2.5,
+        py: 2,
       }}
     >
       <Box
         sx={{
           display: "flex",
-          alignItems: "flex",
+          alignItems: "center",
           width: "100%",
           justifyContent: "space-between",
         }}
       >
-        <Box>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            minHeight: isModern ? 72 : undefined,
+            flex: 1,
+          }}
+        >
           <Typography
             variant="body2"
             sx={{
-              opacity: 0.9,
+              opacity: isOutlined ? 1 : 0.9,
               fontWeight: 500,
+              color: isOutlined ? "#4A4A4A" : "inherit",
             }}
           >
             {title}
@@ -98,8 +123,10 @@ const StatCard: FC<StatCardProps> = ({
               width={80}
               height={36}
               sx={{
-                bgcolor: "rgba(255,255,255,0.35)",
-                mt: 0.5,
+                bgcolor: isOutlined
+                  ? "rgba(0,0,0,0.08)"
+                  : "rgba(255,255,255,0.35)",
+                mt: isModern ? "auto" : 0.5,
               }}
             />
           ) : (
@@ -108,7 +135,8 @@ const StatCard: FC<StatCardProps> = ({
                 fontSize: 28,
                 fontWeight: 700,
                 lineHeight: 1.2,
-                mt: 0.5,
+                mt: isModern ? "auto" : 0.5,
+                pt: isModern ? 1 : 0,
               }}
             >
               {subtitle}
@@ -133,13 +161,18 @@ const StatCard: FC<StatCardProps> = ({
           sx={{
             width: 44,
             height: 44,
-            borderRadius: "50%",
-            background: "rgba(255,255,255,0.2)",
+            borderRadius: isModern ? 1.5 : "50%",
+            background: isOutlined
+              ? color
+              : "rgba(255,255,255,0.2)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             alignSelf: "center",
+            flexShrink: 0,
+            ml: 2,
             lineHeight: 0,
+            color: "#fff",
             "& svg": {
               fontSize: 22,
               display: "block",

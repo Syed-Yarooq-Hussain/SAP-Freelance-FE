@@ -6,7 +6,8 @@ import { useCreateProject } from "@/actions/projects/useCreateProject";
 import { useGetProjectConsultants } from "@/actions/projects/useGetProjectConsultants";
 import AppButton from "@/components/Button";
 import DataTable from "@/components/DataTable";
-import FilterDrawer from "@/components/FilterDrawer";
+import ConsultantProfileModal from "@/components/specific/teambuilder/ConsultantProfileModal";
+import TeamBuilderFilters from "@/components/specific/teambuilder/TeamBuilderFilters";
 import DynamicPopup from "@/components/Popup";
 import StatCard from "@/components/StatCard";
 import { CONSULTANT_STATUS } from "@/constants/status";
@@ -25,6 +26,7 @@ import {
 import { useAnimatedCounter } from "@/utils/useAnimatedCounter";
 import { useProjectProgress } from "@/utils/useProjectProgress";
 import FilterListIcon from "@mui/icons-material/FilterList";
+import Groups2Icon from "@mui/icons-material/Groups2";
 import {
   Alert,
   AlertColor,
@@ -35,7 +37,7 @@ import {
   Snackbar,
   Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 export default function TeamCreation({
   onNext,
@@ -46,6 +48,11 @@ export default function TeamCreation({
   setSelectedIds,
 }: TeamCreationProps) {
   const [filterOpen, setFilterOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [profileConsultant, setProfileConsultant] = useState<TeamBuilderRow | null>(
+    null
+  );
   const selectedCount = selectedIds.length;
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage] = useState("");
@@ -82,6 +89,43 @@ export default function TeamCreation({
     openSchedule,
   }));
 
+  const filteredRows = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return rowsWithSchedule;
+
+    return rowsWithSchedule.filter((row) => {
+      const idMatch = String(row.id).toLowerCase().includes(query);
+      const coreMatch = row.coremodules?.toLowerCase().includes(query);
+      const othersMatch = row.othersmodules?.toLowerCase().includes(query);
+      return idMatch || coreMatch || othersMatch;
+    });
+  }, [rowsWithSchedule, searchQuery]);
+
+  const mapConsultantRow = (
+    item: ClientConsultantDTO,
+    index: number
+  ): TeamBuilderRow => ({
+    id: item.id,
+    name: item.name,
+    country: item.country,
+    projectName:
+      item.project_name && item.project_name !== "N/A"
+        ? item.project_name
+        : undefined,
+    coremodules: item.modules?.core || "N/A",
+    othersmodules: item.modules?.others || "N/A",
+    experience: item.experience ? `${item.experience} Years` : "N/A",
+    experienceYears: item.experience ?? null,
+    rate: item.rate ? `$${item.rate}/hour` : "N/A",
+    rateValue: item.rate ?? 0,
+    avail: item.weekly_available_hours ?? 0,
+    request: shortlistedMap[String(item.id)] ?? 0,
+    error: "",
+    avatar: `/img/u${((index % 5) + 1).toString()}.png`,
+    working_schedule: item.working_schedule || undefined,
+    badges: item.badges ?? [],
+  });
+
   useEffect(() => {
     if (!hydrationReady) return;
     if (rows.length > 0) return;
@@ -89,18 +133,9 @@ export default function TeamCreation({
     loadConsultants(undefined, {
       onSuccess: (res) => {
         const mapped: TeamBuilderRow[] =
-          res.data?.map((item: ClientConsultantDTO, index: number) => ({
-            id: item.id,
-            coremodules: item.modules?.core || "N/A",
-            othersmodules: item.modules?.others || "N/A",
-            experience: item.experience ? `${item.experience} Years` : "N/A",
-            rate: item.rate ? `$${item.rate}/hour` : "N/A",
-            avail: item.weekly_available_hours ?? 0,
-            request: shortlistedMap[String(item.id)] ?? 0,
-            error: "",
-            avatar: `/img/u${((index % 5) + 1).toString()}.png`,
-            working_schedule: item.working_schedule || undefined,
-          })) ?? [];
+          res.data?.map((item: ClientConsultantDTO, index: number) =>
+            mapConsultantRow(item, index)
+          ) ?? [];
         setRows(mapped);
       },
       onError: (error) => {
@@ -277,22 +312,12 @@ export default function TeamCreation({
   };
 
   const handleFilter = (filters:any) => {
-    console.log(filters,'filters');
     loadConsultants(filters, {
       onSuccess: (res) => {
         const mapped: TeamBuilderRow[] =
-          res.data?.map((item: ClientConsultantDTO, index: number) => ({
-            id: item.id,
-            coremodules: item.modules?.core || "N/A",
-            othersmodules: item.modules?.others || "N/A",
-            experience: item.experience ? `${item.experience} Years` : "N/A",
-            rate: item.rate ? `$${item.rate}/hour` : "N/A",
-            avail: item.weekly_available_hours ?? 0,
-            request: shortlistedMap[String(item.id)] ?? 0,
-            error: "",
-            avatar: `/img/u${((index % 5) + 1).toString()}.png`,
-            working_schedule: item.working_schedule || undefined,
-          })) ?? [];
+          res.data?.map((item: ClientConsultantDTO, index: number) =>
+            mapConsultantRow(item, index)
+          ) ?? [];
         setRows(mapped);
         setFilterOpen(false);
       },
@@ -304,13 +329,26 @@ export default function TeamCreation({
     });
   };
 
+  const handleViewProfile = (row: TeamBuilderRow) => {
+    setProfileConsultant(row);
+    setProfileModalOpen(true);
+  };
+
+  const handleAddConsultantToSelection = () => {
+    if (!profileConsultant) return;
+
+    const id = String(profileConsultant.id);
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev : [...prev, id]
+    );
+    setProfileModalOpen(false);
+  };
+
   return (
     <>
       <Box
         sx={{
           p: 2,
-          boxShadow: 2,
-          bgcolor: "background.paper",
           mt: 3,
         }}
       >
@@ -320,9 +358,14 @@ export default function TeamCreation({
           alignItems="center"
           mb={1.5}
         >
-
+          <Box>
+            <Typography variant="h6" sx={{ fontWeight: 600 }}>
+              Build Your Team
+            </Typography>
+            <Typography variant="body2" sx={{ fontWeight: 400 }}>Set weekly hours, and review your projected engagement cost.</Typography>
+          </Box>
           <Button
-            onClick={() => setFilterOpen(true)}
+            onClick={() => setFilterOpen((prev) => !prev)}
             startIcon={<FilterListIcon />}
             sx={{
               ml: "auto",
@@ -347,9 +390,9 @@ export default function TeamCreation({
           </Button>
         </Box>
 
-        <FilterDrawer open={filterOpen} onClose={() => setFilterOpen(false)} onApply={(filters:any) => handleFilter(filters)} />
+      
 
-        <Grid container spacing={2} mt={3}>
+        <Grid container spacing={2} mb={3} mt={2}>
           {teamBuilderStats.map((s, index) => (
             <Grid key={index} size={{ xs: 12, sm: 6, md: 3 }}>
               <StatCard
@@ -370,7 +413,12 @@ export default function TeamCreation({
           ))}
         </Grid>
 
-        <Box mt={3}>
+        <TeamBuilderFilters
+          open={filterOpen}
+          onApply={(filters) => handleFilter(filters)}
+        />
+
+        <Box mt={3} sx={{ boxShadow: 2, bgcolor: colors.LIGHT_YELLOW, py:2, borderRadius: 2 }}>
           {isPending ? (
             <Box
               sx={{
@@ -384,17 +432,54 @@ export default function TeamCreation({
             </Box>
           ) : (
             <DataTable
+              variant="consultant"
               title="Consultant Selection"
-              columns={teamBuilderColumns(handleRequestChange)}
-              rows={rowsWithSchedule}
+              titleIcon={
+                <Box
+                  sx={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: 1.5,
+                    bgcolor: `${colors.ICON_BLUE}`,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Groups2Icon sx={{ color: 'white', fontSize: 20 }} />
+                </Box>
+              }
+              showSearch
+              searchPlaceholder="Search by ID or module..."
+              searchValue={searchQuery}
+              onSearchChange={setSearchQuery}
+              columns={teamBuilderColumns(
+                handleRequestChange,
+                handleViewProfile
+              )}
+              rows={filteredRows}
               pageSize={10}
-              showAvatar
-              avatarField="avatar"
               enableSelection
               selectedIds={selectedIds}
               onSelectionChange={(ids) => setSelectedIds(ids)}
+              rowClickable={false}
             />
           )}
+
+          <ConsultantProfileModal
+            open={profileModalOpen}
+            consultant={profileConsultant}
+            isSelected={
+              profileConsultant
+                ? selectedIds.includes(String(profileConsultant.id))
+                : false
+            }
+            onClose={() => {
+              setProfileModalOpen(false);
+              setProfileConsultant(null);
+            }}
+            onAddToSelection={handleAddConsultantToSelection}
+          />
 
           <DynamicPopup
             open={scheduleModalOpen}
@@ -434,6 +519,7 @@ export default function TeamCreation({
             mt={2}
             flexWrap="wrap"
             gap={2}
+            px={2}
           >
             {selectedCount > 0 ? (
               <Typography
