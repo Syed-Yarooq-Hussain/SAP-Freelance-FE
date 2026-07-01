@@ -11,15 +11,32 @@ import {
 import { PasswordInput } from "@/components/homepage/ui/PasswordInput";
 import React, { useState } from "react";
 import { useToast } from "@/providers/ToastProvider";
+import { useAppSelector } from "@/lib/store/hook";
+import { useConsultantMe } from "@/actions/consultants/useConsultantProfile";
+
+const getLoginWithLinkedin = (profile: any): boolean => {
+  return Boolean(
+    profile?.loginWithLinkedin ??
+      profile?.login_with_linkedin ??
+      profile?.user?.loginWithLinkedin ??
+      profile?.user?.login_with_linkedin
+  );
+};
 
 const ChangePasswordPage = () => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const storedUser = useAppSelector((state) => state.user.user);
+  const { data: consultantMe } = useConsultantMe();
+  const isLinkedinLogin = getLoginWithLinkedin(
+    consultantMe?.data ?? storedUser
+  );
 
   const {
     control,
     handleSubmit,
     reset,
+    setError,
     formState: { errors },
   } = useForm<ChangePasswordFormData>({
     resolver: yupResolver(changePasswordSchema) as never,
@@ -31,12 +48,24 @@ const ChangePasswordPage = () => {
   });
 
   const onSubmit = async (data: ChangePasswordFormData) => {
+    if (!isLinkedinLogin && !data.oldPassword?.trim()) {
+      setError("oldPassword", {
+        type: "manual",
+        message: "Current password is required",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     try {
-      await updatePassword({
-        oldPassword: data.oldPassword,
-        newPassword: data.newPassword,
-      });
+      await updatePassword(
+        isLinkedinLogin
+          ? { newPassword: data.newPassword }
+          : {
+              oldPassword: data.oldPassword,
+              newPassword: data.newPassword,
+            }
+      );
       toast("Password updated successfully", "success");
       reset();
     } catch (err: any) {
@@ -63,21 +92,27 @@ const ChangePasswordPage = () => {
             onSubmit={handleSubmit(onSubmit)}
             className="space-y-5 w-full font-manrope"
           >
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
-              <Controller
-                name="oldPassword"
-                control={control}
-                render={({ field }) => (
-                  <PasswordInput
-                    {...field}
-                    label="Current password"
-                    placeholder="Enter your current password"
-                    error={errors.oldPassword?.message}
-                    required
-                    autoComplete="current-password"
-                  />
-                )}
-              />
+            <div
+              className={`grid grid-cols-1 ${
+                isLinkedinLogin ? "md:grid-cols-2" : "md:grid-cols-3"
+              } gap-4 items-start`}
+            >
+              {!isLinkedinLogin && (
+                <Controller
+                  name="oldPassword"
+                  control={control}
+                  render={({ field }) => (
+                    <PasswordInput
+                      {...field}
+                      label="Current password"
+                      placeholder="Enter your current password"
+                      error={errors.oldPassword?.message}
+                      required
+                      autoComplete="current-password"
+                    />
+                  )}
+                />
+              )}
 
               <Controller
                 name="newPassword"
@@ -140,7 +175,7 @@ const ChangePasswordPage = () => {
               disabled={isSubmitting}
               className="bg-brand-blue text-white font-manrope text-sm font-semibold px-6 py-2.5 rounded-xl transition-all hover:shadow-lg hover:shadow-brand-blue/30 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? "Updating…" : "Update password"}
+              {isSubmitting ? "Updating..." : "Update password"}
             </button>
           </form>
         </div>
