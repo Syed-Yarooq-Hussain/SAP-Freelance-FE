@@ -13,9 +13,12 @@ import {
   Edit,
   File,
   FolderOpen,
+  Linkedin,
+  type LucideIcon,
   MapPin,
   Star,
 } from "lucide-react";
+import type { ReactNode } from "react";
 import ContactInfo from "./contactInfo";
 import UserInfo from "./userInfo";
 import CoreModules from "./coreModules";
@@ -37,6 +40,8 @@ export function ProfileLayout({
   const { data: dashboardData } = useConsultantDashboard();
   const profileStrength = dashboardData?.profile?.profile_strength || 0;
   const user = consultant?.user;
+  const linkedinUrl = user?.linkedin_url;
+  const isLinkedinConnected = Boolean(user?.loginWithLinkedin);
   const profileBadges: string[] = consultant?.badges || [];
   const coreModules =
     consultant?.user?.module?.core?.split(", ").filter(Boolean) || [];
@@ -89,7 +94,29 @@ export function ProfileLayout({
       value: `${consultant?.projects?.length || 0} done`,
       icon: FolderOpen,
     },
-  ];
+    {
+      label: "LinkedIn",
+      value: linkedinUrl ? (
+        <a
+          href={linkedinUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="font-semibold text-brand-blue"
+        >
+          View LinkedIn
+        </a>
+      ) : isLinkedinConnected ? (
+        "LinkedIn verified"
+      ) : (
+        "LinkedIn not connected"
+      ),
+      icon: Linkedin,
+    },
+  ] as Array<{
+    label: string;
+    value: ReactNode;
+    icon: LucideIcon | null;
+  }>;
 
   const completionPercentage =
     Math.round(
