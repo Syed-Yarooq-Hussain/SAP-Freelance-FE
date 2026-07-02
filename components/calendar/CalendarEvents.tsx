@@ -12,13 +12,56 @@ import {
 } from "../consultant-dashboard-new/dashboard-calendar";
 import { useCalendar } from "./CalendarContext";
 
+type CalendarFilter = "all" | "client" | "interviews";
+
+function getDayAvailability(day: ApiDay): {
+  available: boolean;
+  slots: { start_time: string; end_time: string }[];
+} {
+  const fallback = day as unknown as {
+    availability?: {
+      available?: boolean;
+      slots?: { start_time: string; end_time: string }[];
+    };
+  };
+  const slots = Array.isArray(day.slots)
+    ? day.slots
+    : fallback.availability?.slots ?? [];
+
+  return {
+    available: Boolean(day.active || fallback.availability?.available),
+    slots,
+  };
+}
+
 function mapScheduleToDashboardEvents(
   days: ApiDay[] | undefined,
+  filter: CalendarFilter,
 ): DashboardCalendarEvent[] {
   if (!days?.length) return [];
   const out: DashboardCalendarEvent[] = [];
   for (const day of days) {
+    const availability = getDayAvailability(day);
+    if (filter === "all" && availability.available && availability.slots.length > 0) {
+      const firstSlot = availability.slots[0];
+      const lastSlot = availability.slots[availability.slots.length - 1];
+      out.push({
+        date: day.date,
+        dateTime: `${day.date}T${(firstSlot.start_time ?? "09:00").slice(0, 5)}:00`,
+        title: "Available",
+        time: `${toAmPm(firstSlot.start_time)} - ${toAmPm(lastSlot.end_time)}`,
+        location: "Availability",
+        badge: "Available",
+        clientName: "Availability",
+        projectName: "Working hours",
+        kind: "availability",
+      });
+    }
+
     for (const e of day.events ?? []) {
+      if (filter === "interviews" && e.type !== "INTERVIEW") continue;
+      if (filter === "client" && e.type === "INTERVIEW") continue;
+
       const rawStart = e.start_time ?? "09:00";
       const rawEnd = e.end_time ?? rawStart;
       const startNorm = rawStart.slice(0, 5);
@@ -42,13 +85,18 @@ function mapScheduleToDashboardEvents(
         badge: isInterview ? "Interview" : "Client meeting",
         clientName: "—",
         projectName: "—",
+        kind: "event",
       });
     }
   }
   return out;
 }
 
-export default function CalendarEvents() {
+export default function CalendarEvents({
+  filter,
+}: {
+  filter: CalendarFilter;
+}) {
   const now = new Date();
   const [cursor, setCursor] = useState(() => ({
     year: now.getFullYear(),
@@ -60,13 +108,17 @@ export default function CalendarEvents() {
   const { data, isLoading } = useConsultantCalendar(cursor.month, cursor.year);
 
   const events = useMemo(
-    () => mapScheduleToDashboardEvents(data?.days),
-    [data?.days],
+    () => mapScheduleToDashboardEvents(data?.days, filter),
+    [data?.days, filter],
   );
 
-  const handleMonthChange = useCallback((p: DashboardCalendarMonthPayload) => {
-    setCursor({ year: p.year, month: p.month });
-  }, []);
+  const handleMonthChange = useCallback(
+    (p: DashboardCalendarMonthPayload) => {
+      setCursor({ year: p.year, month: p.month });
+      calendarRef.current?.getApi().gotoDate(new Date(p.year, p.month, 1));
+    },
+    [calendarRef],
+  );
 
   const handleDateClick = useCallback(
     (p: DashboardCalendarDateClickPayload) => {

@@ -7,20 +7,20 @@ const steps = [
   {
     number: 1,
     icon: Users,
-    title: "Shortlist SAP Consultants",
-    description: "Browse verified SAP experts and schedule instant interviews.",
+    title: "Sign Up in Seconds",
+    description: "Create your account or continue with LinkedIn — no lengthy forms to start",
   },
   {
     number: 2,
     icon: FileText,
-    title: "Define Project Scope",
-    description: "Set requirements, timelines, deliverables, and engagement model.",
+    title: "Build Your Profile",
+    description: "Add your experience, expertise, and availability so clients know exactly when and how you can help",
   },
   {
     number: 3,
     icon: CheckCircle,
-    title: "Agree & Start",
-    description: "Finalize rates, milestones, and begin work instantly.",
+    title: "Earn Badges, Get Noticed",
+    description: "Unlock verification badges that boost your credibility and push your profile higher in client searches",
   },
 ]
 
@@ -41,11 +41,11 @@ export default function Teambuilder() {
         <div className="text-center mb-12 md:mb-16">
           
           <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4 text-balance">
-            Hire SAP Consultants in 3 Simple Steps
+           Join as a Consultant in 3 simple steps
           </h2>
           
           <p className="text-muted-foreground text-xl mt-2 max-w-2xl mx-auto">
-            From shortlisting to onboarding — everything happens in one platform.
+            From shortlisting to onboarding — everything happens in one platform
           </p>
         </div>
 

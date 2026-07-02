@@ -22,7 +22,6 @@ import Banner from "@/components/homepageNew/Banner";
 import Careers from "@/components/homepageNew/Careers";
 import Consultants from "@/components/homepageNew/Consultants";
 import Features from "@/components/homepageNew/Features";
-import HireSap from "@/components/homepageNew/HireSap";
 import Reviews from "@/components/homepageNew/Reviews";
 import Teambuilder from "@/components/homepageNew/Teambuilder";
 import { Header } from "@/components/Header";
@@ -125,7 +124,6 @@ export default function Home() {
           <Features />
           <Teambuilder />
           <Reviews />
-          <HireSap onSignUpClick={() => openSignUp('consultant')} />
           {/* < 
             onFindConsultants={() => setCurrentPage("consultants")}
           />

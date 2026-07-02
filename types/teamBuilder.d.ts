@@ -42,6 +42,9 @@ export type TeamCreationProps = {
 
 export interface TeamBuilderRow {
   id: string | number;
+  name?: string;
+  country?: string;
+  projectName?: string;
   coremodules: string;
   othersmodules: string;
   experience: string;
@@ -50,7 +53,10 @@ export interface TeamBuilderRow {
   request: number;
   error?: string;
   avatar?: string;
-  working_schedule?: any
+  working_schedule?: any;
+  badges?: string[];
+  rateValue?: number;
+  experienceYears?: number | null;
 }
 
 export interface ITask {
@@ -266,12 +272,16 @@ type Weekday = NonNullable<
   NonNullable<TeamBuilderRow["working_schedule"]>["weekdays"]
 >[number];
 
-type ClientConsultantDTO = {
+export type ClientConsultantDTO = {
   id: string | number;
   name?: string;
+  country?: string;
   experience?: number;
   rate?: number;
   weekly_available_hours?: number;
+  badges?: string[];
+  project_name?: string;
+  project_id?: string | number;
   modules?: {
     core?: string;
     others?: string;
@@ -299,3 +309,43 @@ type ClientMilestoneRow = {
   onEdit?: () => void;
   onDelete?: () => void;
 };
+
+export interface IProjectPaymentDTO {
+  id: string;
+  project_id: string;
+  project_milestone_id: string;
+  doc_id: string | null;
+  amount: number;
+  payment_module: string;
+  is_paid: boolean;
+  deleted_at: string | null;
+  project?: {
+    id: string;
+    name: string;
+    client_id: string;
+    company_name: string;
+    status: string;
+    deleted_at: string | null;
+  };
+  milestone?: {
+    id: string;
+    name: string;
+    description: string | null;
+    start_date: string;
+    due_date: string;
+    status: string;
+    required_hours: number;
+    project_id: string;
+    deleted_at: string | null;
+  };
+  due_date?: string;
+}
+
+export interface PaymentTableRow extends IProjectPaymentDTO {
+  selected: boolean;
+  showUpload: boolean;
+  baseAmount: number;
+  vat: number;
+  serviceCharge: number;
+  totalAmount: number;
+}

@@ -14,12 +14,16 @@ interface SapModulesDropdownProps {
   data: SapModuleGroup[];
   values: string[];
   onChange: (ids: string[]) => void;
+  panelZIndex?: number;
+  maxSelections?: number;
 }
 
 export default function SapModulesDropdown({
   data,
   values,
   onChange,
+  panelZIndex = 300,
+  maxSelections,
 }: SapModulesDropdownProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -100,9 +104,18 @@ export default function SapModulesDropdown({
       const next = new Set(values);
       if (checked) next.add(id);
       else next.delete(id);
-      onChange([...next]);
+      const nextValues = [...next];
+      onChange(nextValues);
+      if (
+        maxSelections &&
+        checked &&
+        nextValues.length === maxSelections
+      ) {
+        setOpen(false);
+        setSearch("");
+      }
     },
-    [values, onChange]
+    [values, onChange, maxSelections]
   );
 
   const removeModule = (id: string) => {
@@ -136,11 +149,12 @@ export default function SapModulesDropdown({
     createPortal(
       <div
         ref={panelRef}
-        className="fixed z-[300] box-border max-w-[calc(100vw-24px)] rounded-lg border border-slate-200 bg-white p-3 font-manrope text-sm text-slate-800 shadow-lg sm:rounded-xl sm:p-4 sm:text-base"
+        className="fixed box-border max-w-[calc(100vw-24px)] rounded-lg border border-slate-200 bg-white p-3 font-manrope text-sm text-slate-800 shadow-lg sm:rounded-xl sm:p-4 sm:text-base"
         style={{
           top: panelRect.top,
           left: panelRect.left,
           width: panelRect.width,
+          zIndex: panelZIndex,
         }}
       >
         <div className="mb-3 flex flex-col gap-3 sm:mb-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-4">

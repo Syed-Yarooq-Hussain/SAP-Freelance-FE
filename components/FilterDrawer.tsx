@@ -1,12 +1,17 @@
 "use client";
 
+import { countries } from "@/utils/common";
+import SapModulesDropdown from "@/components/profile/profile-edit/SapModulesDropdown";
+import { useSapOtherModules } from "@/actions/common/useSapModules";
 import CloseIcon from "@mui/icons-material/Close";
 import {
   Box,
-  Checkbox,
+  Button,
   Divider,
+  Dialog,
+  DialogContent,
+  DialogTitle,
   Drawer,
-  FormControlLabel,
   IconButton,
   MenuItem,
   TextField,
@@ -17,27 +22,28 @@ import { useState } from "react";
 interface FilterDrawerProps {
   open: boolean;
   onClose: () => void;
+  onApply: (filters:any) => void;
 }
 
-export default function FilterDrawer({ open, onClose }: FilterDrawerProps) {
-  const [filters] = useState({
-    modules: {
-      MM: true,
-      FICO: true,
-      SD: true,
-      CO: false,
-      QM: false,
-      HR: false,
-      ABAP: false,
-      PP: false,
-      BW: false,
-    },
-    experience: "9 years",
+export default function FilterDrawer({ open, onClose, onApply }: FilterDrawerProps) {
+  const [filters, setFilters] = useState({
+    experience: "9",
     availability: "20",
     budgetMax: "",
     budgetMin: "",
-    country: "Junior",
+    country: "",
   });
+  const [selectedModules, setSelectedModules] = useState<string[]>([]);
+  const { data: sapOtherModulesData } = useSapOtherModules();
+  const moduleDropdownData = sapOtherModulesData?.data || [];
+  const [modulesModalOpen, setModulesModalOpen] = useState(false);
+
+  const handleApply = () => {
+    onApply({
+      ...filters,
+      modules: selectedModules,
+    });
+  };
 
   return (
     <Drawer
@@ -77,58 +83,133 @@ export default function FilterDrawer({ open, onClose }: FilterDrawerProps) {
       <Typography variant="subtitle2" fontWeight={600} mb={1}>
         Core Modules
       </Typography>
-      <Box display="grid" gridTemplateColumns="repeat(2,1fr)" gap={0.5} mb={2}>
-        {Object.keys(filters.modules).map((key) => (
-          <FormControlLabel
-            key={key}
-            control={
-              <Checkbox
-                defaultChecked={
-                  filters.modules[key as keyof typeof filters.modules]
-                }
-              />
-            }
-            label={key}
-            sx={{ "& .MuiFormControlLabel-label": { fontSize: "0.85rem" } }}
-          />
-        ))}
+      <Box mb={2}>
+        <Button
+          fullWidth
+          variant="outlined"
+          onClick={() => setModulesModalOpen(true)}
+          sx={{
+            justifyContent: "space-between",
+            textTransform: "none",
+            borderColor: "#cbd5e1",
+            color: "#334155",
+            borderRadius: "10px",
+            py: 1.1,
+            px: 1.5,
+            fontSize: "0.85rem",
+            fontWeight: 500,
+            backgroundColor: "#fff",
+            "&:hover": {
+              borderColor: "#4A7AB5",
+              backgroundColor: "#f8fbff",
+            },
+          }}
+        >
+          <span>{selectedModules.length > 0 ? `${selectedModules.length} selected` : "Select modules"}</span>
+          <span style={{ color: "#4A7AB5", fontWeight: 600 }}>Open</span>
+        </Button>
       </Box>
+
+      <Dialog
+        open={modulesModalOpen}
+        onClose={() => setModulesModalOpen(false)}
+        fullWidth
+        maxWidth="md"
+        sx={{
+          "& .MuiDialog-paper": {
+            borderRadius: "14px",
+            overflow: "visible",
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
+            fontSize: "1rem",
+            fontWeight: 700,
+            pb: 1,
+          }}
+        >
+          Select Core Modules
+        </DialogTitle>
+        <DialogContent sx={{ pt: 1.5 }}>
+          <SapModulesDropdown
+            data={moduleDropdownData}
+            values={selectedModules}
+            onChange={setSelectedModules}
+            panelZIndex={1600}
+          />
+          <Box display="flex" justifyContent="flex-end" mt={2}>
+            <Button
+              variant="contained"
+              onClick={() => setModulesModalOpen(false)}
+              sx={{
+                textTransform: "none",
+                borderRadius: "10px",
+                backgroundColor: "#4A7AB5",
+              }}
+            >
+              Done
+            </Button>
+          </Box>
+        </DialogContent>
+      </Dialog>
 
       <Typography variant="subtitle2" fontWeight={600} mb={0.5}>
         Experience level
       </Typography>
       <TextField
-        select
         size="small"
         fullWidth
+        type="number"
         value={filters.experience}
+        onChange={(e) =>
+          setFilters((prev) => ({ ...prev, experience: e.target.value }))
+        }
+        placeholder="Enter experience (years)"
+        inputProps={{ min: 0 }}
         sx={{ mb: 2 }}
-      >
-        <MenuItem value="9 years">9 years</MenuItem>
-        <MenuItem value="10 years">10 years</MenuItem>
-        <MenuItem value="5 years">5 years</MenuItem>
-      </TextField>
+      />
 
       <Typography variant="subtitle2" fontWeight={600} mb={0.5}>
         Availability (hr/week)
       </Typography>
       <TextField
-        select
         size="small"
         fullWidth
+        type="number"
         value={filters.availability}
+        onChange={(e) =>
+          setFilters((prev) => ({ ...prev, availability: e.target.value }))
+        }
+        placeholder="Enter availability (hr/week)"
+        inputProps={{ min: 0 }}
         sx={{ mb: 2 }}
-      >
-        <MenuItem value="20">20</MenuItem>
-        <MenuItem value="40">40</MenuItem>
-      </TextField>
+      />
 
       <Typography variant="subtitle2" fontWeight={600} mb={0.5}>
         Budget
       </Typography>
       <Box display="flex" gap={1} mb={2}>
-        <TextField size="small" placeholder="Min" fullWidth />
-        <TextField size="small" placeholder="Max" fullWidth />
+        <TextField
+          size="small"
+          placeholder="Min"
+          fullWidth
+          type="number"
+          value={filters.budgetMin}
+          onChange={(e) =>
+            setFilters((prev) => ({ ...prev, budgetMin: e.target.value }))
+          }
+        />
+        <TextField
+          size="small"
+          placeholder="Max"
+          fullWidth
+          type="number"
+          value={filters.budgetMax}
+          onChange={(e) =>
+            setFilters((prev) => ({ ...prev, budgetMax: e.target.value }))
+          }
+        />
       </Box>
 
       <Typography variant="subtitle2" fontWeight={600} mb={0.5}>
@@ -139,12 +220,24 @@ export default function FilterDrawer({ open, onClose }: FilterDrawerProps) {
         size="small"
         fullWidth
         value={filters.country}
+        onChange={(e) =>
+          setFilters((prev) => ({ ...prev, country: e.target.value }))
+        }
+        SelectProps={{
+          displayEmpty: true,
+          renderValue: (value) =>
+            value ? String(value) : "Select Country",
+        }}
         sx={{ mb: 2 }}
       >
-        <MenuItem value="Junior">Junior</MenuItem>
-        <MenuItem value="Senior">Senior</MenuItem>
-        <MenuItem value="Mid">Mid</MenuItem>
+        <MenuItem value="" disabled>Select Country</MenuItem>
+        {
+          countries.map((country: any) => (
+            <MenuItem key={country} value={country.toLowerCase()}>{country}</MenuItem>
+          ))
+        }
       </TextField>
+      <Button variant="contained" onClick={handleApply}>Apply</Button>
     </Drawer>
   );
 }

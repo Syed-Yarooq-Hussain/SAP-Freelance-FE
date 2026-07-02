@@ -31,6 +31,26 @@ export async function updateConsultantStatus(
 
 export type ConsultantStatus = "active" | "pending" | "locked";
 
+function normalizeConsultantsResponse(data: unknown): any[] {
+  if (Array.isArray(data)) return data;
+
+  if (data && typeof data === "object") {
+    const record = data as Record<string, unknown>;
+    const possibleLists = [
+      record.data,
+      record.consultants,
+      record.results,
+      record.items,
+    ];
+
+    for (const list of possibleLists) {
+      if (Array.isArray(list)) return list;
+    }
+  }
+
+  return [];
+}
+
 export async function fetchAdminConsultants(
   status: ConsultantStatus
 ): Promise<ApiResponse<any[]>> {
@@ -42,7 +62,7 @@ export async function fetchAdminConsultants(
   if (res.status !== "success") {
     throw new Error(res.message || "Failed to load consultants");
   }
-  const data = Array.isArray(res.data) ? res.data : [res.data];
+  const data = normalizeConsultantsResponse(res.data);
 
   return { ...res, data };
 }

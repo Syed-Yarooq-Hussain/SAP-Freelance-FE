@@ -2,12 +2,15 @@
 
 import { colors } from "@/utils/styles/colors";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import SearchIcon from "@mui/icons-material/Search";
 import {
   Avatar,
   Box,
   Checkbox,
   IconButton,
+  InputAdornment,
   Stack,
+  TextField,
   Typography,
 } from "@mui/material";
 import type {
@@ -24,10 +27,13 @@ import {
 } from "@mui/x-data-grid";
 import * as React from "react";
 
+export type DataTableVariant = "default" | "consultant";
+
 export type DataTableProps<T extends GridValidRowModel> = {
   title: React.ReactNode;
   columns: GridColDef[];
   rows: T[];
+  isTransparent?: boolean;
   pageSize?: number;
   showViewMore?: boolean;
   onViewMoreClick?: () => void;
@@ -48,9 +54,181 @@ export type DataTableProps<T extends GridValidRowModel> = {
   onSelectionChange?: (selectedIds: string[]) => void;
   hidePagination?: boolean;
   selectedIds?: string[];
+  variant?: DataTableVariant;
+  titleIcon?: React.ReactNode;
+  showSearch?: boolean;
+  searchPlaceholder?: string;
+  searchValue?: string;
+  onSearchChange?: (value: string) => void;
+};
+
+const checkboxSx = {
+  color: colors.BLUE,
+  "&.Mui-checked": { color: colors.BLUE },
+  "& .MuiSvgIcon-root": { fontSize: 22 },
+};
+
+const CONSULTANT_TABLE_HEAD_BG = "#F0EDE8";
+const CONSULTANT_TABLE_ROW_BORDER = "#E8E4DE";
+
+const getConsultantGridSx = (rowClickable: boolean) => ({
+  border: "none",
+  borderWidth: 0,
+  borderRadius: 0,
+  boxShadow: "none",
+  backgroundColor: colors.LIGHT_YELLOW,
+  outline: "none",
+  "--DataGrid-t-color-background-base": colors.LIGHT_YELLOW,
+  "--DataGrid-t-color-border-base": "transparent",
+  "--DataGrid-t-header-background-base": CONSULTANT_TABLE_HEAD_BG,
+  "--DataGrid-t-cell-background-pinned": colors.LIGHT_YELLOW,
+  "--DataGrid-rowBorderColor": CONSULTANT_TABLE_ROW_BORDER,
+  "--DataGrid-t-shadow-base": "none",
+  "--DataGrid-t-shadow-overlay": "none",
+  "--unstable_DataGrid-radius": "0px",
+  "& .MuiDataGrid-main": {
+    backgroundColor: colors.LIGHT_YELLOW,
+  },
+  "& .MuiDataGrid-virtualScroller": {
+    backgroundColor: colors.LIGHT_YELLOW,
+  },
+  "& .MuiDataGrid-virtualScrollerContent": {
+    backgroundColor: colors.LIGHT_YELLOW,
+  },
+  "& .MuiDataGrid-topContainer": {
+    backgroundColor: colors.LIGHT_YELLOW,
+  },
+  "& .MuiDataGrid-bottomContainer": {
+    backgroundColor: colors.LIGHT_YELLOW,
+  },
+  "& .MuiDataGrid-filler": {
+    backgroundColor: colors.LIGHT_YELLOW,
+  },
+  "& .MuiDataGrid-scrollbarFiller": {
+    backgroundColor: colors.LIGHT_YELLOW,
+  },
+  "& .MuiDataGrid-columnHeader": {
+    backgroundColor: CONSULTANT_TABLE_HEAD_BG,
+    borderColor: "transparent",
+    fontWeight: 600,
+  },
+  "& .MuiDataGrid-columnHeaders": {
+    backgroundColor: CONSULTANT_TABLE_HEAD_BG,
+    borderBottom: `1px solid ${CONSULTANT_TABLE_ROW_BORDER}`,
+  },
+  "& .MuiDataGrid-columnHeaderTitle": {
+    fontWeight: 600,
+    fontSize: "0.6875rem",
+    letterSpacing: "0.04em",
+    textTransform: "uppercase",
+    color: "#64748B",
+  },
+  "& .MuiDataGrid-columnSeparator": {
+    display: "none",
+  },
+  "& .MuiDataGrid-cell": {
+    fontSize: "0.875rem",
+    alignItems: "flex-start",
+    whiteSpace: "normal",
+    wordBreak: "break-word",
+    lineHeight: 1.4,
+    py: 1.5,
+    borderBottom: `1px solid ${CONSULTANT_TABLE_ROW_BORDER}`,
+    borderColor: CONSULTANT_TABLE_ROW_BORDER,
+  },
+  "& .MuiDataGrid-row": {
+    backgroundColor: colors.LIGHT_YELLOW,
+    cursor: rowClickable ? "pointer" : "default",
+    transition: "background-color 0.2s ease",
+  },
+  "& .MuiDataGrid-row:hover": {
+    backgroundColor: rowClickable ? "#F5F3F0" : colors.LIGHT_YELLOW,
+  },
+  "& .MuiDataGrid-row.Mui-hovered": {
+    backgroundColor: rowClickable ? "#F5F3F0" : colors.LIGHT_YELLOW,
+  },
+  "& .MuiDataGrid-footerContainer": {
+    borderTop: `1px solid ${CONSULTANT_TABLE_ROW_BORDER}`,
+    backgroundColor: colors.LIGHT_YELLOW,
+  },
+  "& .MuiDataGrid-withBorderColor": {
+    borderColor: CONSULTANT_TABLE_ROW_BORDER,
+  },
+});
+
+const transparentGridSx = {
+  border: "none",
+  borderWidth: 0,
+  borderRadius: 0,
+  boxShadow: "none",
+  backgroundColor: "transparent",
+  outline: "none",
+  "--DataGrid-t-color-background-base": "transparent",
+  "--DataGrid-t-color-border-base": "transparent",
+  "--DataGrid-t-header-background-base": "transparent",
+  "--DataGrid-t-cell-background-pinned": "transparent",
+  "--DataGrid-rowBorderColor": "transparent",
+  "--DataGrid-t-shadow-base": "none",
+  "--DataGrid-t-shadow-overlay": "none",
+  "--unstable_DataGrid-radius": "0px",
+  "& .MuiDataGrid-main": {
+    backgroundColor: "transparent",
+  },
+  "& .MuiDataGrid-virtualScroller": {
+    backgroundColor: "transparent",
+  },
+  "& .MuiDataGrid-virtualScrollerContent": {
+    backgroundColor: "transparent",
+  },
+  "& .MuiDataGrid-topContainer": {
+    backgroundColor: "transparent",
+  },
+  "& .MuiDataGrid-bottomContainer": {
+    backgroundColor: "transparent",
+  },
+  "& .MuiDataGrid-filler": {
+    backgroundColor: "transparent",
+  },
+  "& .MuiDataGrid-scrollbarFiller": {
+    backgroundColor: "transparent",
+  },
+  "& .MuiDataGrid-columnHeader": {
+    backgroundColor: "transparent",
+    borderColor: "transparent",
+  },
+  "& .MuiDataGrid-columnHeaders": {
+    backgroundColor: "transparent",
+    borderBottom: "none",
+  },
+  "& .MuiDataGrid-columnSeparator": {
+    display: "none",
+  },
+  "& .MuiDataGrid-cell": {
+    borderBottom: "none",
+    borderTop: "none",
+    borderColor: "transparent",
+  },
+  "& .MuiDataGrid-row": {
+    backgroundColor: "transparent",
+    "--rowBorderColor": "transparent",
+  },
+  "& .MuiDataGrid-row:hover": {
+    backgroundColor: "transparent",
+  },
+  "& .MuiDataGrid-row.Mui-hovered": {
+    backgroundColor: "transparent",
+  },
+  "& .MuiDataGrid-footerContainer": {
+    borderTop: "none",
+    backgroundColor: "transparent",
+  },
+  "& .MuiDataGrid-withBorderColor": {
+    borderColor: "transparent",
+  },
 };
 
 export default function DataTable<T extends GridValidRowModel>({
+  isTransparent = false,
   title,
   columns,
   rows,
@@ -71,7 +249,14 @@ export default function DataTable<T extends GridValidRowModel>({
   hidePagination = false,
   rowClickable = true,
   selectedIds = [],
+  variant = "default",
+  titleIcon,
+  showSearch = false,
+  searchPlaceholder = "Search...",
+  searchValue = "",
+  onSearchChange,
 }: DataTableProps<T>) {
+  const isConsultantVariant = variant === "consultant";
   const [selectedRows, setSelectedRows] = React.useState<Set<string>>(
     new Set()
   );
@@ -124,59 +309,83 @@ export default function DataTable<T extends GridValidRowModel>({
   }, [rows, onSelectionChange]);
 
   const updatedColumns = React.useMemo(() => {
-    if (!showAvatar || !avatarField) return columns;
-
-    const avatarCol: GridColDef = {
-      field: "avatar",
+    const selectionCol: GridColDef = {
+      field: "__selection",
       headerName: "",
-      width: enableSelection ? 90 : 60,
+      width: 52,
       sortable: false,
       disableColumnMenu: true,
-      renderHeader: enableSelection
-        ? () => (
-            <Checkbox
-              indeterminate={
-                selectedRows.size > 0 && selectedRows.size < rows.length
-              }
-              checked={selectedRows.size === rows.length && rows.length > 0}
-              onChange={handleSelectAll}
-              sx={{
-                color: colors.BLUE,
-                "&.Mui-checked": { color: colors.BLUE },
-                "& .MuiSvgIcon-root": { fontSize: 22 },
-              }}
-            />
-          )
-        : undefined,
+      renderHeader: () => (
+        <Checkbox
+          indeterminate={
+            selectedRows.size > 0 && selectedRows.size < rows.length
+          }
+          checked={selectedRows.size === rows.length && rows.length > 0}
+          onChange={handleSelectAll}
+          sx={checkboxSx}
+        />
+      ),
       renderCell: (params: GridRenderCellParams<T>) => (
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          {enableSelection && (
-            <Checkbox
-              checked={selectedRows.has(params.id.toString())}
-              onChange={() => handleSelect(params.id.toString())}
-              sx={{
-                color: colors.BLUE,
-                "&.Mui-checked": { color: colors.BLUE },
-                "& .MuiSvgIcon-root": { fontSize: 22 },
-              }}
-            />
-          )}
-          <Avatar
-            src={params.row[avatarField] as string}
-            alt={params.row.name}
-            sx={{
-              width: 32,
-              height: 32,
-              border: selectedRows.has(params.id.toString())
-                ? `2px solid ${colors.BLUE}`
-                : "2px solid transparent",
-            }}
-          />
-        </Box>
+        <Checkbox
+          checked={selectedRows.has(params.id.toString())}
+          onChange={() => handleSelect(params.id.toString())}
+          onClick={(e) => e.stopPropagation()}
+          sx={checkboxSx}
+        />
       ),
     };
 
-    return [avatarCol, ...columns];
+    if (showAvatar && avatarField) {
+      const avatarCol: GridColDef = {
+        field: "avatar",
+        headerName: "",
+        width: enableSelection ? 90 : 60,
+        sortable: false,
+        disableColumnMenu: true,
+        renderHeader: enableSelection
+          ? () => (
+              <Checkbox
+                indeterminate={
+                  selectedRows.size > 0 && selectedRows.size < rows.length
+                }
+                checked={selectedRows.size === rows.length && rows.length > 0}
+                onChange={handleSelectAll}
+                sx={checkboxSx}
+              />
+            )
+          : undefined,
+        renderCell: (params: GridRenderCellParams<T>) => (
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            {enableSelection && (
+              <Checkbox
+                checked={selectedRows.has(params.id.toString())}
+                onChange={() => handleSelect(params.id.toString())}
+                sx={checkboxSx}
+              />
+            )}
+            <Avatar
+              src={params.row[avatarField] as string}
+              alt={params.row.name}
+              sx={{
+                width: 32,
+                height: 32,
+                border: selectedRows.has(params.id.toString())
+                  ? `2px solid ${colors.BLUE}`
+                  : "2px solid transparent",
+              }}
+            />
+          </Box>
+        ),
+      };
+
+      return [avatarCol, ...columns];
+    }
+
+    if (enableSelection) {
+      return [selectionCol, ...columns];
+    }
+
+    return columns;
   }, [
     showAvatar,
     avatarField,
@@ -188,36 +397,13 @@ export default function DataTable<T extends GridValidRowModel>({
     handleSelectAll,
   ]);
 
-  return (
-    <>
-      <Stack
-        direction="row"
-        alignItems="center"
-        justifyContent="space-between"
-        mb={1.5}
-        sx={{ width: "100%" }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          {showBackButton && (
-            <IconButton
-              onClick={onBackClick}
-              size="small"
-              sx={{ color: "text.primary" }}
-            >
-              <ArrowBackIcon fontSize="small" />
-            </IconButton>
-          )}
-          <Typography variant="h6" fontWeight="bold">
-            {title}
-          </Typography>
-        </Box>
-        {actionButton && <Box>{actionButton}</Box>}
-      </Stack>
-
-      <Box sx={{ width: "100%" }}>
-        {rows && rows?.length > 0 ? <DataGrid
+  const tableContent =
+    rows && rows.length > 0 ? (
+      <DataGrid
           rows={rows}
           columns={updatedColumns}
+          showCellVerticalBorder={!isTransparent && !isConsultantVariant}
+          showColumnVerticalBorder={!isTransparent && !isConsultantVariant}
           initialState={{
             pagination: { paginationModel: { pageSize } },
           }}
@@ -238,51 +424,187 @@ export default function DataTable<T extends GridValidRowModel>({
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
-                  height: 100,
-                  color: "text.secondary",
-                  fontWeight: 500,
+                  height: "100%",
+                  minHeight: 80,
+                  m: 1,
+                  borderRadius: isConsultantVariant ? 0 : isTransparent ? 0 : "12px",
+                  border: isConsultantVariant || isTransparent ? "none" : "1px dashed",
+                  borderColor: isConsultantVariant || isTransparent ? undefined : "#cbd5e1",
+                  bgcolor: isConsultantVariant
+                    ? colors.LIGHT_YELLOW
+                    : isTransparent
+                    ? "transparent"
+                    : "#F0EDE8",
                 }}
               >
-                No data available
+                <Typography
+                  sx={{
+                    color: "#334155",
+                    fontWeight: 500,
+                    fontSize: "0.875rem",
+                    fontFamily: "var(--font-manrope), sans-serif",
+                  }}
+                >
+                  No data available
+                </Typography>
               </Box>
             ),
             ...slots,
           }}
           slotProps={slotProps}
           sx={{
-            "& .MuiDataGrid-columnHeaders": {
-              backgroundColor: "#f8fbff",
-            },
-            "& .MuiDataGrid-columnHeader": {
-              fontWeight: "bold",
-            },
-            "& .MuiDataGrid-columnHeaderTitle": {
-              fontWeight: "bold",
-              fontSize: "0.875rem",
-            },
-            "& .MuiDataGrid-cell": {
-              fontSize: "0.875rem",
-              alignItems: "flex-start",
-              whiteSpace: "normal",
-              wordBreak: "break-word",
-              lineHeight: 1.4,
-              py: 1,
-            },
-            "& .MuiDataGrid-row": {
-              backgroundColor: "#fff",
-              transition: "background-color 0.2s ease",
-              cursor: rowClickable ? "pointer" : "default",
-            },
-
-            "& .MuiDataGrid-row:hover": {
-              backgroundColor: rowClickable ? "#f1f7ff" : "#fff",
-            },
+            ...(isConsultantVariant
+              ? getConsultantGridSx(rowClickable)
+              : isTransparent
+              ? transparentGridSx
+              : {
+                  border: "none",
+                  "& .MuiDataGrid-columnHeaders": {
+                    backgroundColor: "#f8fbff",
+                  },
+                  "& .MuiDataGrid-columnHeader": {
+                    fontWeight: "bold",
+                  },
+                  "& .MuiDataGrid-columnHeaderTitle": {
+                    fontWeight: "bold",
+                    fontSize: "0.875rem",
+                  },
+                  "& .MuiDataGrid-cell": {
+                    fontSize: "0.875rem",
+                    alignItems: "flex-start",
+                    whiteSpace: "normal",
+                    wordBreak: "break-word",
+                    lineHeight: 1.4,
+                    py: 1,
+                  },
+                  "& .MuiDataGrid-row": {
+                    backgroundColor: "#fff",
+                    transition: "background-color 0.2s ease",
+                    cursor: rowClickable ? "pointer" : "default",
+                  },
+                  "& .MuiDataGrid-row:hover": {
+                    backgroundColor: rowClickable ? "#f1f7ff" : "#fff",
+                  },
+                }),
           }}
-        /> : (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-gray-500">No {title} available</p>
-          </div>
-        )}
+        />
+    ) : (
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          py: 4,
+          minHeight: 80,
+          borderRadius: isConsultantVariant || isTransparent ? 0 : "12px",
+          border: isConsultantVariant || isTransparent ? "none" : "1px dashed",
+          borderColor: isConsultantVariant || isTransparent ? undefined : "#cbd5e1",
+          bgcolor: isConsultantVariant
+            ? colors.LIGHT_YELLOW
+            : isTransparent
+            ? "transparent"
+            : "#F0EDE8",
+        }}
+      >
+        <Typography
+          sx={{
+            color: "#334155",
+            fontWeight: 500,
+            fontSize: "0.875rem",
+            fontFamily: isConsultantVariant
+              ? undefined
+              : "var(--font-manrope), sans-serif",
+          }}
+        >
+          No {title} available
+        </Typography>
+      </Box>
+    );
+
+  return (
+    <>
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="space-between"
+        mb={isConsultantVariant ? 2 : 1.5}
+        sx={{ width: "100%", gap: 2, flexWrap: "wrap", px:2 }}
+      >
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          {showBackButton && (
+            <IconButton
+              onClick={onBackClick}
+              size="small"
+              sx={{ color: "text.primary" }}
+            >
+              <ArrowBackIcon fontSize="small" />
+            </IconButton>
+          )}
+          {titleIcon}
+          {title ? (
+            <Typography
+              variant="h6"
+              fontWeight={isConsultantVariant ? 600 : "bold"}
+              sx={{
+                fontSize: isConsultantVariant ? "1.0625rem" : undefined,
+                color: isConsultantVariant ? "#1E293B" : undefined,
+              }}
+            >
+              {title}
+            </Typography>
+          ) : null}
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+          {showSearch && (
+            <TextField
+              size="small"
+              placeholder={searchPlaceholder}
+              value={searchValue}
+              onChange={(e) => onSearchChange?.(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ fontSize: 20, color: "#94A3B8" }} />
+                  </InputAdornment>
+                ),
+              }}
+              sx={{
+                minWidth: { xs: "100%", sm: 280 },
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: 2,
+                  bgcolor: "#fff",
+                  fontSize: "0.875rem",
+                  "& fieldset": { borderColor: "#E2E8F0" },
+                  "&:hover fieldset": { borderColor: "#CBD5E1" },
+                  "&.Mui-focused fieldset": { borderColor: colors.BLUE },
+                },
+              }}
+            />
+          )}
+          {actionButton && <Box>{actionButton}</Box>}
+        </Box>
+      </Stack>
+
+      <Box
+        sx={{
+          width: "100%",
+          ...(isConsultantVariant
+            ? {
+                overflow: "hidden",
+                bgcolor: colors.LIGHT_YELLOW,
+              }
+            : !isTransparent
+            ? {
+                border: "1px solid #E8EAED",
+                borderRadius: 2.5,
+                overflow: "hidden",
+                bgcolor: "#fff",
+              }
+            : {}),
+        }}
+      >
+        {tableContent}
       </Box>
 
       {/* {enableSelection && selectedRows.size > 0 && (

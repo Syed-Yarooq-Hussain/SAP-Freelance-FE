@@ -1,6 +1,7 @@
 export const colors = {
   BLUE: "#3088B7",
   DARK_BLUE: "#005C8A",
+  ICON_BLUE: "#4A7AB5",
   GREEN: "#519F85",
   YELLOW: "#f9a825",
   ORANGE: "#FFB64E",
@@ -9,6 +10,7 @@ export const colors = {
   GOLD: "#fbc02d",
   DARK_RED: "#c62828",
   DARK_GREEN: "#388e3c",
+  LIGHT_YELLOW: "#FAF9F7",
   GREY: "#9e9e9e",
   PURPLE: "#8e24aa",
   GRAY_DARK: "#616161",

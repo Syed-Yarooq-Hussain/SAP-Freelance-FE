@@ -64,6 +64,7 @@ export type DashboardCalendarEvent = {
   badge: string;
   clientName: string;
   projectName: string;
+  kind?: "event" | "availability";
 };
 
 /** `month` is 0–11, same as `Date#getMonth()`. */
@@ -127,7 +128,17 @@ export function DashboardCalendar({
 
   const eventDateKeys = useMemo(() => {
     const keys = new Set<string>();
-    eventsByDate.forEach((_, key) => keys.add(key));
+    eventsByDate.forEach((items, key) => {
+      if (items.some((item) => item.kind !== "availability")) keys.add(key);
+    });
+    return keys;
+  }, [eventsByDate]);
+
+  const availabilityDateKeys = useMemo(() => {
+    const keys = new Set<string>();
+    eventsByDate.forEach((items, key) => {
+      if (items.some((item) => item.kind === "availability")) keys.add(key);
+    });
     return keys;
   }, [eventsByDate]);
 
@@ -488,7 +499,7 @@ export function DashboardCalendar({
       </div>
       )}
 
-      <div className="mb-6 md:bg-transparent bg-white md:rounded-none rounded-box-xl md:p-0 p-3">
+      <div className="md:mb-6 mb-2 md:bg-transparent bg-white md:rounded-none rounded-xl md:p-0 p-3">
         {pathname.includes('dashboard') && (
           <div className='md:hidden flex justify-between items-center mb-4'>
             <div className="flex items-center gap-2">
@@ -520,10 +531,11 @@ export function DashboardCalendar({
           {days.map((dayObj) => {
             const key = isoKey(dayObj.year, dayObj.month, dayObj.day);
             const hasEvent = eventDateKeys.has(key);
+            const hasAvailability = availabilityDateKeys.has(key);
             const isToday = key === todayKey;
             const isSelected = selectedKey === key;
             const pointer =
-              hasEvent || onDateClick ? "cursor-pointer" : "cursor-default";
+              hasEvent || hasAvailability || onDateClick ? "cursor-pointer" : "cursor-default";
 
             return (
               <div
@@ -539,27 +551,26 @@ export function DashboardCalendar({
                             ? "text-gray-700"
                             : "text-gray-300"
                     }
-                    ${
-                      !isSelected && hasEvent
-                        ? "bg-brand-blue text-white hover:opacity-80"
-                        : ""
-                    }
+                    ${!isSelected && hasAvailability && !hasEvent ? "bg-green-200 text-green-700 border border-green-300 hover:bg-green-200" : ""}
+                    ${!isSelected && hasEvent ? "bg-brand-blue text-white hover:opacity-80" : ""}
                     ${
                       !isSelected && !hasEvent && onDateClick
                         ? "hover:bg-slate-100"
                         : ""
                     }
-                    ${!isSelected && !hasEvent ? "bg-[#00000005]" : ""}
+                    ${!isSelected && !hasEvent && !hasAvailability ? "bg-[#00000005]" : ""}
                     ${pointer}
                   `}
               >
-                {hasEvent ? (
+                {hasEvent || hasAvailability ? (
                   <span
-                    className="w-1 h-1 bg-white rounded-full mb-0.5 block"
+                    className="w-1 h-1 rounded-full mb-0.5 block"
                     style={{
                       background: isSelected
                         ? "rgba(255,255,255,0.7)"
-                        : "white",
+                        : hasEvent
+                          ? "white"
+                          : "#16a34a",
                     }}
                   />
                 ) : (

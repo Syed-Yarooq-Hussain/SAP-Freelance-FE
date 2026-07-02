@@ -87,7 +87,7 @@ const getTagColor = (type: string) => {
   }
 }
 
-export function UpcomingEvents({ events = defaultEvents, maxItems = 4 }: UpcomingEventsProps) {
+export function UpcomingEvents({ events = [], maxItems = 4 }: UpcomingEventsProps) {
   const displayedEvents = events.slice(0, maxItems)
 
   const formatDate = (date: Date) => {
@@ -99,7 +99,7 @@ export function UpcomingEvents({ events = defaultEvents, maxItems = 4 }: Upcomin
   }
 
   return (
-    <div className="bg-white rounded-xl ">
+    <div className="bg-white rounded-xl md:p-0 p-3">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">
@@ -115,7 +115,7 @@ export function UpcomingEvents({ events = defaultEvents, maxItems = 4 }: Upcomin
         {displayedEvents.length === 0 ? (
           <div className="text-center py-8">
             <Calendar className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-            <p className="text-slate-500 text-sm">No upcoming events</p>
+            <p className="text-slate-500 text-sm">Your upcoming events will appear here</p>
           </div>
         ) : (
           displayedEvents.map((event) => (

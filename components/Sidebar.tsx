@@ -107,8 +107,6 @@ const Sidebar: FC<ISidebarProps> = ({ children }) => {
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
-      <AppNavbar showSidebar={expanded} />
-
       <Drawer
         variant="permanent"
         open={expanded}
@@ -318,17 +316,29 @@ const Sidebar: FC<ISidebarProps> = ({ children }) => {
       </Drawer>
 
       <Box
-        component="main"
         sx={{
           flexGrow: 1,
-          px: 0,
-          py: 2,
-          mt: `${appBarHeight}px`,
-          minHeight: "100vh",
-          pb: { xs: "70px", md: "0px" },
+          display: "flex",
+          flexDirection: "column",
+          minWidth: 0,
+          width: "100%",
         }}
       >
-        {children}
+        <AppNavbar showSidebar={expanded} />
+
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            px: 0,
+            py: 2,
+            mt: { xs: 0, md: `${appBarHeight}px` },
+            minHeight: "100vh",
+            pb: { xs: "70px", md: "0px" },
+          }}
+        >
+          {children}
+        </Box>
       </Box>
 
       <BottomNav />

@@ -95,7 +95,7 @@ export function SignUpModal({ onClose, onSignUp }: SignUpModalProps) {
           {/* Welcome Message */}
           <div className="text-center mb-4 sm:mb-5 md:mb-6">
             <h3 id="signup-modal-title" className="mb-1 sm:mb-2 text-base sm:text-lg md:text-xl font-semibold text-gray-900">Create Your Account</h3>
-            <p className="text-xs sm:text-sm text-gray-600">Join the SAP Freelance Portal</p>
+            <p className="text-xs sm:text-sm text-gray-600">Join the Consultcrew</p>
           </div>
 
           {/* Form */}

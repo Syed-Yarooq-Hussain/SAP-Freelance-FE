@@ -4,7 +4,7 @@ import { request } from "@/utils/request";
 import { API_ROUTES } from "@/utils/api_routes";
 
 interface IChangePassword{
-    oldPassword: string;
+    oldPassword?: string;
     newPassword: string;
 }
 

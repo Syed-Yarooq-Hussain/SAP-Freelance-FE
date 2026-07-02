@@ -13,29 +13,29 @@ const stats = [
     variant: "blue" as const,
     gradient: "linear-gradient(180deg, #2E9BC6 1%, #164B60 101%)"
   },
-  {
-    icon: Building2,
-    value: "64",
-    label: "Projects in Progress",
-    subLabel: "across 11 countries",
-    growth: "+87 this month",
-    variant: "blue" as const,
-    gradient: "linear-gradient(180deg, #51C0E9 0%, #096B93 100%)"
-  },
-  {
-    icon: Star,
-    value: "4.8/5",
-    label: "Avg Consultant Rating",
-    subLabel: "2,341 reviews",
-    growth: "+87 this month",
-    variant: "blue" as const,
-    gradient: "linear-gradient(180deg, #70D9FF 0%, #268CB2 100%)"
-  },
+  // {
+  //   icon: Building2,
+  //   value: "64",
+  //   label: "Projects in Progress",
+  //   subLabel: "across 11 countries",
+  //   growth: "+87 this month",
+  //   variant: "blue" as const,
+  //   gradient: "linear-gradient(180deg, #51C0E9 0%, #096B93 100%)"
+  // },
+  // {
+  //   icon: Star,
+  //   value: "4.8/5",
+  //   label: "Avg Consultant Rating",
+  //   subLabel: "2,341 reviews",
+  //   growth: "+87 this month",
+  //   variant: "blue" as const,
+  //   gradient: "linear-gradient(180deg, #70D9FF 0%, #268CB2 100%)"
+  // },
   {
     icon: Globe,
     value: "50+",
     label: "Platform Coverage",
-    subLabel: "countries · 12 SAP modules",
+    subLabel: "countries · 12 modules",
     growth: "+87 this month",
     variant: "green" as const,
   },
@@ -62,7 +62,7 @@ export default function Reviews() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+        <div className="w-full md:w-[60%] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 max-w-6xl">
           {stats.map((stat, index) => (
             <div
               key={index}

@@ -1,18 +1,19 @@
 'use client'
 
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import Sidebar from '../Sidebar'
 import { CalendarHeader } from './CalendarHeader'
 import CalendarEvents from './CalendarEvents'
 import { UpcomingEvents } from './UpcomingEvents'
 import EventsCalendar from './EventsCalendar'
-import { CalendarProvider } from './CalendarContext'
+import { CalendarProvider, useCalendar } from './CalendarContext'
 import AvailabilityCalendar from './AvailabilityCalendar'
 import { useConsultantMe } from '@/actions/consultants/useConsultantProfile'
 import { useSaveConsultantSchedule } from '@/actions/consultants/useSaveConsultantSchedule'
 import { DAY_MAP, WEEKLY_ROWS_INIT } from '@/constants/calendar'
 import { useToast } from '@/providers/ToastProvider'
 import { ArrowLeft } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 type WeeklySlot = { start: string; end: string }
 type WeeklySchedule = { day: string; slot?: WeeklySlot[]; active: boolean }
@@ -24,6 +25,8 @@ type WeeklyRow = {
   endTime: string
 }
 
+type CalendarFilter = 'all' | 'client' | 'interviews'
+
 const WEEK_DAYS = [
   { value: 'monday', label: 'Monday' },
   { value: 'tuesday', label: 'Tuesday' },
@@ -34,12 +37,105 @@ const WEEK_DAYS = [
   { value: 'sunday', label: 'Sunday' },
 ] as const
 
+const DAY_SHORT = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'] as const
+
+function formatDisplayDate(date: Date) {
+  return date.toLocaleDateString('en-US', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
+}
+
+function MobileWeekStrip({
+  weeklyByDay,
+}: {
+  weeklyByDay: Map<string, WeeklySchedule>
+}) {
+  const { activeView, currentTitle, calendarRef, setActiveView } = useCalendar()
+  const [anchorDate, setAnchorDate] = useState(new Date())
+
+  useEffect(() => {
+    const api = calendarRef.current?.getApi()
+    if (api) setAnchorDate(new Date(api.getDate()))
+  }, [calendarRef, activeView, currentTitle])
+
+  if (activeView === 'dayGridMonth') return null
+
+  const weekStart = new Date(anchorDate)
+  weekStart.setHours(0, 0, 0, 0)
+  weekStart.setDate(anchorDate.getDate() - anchorDate.getDay())
+
+  const weekDays = Array.from({ length: 7 }, (_, idx) => {
+    const date = new Date(weekStart)
+    date.setDate(weekStart.getDate() + idx)
+    const key = date
+      .toLocaleDateString('en-US', { weekday: 'long' })
+      .toLowerCase()
+    const hasAvailability = Boolean(weeklyByDay.get(key)?.active)
+    const selected =
+      date.getFullYear() === anchorDate.getFullYear() &&
+      date.getMonth() === anchorDate.getMonth() &&
+      date.getDate() === anchorDate.getDate()
+    return { date, hasAvailability, selected, label: DAY_SHORT[idx] }
+  })
+
+  return (
+    <div className="md:hidden">
+      <div className="overflow-x-auto">
+        <div className="grid grid-cols-7 min-w-full gap-1 rounded-xl bg-brand-yellow/60">
+          {weekDays.map(({ date, hasAvailability, selected, label }) => (
+            <button
+              key={date.toISOString()}
+              type="button"
+              onClick={() => {
+                const api = calendarRef.current?.getApi()
+                if (!api) return
+                api.changeView('timeGridDay', date)
+                setActiveView('timeGridDay')
+                setAnchorDate(new Date(date))
+              }}
+              className={`relative rounded-2xl border px-1 py-1 text-center transition ${
+                selected
+                  ? 'border-brand-blue bg-brand-blue text-white'
+                  : 'border-slate-300 bg-white text-slate-900'
+              }`}
+            >
+              <p className={`text-[10px] font-semibold tracking-wide ${selected ? 'text-white/85' : 'text-slate-400'}`}>
+                {label}
+              </p>
+              <p className="text-[24px] leading-none font-semibold scale-[0.55]">{date.getDate()}</p>
+              <span
+                className={`mx-auto block h-1.5 w-1.5 rounded-full ${
+                  hasAvailability
+                    ? selected
+                      ? 'bg-white'
+                      : 'bg-brand-blue'
+                    : 'bg-transparent'
+                }`}
+              />
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 const Index = () => {
-  const {toast} = useToast()
+  const router = useRouter()
+  const {toast} = useToast();
+  const {activeView} = useCalendar();
+  const [activeFilter, setActiveFilter] = useState<CalendarFilter>('all')
   const [showCustomAvailability, setShowCustomAvailability] = useState(false)
   const [availOpen, setAvailOpen] = useState(false)
   const [weeklyRows, setWeeklyRows] = useState<WeeklyRow[]>(WEEKLY_ROWS_INIT)
   const [applyToAllChecked, setApplyToAllChecked] = useState(false)
+  const weeklyAvailabilityStartDate = useMemo(() => {
+    const date = new Date()
+    date.setDate(date.getDate() + 1)
+    return formatDisplayDate(date)
+  }, [])
 
   const { data: meData } = useConsultantMe()
   const { mutateAsync: saveSchedule, isPending } = useSaveConsultantSchedule()
@@ -57,8 +153,11 @@ const Index = () => {
   const mapWeeklyFromMe = (meWeekly: WeeklySchedule[]): WeeklyRow[] => {
     const byDow = new Map<number, WeeklyRow>()
     meWeekly.forEach((d) => {
+      const dow = DAY_MAP.findIndex(
+        (day) => day.toLowerCase() === String(d.day || '').toLowerCase(),
+      )
       const row: WeeklyRow = {
-        dow: DAY_MAP.indexOf(d.day),
+        dow,
         label: (d.day || '').slice(0, 3).toUpperCase(),
         enabled: Boolean(d.active),
         startTime: d.slot?.[0]?.start ?? '',
@@ -98,6 +197,14 @@ const Index = () => {
 
   const canApplyToAll = Boolean(sourceTimeRow)
 
+  const getSavedWeeklyRows = () => {
+    if (weeklyFromMe.length > 0) {
+      return mapWeeklyFromMe(weeklyFromMe)
+    }
+
+    return (WEEKLY_ROWS_INIT as WeeklyRow[]).map((r) => ({ ...r }))
+  }
+
   const handleApplyToAll = (checked: boolean) => {
     setApplyToAllChecked(checked)
     if (!checked || !sourceTimeRow) return
@@ -124,13 +231,15 @@ const Index = () => {
   )
 
   const openWeeklyModal = () => {
-    if (weeklyFromMe.length > 0) {
-      setWeeklyRows(mapWeeklyFromMe(weeklyFromMe))
-    } else {
-      setWeeklyRows((WEEKLY_ROWS_INIT as WeeklyRow[]).map((r) => ({ ...r })))
-    }
+    setWeeklyRows(getSavedWeeklyRows())
     setApplyToAllChecked(false)
     setAvailOpen(true)
+  }
+
+  const closeWeeklyModal = () => {
+    setWeeklyRows(getSavedWeeklyRows())
+    setApplyToAllChecked(false)
+    setAvailOpen(false)
   }
 
   const handleAvailSubmit = async () => {
@@ -195,21 +304,57 @@ const Index = () => {
           />
         </div>
       ) : (
-        <CalendarProvider>
-          <div className="bg-white relative -mt-4 pb-8">
-            <CalendarHeader
-              onAddAvailability={openWeeklyModal}
-              onAddCustomAvailability={() => setShowCustomAvailability(true)}
-            />
-            <div className="grid grid-cols-1 md:grid-cols-7 gap-4">
-              <div className="col-span-1 md:col-span-2 pt-2 pl-2">
-                <CalendarEvents />
-                <div className="mt-2">
+        <>
+          <div className="bg-brand-yellow md:bg-white relative -mt-4 pb-8">
+            <div className="md:hidden flex items-center justify-between gap-2 px-3 py-3 border-b border-slate-200 bg-white">
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => router.back()}
+                  className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-700"
+                  aria-label="Back"
+                >
+                  <ArrowLeft className="w-3 h-3" />
+                </button>
+                <h1 className="text-sm font-medium text-slate-900">My Calendar</h1>
+              </div>
+              <div className=" flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowCustomAvailability(true)}
+                  className="inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-1 py-1 text-xxs font-semibold text-slate-900"
+                >
+                  + Custom Availability
+                </button>
+                <button
+                  type="button"
+                  onClick={openWeeklyModal}
+                  className="inline-flex items-center justify-center rounded-xl bg-brand-blue px-1 py-1 text-xxs font-semibold text-white"
+                >
+                  + Weekly Availability
+                </button>
+              </div>
+            </div>
+            <div>
+              <CalendarHeader
+                onFilterChange={setActiveFilter}
+                onAddAvailability={openWeeklyModal}
+                onAddCustomAvailability={() => setShowCustomAvailability(true)}
+              />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-7 gap-4 md:px-2 pt-2 px-3">
+              <div className="col-span-1 md:col-span-2 pt-2 pl-0 md:pl-2">
+                {activeView === 'dayGridMonth' && <CalendarEvents filter={activeFilter} />}
+                {activeView !== 'dayGridMonth' && <MobileWeekStrip weeklyByDay={weeklyByDay}/>}
+                <div className="mt-2 md:block hidden">
                   <UpcomingEvents />
                 </div>
               </div>
               <div className="col-span-1 md:col-span-5 min-h-[50vh]">
-                <EventsCalendar />
+                <EventsCalendar filter={activeFilter} />
+              </div>
+              <div className="md:hidden block">
+                <UpcomingEvents />
               </div>
             </div>
 
@@ -217,12 +362,17 @@ const Index = () => {
               <div className="fixed inset-0 z-[9999999] flex items-center justify-center bg-black/40 p-4">
                 <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white shadow-2xl">
                   <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200">
-                    <h3 className="text-sm font-semibold text-slate-900">
-                      Set Weekly Availability
-                    </h3>
+                    <div>
+                      <h3 className="text-sm font-semibold text-slate-900">
+                        Set Weekly Availability
+                      </h3>
+                      <p className="mt-1 text-xs text-slate-500">
+                        Updates will apply for the next 3 months, starting from {weeklyAvailabilityStartDate}.
+                      </p>
+                    </div>
                     <button
                       type="button"
-                      onClick={() => setAvailOpen(false)}
+                      onClick={closeWeeklyModal}
                       className="rounded-md px-2 py-1 text-slate-500 hover:bg-slate-100 hover:text-slate-800"
                     >
                       ×
@@ -230,6 +380,10 @@ const Index = () => {
                   </div>
 
                   <div className="p-5 space-y-3">
+                    <div className="rounded-xl border border-sky-100 bg-sky-50 px-3 py-2.5 text-xs leading-5 text-slate-700">
+                      Your marked weekly availability will reset and update your calendar slots for the next 3 months from tomorrow onward.
+                    </div>
+
                     <label className="flex items-center gap-2 px-1">
                       <input
                         type="checkbox"
@@ -304,7 +458,7 @@ const Index = () => {
                   <div className="flex items-center justify-end gap-2 px-5 py-4 border-t border-slate-200">
                     <button
                       type="button"
-                      onClick={() => setAvailOpen(false)}
+                      onClick={closeWeeklyModal}
                       className="rounded-lg border border-slate-300 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50"
                     >
                       Cancel
@@ -322,7 +476,7 @@ const Index = () => {
               </div>
             ) : null}
           </div>
-        </CalendarProvider>
+        </>
       )}
     </Sidebar>
   )

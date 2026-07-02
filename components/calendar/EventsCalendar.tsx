@@ -162,6 +162,8 @@ import { useConsultantCalendar } from '@/actions/consultants/useConsultantCalend
 import { useMemo, useState } from 'react'
 import { useCalendar } from './CalendarContext'
 
+type CalendarFilter = 'all' | 'client' | 'interviews'
+
 interface Slot { start_time: string; end_time: string }
 interface CalendarEvent {
   id: number; title: string; type: string
@@ -173,14 +175,14 @@ interface Day {
   events: CalendarEvent[]
 }
 
-function transformApiData(days: Day[]) {
+function transformApiData(days: Day[], filter: CalendarFilter) {
   const fcEvents: object[] = []
 
   days?.forEach((day) => {
 
     // 1. Available slot → shows as "09:00 Available" green text event in month view
     //    AND green background band in week/day view
-    if (day.availability.available && day.availability.slots.length > 0) {
+    if (filter === 'all' && day.availability.available && day.availability.slots.length > 0) {
       day.availability.slots.forEach((slot, idx) => {
 
         // Background band for week/day view
@@ -188,7 +190,7 @@ function transformApiData(days: Day[]) {
           start:      `${day.date}T${slot.start_time}:00`,
           end:        `${day.date}T${slot.end_time}:00`,
           display:    'background',
-          color:      '#dcfce7',
+          color:      '#BBF7D0',
           classNames: ['fc-avail-bg'],
         })
 
@@ -212,6 +214,9 @@ function transformApiData(days: Day[]) {
 
     // 2. Events
     day.events.forEach((event) => {
+      if (filter === 'interviews' && event.type !== 'INTERVIEW') return
+      if (filter === 'client' && event.type === 'INTERVIEW') return
+
       const isInterview = event.type === 'INTERVIEW'
       fcEvents.push({
         id:    String(event.id),
@@ -234,7 +239,7 @@ function transformApiData(days: Day[]) {
   return fcEvents
 }
 
-export default function EventsCalendar() {
+export default function EventsCalendar({ filter }: { filter: CalendarFilter }) {
   const { calendarRef, setActiveView, setCurrentTitle } = useCalendar()
 
   const goToDayView = (date: Date, scrollTime?: string) => {
@@ -252,7 +257,19 @@ export default function EventsCalendar() {
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1)
   const [currentYear,  setCurrentYear]  = useState(new Date().getFullYear())
   const { data, isLoading } = useConsultantCalendar(currentMonth- 1, currentYear)
-  const events = useMemo(() => transformApiData(data?.days as any ?? []), [data])
+  const events = useMemo(
+    () => transformApiData(data?.days as any ?? [], filter),
+    [data, filter],
+  )
+  const hasInterviewEvents = useMemo(
+    () =>
+      Boolean(
+        (data?.days as Day[] | undefined)?.some((day) =>
+          day.events?.some((event) => event.type === 'INTERVIEW'),
+        ),
+      ),
+    [data],
+  )
 
   const formatCompactAvailabilityTime = (value?: string) => {
     if (!value) return ''
@@ -262,11 +279,20 @@ export default function EventsCalendar() {
   }
 
   return (
-    <div className="relative fc-shell h-[80vh] pr-2">
+    <div className="relative fc-shell md:h-[80vh] h-auto pr-0 md:pr-0">
       <style>{`
 
         /* ─── Reset / base ─────────────────────────────────── */
-        .fc-shell .fc-scrollgrid          { border: '1px solid rgba(241, 245, 249, 0.5)' !important; }
+        .fc-shell .fc {
+          border-radius: 12px !important;
+          overflow: hidden !important;
+        }
+        .fc-shell .fc-scrollgrid {
+          border: 1px solid rgba(241, 245, 249, 0.9) !important;
+          border-radius: 12px !important;
+          overflow: hidden !important;
+          background: #fff !important;
+        }
         .fc-shell td, .fc-shell th        { border-color: #e2e8f0 !important; }
         .fc-shell .fc-scrollgrid-section > td { border: none !important; }
 
@@ -326,8 +352,17 @@ export default function EventsCalendar() {
         //   margin: 0 auto !important;
         //   padding: 0 !important;
         }
-        tbody{
-            background-color: #F0EDE8 !important;
+        tbody { background-color: #F0EDE8 !important; }
+
+        @media (max-width: 767px) {
+          .fc-shell tbody,
+          .fc-shell .fc-daygrid-body,
+          .fc-shell .fc-daygrid-day,
+          .fc-shell .fc-daygrid-day-frame,
+          .fc-shell .fc-daygrid-day-bg,
+          .fc-shell .fc-daygrid-day-top {
+            background-color: #fff !important;
+          }
         }
 
         /* ─── "more" link ───────────────────────────────────── */
@@ -382,7 +417,7 @@ export default function EventsCalendar() {
 
         /* ─── Green background band (week/day) ──────────────── */
         .fc-shell .fc-avail-bg {
-          background-color: #dcfce7 !important;
+          background-color: #BBF7D0 !important;
           opacity: 0.6 !important;
         }
 
@@ -399,6 +434,12 @@ export default function EventsCalendar() {
           </div>
         </div>
       )}
+
+      {filter === 'interviews' && !isLoading && !hasInterviewEvents ? (
+        <div className="mb-3 rounded-xl border border-dashed border-slate-300 bg-white px-4 py-3 text-center text-sm font-medium text-slate-500">
+          No interviews scheduled for this month.
+        </div>
+      ) : null}
 
       <FullCalendar
         ref={calendarRef}
@@ -430,20 +471,24 @@ export default function EventsCalendar() {
                 display:    'flex',
                 alignItems: 'center',
                 gap:        4,
-                backgroundColor: '#E8F0E7',
+                backgroundColor: '#BBF7D0',
                 borderRadius: '4px',
                 padding:    '1px 6px',
                 fontSize:   11,
+                minWidth:   0,
+                width:      '100%',
+                overflow:   'hidden',
               }}>
                 {showTopBar ? (
                   <div className='w-full absolute top-[-180%] left-0 h-[2px] rounded-xl bg-success'/>
                 ) : null}
-                {/* <span style={{
-                  width: 6, height: 6, borderRadius: '50%',
-                  background: '#22c55e', flexShrink: 0,
-                }} /> */}
-                <span style={{ color: '#16a34a', fontWeight: 500 }}>
-                  {formatCompactAvailabilityTime(slotStart)} - {formatCompactAvailabilityTime(slotEnd)} available
+                <span
+                  className="min-w-0 truncate font-medium text-[#16a34a]"
+                  style={{ fontSize: 11 }}
+                >
+                  {formatCompactAvailabilityTime(slotStart)} - {formatCompactAvailabilityTime(slotEnd)}
+                  <span className="hidden sm:inline"> available</span>
+                  <span className="inline sm:hidden"> Avl</span>
                 </span>
               </div>
             )
@@ -452,8 +497,6 @@ export default function EventsCalendar() {
           const isInterview  = type === 'INTERVIEW'
           const accentColor  = isInterview ? '#E8643A' : '#3b82f6'
           const textColor    = isInterview ? '#E8643A' : '#1e40af'
-          const labelBg      = isInterview ? '#f97316' : '#3b82f6'
-          const labelText    = isInterview ? 'Interview' : 'Client'
 
           // ── Month view pill ────────────────────────────────
           if (isMonth) {

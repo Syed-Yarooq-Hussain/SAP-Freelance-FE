@@ -37,9 +37,11 @@ export const ProfileCard: React.FC<{ data: DashboardData }> = ({ data }) => {
       </div>
 
           <div className='flex flex-col md:flex-row items-center gap-2'>
-      <Button className="flex-1 w-full md:w-auto !text-xs bg-brand-blue text-white rounded-xl h-10 hover:bg-[#2670A0]">
-        <Clock className="w-2 h-2 " /> Complete your profile now
-      </Button>
+            <a href={APP_ROUTES.CONSULTANT.PROFILE}>
+              <Button className="flex-1 w-full md:w-auto !text-xs bg-brand-blue text-white rounded-xl h-10 hover:bg-[#2670A0]">
+                <Clock className="w-2 h-2 " /> Complete your profile now
+              </Button>
+            </a>
 
       <Button onClick={() => router.push(APP_ROUTES.CONSULTANT.PROFILE)} variant="outline" className="flex-1 w-full md:w-auto h-10 !text-xs rounded-xl text-success">
         <Star className="w-4 h-4" /> Add your certifications

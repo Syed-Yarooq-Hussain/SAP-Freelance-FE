@@ -84,7 +84,7 @@ export default function AccountPage() {
       <main className=" bg-white">
         <div className=" mx-auto px-4 py-8">
           {/* Header */}
-          <div className="flex items-center justify-between">
+          <div className="flex d items-center justify-between">
             <div className="mb-4 font-manrope">
               <h1 className="text-2xl font-neue text-slate-900 tracking-tight">
                 Account Settings
@@ -99,7 +99,7 @@ export default function AccountPage() {
                 onClick={() => setIsDeleteModalOpen(true)}
               >
                 <TrashIcon className="w-4 h-4" />
-                <span>Delete Account</span>
+                <span className="md:block hidden">Delete Account</span>
               </button>
             </div>
           </div>

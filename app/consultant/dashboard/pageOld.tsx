@@ -152,12 +152,13 @@ export default function ConsultantDashboardPage() {
       onSuccess: (res) => {
         const mapped: ConsultantPaymentRow[] =
           res.data?.map((item: IConsultantPaymentDTO) => ({
-            id: item.id,
+            id: item.id || `${item.project?.id ?? "project"}-${item.month}`,
             project: item.project?.name ?? "N/A",
-            duedates: formatYMD(item.due_date),
+            duedates: item.due_date ? formatYMD(item.due_date) : "N/A",
+            totalHours: String(item.total_hours ?? 0),
             amount: `$${item.amount}`,
             status: item.payment_module ?? "Pending",
-            invoice: "-",
+            pdfUrl: item.pdf_url ?? item.pdfUrl ?? "",
           })) ?? [];
 
         setPaymentRows(mapped);

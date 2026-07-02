@@ -46,7 +46,7 @@ export function ProfileImage({ imageUrl, name, initials }: ProfileImageProps) {
   
 
   return (
-    <div className="relative w-56 h-56 mx-auto p-3 shadow-2xl rounded-3xl">
+    <div className="relative w-36 h-36 md:w-56 md:h-56 mx-auto p-3 shadow-2xl rounded-3xl">
       {user?.user?.avatar ? (
         <Image
           src={user?.user?.avatar || ''}

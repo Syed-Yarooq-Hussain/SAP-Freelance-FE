@@ -4,12 +4,32 @@ import { API_ROUTES } from "@/utils/api_routes";
 import { request } from "@/utils/request";
 import { getCachedSession } from "./sessionCache";
 
-export async function fetchClientConsultants(): Promise<
+export type ClientConsultantsQuery = Record<
+  string,
+  string | number | boolean | Array<string | number | boolean> | null | undefined
+>;
+
+export async function fetchClientConsultants(
+  filters?: ClientConsultantsQuery
+): Promise<
   ApiResponse<IConsultantUser[]>
 > {
+  const params =
+    filters && Object.keys(filters).length > 0
+      ? Object.fromEntries(
+          Object.entries(filters).filter(([, value]) => {
+            if (value === undefined || value === null) return false;
+            if (typeof value === "string") return value.trim() !== "";
+            if (Array.isArray(value)) return value.length > 0;
+            return true;
+          })
+        )
+      : undefined;
+
   const res = await request<undefined, IConsultantUser[]>({
     url: API_ROUTES.CLIENT_CONSULTANTS,
     method: "GET",
+    params,
   });
 
   if (res.status !== "success") {

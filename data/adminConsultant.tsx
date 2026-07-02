@@ -11,15 +11,15 @@ import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 export const getAdminConsultantColumns = (
   onToggleLock: (id: number, locked: boolean) => void
 ): GridColDef<AdminConsultantRow>[] => [
-  { field: "name", headerName: "Name", flex: 2 },
-  { field: "coremodules", headerName: "Modules (Core)", flex: 1.5 },
-  { field: "othersmodules", headerName: "Modules (Others)", flex: 1.5 },
+  { field: "name", headerName: "Name" },
+  { field: "coremodules", headerName: "Modules (Core)", flex: 2 },
+  { field: "othersmodules", headerName: "Modules (Others)", flex: 2 },
   { field: "experience", headerName: "Experience", flex: 1 },
   { field: "hourlyRate", headerName: "Hourly Rate", flex: 1 },
   {
     field: "action",
     headerName: "Action",
-    flex: 1,
+    width: 120,
     sortable: false,
     filterable: false,
     disableColumnMenu: true,

@@ -92,6 +92,10 @@ export default function Consultant<
       ]
     : columns;
 
+  const handleFilter = (filters:any) => {
+    console.log(filters,'filters');
+  };
+
   return (
     <>
       <Box
@@ -180,7 +184,7 @@ export default function Consultant<
       </Box>
 
       {showFilters && (
-        <FilterDrawer open={filterOpen} onClose={() => setFilterOpen(false)} />
+        <FilterDrawer open={filterOpen} onClose={() => setFilterOpen(false)} onApply={(filters:any) => handleFilter(filters)} />
       )}
 
       <DynamicPopup

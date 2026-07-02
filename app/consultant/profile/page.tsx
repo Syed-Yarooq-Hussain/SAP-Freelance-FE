@@ -22,6 +22,8 @@ export default function ProfilePage() {
   const user = useAppSelector((state:any) => state?.user?.user)
   const dispatch = useAppDispatch()
   const [isEditing, setIsEditing] = useState(false)
+  const [scrollToClientsSummaryOnEdit, setScrollToClientsSummaryOnEdit] =
+    useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isCVModalOpen, setIsCVModalOpen] = useState(false)
   const handleCloseCVModal = () => setIsCVModalOpen(false)
@@ -60,23 +62,23 @@ export default function ProfilePage() {
     }
   }
 
-  const handleSave = async (data: unknown, apiPayload?: any) => {
-    setIsLoading(true)
-    try {
-      const res = await updateConsultantProfile(user?.id, apiPayload)
-      if (res.status === 'success') {
-        const consultantData = await getConsultantMeService()
-        if (consultantData?.data) {
-          dispatch(updateUser({ user: consultantData.data }))
-        }
-      }
-      setIsEditing(false)
-    } catch (error) {
-      console.error('Error saving profile:', error)
-    } finally {
-      setIsLoading(false)
-    }
-  }
+  // const handleSave = async (data: unknown, apiPayload?: any) => {
+  //   setIsLoading(true)
+  //   try {
+  //     const res = await updateConsultantProfile(user?.id, apiPayload)
+  //     if (res.status === 'success') {
+  //       const consultantData = await getConsultantMeService()
+  //       if (consultantData?.data) {
+  //         dispatch(updateUser({ user: consultantData.data }))
+  //       }
+  //     }
+  //     setIsEditing(false)
+  //   } catch (error) {
+  //     console.error('Error saving profile:', error)
+  //   } finally {
+  //     setIsLoading(false)
+  //   }
+  // }
 
    // Handle CV autofill data
    const handleCVAutofill = (cvData: any) => {
@@ -126,11 +128,26 @@ export default function ProfilePage() {
                 isLoading={isLoading}
                 onCancel={() => setIsEditing(false)}
               /> */}
-              <ProfileEditPage goBack={() => setIsEditing(false)}/>
+              <ProfileEditPage
+                goBack={() => {
+                  setScrollToClientsSummaryOnEdit(false)
+                  setIsEditing(false)
+                }}
+                scrollToClientsSummary={scrollToClientsSummaryOnEdit}
+              />
             </div>
           ) : (
             <div className=' py-4 px-4'>
-              <ProfileLayout consultant={user} setIsEditing={setIsEditing} setCvModalOpen={setIsCVModalOpen}/>
+              <ProfileLayout
+                consultant={user}
+                setCvModalOpen={setIsCVModalOpen}
+                onEnterEdit={(opts) => {
+                  setScrollToClientsSummaryOnEdit(
+                    Boolean(opts?.scrollToClientsSummary),
+                  )
+                  setIsEditing(true)
+                }}
+              />
             </div>
             // <>
             //   <ProfileHero

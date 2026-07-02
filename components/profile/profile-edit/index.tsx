@@ -180,8 +180,10 @@ const InputField = ({
 }: any) => (
   <div>
     <label className="flex text-xs font-manrope font-medium text-slate-700 mb-2 items-center justify-between">
-      <span> {label} </span>
-      {required && <span className="text-red-500 ml-1">*</span>}
+      <span>
+        {label}
+        {required && <span className="text-red-500 ml-1">*</span>}
+      </span>
       {optional && (
         <span className="text-xs text-light-grey ml-1">Optional</span>
       )}
@@ -224,7 +226,14 @@ const SelectField = ({
   </div>
 );
 
-export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
+export default function ProfileEditPage({
+  goBack,
+  scrollToClientsSummary = false,
+}: {
+  goBack: () => void;
+  /** When true on mount (e.g. from “Write Summary”), expand Basic Information and scroll to the headline editor */
+  scrollToClientsSummary?: boolean;
+}) {
   const dispatch = useAppDispatch();
   const { user: consultant } = useAppSelector((state) => state.user);
   const [industries, setIndustries] = useState<any[]>([]);
@@ -308,6 +317,16 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
     [setFocus],
   );
 
+  const handleClientsSummaryChange = useCallback(
+    (value: string) => {
+      setValue("clients_summary", value, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+    },
+    [setValue],
+  );
+
   useEffect(() => {
     reset(buildProfileEditDefaults(consultant));
   }, [consultant, reset]);
@@ -330,11 +349,43 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
     });
   }, []);
 
+  const clientsSummaryScrollDoneRef = useRef(false);
+
+  useEffect(() => {
+    if (!scrollToClientsSummary) {
+      clientsSummaryScrollDoneRef.current = false;
+      return;
+    }
+    setExpandedSections((prev) => ({ ...prev, keyLocations: true }));
+  }, [scrollToClientsSummary]);
+
+  useEffect(() => {
+    if (
+      !scrollToClientsSummary ||
+      !expandedSections.keyLocations ||
+      clientsSummaryScrollDoneRef.current
+    ) {
+      return;
+    }
+    const scroll = () => {
+      const el = document.getElementById("profile-edit-clients-summary");
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+        clientsSummaryScrollDoneRef.current = true;
+      }
+    };
+    const frame = requestAnimationFrame(() => {
+      requestAnimationFrame(scroll);
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [scrollToClientsSummary, expandedSections.keyLocations]);
+
   // console.log(industries, expertiseLevels,'levellll');
 
   const cvUrl = watch("cv_url");
   const coreModules = watch("core");
   const otherModules = watch("others");
+  const weeklyAvailableHours = watch("weekly_available_hours");
   const usernameW = watch("username");
   const emailW = watch("email");
   const { data: sapModulesData } = useSapModules();
@@ -345,8 +396,19 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
   const headerInitial =
     (usernameW || nestedUser?.username || "?").trim().charAt(0).toUpperCase() ||
     "?";
+  const hasWeeklyAvailabilityChanged = useMemo(() => {
+    const initial = defaultValues.weekly_available_hours;
+    const current = weeklyAvailableHours;
+    const isBlank = (value: unknown) =>
+      value === null || value === undefined || String(value).trim() === "";
 
-    console.log(sapOtherModulesData,'sapOtherModulesData');
+    if (isBlank(initial)) {
+      return !isBlank(current);
+    }
+
+    return Number(initial) !== Number(current);
+  }, [defaultValues.weekly_available_hours, weeklyAvailableHours]);
+
   // const handlePhotoSelected = async (
   //   e: React.ChangeEvent<HTMLInputElement>,
   // ) => {
@@ -741,7 +803,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
   return (
     <div className="min-h-screen bg-[#F0EDE8EB] pb-28 font-manrope md:bg-white md:pb-12">
       {/* Header */}
-      <div className="sticky top-14 z-20 border-b border-slate-200 bg-transparent md:bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-transparent  md:supports-[backdrop-filter]:bg-white/85">
+      <div className="sticky top-0 md:top-14 z-20 border-b border-slate-200 bg-transparent md:bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-transparent  md:supports-[backdrop-filter]:bg-white/85">
         <div className="mx-auto px-6 py-4 flex items-center justify-between shadow-sm">
           <div className="flex items-center gap-2 md:gap-4">
             <div className="flex items-center">
@@ -844,6 +906,7 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                       <SapModulesDropdown
                         data={sapOtherModulesData?.data || []}
                         values={coreModules || []}
+                        maxSelections={2}
                         onChange={(selected) => {
                           if (selected.length > 2) {
                             setError("core", {
@@ -1217,7 +1280,10 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                       outcomes. Use numbers — e.g. &quot;reduced close cycle by
                       60%&quot;. Max 500 characters.
                     </p>
-                    <div>
+                    <div
+                      id="profile-edit-clients-summary"
+                      className="scroll-mt-28"
+                    >
                       <label className="block text-xs font-manrope font-medium text-slate-700 mb-2">
                         Professional Headline
                         <span className="text-red-500 ml-1">*</span>
@@ -1228,17 +1294,14 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
                           style={{ borderRadius: "10px" }}
                           theme="snow"
                           value={watch("clients_summary") || ""}
-                          onChange={(value) => {
-                            console.log("clients_summary", value);
-                            setValue("clients_summary", value);
-                          }}
+                          onChange={handleClientsSummaryChange}
                         />
                         <p className="text-xs text-slate-500 mt-1">
                           This appears right below your name - keep it punchy
                           and specific
                         </p>
                         <div className="absolute top-2 right-3 text-xs text-slate-500">
-                          {watch("clients_summary")?.length || 0} / 100
+                          {watch("clients_summary")?.length || 0}
                         </div>
                       </div>
                       {errors.clients_summary?.message && (
@@ -1707,12 +1770,31 @@ export default function ProfileEditPage({ goBack }: { goBack: () => void }) {
             />
             <ConfirmDeleteModal
               isOpen={saveConfirmOpen}
-              title="Save changes"
-              message="Are you sure you want to save these profile changes?"
-              confirmLabel="Save"
+              title={
+                hasWeeklyAvailabilityChanged
+                  ? "Update weekly availability?"
+                  : "Save changes"
+              }
+              message={
+                hasWeeklyAvailabilityChanged
+                  ? "Changing weekly availability will reset your calendar availability. Existing calendar slots may need to be set again. Are you sure you want to continue?"
+                  : "Are you sure you want to save these profile changes?"
+              }
+              confirmLabel={
+                hasWeeklyAvailabilityChanged ? "Yes, update" : "Save"
+              }
               cancelLabel="Cancel"
               variant="primary"
-              onCancel={() => setSaveConfirmOpen(false)}
+              onCancel={() => {
+                if (hasWeeklyAvailabilityChanged) {
+                  setValue(
+                    "weekly_available_hours",
+                    defaultValues.weekly_available_hours,
+                    { shouldValidate: true, shouldDirty: true },
+                  );
+                }
+                setSaveConfirmOpen(false);
+              }}
               onConfirm={() => {
                 void handleSubmit(
                   (data) => {
