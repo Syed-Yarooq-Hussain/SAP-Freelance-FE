@@ -18,6 +18,7 @@ import {
   Calendar,
   FileText,
   CreditCard,
+  Clock,
   Menu,
   X,
   Settings,
@@ -65,6 +66,7 @@ const BottomNav: FC = () => {
         { icon: <Users size={14} />, label: 'Consultants', link: r.CONSULTANTS },
         { icon: <Briefcase size={14} />, label: 'Projects', link: r.PROJECTS },
         { icon: <CreditCard size={14} />, label: 'Payments', link: r.PAYMENTS },
+        { icon: <CreditCard size={14} />, label: 'Consultant Pay', link: r.CONSULTANT_PAYMENTS },
       ];
     }
 
@@ -85,6 +87,7 @@ const BottomNav: FC = () => {
       { icon: <User size={14} />, label: 'My Profile', link: r.PROFILE },
       { icon: <Calendar size={14} />, label: 'My Calendar', link: r.CALENDAR },
       { icon: <FileText size={14} />, label: 'Documents', link: r.DOCUMENTS },
+      { icon: <Clock size={14} />, label: 'Hour Logs', link: r.HOUR_LOGS },
       { icon: <CreditCard size={14} />, label: 'Payments', link: r.PAYMENTS },
     ];
   }, [role]);
