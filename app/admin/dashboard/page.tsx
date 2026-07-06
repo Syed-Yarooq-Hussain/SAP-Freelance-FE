@@ -3,6 +3,7 @@
 import { useAdminDashboardStats } from "@/actions/admin/useAdminDashboardStats";
 import { usePendingConsultants } from "@/actions/admin/usePendingConsultants";
 import { useUpdateConsultantStatus } from "@/actions/admin/useUpdateConsultantStatus";
+import AdminPageShell from "@/components/admin/AdminPageShell";
 import AppButton from "@/components/Button";
 import Sidebar from "@/components/Sidebar";
 import Dashboard from "@/components/specific/Dashboard";
@@ -59,38 +60,43 @@ export default function AdminDashboardPage() {
 
   return (
     <Sidebar>
-      <Dashboard
-        stats={stats}
-        chart={<VisibilityChart />}
-        projectTable={{
-          title: "Consultant Account Request",
-          columns: adminConsultantColumns,
-          rows,
-          pageSize: 10,
-          showAvatar: true,
-          avatarField: "name",
-          enableSelection: true,
-          onSelectionChange: setSelectedIds,
-          selectionActions: (
-            <>
-              <AppButton
-                label="Accept"
-                colorKey="BLUE"
-                width={180}
-                disabled={!selectedIds.length}
-                onClick={handleBulkAccept}
-              />
-              <AppButton
-                label="Reject"
-                colorKey="RED"
-                width={180}
-                disabled={!selectedIds.length}
-                onClick={handleBulkReject}
-              />
-            </>
-          ),
-        }}
-      />
+      <AdminPageShell
+        title="Admin Dashboard"
+        description="Monitor platform activity and review pending consultant requests."
+      >
+        <Dashboard
+          stats={stats}
+          chart={<VisibilityChart />}
+          projectTable={{
+            title: "Consultant Account Request",
+            columns: adminConsultantColumns,
+            rows,
+            pageSize: 10,
+            showAvatar: true,
+            avatarField: "name",
+            enableSelection: true,
+            onSelectionChange: setSelectedIds,
+            selectionActions: (
+              <>
+                <AppButton
+                  label="Accept"
+                  colorKey="BLUE"
+                  width={180}
+                  disabled={!selectedIds.length}
+                  onClick={handleBulkAccept}
+                />
+                <AppButton
+                  label="Reject"
+                  colorKey="RED"
+                  width={180}
+                  disabled={!selectedIds.length}
+                  onClick={handleBulkReject}
+                />
+              </>
+            ),
+          }}
+        />
+      </AdminPageShell>
     </Sidebar>
   );
 }

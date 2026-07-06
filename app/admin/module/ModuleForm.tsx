@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import {
   useCreateModule,
   useUpdateModule,
 } from "@/actions/admin/useModules";
-
+import { useEffect, useState } from "react";
 import ModuleTreeSelect from "./ModuleTreeSelect";
 
 export default function ModuleForm({ editData }: any) {
@@ -17,7 +16,6 @@ export default function ModuleForm({ editData }: any) {
     parent_id: null as number | null,
   });
 
-  
   useEffect(() => {
     if (editData) {
       setForm({
@@ -27,12 +25,20 @@ export default function ModuleForm({ editData }: any) {
     }
   }, [editData]);
 
+  const resetForm = () => {
+    alert("Saved successfully");
+    setForm({
+      name: "",
+      parent_id: null,
+    });
+  };
+
   const handleSubmit = () => {
     if (!form.name.trim()) return alert("Name required");
 
     const payload = {
       ...form,
-      is_core: false, // ✅ force false
+      is_core: false,
     };
 
     if (editData) {
@@ -52,60 +58,37 @@ export default function ModuleForm({ editData }: any) {
     }
   };
 
-  const resetForm = () => {
-    alert("Saved successfully ✅");
-
-    setForm({
-      name: "",
-      parent_id: null,
-    });
-  };
-
   return (
-    <div className="bg-white rounded-2xl shadow-md p-6 space-y-5 max-w-xl">
-      
-      {/* TITLE */}
-      <h2 className="text-xl font-semibold text-gray-800">
+    <div className="max-w-xl space-y-5 rounded-xl border border-slate-200 bg-white p-6">
+      <h2 className="text-base font-semibold text-slate-900">
         {editData ? "Edit Module" : "Create Module"}
       </h2>
 
-      {/* MODULE NAME */}
       <div className="space-y-1">
-        <label className="text-sm text-gray-600">
+        <label className="text-sm font-medium text-slate-700">
           Module Name
         </label>
-
         <input
-          className="w-full border border-gray-300 px-3 py-2 rounded-lg 
-          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
-          transition"
+          className="w-full rounded-xl border border-slate-300 bg-brand-yellow px-3 py-2 text-sm text-slate-900 transition focus:border-[#3088B7] focus:outline-none focus:ring-2 focus:ring-[#3088B7]"
           placeholder="Enter module name..."
           value={form.name}
-          onChange={(e) =>
-            setForm({ ...form, name: e.target.value })
-          }
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
         />
       </div>
 
-      {/* PARENT MODULE */}
       <div className="space-y-1">
-        <label className="text-sm text-gray-600">
+        <label className="text-sm font-medium text-slate-700">
           Parent Module
         </label>
-
         <ModuleTreeSelect
           value={form.parent_id}
-          onChange={(id: number | null) =>
-            setForm({ ...form, parent_id: id })
-          }
+          onChange={(id: number | null) => setForm({ ...form, parent_id: id })}
         />
       </div>
 
-      {/* ACTION BUTTON */}
       <button
         onClick={handleSubmit}
-        className="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] 
-        text-white font-medium py-2.5 rounded-lg shadow-sm transition"
+        className="w-full rounded-xl bg-brand-blue py-2.5 text-sm font-semibold text-white transition hover:shadow-lg hover:shadow-brand-blue/30"
       >
         {editData ? "Update Module" : "Create Module"}
       </button>

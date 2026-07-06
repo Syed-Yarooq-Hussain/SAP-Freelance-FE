@@ -1,9 +1,10 @@
 "use client";
 
+import AdminPageShell from "@/components/admin/AdminPageShell";
 import Sidebar from "@/components/Sidebar";
 import { useState } from "react";
-import IndustriesTable from "./IndustriesTable";
 import IndustriesForm from "./IndustriesForm";
+import IndustriesTable from "./IndustriesTable";
 
 type Tab = "list" | "create";
 
@@ -20,53 +21,46 @@ export default function IndustriesPage() {
     setEditData(null);
     setActiveTab("list");
   };
+
   return (
     <Sidebar>
-      <div className="p-6 bg-gray-50 min-h-screen">
-        {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-800">Industries Management</h1>
-          <p className="text-gray-500 mt-2">Manage SAP industry classifications</p>
-        </div>
-        {/* Tabs */}
-        <div className="flex gap-2 mb-6 border-b border-gray-200">
-          <button
-            onClick={() => {
-              setActiveTab("list");
-              setEditData(null);
-            }}
-            className={`px-4 py-3 font-medium border-b-2 transition ${
-              activeTab === "list"
-                ? "border-blue-600 text-blue-600"
-                : "border-transparent text-gray-600 hover:text-gray-800"
-            }`}
-          >
-            📋 List Industries
-          </button>
-
-          <button
-            onClick={() => setActiveTab("create")}
-            className={`px-4 py-3 font-medium border-b-2 transition ${
-              activeTab === "create"
-                ? "border-blue-600 text-blue-600"
-                : "border-transparent text-gray-600 hover:text-gray-800"
-            }`}
-          >
-            {editData ? "✏️ Edit Industry" : "➕ Create Industry"}
-          </button>
+      <AdminPageShell
+        title="Industries"
+        description="Manage SAP industry classifications."
+      >
+        <div className="rounded-xl border border-slate-200 bg-white p-3">
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => {
+                setActiveTab("list");
+                setEditData(null);
+              }}
+              className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+                activeTab === "list"
+                  ? "bg-brand-blue text-white"
+                  : "bg-background-main text-slate-600 hover:bg-slate-100"
+              }`}
+            >
+              List Industries
+            </button>
+            <button
+              onClick={() => setActiveTab("create")}
+              className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+                activeTab === "create"
+                  ? "bg-brand-blue text-white"
+                  : "bg-background-main text-slate-600 hover:bg-slate-100"
+              }`}
+            >
+              {editData ? "Edit Industry" : "Create Industry"}
+            </button>
+          </div>
         </div>
 
-        {/* Content */}
-        <div className="space-y-6">
-          {activeTab === "list" && (
-            <IndustriesTable onEdit={handleEdit} />
-          )}
-
-          {activeTab === "create" && (
-            <IndustriesForm editData={editData} onCancel={handleCancel} />
-          )}
-        </div>
-      </div>
+        {activeTab === "list" && <IndustriesTable onEdit={handleEdit} />}
+        {activeTab === "create" && (
+          <IndustriesForm editData={editData} onCancel={handleCancel} />
+        )}
+      </AdminPageShell>
     </Sidebar>
   );
 }

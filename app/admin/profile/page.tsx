@@ -1,5 +1,6 @@
 "use client";
 
+import AdminPageShell from "@/components/admin/AdminPageShell";
 import Sidebar from "@/components/Sidebar";
 import Profile from "@/components/specific/ConsultantProfile";
 import { APP_ROUTES } from "@/utils/app_routes";
@@ -41,9 +42,20 @@ function ProfilePageContent() {
 export default function AdminProfilePage() {
   return (
     <Sidebar>
-      <Suspense fallback={<div>Loading profile...</div>}>
-        <ProfilePageContent />
-      </Suspense>
+      <AdminPageShell
+        title="Admin Profile"
+        description="View and manage the admin profile."
+      >
+        <Suspense
+          fallback={
+            <div className="rounded-xl border border-slate-200 bg-white p-6 text-sm text-slate-500">
+              Loading profile...
+            </div>
+          }
+        >
+          <ProfilePageContent />
+        </Suspense>
+      </AdminPageShell>
     </Sidebar>
   );
 }

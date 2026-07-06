@@ -7,50 +7,58 @@ import { GridColDef } from "@mui/x-data-grid";
 export const adminStatsConfig: Omit<StatCardProps, "subtitle">[] = [
   {
     title: "Total Consultants",
-    color: "linear-gradient(135deg, #97B7FF 0%, #3088B7 100%)",
+    color: "#134481",
     icon: "QueryStatsIcon",
+    variant: "outlined",
   },
 
   {
     title: "Total Clients",
-    color: "linear-gradient(135deg, #4BD7BB 0%, #519F85 100%)",
+    color: "#2563EB",
     icon: "PeopleAltIcon",
+    variant: "outlined",
   },
 
   {
     title: "Pending Profile",
-    color: "linear-gradient(135deg, #F6BD6C 0%, #024E76 100%)",
+    color: "#64748B",
     icon: "CurrencyExchangeIcon",
+    variant: "outlined",
   },
 
   {
     title: "Active Projects",
-    color: "linear-gradient(135deg, #FF99AB 0%, #005C8A 100%)",
+    color: "#0F766E",
     icon: "BallotIcon",
+    variant: "outlined",
   },
 
   {
     title: "Active Consultant",
-    color: "linear-gradient(135deg, #0040CC 0%, #100858 100%)",
+    color: "#1E293B",
     icon: "WorkOutlineIcon",
+    variant: "outlined",
   },
 
   {
     title: "Active Clients",
-    color: "linear-gradient(135deg, #0BA45D 0%, #0C2D17 100%)",
+    color: "#475569",
     icon: "GroupWorkIcon",
+    variant: "outlined",
   },
 
   {
     title: "Interviews this Week",
-    color: "linear-gradient(135deg, #FB9400 0%, #653B00 100%)",
+    color: "#0369A1",
     icon: "EventAvailableIcon",
+    variant: "outlined",
   },
 
   {
     title: "Upcoming Projects",
-    color: "linear-gradient(135deg, #B3001E 0%, #200005 100%)",
+    color: "#334155",
     icon: "UpdateIcon",
+    variant: "outlined",
   },
 ];
 

@@ -21,6 +21,7 @@ interface ConsultantProfileModalProps {
   isSelected: boolean;
   onClose: () => void;
   onAddToSelection: () => void;
+  showAddButton?: boolean;
 }
 
 const parseModuleList = (value?: string): string[] => {
@@ -69,6 +70,7 @@ export default function ConsultantProfileModal({
   isSelected,
   onClose,
   onAddToSelection,
+  showAddButton = true,
 }: ConsultantProfileModalProps) {
   useEffect(() => {
     if (!open) return;
@@ -234,14 +236,16 @@ export default function ConsultantProfileModal({
           >
             Close
           </button>
-          <button
-            type="button"
-            onClick={onAddToSelection}
-            disabled={isSelected}
-            className="rounded-lg bg-brand-blue px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-blue-light disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {isSelected ? "Already Selected" : "Add to Selection"}
-          </button>
+          {showAddButton && (
+            <button
+              type="button"
+              onClick={onAddToSelection}
+              disabled={isSelected}
+              className="rounded-lg bg-brand-blue px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-blue-light disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isSelected ? "Already Selected" : "Add to Selection"}
+            </button>
+          )}
         </div>
       </div>
     </div>

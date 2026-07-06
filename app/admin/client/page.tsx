@@ -2,6 +2,7 @@
 
 import { useAdminClients } from "@/actions/admin/useAdminClients";
 import { useUpdateClientStatus } from "@/actions/admin/useUpdateClientStatus";
+import AdminPageShell from "@/components/admin/AdminPageShell";
 import Sidebar from "@/components/Sidebar";
 import Consultant from "@/components/specific/Consultant";
 import { getAdminClientColumns } from "@/data/adminClient";
@@ -29,6 +30,8 @@ export default function AdminClientPage() {
       id: item.id,
       avatar: "",
       name: item.username,
+      email: item.email ?? item.user?.email ?? "N/A",
+      phone: item.phone ?? item.user?.phone ?? "N/A",
       activeprojects: item.active_count ?? 0,
       completedprojects: item.completed_count ?? 0,
       draftprojects: item.draft_count ?? 0,
@@ -39,7 +42,6 @@ export default function AdminClientPage() {
   const columns = useMemo(
     () =>
       getAdminClientColumns((id, isLocked) => {
-        // 🚫 Locked tab = no action
         if (activeTab === "locked" || isLocked) return;
         updateClientStatus.mutate({
           clientId: id,
@@ -51,15 +53,20 @@ export default function AdminClientPage() {
 
   return (
     <Sidebar>
-      <Consultant
-        key={activeTab}
+      <AdminPageShell
         title="Clients"
-        columns={columns}
-        rows={rows}
-        showTabs
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-      />
+        description="Review client accounts, project activity, and account status."
+      >
+        <Consultant
+          key={activeTab}
+          title="Clients"
+          columns={columns}
+          rows={rows}
+          showTabs
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
+      </AdminPageShell>
     </Sidebar>
   );
 }

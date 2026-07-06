@@ -2,7 +2,6 @@
 
 import { AdminClientRow } from "@/types/admin";
 import { colors } from "@/utils/styles/colors";
-import DeleteIcon from "@mui/icons-material/Delete";
 import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { Box, IconButton, Tooltip } from "@mui/material";
@@ -11,7 +10,9 @@ import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 export const getAdminClientColumns = (
   onToggleLock: (id: number, locked: boolean) => void
 ): GridColDef<AdminClientRow>[] => [
-  { field: "name", headerName: "Name", flex: 2 },
+  { field: "name", headerName: "Name", flex: 1.5 },
+  { field: "email", headerName: "Email", flex: 2 },
+  { field: "phone", headerName: "Phone", flex: 1.2 },
   { field: "activeprojects", headerName: "Active Projects", flex: 1 },
   { field: "completedprojects", headerName: "Completed Projects", flex: 1 },
   { field: "draftprojects", headerName: "Draft Projects", flex: 1 },
@@ -50,19 +51,6 @@ export const getAdminClientColumns = (
                 )}
               </IconButton>
             </span>
-          </Tooltip>
-
-          <Tooltip title="Delete">
-            <IconButton
-              size="small"
-              onClick={() => console.log("Delete", row)}
-              sx={{
-                color: colors.RED,
-                "&:hover": { bgcolor: `${colors.RED}15` },
-              }}
-            >
-              <DeleteIcon fontSize="small" />
-            </IconButton>
           </Tooltip>
         </Box>
       );

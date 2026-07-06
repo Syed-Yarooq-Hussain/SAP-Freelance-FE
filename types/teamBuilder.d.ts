@@ -43,6 +43,8 @@ export type TeamCreationProps = {
 export interface TeamBuilderRow {
   id: string | number;
   name?: string;
+  email?: string;
+  phone?: string;
   country?: string;
   projectName?: string;
   coremodules: string;
@@ -275,6 +277,9 @@ type Weekday = NonNullable<
 export type ClientConsultantDTO = {
   id: string | number;
   name?: string;
+  username?: string;
+  email?: string;
+  phone?: string;
   country?: string;
   experience?: number;
   rate?: number;
@@ -285,6 +290,11 @@ export type ClientConsultantDTO = {
   modules?: {
     core?: string;
     others?: string;
+  };
+  user?: {
+    username?: string;
+    email?: string;
+    phone?: string;
   };
   working_schedule?: TeamBuilderRow["working_schedule"];
 };

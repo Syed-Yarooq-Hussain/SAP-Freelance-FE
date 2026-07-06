@@ -16,7 +16,7 @@ const chartOptions: ApexOptions = {
   },
   stroke: {
     curve: "smooth",
-    width: 2,
+    width: 2.5,
   },
   xaxis: {
     categories: [
@@ -33,18 +33,23 @@ const chartOptions: ApexOptions = {
       "Nov",
       "Dec",
     ],
-    labels: { style: { colors: "#777", fontSize: "12px" } },
+    labels: { style: { colors: "#64748B", fontSize: "12px" } },
     axisBorder: { show: false },
     axisTicks: { show: false },
   },
   yaxis: {
-    labels: { style: { colors: "#777", fontSize: "12px" } },
+    labels: { style: { colors: "#64748B", fontSize: "12px" } },
   },
   fill: {
-    type: "solid",
-    opacity: 0.5,
+    type: "gradient",
+    gradient: {
+      shadeIntensity: 0.2,
+      opacityFrom: 0.22,
+      opacityTo: 0.04,
+      stops: [0, 90, 100],
+    },
   },
-  colors: ["#FF8F6DCC", "#DBA5FF"],
+  colors: ["#134481", "#64748B"],
   legend: {
     position: "bottom",
     horizontalAlign: "center",
@@ -52,11 +57,11 @@ const chartOptions: ApexOptions = {
       size: 5,
       shape: "circle",
     },
-    labels: { colors: "#333" },
+    labels: { colors: "#334155" },
   },
   dataLabels: { enabled: false },
   grid: {
-    borderColor: "#f1f1f1",
+    borderColor: "#E2E8F0",
     strokeDashArray: 3,
   },
   tooltip: {
@@ -90,7 +95,7 @@ const VisibilityChart = () => {
           mb: 2,
         }}
       >
-        <Typography variant="h6" fontWeight="bold">
+        <Typography variant="h6" fontWeight={700} sx={{ color: "#1E293B" }}>
           Performance
         </Typography>
 
@@ -102,6 +107,13 @@ const VisibilityChart = () => {
             minWidth: 120,
             fontSize: "0.9rem",
             bgcolor: "background.paper",
+            borderRadius: 2,
+            "& .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#E2E8F0",
+            },
+            "&:hover .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#CBD5E1",
+            },
           }}
         >
           <MenuItem value="Monthly">Monthly</MenuItem>

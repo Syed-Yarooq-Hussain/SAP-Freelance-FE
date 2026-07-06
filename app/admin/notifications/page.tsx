@@ -1,5 +1,6 @@
 "use client";
 
+import AdminPageShell from "@/components/admin/AdminPageShell";
 import Sidebar from "@/components/Sidebar";
 import Notification from "@/components/specific/Notification";
 import {
@@ -26,7 +27,12 @@ export default function AdminNotificationPage() {
 
   return (
     <Sidebar>
-      <Notification title="Notifications" rows={rows} columns={columns} />
+      <AdminPageShell
+        title="Notifications"
+        description="Manage platform notification templates and delivery state."
+      >
+        <Notification title="Notifications" rows={rows} columns={columns} />
+      </AdminPageShell>
     </Sidebar>
   );
 }

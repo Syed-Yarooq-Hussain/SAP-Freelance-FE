@@ -60,7 +60,7 @@ export default function PatternTreeDropdown() {
               ${isSelected ? "bg-blue-50 text-blue-700" : "hover:bg-gray-100"}
             `}
             style={{
-              paddingLeft: 12 + level * 20, // 🔥 better indentation
+              paddingLeft: 12 + level * 20,
             }}
           >
             {/* Expand Icon */}

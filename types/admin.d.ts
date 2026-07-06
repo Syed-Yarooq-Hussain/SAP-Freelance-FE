@@ -26,6 +26,8 @@ export type AdminClientRow = {
   id: number;
   avatar: string;
   name: string;
+  email: string;
+  phone: string;
   activeprojects: number;
   completedprojects: number;
   draftprojects: number;

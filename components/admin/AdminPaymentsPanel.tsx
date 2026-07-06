@@ -69,12 +69,36 @@ export default function AdminPaymentsPanel() {
 
   return (
     <Box sx={{ width: "100%" }}>
-      <Paper sx={{ p: 2 }}>
-        {/* Tabs */}
+      <Paper
+        elevation={0}
+        sx={{
+          p: { xs: 1.5, md: 2 },
+          border: "1px solid #E2E8F0",
+          borderRadius: "12px",
+          bgcolor: "#fff",
+        }}
+      >
         <Tabs
           value={activeTab}
           onChange={(_, newValue) => setActiveTab(newValue)}
-          sx={{ mb: 2, borderBottom: 1, borderColor: "divider" }}
+          sx={{
+            mb: 2,
+            minHeight: 40,
+            borderBottom: "1px solid #E2E8F0",
+            "& .MuiTab-root": {
+              minHeight: 40,
+              textTransform: "none",
+              fontWeight: 700,
+              fontSize: "0.875rem",
+              color: "#64748B",
+            },
+            "& .Mui-selected": {
+              color: "#134481",
+            },
+            "& .MuiTabs-indicator": {
+              backgroundColor: "#134481",
+            },
+          }}
         >
           <Tab
             label={`Client Payments (${data?.client_payments.length || 0})`}
@@ -88,7 +112,6 @@ export default function AdminPaymentsPanel() {
           />
         </Tabs>
 
-        {/* Client Payments Tab */}
         {activeTab === "client" && data?.client_payments && (
           <DataTable
             title="Client Payments"
@@ -102,7 +125,6 @@ export default function AdminPaymentsPanel() {
           />
         )}
 
-        {/* Consultant Payments Tab */}
         {activeTab === "consultant" && data?.consultant_payments && (
           <DataTable
             title="Consultant Payments"
@@ -117,7 +139,6 @@ export default function AdminPaymentsPanel() {
         )}
       </Paper>
 
-      {/* Mark Paid Dialog */}
       {selectedPayment && (
         <MarkPaidDialog
           open={openMarkPaid}

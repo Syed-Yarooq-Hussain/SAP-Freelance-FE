@@ -1,60 +1,61 @@
 "use client";
 
-import { useIndustries, useDeleteIndustry } from "@/actions/admin/useIndustries";
+import {
+  useDeleteIndustry,
+  useIndustries,
+} from "@/actions/admin/useIndustries";
 
 export default function IndustriesTable({ onEdit }: any) {
   const { data, isLoading } = useIndustries();
   const deleteIndustry = useDeleteIndustry();
 
-  if (isLoading) return <p className="p-4">Loading industries...</p>;
+  if (isLoading) {
+    return (
+      <div className="rounded-xl border border-slate-200 bg-white p-5 text-sm text-slate-500">
+        Loading industries...
+      </div>
+    );
+  }
 
   const industries = data?.data || [];
 
   return (
-    <div className="bg-white shadow-md rounded-2xl p-5">
-      <h2 className="text-xl font-semibold text-gray-800 mb-4">
-        Industries Management
+    <div className="rounded-xl border border-slate-200 bg-white p-5">
+      <h2 className="mb-4 text-base font-semibold text-slate-900">
+        Industries
       </h2>
 
       <div className="overflow-x-auto">
         <table className="w-full border-collapse text-sm">
           <thead>
-            <tr className="bg-gray-50 text-gray-600 text-left">
+            <tr className="bg-background-main text-left text-slate-600">
               <th className="p-3 font-medium">Industry Name</th>
               <th className="p-3 font-medium">Description</th>
               <th className="p-3 text-right font-medium">Actions</th>
             </tr>
           </thead>
-
           <tbody>
             {industries.length > 0 ? (
               industries.map((industry: any) => (
                 <tr
                   key={industry.id}
-                  className="border-t hover:bg-gray-50 transition"
+                  className="border-t border-slate-100 transition hover:bg-background-main"
                 >
-                  {/* INDUSTRY NAME */}
                   <td className="p-3">
-                    <span className="font-medium text-gray-800">
+                    <span className="font-medium text-slate-800">
                       {industry.name}
                     </span>
                   </td>
-
-                  {/* DESCRIPTION */}
-                  <td className="p-3 text-gray-600">
+                  <td className="p-3 text-slate-600">
                     {industry.description || "-"}
                   </td>
-
-                  {/* ACTIONS */}
-                  <td className="p-3 text-right space-x-2">
+                  <td className="space-x-2 p-3 text-right">
                     <button
                       onClick={() => onEdit(industry)}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 text-sm 
-                      bg-yellow-100 text-yellow-700 rounded-lg hover:bg-yellow-200 transition"
+                      className="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
                     >
-                      ✏️ Edit
+                      Edit
                     </button>
-
                     <button
                       onClick={() => {
                         if (
@@ -66,21 +67,16 @@ export default function IndustriesTable({ onEdit }: any) {
                         }
                       }}
                       disabled={deleteIndustry.isPending}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 text-sm 
-                      bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition 
-                      disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="inline-flex items-center rounded-lg bg-red-50 px-3 py-1.5 text-sm font-semibold text-red-600 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                      🗑 Delete
+                      Delete
                     </button>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td
-                  colSpan={3}
-                  className="text-center p-5 text-gray-400"
-                >
+                <td colSpan={3} className="p-5 text-center text-slate-400">
                   No industries found
                 </td>
               </tr>

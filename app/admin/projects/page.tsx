@@ -1,6 +1,7 @@
 "use client";
 
 import { useAdminProjects } from "@/actions/admin/useAdminProjects";
+import AdminPageShell from "@/components/admin/AdminPageShell";
 import Sidebar from "@/components/Sidebar";
 import Project from "@/components/specific/Project";
 import { adminProjectColumns } from "@/data/adminProject";
@@ -26,12 +27,17 @@ export default function AdminProjectPage() {
 
   return (
     <Sidebar>
-      <Project
-        title="Created Projects"
-        stats={[]}
-        columns={adminProjectColumns}
-        rows={rows}
-      />
+      <AdminPageShell
+        title="Projects"
+        description="Track projects created across the platform."
+      >
+        <Project
+          title="Created Projects"
+          stats={[]}
+          columns={adminProjectColumns}
+          rows={rows}
+        />
+      </AdminPageShell>
     </Sidebar>
   );
 }
