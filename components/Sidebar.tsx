@@ -186,30 +186,35 @@ const Sidebar: FC<ISidebarProps> = ({ children }) => {
             <Box
               sx={{
                 position: "relative",
-                width: { xs: 112, sm: 128, md: 140 },
-                height: { xs: 28, sm: 32, md: 36 },
+                width: expanded
+                  ? { xs: 134, sm: 154, md: 168 }
+                  : { xs: 112, sm: 128, md: 140 },
+                height: expanded
+                  ? { xs: 34, sm: 38, md: 43 }
+                  : { xs: 28, sm: 32, md: 36 },
+                transition: "width 0.2s ease, height 0.2s ease",
                 "@media (max-height: 640px)": {
-                  width: 100,
-                  height: 24,
+                  width: expanded ? 120 : 100,
+                  height: expanded ? 29 : 24,
                 },
                 "@media (max-height: 520px)": {
-                  width: 88,
-                  height: 22,
+                  width: expanded ? 106 : 88,
+                  height: expanded ? 26 : 22,
                 },
               }}
             >
               {expanded ?<Image
-                src="/vx9-logo-02.png"
+                src="/images/logo-dashboard-large.png"
                 alt="Logo"
                 fill
                 style={{ objectFit: "contain" }}
                 priority
               /> : (
                 <Image
-                  src="/images/logo-small.png"
+                  src="/images/logo-c.png"
                   alt="Logo"
                   fill
-                  style={{ objectFit: "contain" }}
+                  style={{ objectFit: "cover" }}
                   priority
                 />
               )}
