@@ -5,6 +5,7 @@ import DataTable from "@/components/DataTable";
 import DynamicPopup from "@/components/Popup";
 import { teamBuilderColumns } from "@/data/teamBuilder";
 import { useToast } from "@/providers/ToastProvider";
+import type { ApiPagination } from "@/types/api";
 import type {
   ClientConsultantDTO,
   TeamBuilderRow,
@@ -13,7 +14,7 @@ import type {
 import colors from "@/utils/styles/colors";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import Groups2Icon from "@mui/icons-material/Groups2";
-import { Box, Button, CircularProgress, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Pagination, Stack, Typography } from "@mui/material";
 import type { GridColDef } from "@mui/x-data-grid";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -27,6 +28,50 @@ const TeamBuilderFilters = dynamic(
   () => import("@/components/specific/teambuilder/TeamBuilderFilters"),
   { ssr: false }
 );
+
+const extractConsultantListAndPagination = (
+  payload: unknown,
+  fallbackPagination?: ApiPagination | null
+) => {
+  if (Array.isArray(payload)) {
+    return { list: payload as ClientConsultantDTO[], pagination: fallbackPagination ?? null };
+  }
+
+  if (payload && typeof payload === "object") {
+    const record = payload as Record<string, unknown>;
+    const listCandidates = [record.data, record.results, record.items, record.consultants];
+
+    for (const candidate of listCandidates) {
+      if (Array.isArray(candidate)) {
+        return {
+          list: candidate as ClientConsultantDTO[],
+          pagination: (record.pagination as ApiPagination | undefined) ?? fallbackPagination ?? null,
+        };
+      }
+    }
+
+    const nestedRecord = record.data;
+    if (nestedRecord && typeof nestedRecord === "object") {
+      const nested = nestedRecord as Record<string, unknown>;
+      const nestedCandidates = [nested.data, nested.results, nested.items, nested.consultants];
+
+      for (const candidate of nestedCandidates) {
+        if (Array.isArray(candidate)) {
+          return {
+            list: candidate as ClientConsultantDTO[],
+            pagination:
+              (record.pagination as ApiPagination | undefined) ??
+              (nested.pagination as ApiPagination | undefined) ??
+              fallbackPagination ??
+              null,
+          };
+        }
+      }
+    }
+  }
+
+  return { list: [] as ClientConsultantDTO[], pagination: fallbackPagination ?? null };
+};
 
 const mapConsultantRow = (
   item: ClientConsultantDTO,
@@ -95,6 +140,9 @@ export default function AdminConsultantDirectory() {
   const [filterOpen, setFilterOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [rows, setRows] = useState<TeamBuilderRow[]>([]);
+  const [activeFilters, setActiveFilters] = useState<Record<string, unknown>>({});
+  const [currentPage, setCurrentPage] = useState(1);
+  const [paginationMeta, setPaginationMeta] = useState<ApiPagination | null>(null);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [profileConsultant, setProfileConsultant] =
     useState<TeamBuilderRow | null>(null);
@@ -142,14 +190,25 @@ export default function AdminConsultantDirectory() {
   }, [rowsWithSchedule, searchQuery]);
 
   const fetchConsultants = useCallback(
-    (filters?: Record<string, unknown>) => {
-      loadConsultants(filters as any, {
+    (filters?: Record<string, unknown>, page = 1) => {
+      setCurrentPage(page);
+      const payload = {
+        ...(filters ?? {}),
+        page,
+        limit: 10,
+      } as Record<string, unknown>;
+
+      loadConsultants(payload as any, {
         onSuccess: (res) => {
-          const mapped =
-            res.data?.map((item: ClientConsultantDTO, index: number) =>
-              mapConsultantRow(item, index)
-            ) ?? [];
+          const { list, pagination } = extractConsultantListAndPagination(
+            res.data,
+            res.pagination
+          );
+          const mapped = list.map((item: ClientConsultantDTO, index: number) =>
+            mapConsultantRow(item, index)
+          );
           setRows(mapped);
+          setPaginationMeta(pagination);
           setFilterOpen(false);
         },
         onError: (error) => {
@@ -216,7 +275,10 @@ export default function AdminConsultantDirectory() {
       {filterOpen && (
         <TeamBuilderFilters
           open={filterOpen}
-          onApply={(filters) => fetchConsultants(filters)}
+          onApply={(filters) => {
+            setActiveFilters(filters ?? {});
+            fetchConsultants(filters ?? {}, 1);
+          }}
         />
       )}
 
@@ -236,6 +298,7 @@ export default function AdminConsultantDirectory() {
           <DataTable
             variant="consultant"
             title="Consultant Selection"
+            hidePagination
             titleIcon={
               <Box
                 sx={{
@@ -260,6 +323,31 @@ export default function AdminConsultantDirectory() {
             pageSize={10}
             rowClickable={false}
           />
+        )}
+
+        {paginationMeta && (
+          <Stack
+            direction={{ xs: "column", sm: "row" }}
+            alignItems="center"
+            justifyContent="space-between"
+            spacing={1.5}
+            mt={2}
+            px={2}
+          >
+            <Typography sx={{ fontSize: "0.875rem", color: "#475569" }}>
+              Showing {rows.length} of {paginationMeta.total} consultants
+            </Typography>
+            <Pagination
+              count={Math.max(1, paginationMeta.total_pages ?? 1)}
+              page={Math.max(0, currentPage)}
+              onChange={(_, page) => fetchConsultants(activeFilters, page)}
+              siblingCount={1}
+              boundaryCount={1}
+              color="primary"
+              shape="rounded"
+              size="small"
+            />
+          </Stack>
         )}
       </Box>
 
