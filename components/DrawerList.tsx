@@ -100,7 +100,7 @@ const DrawerList: FC<DrawerListProps> = ({ open }) => {
       // { icon: <WorkIcon />, label: "Projects", link: r.PROJECTS },
       // { icon: <EventNoteIcon />, label: "Meetings", link: r.INTERVIEWS },
       { icon: <DescriptionIcon />, outlined: <DescriptionIconOutline />, label: "Documents", link: r.DOCUMENTS },
-      { icon: <AccessTimeIcon />, outlined: <AccessTimeIconOutline />, label: "Hour Logs", link: r.HOUR_LOGS },
+      // { icon: <AccessTimeIcon />, outlined: <AccessTimeIconOutline />, label: "Hour Logs", link: r.HOUR_LOGS },
       { icon: <PaymentIcon />, outlined: <PaymentIconOutline />, label: "Payments", link: r.PAYMENTS },
     ];
   }, [role]);
