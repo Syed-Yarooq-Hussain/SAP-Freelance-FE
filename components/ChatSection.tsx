@@ -47,8 +47,8 @@ const ChatSection: React.FC<ChatSectionProps> = ({
 
   // FETCH USERS LIST
   useEffect(() => {
-    if (type === "chat") fetchUsersList();
-  }, [type]);
+    if (open && type === "chat") fetchUsersList();
+  }, [open, type]);
 
   const fetchUsersList = async () => {
     try {

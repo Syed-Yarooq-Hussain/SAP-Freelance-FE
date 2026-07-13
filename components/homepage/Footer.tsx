@@ -19,11 +19,11 @@ export function Footer({ onNavigate }: FooterProps) {
           <div className="md:col-span-2">
             <div className="mb-6 flex items-center gap-3">
               <Image
-    src="/vx9-logo-02.png"
+    src="/images/logo-footer.png"
     alt="Vertex9 Systems"
-    width={160}
-    height={60}
-    className="h-12 w-auto"
+    width={100}
+    height={40}
+    className="h-11 w-auto"
     priority
   />
               <div className="flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full">

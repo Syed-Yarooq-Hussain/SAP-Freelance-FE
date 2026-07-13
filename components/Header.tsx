@@ -29,13 +29,13 @@ export function Header({ onLoginClick, onSignUpClick, isAuthenticated = false }:
           <div className="flex items-center justify-between">
             {/* Logo */}
             <div className="flex-shrink-0">
-              {/* <Image
-                src="/vx9-logo-02.png"
+              <Image
+                src="/images/logo-c.png"
                 alt="Vertex9 Systems"
                 width={140}
                 height={40}
-                className="h-8 md:h-10 w-auto lg:hidden block"
-              /> */}
+                className="h-8 md:h-10 w-auto"
+              />
             </div>
 
             {/* Desktop Navigation */}

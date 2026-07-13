@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Calendar, CheckCircle2, Clock, MapPin, Shield } from 'lucide-react';
 import { useAppSelector } from '@/lib/store/hook';
+import Image from 'next/image';
 
 
 export function WelcomeHeader() {
@@ -62,7 +63,9 @@ export function WelcomeHeader() {
             </div>
             <p className="text-[30px] font-bold font-neue tracking-tight leading-none">Vertex9</p>
           </div> */}
-
+          <div className='mb-2 flex items-center justify-center'>
+            <Image src="/images/logo-dashboard.png" alt="Logo" width={110} height={110} />
+          </div>
           <h1 className="text-lg md:text-4xl text-center font-bold font-neue tracking-tight mb-2">
             Welcome, {user?.user?.username || 'User'}! 👋
           </h1>
