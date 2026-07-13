@@ -168,7 +168,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Box sx={{ display: { xs: "flex", md: "none" }, alignItems: "center" }}>
               <Image
-                src="/vx9-logo-02.png"
+                src="/images/logo-dashboard-large.png"
                 alt="Logo"
                 width={120}
                 height={34}
