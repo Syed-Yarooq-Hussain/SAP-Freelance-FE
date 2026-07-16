@@ -573,7 +573,7 @@ export default function AvailabilityCalendar({ onSave }: AvailabilityCalendarPro
                 <button
                   type="button"
                   onClick={handleSave}
-                  disabled={payload.length === 0}
+                  // disabled={payload.length === 0}
                   className="px-6 py-2.5 bg-brand-blue hover:bg-brand-blue-dark disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed text-white md:text-xs text-xxs font-semibold rounded-xl transition-colors shadow-sm"
                 >
                   Save Availability

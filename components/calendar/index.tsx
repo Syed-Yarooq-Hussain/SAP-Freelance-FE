@@ -25,7 +25,7 @@ type WeeklyRow = {
   endTime: string
 }
 
-type CalendarFilter = 'all' | 'client' | 'interviews'
+type CalendarFilter = 'all' | 'Meetings'
 
 const WEEK_DAYS = [
   { value: 'monday', label: 'Monday' },

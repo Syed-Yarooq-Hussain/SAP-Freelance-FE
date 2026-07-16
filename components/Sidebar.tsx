@@ -137,7 +137,7 @@ const Sidebar: FC<ISidebarProps> = ({ children }) => {
           }}
         >
           <Image
-            src="/vx9-logo-02.png"
+            src="/images/logo-c.png"
             alt="Logo"
             width={120}
             height={40}

@@ -297,11 +297,11 @@ export default function ProfileEditPage({
       }
       const description = flat
         .slice(0, 10)
-        .map((f) => `• ${f.path}: ${f.message}`)
+        .map((f) => `• ${f.message}`)
         .join("\n");
       const extra =
-        flat.length > 10 ? `\n… and ${flat.length - 10} more (see console)` : "";
-      toast.error("Please fix the errors below, then save again.", {
+        flat.length > 10 ? `\n… and ${flat.length - 10} more` : "";
+      toast.error("Please fill all the mandtory fields", {
         description: `${description}${extra}`,
         duration: 12_000,
       });
@@ -882,7 +882,7 @@ export default function ProfileEditPage({
                       </div>
                     </div>
                     <div>
-                      <div className="flex items-center gap-2 mt-4">
+                      <div className="flex flex-col items-start gap-2 mt-4">
                         <div className="w-full">
                           <InputField
                             label="Weekly availability (hours)"
@@ -893,6 +893,7 @@ export default function ProfileEditPage({
                             {...register("weekly_available_hours")}
                           />
                         </div>
+                        <p className="text-xs text-start text-light-grey">Note: Changing weekly availability will reset your calendar availability. </p>
                       </div>
                     </div>
                   </div>

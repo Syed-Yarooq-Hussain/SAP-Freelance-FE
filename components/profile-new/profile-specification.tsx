@@ -1,8 +1,9 @@
+import { formatNumberWithCommas } from '@/utils/formatNumber';
 import { CircleCheck, Clock, MapPin } from 'lucide-react'
 import React from 'react'
 
 const ProfileSpecification = ({ user }: { user: any }) => {
-  const linkedinUrl = '';
+  const loginWithLinkedin = user?.user?.linkedin_url;
   return (
     <div
         className={`grid grid-cols-2  gap-4 mb-4 ${user?.user?.linkedin_url ? "md:grid-cols-5" : "md:grid-cols-4"}`}
@@ -12,7 +13,7 @@ const ProfileSpecification = ({ user }: { user: any }) => {
             Hourly Rate
           </div>
           <div className="text-sm font-bold text-success font-manrope">
-            ${user?.rate || "-"}/hr
+            ${formatNumberWithCommas(user?.rate || 0)} USD / hr
           </div>
         </div>
         <div className="shadow-custom min-h-16 border flex flex-col justify-evenly border-slate-200 rounded-lg px-4 py-2">
@@ -36,7 +37,7 @@ const ProfileSpecification = ({ user }: { user: any }) => {
             </div>
           </div>
         )}
-        {linkedinUrl && (
+        {loginWithLinkedin && (
           <div className="shadow-custom min-h-16 border flex flex-col justify-evenly border-slate-200 rounded-lg px-4 py-2">
             <div className="flex items-center gap-1 text-[10px] text-light-grey font-semibold mb-1 font-manrope">
               LinkedIn
@@ -44,7 +45,7 @@ const ProfileSpecification = ({ user }: { user: any }) => {
             <div className="text-sm text-slate-900 flex items-center gap-1.5 font-manrope">
               <img src="/images/linkedin.png" alt="LinkedIn" className="w-4 h-4" />
               <a
-                href={linkedinUrl}
+                href={loginWithLinkedin}
                 target="_blank"
                 rel="noopener noreferrer"
               >

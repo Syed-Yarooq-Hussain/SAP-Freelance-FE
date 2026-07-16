@@ -10,6 +10,7 @@ import {
   GridRenderCellParams,
   GridValidRowModel,
 } from "@mui/x-data-grid";
+import { File } from "lucide-react";
 import { useState } from "react";
 
 interface DocumentProps<T extends GridValidRowModel = GridValidRowModel> {
@@ -98,6 +99,10 @@ export default function Document<
         columns={enhancedColumns}
         rows={rows}
         pageSize={10}
+        noResultText={<div className="flex flex-col justify-center items-center gap-2">
+          <File className="h-10 w-10 text-slate-700" />
+          <p className="text-xs max-w-1/2 text-slate-700 text-center">No Documents Available.Your SAP project files, client documents, and project resources will appear here.</p>
+        </div>}
       />
 
       {showUpload && (

@@ -153,7 +153,11 @@ export const profileEditSchema = yup.object().shape({
   others: yup.array().of(yup.string()).default([]),
   linkedin_url: yup.string().nullable(),
   professional_headline: yup.string().nullable(),
-  industries: yup.string().nullable(),
+  industries: yup
+    .string()
+    .required('Industry is required')
+    .trim()
+    .min(1, 'Industry is required'),
   // Basic Information - from user object
   username: yup
     .string()
@@ -261,7 +265,7 @@ export type ProfileEditFormData = {
   rate: number | null | undefined
   expertise_level: string | null | undefined
   professional_headline: string | null | undefined;
-  industries: string | null | undefined;
+  industries: string;
   core: string[]
   others: string[]
   weekly_available_hours: number | null | undefined

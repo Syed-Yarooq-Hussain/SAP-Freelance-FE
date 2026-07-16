@@ -13,6 +13,7 @@ import { DocumentsCard } from './document-card';
 import { DashboardData } from '@/types/dashboard';
 import { WelcomeHeader } from '../consultant-dashboard/welcome-header';
 import { ProfileSetupBanner } from './profile-setup-banner';
+import { formatNumberWithCommas } from '@/utils/formatNumber';
 
 export default function DashboardPage({ data }: { data: DashboardData }) {
   const projectExists = data?.projects?.projects?.length > 0;
@@ -36,7 +37,7 @@ export default function DashboardPage({ data }: { data: DashboardData }) {
               <div className='col-span-1 border shadow-custom md:col-span-2 rounded-xl md:mt-0 mt-3'>
                     <div className=' bg-brand-pink border-brand-blue text-brand-blue p-4 md:p-2 flex justify-center items-start md:items-center flex-col gap-3 rounded-xl h-full'>
                       <p className='text-xs font-bold font-manrope'>My Total Earnings</p>
-                      <p className='text-xl font-bold font-manrope'>$ {data?.payment?.total_earnings || 0}</p>
+                      <p className='text-xl font-bold font-manrope'>$ {formatNumberWithCommas(data?.payment?.total_earnings)}</p>
                     </div>
                   </div>
             </div>
@@ -56,7 +57,7 @@ export default function DashboardPage({ data }: { data: DashboardData }) {
                   {/* 0 0px 4px 1px rgba(0, 0, 0, .1), 0 2px 4px -2px rgba(0, 0, 0, .1) */}
                   <div className='col-span-1 md:block hidden shadow-custom md:col-span-2 rounded-xl md:mt-0 mt-3'>
                     <div className=' bg-brand-pink border border-brand-blue text-brand-blue  p-2 flex justify-center items-center flex-col gap-3 rounded-xl h-full'>
-                      <p className='text-xl font-bold font-manrope'>$ {data?.payment?.total_earnings || 0}</p>
+                      <p className='text-xl font-bold font-manrope'>$ {formatNumberWithCommas(data?.payment?.total_earnings)}</p>
                       <p className='text-sm font-bold font-manrope'>My Total Earnings</p>
                     </div>
                   </div>
