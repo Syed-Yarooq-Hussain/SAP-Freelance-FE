@@ -61,7 +61,7 @@ export default function VerifyEmailPage() {
           {/* Logo */}
           <div className="flex justify-center mb-8">
             <Image
-              src="/vx9-logo-02.png"
+              src="/images/logo-c.png"
               alt="Vertex9 Systems"
               width={140}
               height={40}

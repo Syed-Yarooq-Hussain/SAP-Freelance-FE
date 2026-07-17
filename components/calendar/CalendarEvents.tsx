@@ -12,7 +12,7 @@ import {
 } from "../consultant-dashboard-new/dashboard-calendar";
 import { useCalendar } from "./CalendarContext";
 
-type CalendarFilter = "all" | "client" | "interviews";
+type CalendarFilter = "all" | "Meetings";
 
 function getDayAvailability(day: ApiDay): {
   available: boolean;
@@ -59,8 +59,7 @@ function mapScheduleToDashboardEvents(
     }
 
     for (const e of day.events ?? []) {
-      if (filter === "interviews" && e.type !== "INTERVIEW") continue;
-      if (filter === "client" && e.type === "INTERVIEW") continue;
+      if (filter === "Meetings" && e.type !== "INTERVIEW") continue;
 
       const rawStart = e.start_time ?? "09:00";
       const rawEnd = e.end_time ?? rawStart;
@@ -74,7 +73,7 @@ function mapScheduleToDashboardEvents(
           : `${dateKey}T${startNorm}:00`,
         title:
           e.title?.trim() ||
-          (isInterview ? "Interview" : "Meeting"),
+          (isInterview ? "Meeting" : "Meeting"),
         time: e.all_day
           ? "All day"
           : `${toAmPm(rawStart)} – ${toAmPm(rawEnd)}`,
@@ -82,7 +81,7 @@ function mapScheduleToDashboardEvents(
           typeof e.meeting_link === "string" && e.meeting_link.trim()
             ? e.meeting_link
             : "Online",
-        badge: isInterview ? "Interview" : "Client meeting",
+        badge: isInterview ? "Meeting" : "Meeting",
         clientName: "—",
         projectName: "—",
         kind: "event",

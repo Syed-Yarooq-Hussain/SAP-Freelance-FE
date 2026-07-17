@@ -254,7 +254,7 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
                   />
                   <Box className="flex flex-col items-start justify-center">
                     <p className="text-xxs font-medium">{user?.user?.username || 'User'}</p>
-                    <p className="text-[7px] text-gray-800">{(user?.user?.module?.core ? user?.user?.module?.core.split(',')[0] : '') || ''}</p>
+                    {/* <p className="text-[7px] text-gray-800">{(user?.user?.module?.core ? user?.user?.module?.core.split(',')[0] : '') || ''}</p> */}
                   </Box>
                   <div>
                     <ChevronDown className="w-4 h-4 text-gray-800" />

@@ -69,7 +69,7 @@ export function LoginModal({ onClose, onLogin, onSwitchToSignUp, onForgotPasswor
           {/* Logo */}
           <div className="flex justify-center mb-8">
             <Image
-              src="/vx9-logo-02.png"
+              src="/images/logo-footer.png"
               alt="Vertex9 Systems"
               width={140}
               height={40}

@@ -66,7 +66,7 @@ export function ProfileLayout({
   const mobileStats = [
     {
       label: "Hourly Rate",
-      value: `$ ${consultant?.rate || "-"}` + " / hr",
+      value: `$ ${consultant?.rate || "-"} USD / hr`,
       icon: null,
     },
     {

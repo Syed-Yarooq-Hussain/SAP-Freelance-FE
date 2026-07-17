@@ -3,6 +3,8 @@ import { GridColDef, GridValidRowModel } from "@mui/x-data-grid";
 import { useMemo, useState } from "react";
 import AppButton from "../Button";
 import DataTable from "../DataTable";
+import { MonetizationOn, MoneyOff } from "@mui/icons-material";
+import { CreditCard } from "lucide-react";
 
 type TabKey = "upcoming" | "made" | "outstanding";
 
@@ -80,6 +82,10 @@ export default function Payment<
         columns={columns}
         rows={filteredRows}
         pageSize={10}
+        noResultText={<div className="flex flex-col justify-center items-center gap-2">
+          <CreditCard className="h-10 w-10 text-slate-700" />
+          <p className="text-xs max-w-1/2 text-slate-700 text-center">You don't have any payments yet. Your payment history, upcoming payments, and transaction records will appear here once payments are processed.</p>
+        </div>}
       />
     </Box>
   );

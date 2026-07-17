@@ -87,7 +87,7 @@ export default function LinkedInCallback() {
         <div className="w-full max-w-md relative bg-white rounded-3xl shadow-2xl border border-slate-100/50 p-8 md:p-10">
           <div className="flex justify-center mb-8">
             <Image
-              src="/vx9-logo-02.png"
+              src="/images/logo-footer.png"
               alt="Vertex9 Systems"
               width={140}
               height={40}
@@ -125,7 +125,7 @@ export default function LinkedInCallback() {
       <div className="w-full max-w-md relative bg-white rounded-3xl shadow-2xl border border-slate-100/50 p-8 md:p-10">
         <div className="flex justify-center mb-8">
           <Image
-            src="/vx9-logo-02.png"
+            src="/images/logo-c.png"
             alt="Vertex9 Systems"
             width={140}
             height={40}

@@ -14,7 +14,7 @@ const AuthHeader: React.FC<IAuthHeaderProps> = ({ heading, description }) => {
     <Box sx={{ textAlign: "center", mb: 4 }}>
       <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
         <Image
-          src="/vx9-logo-02.png"
+          src="/images/logo-c.png"
           alt="Vertex9 Systems Logo"
           width={0}
           height={0}

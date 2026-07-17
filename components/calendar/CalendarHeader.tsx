@@ -5,7 +5,7 @@ import { ChevronLeft, ChevronRight, Filter, Plus } from 'lucide-react'
 import { useCalendar } from './CalendarContext'
 
 type ViewMode = 'dayGridMonth' | 'timeGridWeek' | 'timeGridDay'
-type FilterType = 'all' | 'client' | 'interviews'
+type FilterType = 'all' | 'Meetings'
 
 interface CalendarHeaderProps {
   onFilterChange?: (filter: FilterType) => void
@@ -194,7 +194,7 @@ export function CalendarHeader({
         {/* Filter chips */}
         <div className="flex flex-wrap md:py-4 py-0 items-center border-y border-slate-100">
           <div className='px-2 flex gap-2'>
-            {(['all', 'interviews'] as const).map((filter) => (
+            {(['all', 'Meetings'] as const).map((filter) => (
               <button
                 key={filter}
                 type="button"
@@ -211,8 +211,8 @@ export function CalendarHeader({
                 {/* {filter === 'client' && (
                   <span className={`h-2 w-2 shrink-0 rounded-full ${activeFilter === 'client' ? 'bg-white' : 'bg-brand-blue'}`} aria-hidden />
                 )} */}
-                {filter === 'interviews' && (
-                  <span className={`h-2 w-2 shrink-0 rounded-full ${activeFilter === 'interviews' ? 'bg-white' : 'bg-orange-500'}`} aria-hidden />
+                {filter === 'Meetings' && (
+                  <span className={`h-2 w-2 shrink-0 rounded-full ${activeFilter === 'Meetings' ? 'bg-white' : 'bg-orange-500'}`} aria-hidden />
                 )}
                 {filter.charAt(0).toUpperCase() + filter.slice(1)}
               </button>

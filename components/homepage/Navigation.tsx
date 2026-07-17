@@ -34,7 +34,7 @@ export function Navigation({
             className="group flex items-center gap-3 hover:opacity-80 transition-all transform hover:scale-105"
           >
             <Image
-    src="/vx9-logo-02.png"
+    src="/images/logo-c.png"
     alt="Vertex9 Systems"
     width={160}
     height={60}

@@ -30,6 +30,7 @@ import * as React from "react";
 export type DataTableVariant = "default" | "consultant";
 
 export type DataTableProps<T extends GridValidRowModel> = {
+  noResultText?: React.ReactNode;
   title: React.ReactNode;
   columns: GridColDef[];
   rows: T[];
@@ -255,6 +256,7 @@ export default function DataTable<T extends GridValidRowModel>({
   searchPlaceholder = "Search...",
   searchValue = "",
   onSearchChange,
+  noResultText = "No data available",
 }: DataTableProps<T>) {
   const isConsultantVariant = variant === "consultant";
   const [selectedRows, setSelectedRows] = React.useState<Set<string>>(
@@ -445,7 +447,7 @@ export default function DataTable<T extends GridValidRowModel>({
                     fontFamily: "var(--font-manrope), sans-serif",
                   }}
                 >
-                  No data available
+                  {noResultText}
                 </Typography>
               </Box>
             ),
@@ -517,7 +519,7 @@ export default function DataTable<T extends GridValidRowModel>({
               : "var(--font-manrope), sans-serif",
           }}
         >
-          No {title} available
+          {noResultText}
         </Typography>
       </Box>
     );

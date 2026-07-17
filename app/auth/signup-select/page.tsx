@@ -46,7 +46,7 @@ export default function SignUpSelectionPage() {
         >
           <Box sx={{ display: "flex", justifyContent: "center", mb: 1 }}>
             <Image
-              src="/vx9-logo-02.png"
+              src="/images/logo-c.png"
               alt="Vertex9 Systems"
               width={140}
               height={60}

@@ -72,7 +72,7 @@ const AppTitle: React.FC = () => {
           style={{ display: "flex", alignItems: "center" }}
         >
           <Image
-            src="/vx9-logo-02.png"
+            src="/images/logo-c.png"
             alt="Vertex9 Systems"
             width={100}
             height={50}

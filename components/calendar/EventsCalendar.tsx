@@ -162,7 +162,7 @@ import { useConsultantCalendar } from '@/actions/consultants/useConsultantCalend
 import { useMemo, useState } from 'react'
 import { useCalendar } from './CalendarContext'
 
-type CalendarFilter = 'all' | 'client' | 'interviews'
+type CalendarFilter = 'all' | 'Meetings'
 
 interface Slot { start_time: string; end_time: string }
 interface CalendarEvent {
@@ -214,8 +214,7 @@ function transformApiData(days: Day[], filter: CalendarFilter) {
 
     // 2. Events
     day.events.forEach((event) => {
-      if (filter === 'interviews' && event.type !== 'INTERVIEW') return
-      if (filter === 'client' && event.type === 'INTERVIEW') return
+      if (filter === 'Meetings' && event.type !== 'INTERVIEW') return
 
       const isInterview = event.type === 'INTERVIEW'
       fcEvents.push({
@@ -435,9 +434,9 @@ export default function EventsCalendar({ filter }: { filter: CalendarFilter }) {
         </div>
       )}
 
-      {filter === 'interviews' && !isLoading && !hasInterviewEvents ? (
+      {filter === 'Meetings' && !isLoading && !hasInterviewEvents ? (
         <div className="mb-3 rounded-xl border border-dashed border-slate-300 bg-white px-4 py-3 text-center text-sm font-medium text-slate-500">
-          No interviews scheduled for this month.
+          No Meetings scheduled for this month.
         </div>
       ) : null}
 

@@ -84,9 +84,9 @@ export function SignUpModal({ onClose, onSignUp }: SignUpModalProps) {
           {/* Logo */}
           <div className="flex justify-center mb-4 sm:mb-6 md:mb-6">
             <Image
-              src="/vx9-logo-02.png"
+              src="/images/logo-footer.png"
               alt="Vertex9 Systems"
-              width={100}
+              width={80}
               height={40}
               className="h-8 sm:h-10 md:h-12 w-auto"
             />

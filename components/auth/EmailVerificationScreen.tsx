@@ -106,7 +106,7 @@ export function EmailVerificationScreen({ onClose, email, userDetails }: EmailVe
         <div className="p-8">
           {/* Logo */}
           <div className="flex justify-center mb-8">
-            <img src="/vx9-logo-02.png" alt="Vertex9 Systems" className="h-12" />
+            <img src="/images/logo-footer.png" alt="Vertex9 Systems" className="h-12" />
           </div>
 
           {/* Icon */}

@@ -28,7 +28,7 @@ export function Header({ onLoginClick, onSignUpClick, isAuthenticated = false }:
         <nav className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-lg border border-slate-100 px-4 md:px-6 py-3">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <div className="flex-shrink-0">
+            <Link href="/" className="flex-shrink-0" aria-label="Go to home">
               <Image
                 src="/images/logo-c.png"
                 alt="Vertex9 Systems"
@@ -36,7 +36,7 @@ export function Header({ onLoginClick, onSignUpClick, isAuthenticated = false }:
                 height={40}
                 className="h-8 md:h-10 w-auto"
               />
-            </div>
+            </Link>
 
             {/* Desktop Navigation */}
             <div className="hidden xl:flex items-center gap-1 2xl:gap-2">
