@@ -25,6 +25,7 @@ export default function AdminDashboardPage() {
     data?.data?.map((consultant) => ({
       id: consultant.id,
       consultantId: consultant.id,
+      avatar: "/images/placeholder.png",
       name: consultant.username,
       coremodules: consultant.modules?.core || "N/A",
       othersmodules: consultant.modules?.others || "N/A",
@@ -73,7 +74,7 @@ export default function AdminDashboardPage() {
             rows,
             pageSize: 10,
             showAvatar: true,
-            avatarField: "name",
+            avatarField: "avatar",
             enableSelection: true,
             onSelectionChange: setSelectedIds,
             selectionActions: (

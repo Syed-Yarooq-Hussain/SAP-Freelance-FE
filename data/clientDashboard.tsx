@@ -124,7 +124,7 @@ export const getClientSidebar = (
         { type: "text", value: "Global Rollout" },
         {
           type: "avatars",
-          avatars: ["/img/u1.png", "/img/u2.png", "/img/u3.png"],
+          avatars: [],
         },
       ],
     },

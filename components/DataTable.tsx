@@ -71,6 +71,18 @@ const checkboxSx = {
 
 const CONSULTANT_TABLE_HEAD_BG = "#F0EDE8";
 const CONSULTANT_TABLE_ROW_BORDER = "#E8E4DE";
+const FALLBACK_AVATAR_SRC = "/images/placeholder.png";
+
+const getSafeAvatarSrc = (value: unknown): string => {
+  if (typeof value !== "string") return FALLBACK_AVATAR_SRC;
+
+  const trimmed = value.trim();
+  if (!trimmed) return FALLBACK_AVATAR_SRC;
+
+  return /^https?:\/\//i.test(trimmed) || trimmed.startsWith("/")
+    ? trimmed
+    : FALLBACK_AVATAR_SRC;
+};
 
 const getConsultantGridSx = (rowClickable: boolean) => ({
   border: "none",
@@ -366,8 +378,8 @@ export default function DataTable<T extends GridValidRowModel>({
               />
             )}
             <Avatar
-              src={params.row[avatarField] as string}
-              alt={params.row.name}
+              src={getSafeAvatarSrc(params.row[avatarField])}
+              alt={String((params.row as Record<string, unknown>).name ?? "Profile avatar")}
               sx={{
                 width: 32,
                 height: 32,
