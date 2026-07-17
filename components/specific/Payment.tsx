@@ -84,7 +84,7 @@ export default function Payment<
         pageSize={10}
         noResultText={<div className="flex flex-col justify-center items-center gap-2">
           <CreditCard className="h-10 w-10 text-slate-700" />
-          <p className="text-xs max-w-1/2 text-slate-700 text-center">You don't have any payments yet. Your payment history, upcoming payments, and transaction records will appear here once payments are processed.</p>
+          <p className="text-xs max-w-1/2 text-slate-700 text-center">You don&apos;t have any payments yet. Your payment history, upcoming payments, and transaction records will appear here once payments are processed.</p>
         </div>}
       />
     </Box>
