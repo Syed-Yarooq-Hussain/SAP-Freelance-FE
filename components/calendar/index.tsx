@@ -271,11 +271,11 @@ const Index = () => {
 
     try {
       await saveSchedule(payloadCustom)
-      toast("Custom availability saved successfully", 'success')
+      toast("Flexible availability saved successfully", 'success')
       setShowCustomAvailability(false)
     } catch (error) {
       console.error('Failed to update weekly availability', error)
-      toast("Failed to update custom availability", 'error')
+      toast("Failed to update flexible availability", 'error')
     }
   }
 
@@ -324,7 +324,7 @@ const Index = () => {
                   onClick={() => setShowCustomAvailability(true)}
                   className="inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-1 py-1 text-xxs font-semibold text-slate-900"
                 >
-                  + Custom Availability
+                  + Flexible Availability
                 </button>
                 <button
                   type="button"
@@ -343,14 +343,14 @@ const Index = () => {
               />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-7 gap-4 md:px-2 pt-2 px-3">
-              <div className="col-span-1 md:col-span-2 pt-2 pl-0 md:pl-2">
+              <div className="col-span-1 md:block hidden md:col-span-2 pt-2 pl-0 md:pl-2">
                 {activeView === 'dayGridMonth' && <CalendarEvents filter={activeFilter} />}
                 {activeView !== 'dayGridMonth' && <MobileWeekStrip weeklyByDay={weeklyByDay}/>}
                 <div className="mt-2 md:block hidden">
                   <UpcomingEvents />
                 </div>
               </div>
-              <div className="col-span-1 md:col-span-5 min-h-[50vh]">
+              <div className="col-span-1 md:col-span-5 md:mt-0 mt-4 min-h-[50vh]">
                 <EventsCalendar filter={activeFilter} />
               </div>
               <div className="md:hidden block">

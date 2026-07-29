@@ -299,7 +299,7 @@ export default function EventsCalendar({ filter }: { filter: CalendarFilter }) {
         .fc-shell .fc-col-header-cell-cushion {
           font-size: 11px !important;
           font-weight: 600 !important;
-          color: #94a3b8 !important;
+          color: #000 !important;
           text-transform: uppercase !important;
           letter-spacing: 0.06em !important;
           padding: 10px 0 8px !important;
@@ -308,6 +308,7 @@ export default function EventsCalendar({ filter }: { filter: CalendarFilter }) {
 
         .fc-daygrid-day-frame{
             position: relative !important;
+            background: #fbfaf8 !important;
         }
 
         /* ─── Day number ────────────────────────────────────── */
@@ -470,7 +471,7 @@ export default function EventsCalendar({ filter }: { filter: CalendarFilter }) {
                 display:    'flex',
                 alignItems: 'center',
                 gap:        4,
-                backgroundColor: '#BBF7D0',
+                backgroundColor: '#bbf7d0',
                 borderRadius: '4px',
                 padding:    '1px 6px',
                 fontSize:   11,
@@ -479,10 +480,10 @@ export default function EventsCalendar({ filter }: { filter: CalendarFilter }) {
                 overflow:   'hidden',
               }}>
                 {showTopBar ? (
-                  <div className='w-full absolute top-[-180%] left-0 h-[2px] rounded-xl bg-success'/>
+                  <div className='w-full absolute top-[-180%] left-0 h-[2px] rounded-xl bg-green-700'/>
                 ) : null}
                 <span
-                  className="min-w-0 truncate font-medium text-[#16a34a]"
+                  className="min-w-0 truncate font-medium text-green-700"
                   style={{ fontSize: 11 }}
                 >
                   {formatCompactAvailabilityTime(slotStart)} - {formatCompactAvailabilityTime(slotEnd)}
