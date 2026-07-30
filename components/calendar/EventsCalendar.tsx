@@ -311,6 +311,27 @@ export default function EventsCalendar({ filter }: { filter: CalendarFilter }) {
             background: #fbfaf8 !important;
         }
 
+        /* ─── Day / Week date columns (match month shade) ───── */
+        .fc-shell .fc-timegrid-col,
+        .fc-shell .fc-timegrid-col-frame,
+        .fc-shell .fc-timegrid-body,
+        .fc-shell .fc-timegrid-slots,
+        .fc-shell .fc-timegrid-slots table,
+        .fc-shell .fc-timegrid-slot,
+        .fc-shell .fc-timegrid-cols,
+        .fc-shell .fc-timegrid-col-bg,
+        .fc-shell .fc-timegrid-bg,
+        .fc-shell .fc-scrollgrid-sync-table {
+          background: #fbfaf8 !important;
+        }
+        .fc-shell .fc-timegrid-slot-lane {
+          background: #fbfaf8 !important;
+        }
+        .fc-shell .fc-daygrid-body,
+        .fc-shell .fc-daygrid-body .fc-daygrid-day-frame {
+          background: #fbfaf8 !important;
+        }
+
         /* ─── Day number ────────────────────────────────────── */
         .fc-shell .fc-daygrid-day-number {
           font-size: 13px !important;
@@ -341,18 +362,9 @@ export default function EventsCalendar({ filter }: { filter: CalendarFilter }) {
         /* ─── Week/day header (Mon 23 etc.) ─────────────────── */
         .fc-shell .fc-timegrid-axis { border: none !important; }
         .fc-shell .fc-col-header-cell.fc-day-today .fc-col-header-cell-cushion {
-        //   background: #2d8fc0 !important;
-        //   color: #fff !important;
-        //   border-radius: 50% !important;
-        //   width: 28px !important;
-        //   height: 55px !important;
-        //   display: flex !important;
-        //   align-items: center !important;
-        //   justify-content: center !important;
-        //   margin: 0 auto !important;
-        //   padding: 0 !important;
+          /* today header styling reserved */
         }
-        tbody { background-color: #F0EDE8 !important; }
+        .fc-shell tbody { background-color: #fbfaf8 !important; }
 
         @media (max-width: 767px) {
           .fc-shell tbody,
@@ -360,7 +372,11 @@ export default function EventsCalendar({ filter }: { filter: CalendarFilter }) {
           .fc-shell .fc-daygrid-day,
           .fc-shell .fc-daygrid-day-frame,
           .fc-shell .fc-daygrid-day-bg,
-          .fc-shell .fc-daygrid-day-top {
+          .fc-shell .fc-daygrid-day-top,
+          .fc-shell .fc-timegrid-col,
+          .fc-shell .fc-timegrid-col-frame,
+          .fc-shell .fc-timegrid-slot,
+          .fc-shell .fc-timegrid-slot-lane {
             background-color: #fff !important;
           }
         }

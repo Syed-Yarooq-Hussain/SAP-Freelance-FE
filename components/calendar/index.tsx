@@ -1,12 +1,11 @@
 'use client'
 
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import Sidebar from '../Sidebar'
 import { CalendarHeader } from './CalendarHeader'
 import CalendarEvents from './CalendarEvents'
 import { UpcomingEvents } from './UpcomingEvents'
 import EventsCalendar from './EventsCalendar'
-import { CalendarProvider, useCalendar } from './CalendarContext'
 import AvailabilityCalendar from './AvailabilityCalendar'
 import { useConsultantMe } from '@/actions/consultants/useConsultantProfile'
 import { useSaveConsultantSchedule } from '@/actions/consultants/useSaveConsultantSchedule'
@@ -37,8 +36,6 @@ const WEEK_DAYS = [
   { value: 'sunday', label: 'Sunday' },
 ] as const
 
-const DAY_SHORT = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'] as const
-
 function formatDisplayDate(date: Date) {
   return date.toLocaleDateString('en-US', {
     day: 'numeric',
@@ -47,85 +44,9 @@ function formatDisplayDate(date: Date) {
   })
 }
 
-function MobileWeekStrip({
-  weeklyByDay,
-}: {
-  weeklyByDay: Map<string, WeeklySchedule>
-}) {
-  const { activeView, currentTitle, calendarRef, setActiveView } = useCalendar()
-  const [anchorDate, setAnchorDate] = useState(new Date())
-
-  useEffect(() => {
-    const api = calendarRef.current?.getApi()
-    if (api) setAnchorDate(new Date(api.getDate()))
-  }, [calendarRef, activeView, currentTitle])
-
-  if (activeView === 'dayGridMonth') return null
-
-  const weekStart = new Date(anchorDate)
-  weekStart.setHours(0, 0, 0, 0)
-  weekStart.setDate(anchorDate.getDate() - anchorDate.getDay())
-
-  const weekDays = Array.from({ length: 7 }, (_, idx) => {
-    const date = new Date(weekStart)
-    date.setDate(weekStart.getDate() + idx)
-    const key = date
-      .toLocaleDateString('en-US', { weekday: 'long' })
-      .toLowerCase()
-    const hasAvailability = Boolean(weeklyByDay.get(key)?.active)
-    const selected =
-      date.getFullYear() === anchorDate.getFullYear() &&
-      date.getMonth() === anchorDate.getMonth() &&
-      date.getDate() === anchorDate.getDate()
-    return { date, hasAvailability, selected, label: DAY_SHORT[idx] }
-  })
-
-  return (
-    <div className="md:hidden">
-      <div className="overflow-x-auto">
-        <div className="grid grid-cols-7 min-w-full gap-1 rounded-xl bg-brand-yellow/60">
-          {weekDays.map(({ date, hasAvailability, selected, label }) => (
-            <button
-              key={date.toISOString()}
-              type="button"
-              onClick={() => {
-                const api = calendarRef.current?.getApi()
-                if (!api) return
-                api.changeView('timeGridDay', date)
-                setActiveView('timeGridDay')
-                setAnchorDate(new Date(date))
-              }}
-              className={`relative rounded-2xl border px-1 py-1 text-center transition ${
-                selected
-                  ? 'border-brand-blue bg-brand-blue text-white'
-                  : 'border-slate-300 bg-white text-slate-900'
-              }`}
-            >
-              <p className={`text-[10px] font-semibold tracking-wide ${selected ? 'text-white/85' : 'text-slate-400'}`}>
-                {label}
-              </p>
-              <p className="text-[24px] leading-none font-semibold scale-[0.55]">{date.getDate()}</p>
-              <span
-                className={`mx-auto block h-1.5 w-1.5 rounded-full ${
-                  hasAvailability
-                    ? selected
-                      ? 'bg-white'
-                      : 'bg-brand-blue'
-                    : 'bg-transparent'
-                }`}
-              />
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
-
 const Index = () => {
   const router = useRouter()
   const {toast} = useToast();
-  const {activeView} = useCalendar();
   const [activeFilter, setActiveFilter] = useState<CalendarFilter>('all')
   const [showCustomAvailability, setShowCustomAvailability] = useState(false)
   const [availOpen, setAvailOpen] = useState(false)
@@ -141,14 +62,6 @@ const Index = () => {
   const { mutateAsync: saveSchedule, isPending } = useSaveConsultantSchedule()
   const weeklyFromMe: WeeklySchedule[] =
     (meData?.data?.working_schedule?.weekly as WeeklySchedule[]) ?? []
-
-  const weeklyByDay = useMemo(() => {
-    const map = new Map<string, WeeklySchedule>()
-    weeklyFromMe.forEach((entry) => {
-      if (entry?.day) map.set(entry.day.toLowerCase(), entry)
-    })
-    return map
-  }, [weeklyFromMe])
 
   const mapWeeklyFromMe = (meWeekly: WeeklySchedule[]): WeeklyRow[] => {
     const byDow = new Map<number, WeeklyRow>()
@@ -344,17 +257,13 @@ const Index = () => {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-7 gap-4 md:px-2 pt-2 px-3">
               <div className="col-span-1 md:block hidden md:col-span-2 pt-2 pl-0 md:pl-2">
-                {activeView === 'dayGridMonth' && <CalendarEvents filter={activeFilter} />}
-                {activeView !== 'dayGridMonth' && <MobileWeekStrip weeklyByDay={weeklyByDay}/>}
-                <div className="mt-2 md:block hidden">
+                <CalendarEvents filter={activeFilter} />
+                <div className="mt-2">
                   <UpcomingEvents />
                 </div>
               </div>
               <div className="col-span-1 md:col-span-5 md:mt-0 mt-4 min-h-[50vh]">
                 <EventsCalendar filter={activeFilter} />
-              </div>
-              <div className="md:hidden block">
-                <UpcomingEvents />
               </div>
             </div>
 
