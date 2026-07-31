@@ -151,7 +151,7 @@ export function CalendarHeader({
                   <Plus className="w-4 h-4" /> Add Weekly Availability
                 </button>
                 <button type="button" onClick={onAddCustomAvailability} className="inline-flex items-center gap-1.5 rounded-lg border border-brand-blue bg-white px-3 py-2 text-xs font-medium text-brand-blue transition hover:bg-sky-50">
-                  <Plus className="w-4 h-4" /> Add Custom Availability
+                  <Plus className="w-4 h-4" /> Add Flexible Availability
                 </button>
               </div>
             </div>
@@ -185,7 +185,7 @@ export function CalendarHeader({
                 <Plus className="w-4 h-4" /> Add Weekly Availability
               </button>
               <button type="button" onClick={onAddCustomAvailability} className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-brand-blue bg-white py-2 text-xs font-medium text-brand-blue">
-                <Plus className="w-4 h-4" /> Add Custom Availability
+                <Plus className="w-4 h-4" /> Add Flexible Availability
               </button>
             </div>
           </div>

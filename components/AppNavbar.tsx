@@ -173,6 +173,16 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
                 width={120}
                 height={34}
                 priority
+                className="hidden md:block"
+                style={{ objectFit: "contain", maxWidth: "100%", height: "auto" }}
+              />
+              <Image
+                src="/images/logo-c.png"
+                alt="Logo"
+                width={80}
+                height={24}
+                priority
+                className="block md:hidden"
                 style={{ objectFit: "contain", maxWidth: "100%", height: "auto" }}
               />
             </Box>

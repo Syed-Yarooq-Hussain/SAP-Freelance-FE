@@ -299,7 +299,7 @@ export default function EventsCalendar({ filter }: { filter: CalendarFilter }) {
         .fc-shell .fc-col-header-cell-cushion {
           font-size: 11px !important;
           font-weight: 600 !important;
-          color: #94a3b8 !important;
+          color: #000 !important;
           text-transform: uppercase !important;
           letter-spacing: 0.06em !important;
           padding: 10px 0 8px !important;
@@ -308,6 +308,28 @@ export default function EventsCalendar({ filter }: { filter: CalendarFilter }) {
 
         .fc-daygrid-day-frame{
             position: relative !important;
+            background: #fbfaf8 !important;
+        }
+
+        /* ─── Day / Week date columns (match month shade) ───── */
+        .fc-shell .fc-timegrid-col,
+        .fc-shell .fc-timegrid-col-frame,
+        .fc-shell .fc-timegrid-body,
+        .fc-shell .fc-timegrid-slots,
+        .fc-shell .fc-timegrid-slots table,
+        .fc-shell .fc-timegrid-slot,
+        .fc-shell .fc-timegrid-cols,
+        .fc-shell .fc-timegrid-col-bg,
+        .fc-shell .fc-timegrid-bg,
+        .fc-shell .fc-scrollgrid-sync-table {
+          background: #fbfaf8 !important;
+        }
+        .fc-shell .fc-timegrid-slot-lane {
+          background: #fbfaf8 !important;
+        }
+        .fc-shell .fc-daygrid-body,
+        .fc-shell .fc-daygrid-body .fc-daygrid-day-frame {
+          background: #fbfaf8 !important;
         }
 
         /* ─── Day number ────────────────────────────────────── */
@@ -340,18 +362,9 @@ export default function EventsCalendar({ filter }: { filter: CalendarFilter }) {
         /* ─── Week/day header (Mon 23 etc.) ─────────────────── */
         .fc-shell .fc-timegrid-axis { border: none !important; }
         .fc-shell .fc-col-header-cell.fc-day-today .fc-col-header-cell-cushion {
-        //   background: #2d8fc0 !important;
-        //   color: #fff !important;
-        //   border-radius: 50% !important;
-        //   width: 28px !important;
-        //   height: 55px !important;
-        //   display: flex !important;
-        //   align-items: center !important;
-        //   justify-content: center !important;
-        //   margin: 0 auto !important;
-        //   padding: 0 !important;
+          /* today header styling reserved */
         }
-        tbody { background-color: #F0EDE8 !important; }
+        .fc-shell tbody { background-color: #fbfaf8 !important; }
 
         @media (max-width: 767px) {
           .fc-shell tbody,
@@ -359,7 +372,11 @@ export default function EventsCalendar({ filter }: { filter: CalendarFilter }) {
           .fc-shell .fc-daygrid-day,
           .fc-shell .fc-daygrid-day-frame,
           .fc-shell .fc-daygrid-day-bg,
-          .fc-shell .fc-daygrid-day-top {
+          .fc-shell .fc-daygrid-day-top,
+          .fc-shell .fc-timegrid-col,
+          .fc-shell .fc-timegrid-col-frame,
+          .fc-shell .fc-timegrid-slot,
+          .fc-shell .fc-timegrid-slot-lane {
             background-color: #fff !important;
           }
         }
@@ -470,7 +487,7 @@ export default function EventsCalendar({ filter }: { filter: CalendarFilter }) {
                 display:    'flex',
                 alignItems: 'center',
                 gap:        4,
-                backgroundColor: '#BBF7D0',
+                backgroundColor: '#bbf7d0',
                 borderRadius: '4px',
                 padding:    '1px 6px',
                 fontSize:   11,
@@ -479,10 +496,10 @@ export default function EventsCalendar({ filter }: { filter: CalendarFilter }) {
                 overflow:   'hidden',
               }}>
                 {showTopBar ? (
-                  <div className='w-full absolute top-[-180%] left-0 h-[2px] rounded-xl bg-success'/>
+                  <div className='w-full absolute top-[-180%] left-0 h-[2px] rounded-xl bg-green-700'/>
                 ) : null}
                 <span
-                  className="min-w-0 truncate font-medium text-[#16a34a]"
+                  className="min-w-0 truncate font-medium text-green-700"
                   style={{ fontSize: 11 }}
                 >
                   {formatCompactAvailabilityTime(slotStart)} - {formatCompactAvailabilityTime(slotEnd)}
