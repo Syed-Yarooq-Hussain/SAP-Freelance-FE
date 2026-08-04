@@ -61,6 +61,9 @@ export const accountSchema = yup.object().shape({
     city: yup
     .string()
     .required('City is required'),
+    country: yup
+    .string()
+    .required('Country is required'),
   profileImage: yup
     .string()
     .optional(),

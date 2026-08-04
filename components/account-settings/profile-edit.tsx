@@ -29,6 +29,7 @@ const transformToApiPayload = (formData: AccountFormData, userData?: any) => {
     user: {
       username: formData.username,
       city: formData.city || '',
+      country: formData.country || '',
     },
     consultant: {
       rate: Number(formData.rate),
@@ -117,6 +118,7 @@ export function ProfileEdit({
       username: user?.user?.username || '',
       email: user?.user?.email || '',
       city: user?.user?.city || '',
+      country: user?.user?.country || '',
       clients_summary: user?.clients_summary || '',
       rate: user?.rate || 0,
       weekly_available_hours: user?.weekly_available_hours || 0,
@@ -135,6 +137,7 @@ export function ProfileEdit({
       setValue('username', user?.user?.username || '')
       setValue('email', user?.user?.email || '')
       setValue('city', user?.user?.city || '')
+      setValue('country', user?.user?.country || '')
       setValue('clients_summary', user?.clients_summary || '')
       setValue('rate', user?.rate || 0)
       setValue('weekly_available_hours', user?.weekly_available_hours || 0)
@@ -358,26 +361,46 @@ export function ProfileEdit({
             </div>
 
             {/* Location */}
-            <div>
-              <label className="block text-sm font-semibold text-slate-900 mb-2">
-               Current Location <span className="text-red-500">*</span>
-              </label>
-              <LocationAutocomplete
-                value={watch('city')}
-                onChange={(value) => setValue('city', value)}
-                placeholder="e.g., Berlin"
-              />
-              {/* <input
-                {...register('city')}
-                type="text"
-                placeholder="e.g., Berlin"
-                className="w-full px-4 py-2 border border-slate-300 rounded-input focus:outline-none focus:border-brand-blue"
-              /> */}
-              {errors.city && (
-                <p className="text-xs text-red-500 mt-1">
-                  {errors.city?.message}
-                </p>
-              )}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-semibold text-slate-900 mb-2">
+                  Country <span className="text-red-500">*</span>
+                </label>
+                <LocationAutocomplete
+                  value={watch('country') || ''}
+                  onChange={(value) => {
+                    setValue('country', value, { shouldValidate: true })
+                    setValue('city', '', { shouldValidate: true })
+                  }}
+                  placeholder="Select country"
+                  type="country"
+                />
+                {errors.country && (
+                  <p className="text-xs text-red-500 mt-1">
+                    {errors.country?.message}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-900 mb-2">
+                  City <span className="text-red-500">*</span>
+                </label>
+                <LocationAutocomplete
+                  value={watch('city') || ''}
+                  onChange={(value) => {
+                    setValue('city', value, { shouldValidate: true })
+                  }}
+                  placeholder="Select city"
+                  type="city"
+                  selectedCountry={watch('country') || ''}
+                />
+                {errors.city && (
+                  <p className="text-xs text-red-500 mt-1">
+                    {errors.city?.message}
+                  </p>
+                )}
+              </div>
             </div>
 
           </div>

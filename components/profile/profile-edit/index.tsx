@@ -64,7 +64,6 @@ import { useToast } from "@/providers/ToastProvider";
 import { LocationAutocomplete } from "@/components/account-settings/LocationAutocomplete";
 import { toast } from "sonner";
 import ReactQuill from "react-quill-new";
-import "react-quill-new/dist/quill.snow.css";
 import SapModulesDropdown from "./SapModulesDropdown";
 
 const inputSurfaceClass =
@@ -1022,7 +1021,24 @@ export default function ProfileEditPage({
                     />
                   </div>
 
-                  <div className="grid grid-cols-1 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-manrope font-medium text-slate-700 mb-2">
+                        Country
+                        <span className="text-red-500 ml-1">*</span>
+                      </label>
+                      <LocationAutocomplete
+                        value={watch("country") || ""}
+                        onChange={(value) => {
+                          setValue("country", value, { shouldValidate: true })
+                          setValue("city", "", { shouldValidate: true })
+                        }}
+                        placeholder="Select country"
+                        className="bg-brand-yellow"
+                        type="country"
+                      />
+                    </div>
+
                     <div>
                       <label className="block text-xs font-manrope font-medium text-slate-700 mb-2">
                         City
@@ -1031,26 +1047,14 @@ export default function ProfileEditPage({
                       <LocationAutocomplete
                         value={watch("city") || ""}
                         onChange={(value) => {
-                          const [city, country] = value.split(',')
-                          setValue("city", city)
-                          setValue("country", country)
+                          setValue("city", value, { shouldValidate: true })
                         }}
                         placeholder="Select city"
                         className="bg-brand-yellow"
+                        type="city"
+                        selectedCountry={watch("country") || ""}
                       />
                     </div>
-                    {/* <div>
-                        <label className="block text-xs font-manrope font-medium text-slate-700 mb-2">
-                          Country
-                          <span className="text-red-500 ml-1">*</span>
-                        </label>
-                        <LocationAutocomplete
-                        value={watch('country') || ''}
-                        onChange={(value) => setValue('country', value)}
-                        placeholder="Select country"
-                        className="bg-brand-yellow"
-                      /> 
-                    </div> */}
                   </div>
                   <div className="md:grid hidden grid-cols-1 md:grid-cols-2 gap-4">
                     <InputField

@@ -18,6 +18,7 @@ export function CompletionCard({
   profileEssentialsCompleted = false,
 }: CompletionCardProps) {
   const completionPercentageNumber = Number(completionPercentage.replace('%', ''))
+  const isProfileComplete = completionPercentageNumber >= 100
 
   const tasks = [
     { label: 'Profile Essentials', completed: profileEssentialsCompleted },
@@ -79,9 +80,11 @@ export function CompletionCard({
         ))}
       </div>
 
-      <button onClick={onEdit} className="w-fit px-4 text-xs bg-[#4A7AB5] text-white font-semibold py-2 rounded-xl hover:shadow-lg transition-all">
-        Finish Now
-      </button>
+      {!isProfileComplete && (
+        <button onClick={onEdit} className="w-fit px-4 text-xs bg-[#4A7AB5] text-white font-semibold py-2 rounded-xl hover:shadow-lg transition-all">
+          Finish Now
+        </button>
+      )}
     </div>
   )
 }

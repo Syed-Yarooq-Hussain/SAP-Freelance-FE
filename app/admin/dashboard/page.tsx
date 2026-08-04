@@ -4,10 +4,11 @@ import { useAdminDashboardStats } from "@/actions/admin/useAdminDashboardStats";
 import { usePendingConsultants } from "@/actions/admin/usePendingConsultants";
 import { useUpdateConsultantStatus } from "@/actions/admin/useUpdateConsultantStatus";
 import AdminPageShell from "@/components/admin/AdminPageShell";
+import ConsultantDashboardOverview from "@/components/admin/ConsultantDashboardOverview";
 import AppButton from "@/components/Button";
 import Sidebar from "@/components/Sidebar";
 import Dashboard from "@/components/specific/Dashboard";
-import VisibilityChart from "@/components/VisibilityChart";
+import { useConsultantDashboardSummary } from "@/actions/admin/useConsultantDashboardSummary";
 import { adminConsultantColumns } from "@/data/adminDashboard";
 import { GridRowId } from "@mui/x-data-grid";
 import { useQueryClient } from "@tanstack/react-query";
@@ -15,6 +16,7 @@ import React from "react";
 
 export default function AdminDashboardPage() {
   const stats = useAdminDashboardStats();
+  const { data: consultantSummaryData } = useConsultantDashboardSummary();
   const { data } = usePendingConsultants();
   const { mutateAsync } = useUpdateConsultantStatus();
   const queryClient = useQueryClient();
@@ -67,7 +69,7 @@ export default function AdminDashboardPage() {
       >
         <Dashboard
           stats={stats}
-          chart={<VisibilityChart />}
+          chart={<ConsultantDashboardOverview data={consultantSummaryData?.data} />}
           projectTable={{
             title: "Consultant Account Request",
             columns: adminConsultantColumns,
