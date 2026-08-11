@@ -66,6 +66,12 @@ import { toast } from "sonner";
 import ReactQuill from "react-quill-new";
 import SapModulesDropdown from "./SapModulesDropdown";
 
+const headlineEditorModules = {
+  toolbar: [["bold", "italic", "underline"], [{ list: "bullet" }], ["clean"]],
+};
+
+const headlineEditorFormats = ["bold", "italic", "underline", "list"];
+
 const inputSurfaceClass =
   "bg-background-main border-slate-200 focus:ring-[#3088B7] focus:border-[#3088B7]";
 
@@ -1295,9 +1301,11 @@ export default function ProfileEditPage({
                       </label>
                       <div className="relative">
                         <ReactQuill
-                          className="bg-brand-yellow rounded-lg"
+                          className="profile-headline-editor bg-brand-yellow rounded-lg"
                           style={{ borderRadius: "10px" }}
                           theme="snow"
+                          modules={headlineEditorModules}
+                          formats={headlineEditorFormats}
                           value={watch("clients_summary") || ""}
                           onChange={handleClientsSummaryChange}
                         />

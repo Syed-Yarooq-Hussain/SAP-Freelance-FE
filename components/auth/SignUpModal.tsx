@@ -7,6 +7,7 @@ import { CustomButton } from '../homepage/ui/CustomButton';
 // import { toast } from 'sonner';
 import { ISignupDTO } from '@/types/common-auth';
 import { useToast } from '@/providers/ToastProvider';
+import { startLinkedInAuth } from '@/utils/startLinkedInAuth';
 
 interface SignUpModalProps {
   onClose: () => void;
@@ -57,7 +58,7 @@ export function SignUpModal({ onClose, onSignUp }: SignUpModalProps) {
   };
 
   const handleLinkedInSignUp = () => {
-    window.location.href = process.env.NEXT_PUBLIC_API_URL + '/auth/linkedin';
+    startLinkedInAuth();
   };
 
   return (

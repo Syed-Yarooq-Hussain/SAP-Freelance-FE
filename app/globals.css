@@ -12,6 +12,11 @@
   border: none !important
 }
 
+.profile-headline-editor .ql-editor img {
+  max-width: 100%;
+  height: auto;
+}
+
 
 @custom-variant dark (&:where(.dark, .dark *));
 

@@ -9,15 +9,27 @@ import { useAppDispatch } from "@/lib/store/hook";
 import { updateUser } from "@/lib/store/features/user/userSlice";
 import { getConsultantMeService } from "@/services/getConsultantProfile";
 
+const getBrowserTimezone = (): string | undefined => {
+  try {
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    return timezone?.trim() ? timezone : undefined;
+  } catch {
+    return undefined;
+  }
+};
+
 export const useLogin = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
 
   return useMutation({
     mutationFn: async (data: ILoginForm) => {
+      const timezone = getBrowserTimezone();
+
       const response = (await signIn("credentials", {
         email: data.email,
         password: data.password,
+        ...(timezone ? { timezone } : {}),
         redirect: false,
       })) as SignInResponse;
 

@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { PasswordInput } from '../homepage/ui/PasswordInput';
 import { CustomButton } from '../homepage/ui/CustomButton';
 import { CustomInput } from '../homepage/ui/CustomInput';
+import { startLinkedInAuth } from '@/utils/startLinkedInAuth';
 
 interface LoginModalProps {
   onClose: () => void;
@@ -41,7 +42,7 @@ export function LoginModal({ onClose, onLogin, onSwitchToSignUp, onForgotPasswor
   };
 
   const handleLinkedInLogin = () => {
-    window.location.href = process.env.NEXT_PUBLIC_API_URL + '/auth/linkedin';
+    startLinkedInAuth();
   };
 
   return (

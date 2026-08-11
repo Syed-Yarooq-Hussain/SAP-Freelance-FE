@@ -14,6 +14,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       credentials: {
         email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
+        timezone: { label: "Timezone", type: "text" },
         token: { label: "Token", type: "text", required:false },
       },
       authorize: async (credentials:any) => {

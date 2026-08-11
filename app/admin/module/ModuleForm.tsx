@@ -13,13 +13,19 @@ export default function ModuleForm({ editData }: any) {
 
   const [form, setForm] = useState({
     name: "",
+    abbreviation: "",
     parent_id: null as number | null,
   });
 
   useEffect(() => {
     if (editData) {
       setForm({
-        name: editData.name,
+        name:
+          editData.abbreviation &&
+          editData.name.endsWith(` (${editData.abbreviation})`)
+            ? editData.name.slice(0, -(` (${editData.abbreviation})`.length))
+            : editData.name,
+        abbreviation: editData.abbreviation ?? "",
         parent_id: editData.parent_id,
       });
     }
@@ -29,6 +35,7 @@ export default function ModuleForm({ editData }: any) {
     alert("Saved successfully");
     setForm({
       name: "",
+      abbreviation: "",
       parent_id: null,
     });
   };
@@ -37,7 +44,9 @@ export default function ModuleForm({ editData }: any) {
     if (!form.name.trim()) return alert("Name required");
 
     const payload = {
-      ...form,
+      name: form.name.trim(),
+      abbreviation: form.abbreviation.trim() || null,
+      parent_id: form.parent_id,
       is_core: false,
     };
 
@@ -73,6 +82,18 @@ export default function ModuleForm({ editData }: any) {
           placeholder="Enter module name..."
           value={form.name}
           onChange={(e) => setForm({ ...form, name: e.target.value })}
+        />
+      </div>
+
+      <div className="space-y-1">
+        <label className="text-sm font-medium text-slate-700">
+          Abbreviation <span className="font-normal text-slate-400">(optional)</span>
+        </label>
+        <input
+          className="w-full rounded-xl border border-slate-300 bg-brand-yellow px-3 py-2 text-sm text-slate-900 transition focus:border-[#3088B7] focus:outline-none focus:ring-2 focus:ring-[#3088B7]"
+          placeholder="e.g. FI"
+          value={form.abbreviation}
+          onChange={(e) => setForm({ ...form, abbreviation: e.target.value })}
         />
       </div>
 

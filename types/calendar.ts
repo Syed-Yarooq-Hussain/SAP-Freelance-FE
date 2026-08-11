@@ -1,6 +1,7 @@
 export interface ApiSlot {
   start_time: string;
   end_time: string;
+  end_date?: string;
 }
 
 export interface ApiAvailability {
@@ -22,6 +23,7 @@ export interface ApiDay {
   active: boolean;
   date: string;
   slots: ApiSlot[];
+  availability?: ApiAvailability;
   events: ApiEvent[];
 }
 

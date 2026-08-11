@@ -41,6 +41,7 @@ export async function fetchModuleTree(): Promise<ApiResponse<any[]>> {
 // =========================
 export async function createModule(data: {
   name: string;
+  abbreviation: string | null;
   is_core: boolean;
   parent_id: number | null;
 }): Promise<ApiResponse<any>> {
@@ -64,6 +65,7 @@ export async function updateModule(
   id: number,
   data: {
     name: string;
+    abbreviation: string | null;
     is_core: boolean;
     parent_id: number | null;
   }

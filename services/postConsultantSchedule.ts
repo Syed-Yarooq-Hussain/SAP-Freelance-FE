@@ -16,6 +16,39 @@ export interface ConsultantSchedulePayload {
   events?: any[];
 }
 
+const toHoursAndMinutes = (time: string) => {
+  const [hours = "", minutes = ""] = time.split(":");
+  return `${hours.padStart(2, "0")}:${minutes.padStart(2, "0")}`;
+};
+
+const normalizeSchedulePayload = (
+  payload: ConsultantSchedulePayload
+): ConsultantSchedulePayload => ({
+  ...payload,
+  ...(payload.weekly
+    ? {
+        weekly: payload.weekly.map((day) => ({
+          ...day,
+          slot: day.slot?.map((slot) => ({
+            start: toHoursAndMinutes(slot.start),
+            end: toHoursAndMinutes(slot.end),
+          })),
+        })),
+      }
+    : {}),
+  ...(payload.custom
+    ? {
+        custom: payload.custom.map((day) => ({
+          ...day,
+          slot: day.slot.map((slot) => ({
+            start: toHoursAndMinutes(slot.start),
+            end: toHoursAndMinutes(slot.end),
+          })),
+        })),
+      }
+    : {}),
+});
+
 export const postConsultantSchedule = async (
   payload: ConsultantSchedulePayload
 ) => {
@@ -26,6 +59,6 @@ export const postConsultantSchedule = async (
     url: API_ROUTES.POST_CONSULTANT_SCHEDULE,
     method: "POST",
     headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-    data: payload,
+    data: normalizeSchedulePayload(payload),
   });
 };

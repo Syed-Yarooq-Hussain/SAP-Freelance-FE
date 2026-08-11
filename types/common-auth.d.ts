@@ -20,6 +20,7 @@ export interface ISignupDTO {
 export interface ILoginForm {
   email: string;
   password: string;
+  timezone?: string;
 }
 
 export interface IUser {

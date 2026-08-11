@@ -164,7 +164,7 @@ import { useCalendar } from './CalendarContext'
 
 type CalendarFilter = 'all' | 'Meetings'
 
-interface Slot { start_time: string; end_time: string }
+interface Slot { start_time: string; end_time: string; end_date?: string }
 interface CalendarEvent {
   id: number; title: string; type: string
   start_time: string; end_time: string; all_day: boolean; status: string
@@ -188,7 +188,7 @@ function transformApiData(days: Day[], filter: CalendarFilter) {
         // Background band for week/day view
         fcEvents.push({
           start:      `${day.date}T${slot.start_time}:00`,
-          end:        `${day.date}T${slot.end_time}:00`,
+          end:        `${slot.end_date || day.date}T${slot.end_time}:00`,
           display:    'background',
           color:      '#BBF7D0',
           classNames: ['fc-avail-bg'],
@@ -197,7 +197,7 @@ function transformApiData(days: Day[], filter: CalendarFilter) {
         // "09:00 Available" label pill for month view
         fcEvents.push({
           start:      `${day.date}T${slot.start_time}:00`,
-          end:        `${day.date}T${slot.end_time}:00`,
+          end:        `${slot.end_date || day.date}T${slot.end_time}:00`,
           display:    'auto',
           title:      'Available',
           classNames: ['fc-avail-label'],
@@ -205,6 +205,7 @@ function transformApiData(days: Day[], filter: CalendarFilter) {
             isAvailability: true,
             slotStart: slot.start_time,
             slotEnd: slot.end_time,
+            slotEndDate: slot.end_date,
             date: day.date,
             showTopBar: idx === 0,
           },
@@ -272,9 +273,7 @@ export default function EventsCalendar({ filter }: { filter: CalendarFilter }) {
 
   const formatCompactAvailabilityTime = (value?: string) => {
     if (!value) return ''
-    if (!value.endsWith(':00')) return value
-    const [hour] = value.split(':')
-    return String(Number(hour))
+    return value.slice(0, 5)
   }
 
   return (
@@ -474,7 +473,7 @@ export default function EventsCalendar({ filter }: { filter: CalendarFilter }) {
 
         // ─── Event content ─────────────────────────────────────
         eventContent={(arg) => {
-          const { isAvailability, slotStart, slotEnd, type, startTime, showTopBar } = arg.event.extendedProps
+          const { isAvailability, slotStart, slotEnd, slotEndDate, type, startTime, showTopBar } = arg.event.extendedProps
           const viewType = arg.view.type
           const isMonth  = viewType === 'dayGridMonth'
           const isTimeGrid = viewType === 'timeGridWeek' || viewType === 'timeGridDay'
@@ -503,6 +502,7 @@ export default function EventsCalendar({ filter }: { filter: CalendarFilter }) {
                   style={{ fontSize: 11 }}
                 >
                   {formatCompactAvailabilityTime(slotStart)} - {formatCompactAvailabilityTime(slotEnd)}
+                  {slotEndDate ? ` (${slotEndDate})` : ''}
                   <span className="hidden sm:inline"> available</span>
                   <span className="inline sm:hidden"> Avl</span>
                 </span>

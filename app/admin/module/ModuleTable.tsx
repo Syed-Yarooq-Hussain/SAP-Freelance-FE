@@ -51,6 +51,7 @@ export default function ModuleTable({ onEdit }: any) {
               <span className="font-medium text-slate-800">{node.name}</span>
             </div>
           </td>
+          <td className="p-3 text-slate-600">{node.abbreviation || "—"}</td>
           <td className="space-x-2 p-3 text-right">
             <button
               onClick={() => onEdit(node)}
@@ -80,6 +81,7 @@ export default function ModuleTable({ onEdit }: any) {
           <thead>
             <tr className="bg-background-main text-left text-slate-600">
               <th className="p-3 font-medium">Module Name</th>
+              <th className="p-3 font-medium">Abbreviation</th>
               <th className="p-3 text-right font-medium">Actions</th>
             </tr>
           </thead>
@@ -88,7 +90,7 @@ export default function ModuleTable({ onEdit }: any) {
               renderRows(treeData)
             ) : (
               <tr>
-                <td colSpan={2} className="p-5 text-center text-slate-400">
+                <td colSpan={3} className="p-5 text-center text-slate-400">
                   No modules found
                 </td>
               </tr>

@@ -16,12 +16,12 @@ type CalendarFilter = "all" | "Meetings";
 
 function getDayAvailability(day: ApiDay): {
   available: boolean;
-  slots: { start_time: string; end_time: string }[];
+  slots: { start_time: string; end_time: string; end_date?: string }[];
 } {
   const fallback = day as unknown as {
     availability?: {
       available?: boolean;
-      slots?: { start_time: string; end_time: string }[];
+      slots?: { start_time: string; end_time: string; end_date?: string }[];
     };
   };
   const slots = Array.isArray(day.slots)
@@ -49,7 +49,7 @@ function mapScheduleToDashboardEvents(
         date: day.date,
         dateTime: `${day.date}T${(firstSlot.start_time ?? "09:00").slice(0, 5)}:00`,
         title: "Available",
-        time: `${toAmPm(firstSlot.start_time)} - ${toAmPm(lastSlot.end_time)}`,
+        time: `${firstSlot.start_time.slice(0, 5)} - ${lastSlot.end_time.slice(0, 5)}${lastSlot.end_date ? ` (${lastSlot.end_date})` : ""}`,
         location: "Availability",
         badge: "Available",
         clientName: "Availability",
