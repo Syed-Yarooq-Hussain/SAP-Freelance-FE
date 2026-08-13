@@ -7,11 +7,13 @@ import CascadeDropdown from "./CascadeDropdown";
 import ModuleForm from "./ModuleForm";
 import ModuleTable from "./ModuleTable";
 import ModuleTreeDropdown from "./ModuleTreeDropdown";
+import ModuleRequestsTable from "./ModuleRequestsTable";
 
-type Tab = "list" | "create" | "dropdown" | "cascade";
+type Tab = "list" | "requests" | "create" | "dropdown" | "cascade";
 
 const tabs: Array<{ key: Tab; label: string }> = [
   { key: "list", label: "Modules" },
+  { key: "requests", label: "Requested Modules" },
   { key: "create", label: "Create Module" },
   { key: "dropdown", label: "Tree Dropdown" },
   { key: "cascade", label: "Cascade Menu" },
@@ -58,6 +60,8 @@ export default function ModulePage() {
         )}
 
         {activeTab === "create" && <ModuleForm editData={editData} />}
+
+        {activeTab === "requests" && <ModuleRequestsTable />}
 
         {activeTab === "dropdown" && (
           <div className="rounded-xl border border-slate-200 bg-white p-5">

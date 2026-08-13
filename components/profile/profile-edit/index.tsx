@@ -913,6 +913,7 @@ export default function ProfileEditPage({
                         data={sapOtherModulesData?.data || []}
                         values={coreModules || []}
                         maxSelections={2}
+                        allowModuleRequest
                         onChange={(selected) => {
                           if (selected.length > 2) {
                             setError("core", {
@@ -998,6 +999,7 @@ export default function ProfileEditPage({
                         <SapModulesDropdown
                           data={sapOtherModulesData?.data || []}
                           values={otherModules || []}
+                          allowModuleRequest
                           onChange={(selected) => {
                             setValue("others", selected, {
                               shouldValidate: true,

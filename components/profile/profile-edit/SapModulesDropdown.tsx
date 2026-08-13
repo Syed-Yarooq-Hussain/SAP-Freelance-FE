@@ -9,6 +9,8 @@ import {
   useLayoutEffect,
 } from "react";
 import { createPortal } from "react-dom";
+import { useCreateModuleRequest } from "@/actions/modules/useModuleRequests";
+import { toast } from "sonner";
 
 interface SapModulesDropdownProps {
   data: SapModuleGroup[];
@@ -16,6 +18,7 @@ interface SapModulesDropdownProps {
   onChange: (ids: string[]) => void;
   panelZIndex?: number;
   maxSelections?: number;
+  allowModuleRequest?: boolean;
 }
 
 export default function SapModulesDropdown({
@@ -24,9 +27,13 @@ export default function SapModulesDropdown({
   onChange,
   panelZIndex = 300,
   maxSelections,
+  allowModuleRequest = false,
 }: SapModulesDropdownProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [requestOpen, setRequestOpen] = useState(false);
+  const [requestName, setRequestName] = useState("");
+  const createRequest = useCreateModuleRequest();
   const triggerRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
@@ -130,6 +137,28 @@ export default function SapModulesDropdown({
     onChange(allSelected ? [] : allIds);
   };
 
+  const openRequestModal = () => {
+    setRequestName(search.trim());
+    setOpen(false);
+    setRequestOpen(true);
+  };
+
+  const submitModuleRequest = () => {
+    const name = requestName.trim();
+    if (!name) return;
+    createRequest.mutate(name, {
+      onSuccess: () => {
+        toast.success("Module request submitted");
+        setRequestOpen(false);
+        setRequestName("");
+        setSearch("");
+      },
+      onError: (error) => {
+        toast.error(error instanceof Error ? error.message : "Unable to submit request");
+      },
+    });
+  };
+
   const lowerSearch = search.toLowerCase().trim();
   const filteredGroups = data
     .map((group) => ({
@@ -177,6 +206,19 @@ export default function SapModulesDropdown({
                 🔍
               </span>
             </div>
+
+            {allowModuleRequest ? (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openRequestModal();
+                }}
+                className="h-9 shrink-0 rounded-md bg-brand-blue px-3 text-xs font-semibold text-white transition-colors hover:bg-brand-blue/90 sm:h-10 sm:px-4 sm:text-sm"
+              >
+                Request New
+              </button>
+            ) : null}
 
             <button
               type="button"
@@ -233,6 +275,67 @@ export default function SapModulesDropdown({
         </div>
       </div>,
       document.body
+    );
+
+  const requestModal =
+    requestOpen &&
+    typeof document !== "undefined" &&
+    createPortal(
+      <div
+        className="fixed inset-0 flex items-center justify-center bg-black/45 p-4"
+        style={{ zIndex: panelZIndex + 10 }}
+        onMouseDown={() => !createRequest.isPending && setRequestOpen(false)}
+      >
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="request-module-title"
+          className="w-full max-w-md rounded-2xl bg-white p-5 shadow-2xl"
+          onMouseDown={(e) => e.stopPropagation()}
+        >
+          <h2 id="request-module-title" className="text-lg font-semibold text-slate-900">
+            Request a new module
+          </h2>
+          <p className="mt-1 text-sm text-slate-500">
+            Enter the SAP module you would like the admin to add.
+          </p>
+          <label className="mt-5 block text-sm font-medium text-slate-700">
+            Module name
+          </label>
+          <input
+            autoFocus
+            value={requestName}
+            onChange={(e) => setRequestName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                submitModuleRequest();
+              }
+            }}
+            placeholder="e.g. SAP Transportation Management"
+            className="mt-2 h-11 w-full rounded-lg border border-slate-300 px-3 text-sm outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/15"
+          />
+          <div className="mt-5 flex justify-end gap-2">
+            <button
+              type="button"
+              disabled={createRequest.isPending}
+              onClick={() => setRequestOpen(false)}
+              className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              disabled={!requestName.trim() || createRequest.isPending}
+              onClick={submitModuleRequest}
+              className="rounded-lg bg-brand-blue px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {createRequest.isPending ? "Submitting..." : "Submit Request"}
+            </button>
+          </div>
+        </div>
+      </div>,
+      document.body,
     );
 
   return (
@@ -298,6 +401,7 @@ export default function SapModulesDropdown({
       </div>
 
       {dropdownPanel}
+      {requestModal}
     </div>
   );
 }

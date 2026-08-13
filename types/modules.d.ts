@@ -8,3 +8,16 @@ export interface SapModuleGroup {
     name: string;
     modules: SapModule[];
   }
+
+export interface ModuleRequest {
+  id: number;
+  name: string;
+  user_id: number;
+  is_accepted: boolean | null;
+  created_at?: string;
+  user?: {
+    id: number;
+    username?: string;
+    email?: string;
+  };
+}
