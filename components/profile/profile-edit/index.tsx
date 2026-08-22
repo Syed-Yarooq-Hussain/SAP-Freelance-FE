@@ -163,10 +163,11 @@ function mapModalProjectToProfileRow(
 function mapProfileProjectToModal(
   row: ProfileEditFormData["projects"][number],
 ): ProjectFormData & { budget?: number | null; status?: string } {
+  const legacySummary = (row as typeof row & { summary?: string | null }).summary;
   return {
     project_name: row.project_name || "",
     client_name: row.client_name || "",
-    project_summary: row.project_summary || "",
+    project_summary: row.project_summary || legacySummary || "",
     start_date: row.start_date || "",
     end_date: row.end_date || "",
     budget: row.budget ?? null,
@@ -294,6 +295,37 @@ export default function ProfileEditPage({
         fields: flat,
         rawErrors: formErrors,
       });
+      const invalidFields = new Set(flat.map((item) => item.path.split(".")[0]));
+      setExpandedSections((previous) => ({
+        ...previous,
+        myInformation:
+          previous.myInformation ||
+          [
+            "rate",
+            "weekly_available_hours",
+            "core",
+            "others",
+            "email",
+            "phone",
+            "city",
+            "country",
+            "industries",
+          ].some((field) => invalidFields.has(field)),
+        keyLocations:
+          previous.keyLocations ||
+          [
+            "username",
+            "linkedin_url",
+            "experience",
+            "expertise_level",
+            "clients_summary",
+          ].some((field) => invalidFields.has(field)),
+        professionalInformation:
+          previous.professionalInformation ||
+          ["work_experiences", "certifications", "educations", "projects"].some(
+            (field) => invalidFields.has(field),
+          ),
+      }));
       if (flat.length === 0) {
         toast.error("Unable to save. Check the form for invalid values.", {
           description: "Open the browser console for details.",
@@ -332,8 +364,11 @@ export default function ProfileEditPage({
     [setValue],
   );
 
+  const hasHydratedInitialProfile = useRef(Boolean(consultant));
   useEffect(() => {
+    if (!consultant || hasHydratedInitialProfile.current) return;
     reset(buildProfileEditDefaults(consultant));
+    hasHydratedInitialProfile.current = true;
   }, [consultant, reset]);
 
   useEffect(() => {
@@ -836,7 +871,13 @@ export default function ProfileEditPage({
               Discard Changes
             </button>
             <button
-              onClick={() => setSaveConfirmOpen(true)}
+              type="button"
+              onClick={() => {
+                void handleSubmit(
+                  () => setSaveConfirmOpen(true),
+                  onInvalidSubmit,
+                )();
+              }}
               className="px-6 py-2 text-sm bg-brand-blue text-white rounded-xl transition font-medium"
             >
               Save Changes
@@ -1043,6 +1084,7 @@ export default function ProfileEditPage({
                         }}
                         placeholder="Select country"
                         className="bg-brand-yellow"
+                        error={errors.country?.message}
                         type="country"
                       />
                     </div>
@@ -1059,6 +1101,7 @@ export default function ProfileEditPage({
                         }}
                         placeholder="Select city"
                         className="bg-brand-yellow"
+                        error={errors.city?.message}
                         type="city"
                         selectedCountry={watch("country") || ""}
                       />
@@ -1257,9 +1300,14 @@ export default function ProfileEditPage({
                           required
                           value={watch("experience") || ""}
                           error={errors.experience?.message}
-                          onChange={(e: any) =>
-                            setValue("experience", Number(e.target.value))
-                          }
+                          onChange={(e: any) => {
+                            const value = e.target.value;
+                            setValue(
+                              "experience",
+                              value === "" ? null : Number(value),
+                              { shouldValidate: true, shouldDirty: true },
+                            );
+                          }}
                         />
 
                         <SelectField
@@ -1683,7 +1731,12 @@ export default function ProfileEditPage({
                 </button>
                 <button
                   type="button"
-                  onClick={() => setSaveConfirmOpen(true)}
+                  onClick={() => {
+                    void handleSubmit(
+                      () => setSaveConfirmOpen(true),
+                      onInvalidSubmit,
+                    )();
+                  }}
                   className="flex items-center justify-center gap-1 flex-1 rounded-xl bg-brand-blue py-2.5 text-sm font-medium text-white transition hover:opacity-95"
                 >
                   Save Changes <ArrowRight className="w-4 h-4" />

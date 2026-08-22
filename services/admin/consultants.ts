@@ -2,6 +2,7 @@ import { IAdminPendingConsultant } from "@/types/admin";
 import type { ApiResponse } from "@/types/api";
 import { API_ROUTES } from "@/utils/api_routes";
 import { request } from "@/utils/request";
+import { getCachedSession } from "@/services/sessionCache";
 
 export async function fetchPendingConsultants(): Promise<
   ApiResponse<IAdminPendingConsultant[]>
@@ -65,4 +66,22 @@ export async function fetchAdminConsultants(
   const data = normalizeConsultantsResponse(res.data);
 
   return { ...res, data };
+}
+
+export async function fetchAdminConsultantDetail(
+  consultantId: string | number,
+): Promise<ApiResponse<any>> {
+  const session = await getCachedSession();
+  const token = session?.accessToken;
+  const res = await request<undefined, any>({
+    url: API_ROUTES.ADMIN_CONSULTANT_DETAIL(consultantId),
+    method: "GET",
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+  });
+
+  if (res.status !== "success") {
+    throw new Error(res.message || "Failed to load consultant profile");
+  }
+
+  return res;
 }

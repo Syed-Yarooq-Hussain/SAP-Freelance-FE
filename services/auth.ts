@@ -2,9 +2,32 @@ import { ILoginForm } from "@/types/common-auth";
 import { API_ROUTES } from "@/utils/api_routes";
 import { request } from "@/utils/request";
 import { getMe } from "@/services/getMe";
-import NextAuth from "next-auth";
+import NextAuth, { CredentialsSignin } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { API_STATUS } from "../constants/api_status";
+
+class EmailNotVerifiedError extends CredentialsSignin {
+  code: string;
+
+  constructor(userId: number) {
+    super();
+    this.code = `email_not_verified_${userId}`;
+  }
+}
+
+const getUnverifiedUserId = (error: any): number | null => {
+  const message = String(error?.message || "");
+  const code = String(error?.code || "").toUpperCase();
+  const isUnverified =
+    code === "EMAIL_NOT_VERIFIED" ||
+    /email\s+(?:is\s+)?not\s+verified|unverified\s+email/i.test(message);
+
+  if (!isUnverified) return null;
+  const data = error?.data;
+  const rawId = data?.userId ?? data?.user_id ?? data?.id ?? data?.user?.id;
+  const userId = Number(rawId);
+  return Number.isInteger(userId) && userId > 0 ? userId : null;
+};
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -70,6 +93,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 accessToken: response.data.token,
               };
             } catch (error: any) {
+              const unverifiedUserId = getUnverifiedUserId(error);
+              if (unverifiedUserId) {
+                throw new EmailNotVerifiedError(unverifiedUserId);
+              }
+
               // Catch errors thrown by request utility (CustomError, AxiosError, etc.)
               const backendResponse = error?.response?.data || error?.response;
               const errorMessage = backendResponse?.message || error?.message || "Login failed";

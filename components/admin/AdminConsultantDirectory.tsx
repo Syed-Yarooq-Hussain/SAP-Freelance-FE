@@ -17,12 +17,8 @@ import Groups2Icon from "@mui/icons-material/Groups2";
 import { Box, Button, CircularProgress, Pagination, Stack, Typography } from "@mui/material";
 import type { GridColDef } from "@mui/x-data-grid";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
-
-const ConsultantProfileModal = dynamic(
-  () => import("@/components/specific/teambuilder/ConsultantProfileModal"),
-  { ssr: false }
-);
 
 const TeamBuilderFilters = dynamic(
   () => import("@/components/specific/teambuilder/TeamBuilderFilters"),
@@ -98,6 +94,7 @@ const mapConsultantRow = (
   avatar: `/img/u${((index % 5) + 1).toString()}.png`,
   working_schedule: item.working_schedule || undefined,
   badges: item.badges ?? [],
+  rawProfile: item as unknown as Record<string, any>,
 });
 
 const adminContactColumns: GridColDef<TeamBuilderRow>[] = [
@@ -137,21 +134,31 @@ const adminContactColumns: GridColDef<TeamBuilderRow>[] = [
 ];
 
 export default function AdminConsultantDirectory() {
+  const router = useRouter();
   const [filterOpen, setFilterOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [rows, setRows] = useState<TeamBuilderRow[]>([]);
   const [activeFilters, setActiveFilters] = useState<Record<string, unknown>>({});
   const [currentPage, setCurrentPage] = useState(1);
   const [paginationMeta, setPaginationMeta] = useState<ApiPagination | null>(null);
-  const [profileModalOpen, setProfileModalOpen] = useState(false);
-  const [profileConsultant, setProfileConsultant] =
-    useState<TeamBuilderRow | null>(null);
   const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
   const [scheduleData, setScheduleData] = useState<
     TeamBuilderRow["working_schedule"] | null
   >(null);
   const { mutate: loadConsultants, isPending } = useClientConsultants();
   const { toast } = useToast();
+
+  const openProfile = useCallback((row: TeamBuilderRow) => {
+    try {
+      sessionStorage.setItem(
+        `admin-consultant-profile:${row.id}`,
+        JSON.stringify(row.rawProfile ?? row),
+      );
+    } catch {
+      // The detail page will refetch if session storage is unavailable.
+    }
+    router.push(`/admin/consultant/${row.id}`);
+  }, [router]);
 
   const openSchedule = (row: TeamBuilderRow) => {
     setScheduleData(row.working_schedule);
@@ -231,17 +238,14 @@ export default function AdminConsultantDirectory() {
     () => {
       const teamColumns = teamBuilderColumns(
         () => {},
-        (row) => {
-          setProfileConsultant(row);
-          setProfileModalOpen(true);
-        }
+        openProfile
       ).filter(
         (column) => column.field !== "request" && column.field !== "id"
       );
 
       return [...adminContactColumns, ...teamColumns];
     },
-    []
+    [openProfile]
   );
 
   return (
@@ -321,7 +325,8 @@ export default function AdminConsultantDirectory() {
             columns={columns}
             rows={filteredRows}
             pageSize={10}
-            rowClickable={false}
+            rowClickable
+            onRowClick={(params) => openProfile(params.row as TeamBuilderRow)}
           />
         )}
 
@@ -350,20 +355,6 @@ export default function AdminConsultantDirectory() {
           </Stack>
         )}
       </Box>
-
-      {profileModalOpen && profileConsultant && (
-        <ConsultantProfileModal
-          open={profileModalOpen}
-          consultant={profileConsultant}
-          isSelected={false}
-          showAddButton={false}
-          onClose={() => {
-            setProfileModalOpen(false);
-            setProfileConsultant(null);
-          }}
-          onAddToSelection={() => {}}
-        />
-      )}
 
       {scheduleModalOpen && (
         <DynamicPopup

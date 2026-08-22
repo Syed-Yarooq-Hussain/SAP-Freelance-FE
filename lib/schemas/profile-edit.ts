@@ -142,7 +142,10 @@ const projectSchema = yup.object().shape({
 
 // Combined Profile Edit Schema
 export const profileEditSchema = yup.object().shape({
-  expertise_level: yup.string().nullable(),
+  expertise_level: yup
+    .string()
+    .trim()
+    .required('Expertise level is required'),
   core: yup
     .array()
     .of(yup.string())
@@ -182,12 +185,27 @@ export const profileEditSchema = yup.object().shape({
   // Key Locations - from user object
   city: yup
     .string()
-    .nullable(),
-  country: yup.string().nullable(),
+    .trim()
+    .required('City is required'),
+  country: yup
+    .string()
+    .trim()
+    .required('Country is required'),
   // Professional Summary - from clients_summary
   clients_summary: yup
     .string()
-    .nullable()
+    .required('Professional headline is required')
+    .test(
+      'headline-content',
+      'Professional headline is required',
+      (value) =>
+        Boolean(
+          String(value || '')
+            .replace(/<[^>]*>/g, '')
+            .replace(/&nbsp;/gi, ' ')
+            .trim(),
+        ),
+    )
     .max(2000, 'Professional summary cannot exceed 2000 characters'),
 
   // Experience & Rate - from freelancer profile
@@ -199,6 +217,7 @@ export const profileEditSchema = yup.object().shape({
       const parsed = Number(originalValue)
       return Number.isNaN(parsed) ? null : parsed
     })
+    .required('Experience is required')
     .typeError('Experience must be a number')
     .min(0, 'Experience cannot be negative'),
   rate: yup
@@ -207,6 +226,7 @@ export const profileEditSchema = yup.object().shape({
     .transform((value, originalValue) =>
       originalValue === '' || originalValue == null ? null : value
     )
+    .required('Hourly rate is required')
     .typeError('Rate must be a number')
     .min(0, 'Rate cannot be negative'),
   weekly_available_hours: yup
@@ -340,6 +360,13 @@ export function buildProfileEditDefaults(consultant: unknown): ProfileEditFormDa
         ? (c.certifications as CertificationFormData[])
         : [],
     educations: Array.isArray(c?.education) ? (c.education as EducationFormData[]) : [],
-    projects: Array.isArray(c?.projects) ? (c.projects as ProjectFormData[]) : [],
+    projects: Array.isArray(c?.projects)
+      ? (c.projects as Array<ProjectFormData & { summary?: string | null }>).map(
+          (project) => ({
+            ...project,
+            project_summary: project.project_summary || project.summary || '',
+          }),
+        )
+      : [],
   }
 }

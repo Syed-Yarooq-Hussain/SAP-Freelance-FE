@@ -18,6 +18,13 @@ const getBrowserTimezone = (): string | undefined => {
   }
 };
 
+export class EmailVerificationRequiredError extends Error {
+  constructor(public readonly userId: number) {
+    super("Please verify your email address");
+    this.name = "EmailVerificationRequiredError";
+  }
+}
+
 export const useLogin = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -36,6 +43,11 @@ export const useLogin = () => {
       // NextAuth returns generic error codes like "CredentialsSignin" or "Configuration"
       // Map them to a clear, user-friendly message (e.g. backend "Invalid credentials")
       if (response?.error) {
+        const verificationMatch = response.code?.match(/^email_not_verified_(\d+)$/);
+        if (verificationMatch) {
+          throw new EmailVerificationRequiredError(Number(verificationMatch[1]));
+        }
+
         let message = response.error;
 
         // These are the common generic codes we see from Credentials provider

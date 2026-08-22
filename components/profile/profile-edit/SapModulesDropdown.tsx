@@ -148,7 +148,7 @@ export default function SapModulesDropdown({
     if (!name) return;
     createRequest.mutate(name, {
       onSuccess: () => {
-        toast.success("Module request submitted");
+        toast.success("Request submitted. Admin will review and add it soon.");
         setRequestOpen(false);
         setRequestName("");
         setSearch("");
@@ -207,7 +207,7 @@ export default function SapModulesDropdown({
               </span>
             </div>
 
-            {allowModuleRequest ? (
+            {allowModuleRequest && lowerSearch && filteredGroups.length === 0 ? (
               <button
                 type="button"
                 onClick={(e) => {
@@ -216,7 +216,7 @@ export default function SapModulesDropdown({
                 }}
                 className="h-9 shrink-0 rounded-md bg-brand-blue px-3 text-xs font-semibold text-white transition-colors hover:bg-brand-blue/90 sm:h-10 sm:px-4 sm:text-sm"
               >
-                Request New
+                Add New Module
               </button>
             ) : null}
 

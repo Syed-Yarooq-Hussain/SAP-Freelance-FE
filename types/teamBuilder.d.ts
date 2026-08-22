@@ -59,6 +59,7 @@ export interface TeamBuilderRow {
   badges?: string[];
   rateValue?: number;
   experienceYears?: number | null;
+  rawProfile?: Record<string, any>;
 }
 
 export interface ITask {

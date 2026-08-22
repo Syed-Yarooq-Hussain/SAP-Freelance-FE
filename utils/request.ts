@@ -13,6 +13,7 @@ let isSigningOut = false;
 type ApiErrorResponse = {
   message?: string;
   code?: number;
+  data?: unknown;
 };
 
 instance.interceptors.response.use(
@@ -60,7 +61,10 @@ export const request = async <P, R>(
     if (result.status === API_STATUS.ERROR) {
       const errorMessage = result.message || "An error occurred";
       const errorCode = result.code ?? 400;
-      throw new CustomError(errorCode, errorMessage);
+      throw new CustomError(errorCode, errorMessage, {
+        code: result.code,
+        data: result.data,
+      });
     }
 
     return result;
@@ -78,7 +82,10 @@ export const request = async <P, R>(
 
       const errorMessage = err.response?.data?.message || err.message || "Request failed";
       const errorCode = err.response?.status ?? 500;
-      throw new CustomError(errorCode, errorMessage);
+      throw new CustomError(errorCode, errorMessage, {
+        code: err.response?.data?.code,
+        data: err.response?.data?.data,
+      });
     }
 
     // Handle generic Error instances

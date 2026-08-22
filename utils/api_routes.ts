@@ -50,6 +50,7 @@ export const API_ROUTES = {
   ADMIN_STATS: "/admin/stats",
   ADMIN_PROJECTS: "/admin/projects",
   ADMIN_CONSULTANTS: "/admin/consultants/all",
+  ADMIN_CONSULTANT_DETAIL: (id: string | number) => `/admin/consultants/${id}`,
   ADMIN_CONSULTANT_SUMMARY: "/admin/dashboard/consultants-summary",
   UPDATE_ADMIN_CONSULTANT_STATUS: "/admin/consultants",
   ADMIN_CLIENTS: "/admin/clients/all",

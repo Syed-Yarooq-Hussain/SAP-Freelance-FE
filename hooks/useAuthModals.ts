@@ -1,4 +1,4 @@
-import { useLogin } from '@/actions/auth/login';
+import { EmailVerificationRequiredError, useLogin } from '@/actions/auth/login';
 import { useSignupConsultant } from '@/actions/auth/signupConsultant';
 import { useForgetPassword } from '@/actions/auth/useForgetPassword';
 import { useResetPassword } from '@/actions/auth/useResetPassword';
@@ -90,6 +90,14 @@ export function useAuthModals() {
       const response = await mutateLogin(data);
       return response;
     } catch (error: any) {
+      if (error instanceof EmailVerificationRequiredError) {
+        setUserDetails({ id: error.userId } as IUser);
+        setSignUpEmail(data.email);
+        setShowLogin(false);
+        setShowEmailVerification(true);
+        return;
+      }
+
       // Extract backend error message
       const errorMessage = error?.message || error?.response?.data?.message || 'Login failed';
       

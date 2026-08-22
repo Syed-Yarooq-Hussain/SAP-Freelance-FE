@@ -19,14 +19,14 @@ import { ProjectFormData } from '@/lib/schemas/projects'
 
 
 const tabs = [
-  { id: 'work-experience', label: 'Work Experience' },
-  { id: 'certifications', label: 'Certifications' },
   { id: 'projects', label: 'Projects' },
+  { id: 'certifications', label: 'Certifications' },
+  { id: 'work-experience', label: 'Work Experience' },
   { id: 'education', label: 'Education' },
 ]
 
 export function ProfessionalInfo() {
-  const [activeTab, setActiveTab] = useState('work-experience')
+  const [activeTab, setActiveTab] = useState('projects')
   const dispatch = useAppDispatch()
   const { user } = useAppSelector((state) => state.user)
 
