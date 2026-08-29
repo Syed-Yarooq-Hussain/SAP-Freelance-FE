@@ -16,15 +16,16 @@ import { PersistGate } from "redux-persist/integration/react";
 import { persistor } from "@/lib/store/store";
 // import { Toaster } from "@/components/homepage/ui/sonner";
 import ThemeRegistry from "./ThemeRegistry";
-import { usePathname } from "next/navigation";
 import { Toaster } from "sonner";
+import {
+  OnboardingProvider,
+} from "@/providers/OnboardingProvider";
 
 export default function ClientProviders({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const pathname = usePathname();
   const theme = useMemo(() => getTheme("light"), []);
 
   return (
@@ -35,27 +36,29 @@ export default function ClientProviders({
           <QueryProvider>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <SessionProvider refetchInterval={0} refetchWhenOffline={false}>
-              <Container
-                maxWidth={false}
-                disableGutters
-                sx={{
-                  minHeight: "100vh",
-                  display: "flex",
-                  flexDirection: "column"
-                }}
-              >
-                <Box component="main">
-                  <ToastProvider>
-                    <GlobalLoader />
-                    <Providers>
-                      <PersistGate persistor={persistor} loading={null}>
-                        {children}
-                      </PersistGate>
-                    </Providers>
-                  </ToastProvider>
-                  <Toaster richColors/>
-                </Box>
-              </Container>
+              <OnboardingProvider>
+                  <Container
+                    maxWidth={false}
+                    disableGutters
+                    sx={{
+                      minHeight: "100vh",
+                      display: "flex",
+                      flexDirection: "column"
+                    }}
+                  >
+                    <Box component="main">
+                      <ToastProvider>
+                        <GlobalLoader />
+                        <Providers>
+                          <PersistGate persistor={persistor} loading={null}>
+                            {children}
+                          </PersistGate>
+                        </Providers>
+                      </ToastProvider>
+                      <Toaster richColors/>
+                    </Box>
+                  </Container>
+              </OnboardingProvider>
             </SessionProvider>
           </LocalizationProvider>
           </QueryProvider>

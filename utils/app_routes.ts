@@ -16,6 +16,7 @@ export const APP_ROUTES = {
     HOUR_LOGS: "/consultant/hour-logs",
     DOCUMENTS: "/consultant/documents",
     PROFILE: "/consultant/profile",
+    MY_PROFILE: "/consultant/my-profile",
     ACCOUNT: "/consultant/account",
     CALENDAR: "/consultant/calendar",
   },

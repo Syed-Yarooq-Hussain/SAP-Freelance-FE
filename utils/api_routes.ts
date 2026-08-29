@@ -80,4 +80,9 @@ export const API_ROUTES = {
   ADMIN_CONSULTANT_PAYMENTS: "/admin/consultant/payments",
   ADMIN_CONSULTANT_PAYMENT: "/admin/consultant/payment",
 
+  ONBOARDING_STATUS: "/onboarding/status",
+  ONBOARDING_STEP: "/onboarding/step",
+  ONBOARDING_COMPLETE: "/onboarding/complete",
+  ONBOARDING_TOUR: (key: string) => `/onboarding/tours/${key}`,
+
 };

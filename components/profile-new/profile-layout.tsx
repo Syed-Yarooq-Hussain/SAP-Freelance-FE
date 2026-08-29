@@ -27,12 +27,14 @@ interface ProfileLayoutProps {
   setCvModalOpen: (open: boolean) => void;
   /** Opens profile edit; optional scroll target for the professional headline (clients summary) field */
   onEnterEdit: (opts?: { scrollToClientsSummary?: boolean }) => void;
+  tourVariant?: "profile" | "my_profile";
 }
 
 export function ProfileLayout({
   consultant,
   setCvModalOpen,
   onEnterEdit,
+  tourVariant = "profile",
 }: ProfileLayoutProps) {
   const { data: dashboardData } = useConsultantDashboard();
   const profileStrength = dashboardData?.profile?.profile_strength || 0;
@@ -120,10 +122,16 @@ export function ProfileLayout({
       <div className="mx-auto">
         {/* Profile Header Section */}
         <div className="border  border-none md:border-slate-200 rounded-2xl md:p-4 p-0 mb-4">
-          <div className="sticky md:block hidden top-0 z-40 bg-transparent md:bg-background-main backdrop-blur border-slate-200 mb-2">
+          <div
+            className="sticky md:block hidden top-0 z-40 bg-transparent md:bg-background-main backdrop-blur border-slate-200 mb-2"
+            data-tour={
+              tourVariant === "my_profile" ? "my-profile-actions" : undefined
+            }
+          >
             <div className="max-w-7xl mx-auto  flex justify-end gap-3 ">
               <button
                 onClick={() => setCvModalOpen(true)}
+                data-tour="autofill-resume"
                 className="flex items-center gap-2 px-3 md:px-4 md:py-2 py-1 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-200 transition font-medium text-xs"
               >
                 <File className="md:w-4 md:h-4 w-3 h-3" />
@@ -154,9 +162,15 @@ export function ProfileLayout({
                   />
                 </div>
                 <div className="md:hidden block rounded-3xl border border-slate-200 bg-[#f5f5f5] p-4">
-                  <div className="grid grid-cols-2 gap-2 mb-3">
+                  <div
+                    className="grid grid-cols-2 gap-2 mb-3"
+                    data-tour={
+                      tourVariant === "my_profile" ? "my-profile-actions" : undefined
+                    }
+                  >
                     <button
                       onClick={() => setCvModalOpen(true)}
+                      data-tour="autofill-resume"
                       className="flex min-w-0 items-center justify-center gap-1  rounded-xl border border-slate-200 bg-white px-2 py-2.5 text-xs font-medium leading-tight text-slate-600"
                     >
                       <File className="h-4 w-4 shrink-0" />
@@ -224,7 +238,13 @@ export function ProfileLayout({
                 </div>
               </div>
             </div>
-            <ProfileHeader onEnterEdit={onEnterEdit} />
+            <div
+              data-tour={
+                tourVariant === "my_profile" ? "my-profile-header" : undefined
+              }
+            >
+              <ProfileHeader onEnterEdit={onEnterEdit} />
+            </div>
           </div>
         </div>
 
@@ -233,7 +253,14 @@ export function ProfileLayout({
           {/* Left Sidebar */}
           <div className="lg:col-span-1">
             {otherModules.length > 0 && <OtherModulesSection />}
-            <CompletionCard
+            <div
+              data-tour={
+                tourVariant === "my_profile"
+                  ? "my-profile-completion"
+                  : "profile-completion"
+              }
+            >
+              <CompletionCard
               completionPercentage={profileStrength.toString() || '0%'}
               onEdit={() => onEnterEdit()}
               profileEssentialsCompleted={
@@ -246,10 +273,14 @@ export function ProfileLayout({
                 dashboardData?.profile?.professional_information_completed
               }
             />
+            </div>
           </div>
 
           {/* Main Content */}
-          <div className="lg:col-span-2 md:bg-transparent bg-background-main">
+          <div
+            className="lg:col-span-2 md:bg-transparent bg-background-main"
+            data-tour="profile-professional-info"
+          >
             <ProfessionalInfo />
           </div>
         </div>

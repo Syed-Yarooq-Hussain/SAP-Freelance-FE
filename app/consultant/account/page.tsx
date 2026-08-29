@@ -1,10 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import { ProfileView } from "@/components/account-settings/profile-view";
-import { ProfileEdit } from "@/components/account-settings/profile-edit";
+import { useState, useEffect, useMemo } from "react";
 import type { AccountFormData } from "@/lib/schemas/account";
 import Sidebar from "@/components/Sidebar";
+import { PageOnboardingTour } from "@/components/onboarding/PageOnboardingTour";
+import {
+  waitForTourTarget,
+  shouldRunOnboardingPageTour,
+  getOnboardingStepPatchForPage,
+} from "@/components/onboarding/onboarding-tour-utils";
+import { accountTourSteps } from "@/components/onboarding/tour-steps";
+import { useOnboarding } from "@/providers/OnboardingProvider";
 import { updateConsultantProfile } from "@/services/consultants";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
 import { getConsultantMeService } from "@/services/getConsultantProfile";
@@ -15,36 +21,71 @@ import { useDeleteConsultantProfile } from "@/actions/consultants/useDeleteConsu
 import { useLogout } from "@/actions/auth/logout";
 import { TrashIcon } from "lucide-react";
 import { ConfirmDeleteModal } from "@/components/common/ConfirmDeleteModal";
-
-const mockBadges = [
-  {
-    id: "1",
-    label: "Verified",
-    color: "green" as const,
-    icon: "/images/green-tick-badge.svg",
-  },
-  {
-    id: "2",
-    label: "Top Rated",
-    color: "blue" as const,
-    icon: "/images/star-profile-badge.svg",
-  },
-  {
-    id: "3",
-    label: "Expert",
-    color: "orange" as const,
-    icon: "/images/leader-badge.svg",
-  },
-];
+import { usePathname } from "next/navigation";
 
 export default function AccountPage() {
   const dispatch = useAppDispatch();
+  const pathname = usePathname();
   const user = useAppSelector((state) => state?.user?.user);
-  const [isEditing, setIsEditing] = useState(false);
+  const { currentStep, status, fetchError, advanceStep } = useOnboarding();
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [targetsReady, setTargetsReady] = useState(false);
+  const [accountTourDismissed, setAccountTourDismissed] = useState(false);
   const deleteProfile = useDeleteConsultantProfile();
   const { mutate: logout } = useLogout();
+
+  const shouldRunTour = useMemo(
+    () =>
+      shouldRunOnboardingPageTour({
+        pageStep: "my_profile",
+        pathname,
+        status,
+        currentStep,
+        fetchError,
+        dismissed: accountTourDismissed,
+      }),
+    [
+      accountTourDismissed,
+      currentStep,
+      fetchError,
+      pathname,
+      status,
+    ],
+  );
+
+  useEffect(() => {
+    const patchStep = getOnboardingStepPatchForPage("my_profile", currentStep);
+    if (status !== "in_progress" || !patchStep) {
+      return;
+    }
+
+    void advanceStep(patchStep);
+  }, [advanceStep, currentStep, status]);
+
+  useEffect(() => {
+    if (!shouldRunTour) {
+      setTargetsReady(false);
+      return;
+    }
+
+    if (document.querySelector('[data-tour="account-settings"]')) {
+      setTargetsReady(true);
+      return;
+    }
+
+    let cancelled = false;
+
+    void waitForTourTarget('[data-tour="account-settings"]').then((found) => {
+      if (!cancelled) {
+        setTargetsReady(found);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [shouldRunTour]);
 
   const handleSave = async (data: AccountFormData, apiPayload?: any) => {
     setIsLoading(true);
@@ -58,7 +99,6 @@ export default function AccountPage() {
         }
         toast.success("Account settings updated successfully!");
       }
-      setIsEditing(false);
     } catch (error) {
       console.error("Error saving profile:", error);
       toast.error("Failed to update account settings!");
@@ -79,11 +119,11 @@ export default function AccountPage() {
       },
     });
   };
+
   return (
     <Sidebar>
       <main className=" bg-white">
         <div className=" mx-auto px-4 py-8">
-          {/* Header */}
           <div className="flex d items-center justify-between">
             <div className="mb-4 font-manrope">
               <h1 className="text-2xl font-neue text-slate-900 tracking-tight">
@@ -104,20 +144,10 @@ export default function AccountPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl p-2 border border-slate-200 shadow-lg">
-            {/* Content */}
-            {/* {isEditing ? (
-              <ProfileEdit
-                onSubmit={handleSave}
-                isLoading={isLoading}
-              />
-            ) : (
-              <ProfileView
-                key={user?.id}
-                badges={mockBadges}
-                onEdit={() => setIsEditing(true)}
-              />
-            )} */}
+          <div
+            className="bg-white rounded-xl p-2 border border-slate-200 shadow-lg"
+            data-tour="account-settings"
+          >
             <AccountSettings onSubmit={handleSave} isLoading={isLoading} />
           </div>
         </div>
@@ -137,6 +167,15 @@ export default function AccountPage() {
           }}
         />
       </main>
+
+      {!fetchError && (
+        <PageOnboardingTour
+          pageStep="my_profile"
+          steps={accountTourSteps}
+          run={shouldRunTour && targetsReady}
+          onStepAfter={() => setAccountTourDismissed(true)}
+        />
+      )}
     </Sidebar>
   );
 }

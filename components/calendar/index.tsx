@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import Sidebar from '../Sidebar'
 import { CalendarHeader } from './CalendarHeader'
 import CalendarEvents from './CalendarEvents'
@@ -9,6 +9,9 @@ import EventsCalendar from './EventsCalendar'
 import AvailabilityCalendar from './AvailabilityCalendar'
 import { useConsultantMe } from '@/actions/consultants/useConsultantProfile'
 import { useSaveConsultantSchedule } from '@/actions/consultants/useSaveConsultantSchedule'
+import { PageOnboardingTour } from '@/components/onboarding/PageOnboardingTour'
+import { calendarTourSteps } from '@/components/onboarding/tour-steps'
+import { useOnboarding } from '@/providers/OnboardingProvider'
 import { DAY_MAP, WEEKLY_ROWS_INIT } from '@/constants/calendar'
 import { useToast } from '@/providers/ToastProvider'
 import { ArrowLeft } from 'lucide-react'
@@ -58,7 +61,9 @@ const Index = () => {
     return formatDisplayDate(date)
   }, [])
 
-  const { data: meData } = useConsultantMe()
+  const { data: meData, isLoading: isMeLoading } = useConsultantMe()
+  const { currentStep, status, fetchError } = useOnboarding()
+  const [targetsReady, setTargetsReady] = useState(false)
   const { mutateAsync: saveSchedule, isPending } = useSaveConsultantSchedule()
   const weeklyFromMe: WeeklySchedule[] =
     (meData?.data?.working_schedule?.weekly as WeeklySchedule[]) ?? []
@@ -196,6 +201,25 @@ const Index = () => {
     (r) => r.enabled && r.startTime && r.endTime && r.startTime >= r.endTime,
   )
 
+  const shouldRunTour = useMemo(() => {
+    if (fetchError || status === 'completed') return false
+    return currentStep === 'calendar'
+  }, [currentStep, fetchError, status])
+
+  useEffect(() => {
+    if (!shouldRunTour || showCustomAvailability) {
+      setTargetsReady(false)
+      return
+    }
+
+    if (isMeLoading || !meData) {
+      setTargetsReady(false)
+      return
+    }
+
+    setTargetsReady(true)
+  }, [shouldRunTour, isMeLoading, meData, showCustomAvailability])
+
   return (
     <Sidebar>
       {showCustomAvailability ? (
@@ -249,20 +273,28 @@ const Index = () => {
               </div>
             </div>
             <div>
-              <CalendarHeader
-                onFilterChange={setActiveFilter}
-                onAddAvailability={openWeeklyModal}
-                onAddCustomAvailability={() => setShowCustomAvailability(true)}
-              />
+              <div data-tour="calendar-availability">
+                <CalendarHeader
+                  onFilterChange={setActiveFilter}
+                  onAddAvailability={openWeeklyModal}
+                  onAddCustomAvailability={() => setShowCustomAvailability(true)}
+                />
+              </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-7 gap-4 md:px-2 pt-2 px-3">
-              <div className="col-span-1 md:block hidden md:col-span-2 pt-2 pl-0 md:pl-2">
+              <div
+                className="col-span-1 md:block hidden md:col-span-2 pt-2 pl-0 md:pl-2"
+                data-tour="calendar-events"
+              >
                 <CalendarEvents filter={activeFilter} />
                 <div className="mt-2">
                   <UpcomingEvents />
                 </div>
               </div>
-              <div className="col-span-1 md:col-span-5 md:mt-0 mt-4 min-h-[50vh]">
+              <div
+                className="col-span-1 md:col-span-5 md:mt-0 mt-4 min-h-[50vh]"
+                data-tour="calendar-events-mobile"
+              >
                 <EventsCalendar filter={activeFilter} />
               </div>
             </div>
@@ -386,6 +418,13 @@ const Index = () => {
             ) : null}
           </div>
         </>
+      )}
+      {!fetchError && (
+        <PageOnboardingTour
+          pageStep="calendar"
+          steps={calendarTourSteps}
+          run={shouldRunTour && targetsReady}
+        />
       )}
     </Sidebar>
   )
