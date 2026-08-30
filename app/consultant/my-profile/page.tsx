@@ -3,10 +3,10 @@
 import Sidebar from '@/components/Sidebar'
 import { ConsultantProfilePageContent } from '@/components/profile-new/consultant-profile-page-content'
 
-export default function ProfilePage() {
+export default function MyProfilePage() {
   return (
     <Sidebar>
-      <ConsultantProfilePageContent tourVariant="profile" />
+      <ConsultantProfilePageContent tourVariant="my_profile" />
     </Sidebar>
   )
 }

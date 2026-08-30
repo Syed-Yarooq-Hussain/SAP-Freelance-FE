@@ -1,0 +1,119 @@
+/* Full-viewport portal — overlay must sit above shell chrome (sidebar, header) */
+#react-joyride-portal {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  pointer-events: none;
+}
+
+/* Floater/tooltip must re-enable clicks inside the non-interactive portal */
+.react-joyride__floater {
+  pointer-events: auto !important;
+  z-index: 10001 !important;
+}
+
+/* Dimmed backdrop — never blur (backdrop-filter blurs spotlight cutout content too) */
+.react-joyride__overlay {
+  mix-blend-mode: normal;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  pointer-events: none;
+}
+
+/* Spotlight ring to match design */
+.react-joyride__spotlight {
+  stroke: rgba(255, 255, 255, 0.95);
+  stroke-width: 3px;
+}
+
+/* Sidebar / nav target highlight while tour step is active */
+[data-onboarding-highlight="nav"] {
+  background-color: #1a3352 !important;
+  color: #ffffff !important;
+  border-radius: 12px !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.85);
+  position: relative;
+  z-index: 10001;
+}
+
+[data-onboarding-highlight="nav"][data-tour="nav-account"] {
+  border-radius: 0 !important;
+}
+
+[data-onboarding-highlight="nav"] .MuiListItemIcon-root,
+[data-onboarding-highlight="nav"] .MuiListItemIcon-root svg,
+[data-onboarding-highlight="nav"] .MuiListItemText-root,
+[data-onboarding-highlight="nav"] .MuiTypography-root {
+  color: inherit !important;
+}
+
+/* Page content targets — keep clear inside the Joyride spotlight (no dark fill) */
+[data-onboarding-highlight="content"] {
+  position: relative;
+  z-index: 10001;
+}
+
+/* Joyride default chrome — custom tooltip owns layout */
+.react-joyride__tooltip {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  max-width: none !important;
+}
+
+.react-joyride__tooltip > div {
+  padding: 0 !important;
+}
+
+@keyframes onboarding-completion-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  70% {
+    transform: scale(1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes onboarding-check-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(74, 122, 181, 0.45);
+  }
+  100% {
+    box-shadow: 0 0 0 14px rgba(74, 122, 181, 0);
+  }
+}
+
+@keyframes onboarding-confetti-float {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-8px) scale(1.15);
+  }
+}
+
+.onboarding-completion-card {
+  animation: onboarding-completion-pop 0.45s cubic-bezier(0.22, 1, 0.36, 1)
+    both;
+}
+
+.onboarding-completion-check {
+  animation: onboarding-check-ring 1.4s ease-out infinite;
+}
+
+.onboarding-confetti-dot {
+  animation: onboarding-confetti-float 2.4s ease-in-out infinite;
+}
+
+.onboarding-completion-cta:active {
+  transform: scale(0.98);
+}

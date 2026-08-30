@@ -20,16 +20,20 @@ import {
   Button,
 } from "@mui/material";
 import * as React from "react";
+import { ONBOARDING_DROPDOWN_Z_INDEX } from "@/components/onboarding/joyride-config";
+import { useOnboarding } from "@/providers/OnboardingProvider";
 import ProfileAvatar from "./ProfileAvatar";
 
 interface ProfileMenuProps {
   anchorEl: HTMLElement | null;
   open: boolean;
   onClose: () => void;
-  onProfileClick?: () => void;
+  onProfileClick?: (event: React.MouseEvent) => void;
+  onAccountSettingsClick?: (event: React.MouseEvent) => void;
   onChangePasswordClick?: () => void;
   onLogoutClick?: () => void;
   onDeleteAccount?: () => void;
+  accountSettingsLocked?: boolean;
   user?: {
     name: string;
     avatar?: string;
@@ -42,13 +46,20 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({
   open,
   onClose,
   onProfileClick,
+  onAccountSettingsClick,
   onChangePasswordClick,
   onLogoutClick,
   onDeleteAccount,
+  accountSettingsLocked = false,
   selectedPath,
   user = { name: "User" },
 }) => {
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
+  const { status: onboardingStatus, currentStep } = useOnboarding();
+  const elevateMenuForTour =
+    open &&
+    onboardingStatus === "in_progress" &&
+    currentStep === "calendar";
 
   const handleDeleteClick = () => {
     setOpenDeleteDialog(true);
@@ -80,6 +91,7 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({
               minWidth: 220,
               overflow: "hidden",
               p: 0,
+              zIndex: elevateMenuForTour ? ONBOARDING_DROPDOWN_Z_INDEX : undefined,
               boxShadow:
                 "0px 2px 8px rgba(0,0,0,0.1), 0px 4px 20px rgba(0,0,0,0.08)",
             },
@@ -108,15 +120,23 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({
         <Divider />
 
         <MenuItem
+          data-tour="nav-account"
           selected={selectedPath === "profile"}
-          onClick={() => {
-            onProfileClick?.();
+          disabled={accountSettingsLocked}
+          onClick={(event) => {
+            if (accountSettingsLocked) {
+              event.preventDefault();
+              return;
+            }
+            onAccountSettingsClick?.(event);
             onClose();
           }}
           sx={{
             width: "100%",
             boxSizing: "border-box",
             px: 2,
+            opacity: accountSettingsLocked ? 0.4 : 1,
+            pointerEvents: accountSettingsLocked ? "none" : "auto",
             "&.Mui-selected": {
               bgcolor: "rgba(25, 118, 210, 0.12)",
             },

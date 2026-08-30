@@ -19,7 +19,7 @@ export default function DashboardPage({ data }: { data: DashboardData }) {
   const projectExists = data?.projects?.projects?.length > 0;
   return (
     <>
-      <div className="-mt-5 w-[101%] relative left-[-1%] mx-auto mb-4">
+      <div className="-mt-5 w-[101%] relative left-[-1%] mx-auto mb-4" data-tour="dashboard-welcome">
         <WelcomeHeader />
       </div>
       <div className="bg-[#F4F5F8] md:bg-background-main rounded-xl relative top-[-2rem] md:-top-0">
@@ -41,7 +41,7 @@ export default function DashboardPage({ data }: { data: DashboardData }) {
                     </div>
                   </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-9 gap-1 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-9 gap-1 mb-6" data-tour="dashboard-stats">
               {/* Calendar - Takes 1 column on desktop */}
               <div className='col-span-1 md:col-span-4'>
                 <CalendarWidget data={data}/>

@@ -10,6 +10,8 @@ import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { FC, useEffect, useMemo, useState } from 'react';
+import { isNavLinkLocked, useOnboarding } from '@/providers/OnboardingProvider';
+import { useOnboardingNavClick } from '@/hooks/useOnboardingNavClick';
 import {
   LayoutDashboard,
   User,
@@ -49,6 +51,8 @@ type MoreMenuSection = {
 const BottomNav: FC = () => {
   const pathname = usePathname();
   const { data: session, status } = useSession();
+  const { status: onboardingStatus, currentStep } = useOnboarding();
+  const handleOnboardingNavClick = useOnboardingNavClick();
   const dispatch = useAppDispatch();
   const { mutate: logout } = useLogout();
   const [moreOpen, setMoreOpen] = useState(false);
@@ -84,7 +88,7 @@ const BottomNav: FC = () => {
     const r = APP_ROUTES.CONSULTANT;
     return [
       { icon: <LayoutDashboard size={14} />, label: 'Dashboard', link: r.DASHBOARD },
-      { icon: <User size={14} />, label: 'My Profile', link: r.PROFILE },
+      { icon: <User size={14} />, label: 'My Profile', link: r.MY_PROFILE },
       { icon: <Calendar size={14} />, label: 'My Calendar', link: r.CALENDAR },
       { icon: <FileText size={14} />, label: 'Documents', link: r.DOCUMENTS },
       { icon: <Clock size={14} />, label: 'Hour Logs', link: r.HOUR_LOGS },
@@ -177,6 +181,13 @@ const BottomNav: FC = () => {
     };
   }, [moreOpen]);
 
+  const handleTourNavClick = (
+    event: React.MouseEvent,
+    link: string,
+  ) => {
+    void handleOnboardingNavClick(event, link);
+  };
+
   const renderMoreItem = (item: MoreMenuItem) => {
     const isActive = item.link
       ? pathname === item.link || pathname.startsWith(`${item.link}/`)
@@ -205,17 +216,36 @@ const BottomNav: FC = () => {
       </>
     );
 
+    const locked = item.link
+      ? isNavLinkLocked(item.link, onboardingStatus, currentStep)
+      : false;
+
     const className = `flex w-full items-center justify-start gap-3 px-1 py-3.5 text-left text-sm font-medium transition-colors border-b border-slate-300/70 last:border-b-0 ${
       item.variant === 'danger'
         ? 'text-red-600'
         : isActive
           ? 'text-brand-blue'
           : 'text-slate-800'
-    }`;
+    } ${locked ? 'opacity-40 cursor-not-allowed' : ''}`;
 
     if (item.link) {
       return (
-        <Link key={item.link} href={item.link} className={className}>
+        <Link
+          key={item.link}
+          href={locked ? '#' : item.link}
+          data-tour={
+            item.link === APP_ROUTES.CONSULTANT.ACCOUNT
+              ? 'nav-account'
+              : undefined
+          }
+          aria-disabled={locked ? true : undefined}
+          onClick={
+            locked
+              ? (event) => event.preventDefault()
+              : (event) => handleTourNavClick(event, item.link!)
+          }
+          className={className}
+        >
           {content}
         </Link>
       );
@@ -239,18 +269,40 @@ const BottomNav: FC = () => {
 
   return (
     <>
-      <nav className="fixed bottom-0 left-0 right-0 md:hidden z-40">
+      <nav
+        className="fixed bottom-0 left-0 right-0 md:hidden"
+      >
         <div className="rounded-t-2xl bg-[#F0F1F3] border border-t border-slate-300 px-2 py-2 shadow-lg">
           <div className="flex items-stretch justify-around">
             {primaryItems.map((item, index) => {
               const isActive =
                 pathname === item.link || pathname.startsWith(`${item.link}/`);
+              const locked = isNavLinkLocked(
+                item.link,
+                onboardingStatus,
+                currentStep,
+              );
+              const tourId =
+                item.link === APP_ROUTES.CONSULTANT.PROFILE
+                  ? 'nav-profile'
+                  : item.link === APP_ROUTES.CONSULTANT.CALENDAR
+                    ? 'nav-calendar'
+                    : undefined;
 
               return (
                 <div key={item.link} className="flex flex-1 items-stretch">
                   <Link
-                    href={item.link}
-                    className="flex flex-col items-center justify-center gap-1.5 py-2 flex-1 relative groups"
+                    href={locked ? '#' : item.link}
+                    data-tour={tourId}
+                    aria-disabled={locked ? true : undefined}
+                    onClick={
+                      locked
+                        ? (event) => event.preventDefault()
+                        : (event) => handleTourNavClick(event, item.link)
+                    }
+                    className={`flex flex-col items-center justify-center gap-1.5 py-2 flex-1 relative groups ${
+                      locked ? 'opacity-40 cursor-not-allowed' : ''
+                    }`}
                   >
                     <div
                       className={`transition-colors ${

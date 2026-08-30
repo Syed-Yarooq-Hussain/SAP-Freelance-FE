@@ -23,7 +23,6 @@ import { useSession } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import * as React from "react";
-import ChatSection from "./ChatSection";
 import ProfileAvatar from "./ProfileAvatar";
 import ProfileMenu from "./ProfileMenu";
 import { APP_ROUTES } from "@/utils/app_routes";
@@ -33,6 +32,13 @@ import { Roles } from "@/constants/roles";
 import { ConfirmDeleteModal } from "@/components/common/ConfirmDeleteModal";
 import { useToast } from "@/providers/ToastProvider";
 import { logoutUser } from "@/lib/store/features/user/userSlice";
+import {
+  isNavLinkLocked,
+  useOnboarding,
+} from "@/providers/OnboardingProvider";
+import { useOnboardingNavClick } from "@/hooks/useOnboardingNavClick";
+import { ONBOARDING_CLOSE_PROFILE_MENU_EVENT, ONBOARDING_OPEN_PROFILE_MENU_EVENT } from "@/constants/onboarding-events";
+import ChatSection from "./ChatSection";
 
 interface AppNavbarProps {
   showSidebar?: boolean;
@@ -53,7 +59,10 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
   >(null);
   const [signOutOpen, setSignOutOpen] = React.useState(false);
   const [deleteAccountOpen, setDeleteAccountOpen] = React.useState(false);
+  const profileMenuTriggerRef = React.useRef<HTMLButtonElement>(null);
   const {user} = useAppSelector(state => state.user)
+  const { status: onboardingStatus, currentStep } = useOnboarding();
+  const handleOnboardingNavClick = useOnboardingNavClick();
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
@@ -64,7 +73,16 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) =>
     setAnchorEl(event.currentTarget);
-  const handleMenuClose = () => setAnchorEl(null);
+  const handleMenuClose = () => {
+    const accountMenuItem = document.querySelector(
+      '[data-tour="nav-account"][data-onboarding-highlight="nav"]',
+    );
+    if (accountMenuItem) {
+      return;
+    }
+
+    setAnchorEl(null);
+  };
   const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) =>
     setMobileMoreAnchorEl(event.currentTarget);
   const handleMobileMenuClose = () => setMobileMoreAnchorEl(null);
@@ -74,12 +92,62 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
     logout()
     dispatch(logoutUser())
   };
-  const handleProfileClick = () => {
-    const role = session?.user?.role;
-    const route = getProfileRouteByRole(role);
+  const handleProfileClick = (event?: React.MouseEvent) => {
+    const route = getProfileRouteByRole(session?.user?.role);
+    if (event) {
+      void (async () => {
+        await handleOnboardingNavClick(event, route);
+        if (!event.defaultPrevented) {
+          router.push(route);
+        }
+      })();
+      return;
+    }
+
     router.push(route);
   };
-  
+
+  const handleAccountSettingsClick = (event: React.MouseEvent) => {
+    void (async () => {
+      await handleOnboardingNavClick(event, APP_ROUTES.CONSULTANT.ACCOUNT);
+      if (!event.defaultPrevented) {
+        router.push(APP_ROUTES.CONSULTANT.ACCOUNT);
+      }
+    })();
+  };
+
+  React.useEffect(() => {
+    const openProfileMenu = () => {
+      if (profileMenuTriggerRef.current) {
+        setAnchorEl(profileMenuTriggerRef.current);
+      }
+    };
+
+    window.addEventListener(
+      ONBOARDING_OPEN_PROFILE_MENU_EVENT,
+      openProfileMenu,
+    );
+
+    const closeProfileMenu = () => {
+      setAnchorEl(null);
+    };
+
+    window.addEventListener(
+      ONBOARDING_CLOSE_PROFILE_MENU_EVENT,
+      closeProfileMenu,
+    );
+
+    return () => {
+      window.removeEventListener(
+        ONBOARDING_OPEN_PROFILE_MENU_EVENT,
+        openProfileMenu,
+      );
+      window.removeEventListener(
+        ONBOARDING_CLOSE_PROFILE_MENU_EVENT,
+        closeProfileMenu,
+      );
+    };
+  }, []);
 
   const handleDeleteAccount = () => {
     deleteProfile.mutate(undefined, {
@@ -98,13 +166,18 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
 
   const profileRoute = getProfileRouteByRole(session?.user?.role);
   const selectedMenu = pathname === profileRoute ? "profile" : undefined;
+  const accountSettingsLocked = isNavLinkLocked(
+    APP_ROUTES.CONSULTANT.ACCOUNT,
+    onboardingStatus,
+    currentStep,
+  );
 
   const role = session?.user?.role as number | undefined;
   const getNavRoutes = () => {
     if (role === Roles.CONSULTANT)
       return {
         dashboard: APP_ROUTES.CONSULTANT.DASHBOARD,
-        profile: APP_ROUTES.CONSULTANT.PROFILE,
+        profile: APP_ROUTES.CONSULTANT.MY_PROFILE,
         calendar: APP_ROUTES.CONSULTANT.CALENDAR,
         account: APP_ROUTES.CONSULTANT.ACCOUNT,
         changePassword: APP_ROUTES.CONSULTANT.CHANGE_PASSWORD,
@@ -140,8 +213,20 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
     { label: "Change Password", path: navRoutes.changePassword, icon: LockIcon }
   ]
   const handleNavClick = (path: string) => {
-    router.push(path);
     handleMobileMenuClose();
+    router.push(path);
+  };
+
+  const handleTopNavClick = (
+    event: React.MouseEvent,
+    path: string,
+  ) => {
+    void (async () => {
+      await handleOnboardingNavClick(event, path);
+      if (!event.defaultPrevented) {
+        router.push(path);
+      }
+    })();
   };
 
   return (
@@ -198,22 +283,26 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
           >
             {navItems.map(({ label, path, icon: Icon }, index) => {
               const isActive = pathname === path;
-              // const isProfileItem = path === APP_ROUTES.CONSULTANT.PROFILE;
-              // const isCalendarItem = path === APP_ROUTES.CONSULTANT.CALENDAR;
-              // const shouldHideCurrentNavButton =
-              //   (isProfileItem && pathname === APP_ROUTES.CONSULTANT.PROFILE) ||
-              //   (isCalendarItem && pathname === APP_ROUTES.CONSULTANT.CALENDAR);
-              // if (shouldHideCurrentNavButton) return null;
+              const locked = isNavLinkLocked(
+                path,
+                onboardingStatus,
+                currentStep,
+              );
               return (
                 <button
                   key={index}
                   type="button"
-                  onClick={() => router.push(path ?? "")}
+                  aria-disabled={locked ? true : undefined}
+                  onClick={
+                    locked
+                      ? undefined
+                      : (event) => handleTopNavClick(event, path ?? "")
+                  }
                   className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-manrope transition-colors ${
                     isActive
                       ? "bg-brand-yellow text-brand-blue"
                       : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-                  }`}
+                  } ${locked ? "opacity-40 cursor-not-allowed" : ""}`}
                 >
                   <Icon className="w-4 h-4" />
                   {label}
@@ -237,10 +326,12 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
             <div className="w-[1px] bg-gray-300 h-5"/>
             <Tooltip title="Profile" arrow>
               <IconButton
+                ref={profileMenuTriggerRef}
                 size="large"
                 disableRipple
                 edge="end"
                 color="inherit"
+                data-tour="profile-menu-trigger"
                 onClick={handleProfileMenuOpen}
                 sx={{ p: 0.5, }}
               >
@@ -296,19 +387,35 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
         >
           {navItemsMobile.map(({ label, path, icon: Icon }) => {
             const isActive = pathname === path;
-            // const isProfileItem = path === APP_ROUTES.CONSULTANT.PROFILE;
-            // const isCalendarItem = path === APP_ROUTES.CONSULTANT.CALENDAR;
-            // const shouldHideCurrentNavButton =
-            //   (isProfileItem && pathname === APP_ROUTES.CONSULTANT.PROFILE) ||
-            //   (isCalendarItem && pathname === APP_ROUTES.CONSULTANT.CALENDAR);
-            // if (shouldHideCurrentNavButton) return null;
+            const locked = path
+              ? isNavLinkLocked(path, onboardingStatus, currentStep)
+              : false;
             return (
               <MenuItem
                 key={path}
-                onClick={() => handleNavClick(path ?? "")}
+                data-tour={
+                  path === APP_ROUTES.CONSULTANT.ACCOUNT
+                    ? "nav-account"
+                    : undefined
+                }
+                onClick={
+                  locked
+                    ? undefined
+                    : (event) => {
+                        void (async () => {
+                          await handleOnboardingNavClick(event, path ?? "");
+                          if (!event.defaultPrevented) {
+                            handleNavClick(path ?? "");
+                          }
+                        })();
+                      }
+                }
+                disabled={locked}
                 selected={isActive}
                 sx={{
                   gap: 1.5,
+                  opacity: locked ? 0.4 : 1,
+                  pointerEvents: locked ? "none" : "auto",
                   bgcolor: isActive ? "rgba(25, 118, 210, 0.08)" : undefined,
                   color: isActive ? "#1976d2" : "text.primary",
                 }}
@@ -339,6 +446,8 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
         onClose={handleMenuClose}
         onLogoutClick={() => setSignOutOpen(true)}
         onProfileClick={handleProfileClick}
+        onAccountSettingsClick={handleAccountSettingsClick}
+        accountSettingsLocked={accountSettingsLocked}
         onChangePasswordClick={() => router.push(APP_ROUTES.CONSULTANT.CHANGE_PASSWORD)}
         onDeleteAccount={() => setDeleteAccountOpen(true)}
         selectedPath={selectedMenu}

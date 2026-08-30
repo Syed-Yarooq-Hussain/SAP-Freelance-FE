@@ -37,6 +37,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FC, useMemo } from "react";
 import DrawerListSkeleton from "./DrawerListSkeleton";
+import { isNavLinkLocked, useOnboarding } from "@/providers/OnboardingProvider";
+import { useOnboardingNavClick } from "@/hooks/useOnboardingNavClick";
 
 
 
@@ -56,6 +58,8 @@ type DrawerListProps = {
 const DrawerList: FC<DrawerListProps> = ({ open }) => {
   const pathname = usePathname();
   const { data: session, status } = useSession();
+  const { status: onboardingStatus, currentStep } = useOnboarding();
+  const handleOnboardingNavClick = useOnboardingNavClick();
   const role = session?.user?.role;
   const items: DrawerItem[] = useMemo(() => {
     if (!role) return [];
@@ -114,20 +118,43 @@ const DrawerList: FC<DrawerListProps> = ({ open }) => {
       {items.map((item) => {
         const isActive =
           pathname === item.link || pathname.startsWith(`${item.link}/`);
+        const locked = isNavLinkLocked(
+          item.link,
+          onboardingStatus,
+          currentStep,
+        );
+        const tourId =
+          item.link === APP_ROUTES.CONSULTANT.DASHBOARD
+            ? "nav-dashboard"
+            : item.link === APP_ROUTES.CONSULTANT.PROFILE
+              ? "nav-profile"
+              : item.link === APP_ROUTES.CONSULTANT.CALENDAR
+                ? "nav-calendar"
+                : undefined;
 
         return (
           <ListItem key={item.link} disablePadding>
             <ListItemButton
-              component={Link}
-              href={item.link}
+              component={locked ? "div" : Link}
+              href={locked ? undefined : item.link}
+              data-tour={tourId}
+              aria-disabled={locked ? true : undefined}
+              onClick={(event: React.MouseEvent) => {
+                if (locked) {
+                  event.preventDefault();
+                  return;
+                }
+                void handleOnboardingNavClick(event, item.link);
+              }}
               sx={{
                 py: 1.5,
                 px: 2,
                 m: 1,
                 borderRadius: 2,
                 bgcolor: isActive ? '#4A7AB5' : "transparent",
-                // color: isActive ? "#fff" : colors.BLUE,
                 color: isActive ? "#fff" : '#4A7AB5',
+                opacity: locked ? 0.4 : 1,
+                cursor: locked ? "not-allowed" : "pointer",
                 "&:hover": {
                   // bgcolor: isActive ? "#14394D" : alpha(colors.BLUE, 0.12),
                   bgcolor: isActive ? "#4A7AB5" : alpha('#4A7AB5', 0.12),
