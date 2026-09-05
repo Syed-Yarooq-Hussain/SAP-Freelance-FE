@@ -13,12 +13,12 @@ export default function GlobalLoader() {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    let timer: NodeJS.Timeout;
+    let timer: ReturnType<typeof setTimeout>;
 
     if (shouldOpen) {
-      setOpen(true);
+      timer = setTimeout(() => setOpen(true), 180);
     } else {
-      timer = setTimeout(() => setOpen(false), 300);
+      setOpen(false);
     }
 
     return () => clearTimeout(timer);

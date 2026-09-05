@@ -22,6 +22,7 @@ import {
 import { useSession } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import * as React from "react";
 import ProfileAvatar from "./ProfileAvatar";
 import ProfileMenu from "./ProfileMenu";
@@ -38,7 +39,8 @@ import {
 } from "@/providers/OnboardingProvider";
 import { useOnboardingNavClick } from "@/hooks/useOnboardingNavClick";
 import { ONBOARDING_CLOSE_PROFILE_MENU_EVENT, ONBOARDING_OPEN_PROFILE_MENU_EVENT } from "@/constants/onboarding-events";
-import ChatSection from "./ChatSection";
+
+const ChatSection = dynamic(() => import("./ChatSection"), { ssr: false });
 
 interface AppNavbarProps {
   showSidebar?: boolean;
@@ -459,11 +461,13 @@ const AppNavbar: React.FC<AppNavbarProps> = ({ showSidebar = true }) => {
         }}
       /> }
 
-      <ChatSection
-        open={drawerOpen}
-        type={drawerType || "chat"}
-        onClose={() => setDrawerOpen(false)}
-      />
+      {drawerOpen ? (
+        <ChatSection
+          open={drawerOpen}
+          type={drawerType || "chat"}
+          onClose={() => setDrawerOpen(false)}
+        />
+      ) : null}
 
       <ConfirmDeleteModal
         isOpen={signOutOpen}

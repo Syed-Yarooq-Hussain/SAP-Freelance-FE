@@ -29,9 +29,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 export default function TeamPayments({
   projectId,
   onDiscard,
+  completionRoute = APP_ROUTES.CLIENT.DASHBOARD,
 }: {
   projectId: string;
   onDiscard: () => void;
+  completionRoute?: string;
 }) {
   const router = useRouter();
   const [isCustomRange, setIsCustomRange] = useState(false);
@@ -233,7 +235,7 @@ export default function TeamPayments({
       {
         onSuccess: () => {
           toast("Project started!", "success");
-          router.push(APP_ROUTES.CLIENT.DASHBOARD);
+          router.push(completionRoute);
         },
         onError: (err) => {
           toast(err.message, "error");

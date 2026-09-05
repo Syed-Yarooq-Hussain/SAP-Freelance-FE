@@ -2,6 +2,8 @@
 
 import { Box } from "@mui/material";
 import { DatePicker, TimePicker } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import dayjs, { Dayjs } from "dayjs";
 
 interface WorkingDay {
@@ -44,7 +46,8 @@ export default function InterviewDateTimePicker({
       : null;
 
   return (
-    <Box display="flex" gap={2}>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <Box display="flex" gap={2}>
       <DatePicker
         label="Date"
         value={selectedDate}
@@ -120,6 +123,7 @@ export default function InterviewDateTimePicker({
           },
         }}
       />
-    </Box>
+      </Box>
+    </LocalizationProvider>
   );
 }

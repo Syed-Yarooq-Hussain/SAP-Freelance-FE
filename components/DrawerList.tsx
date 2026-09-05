@@ -18,12 +18,20 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import NotificationsIconOutline from "@mui/icons-material/NotificationsOutlined";
 import PaymentIcon from "@mui/icons-material/Payment";
 import PaymentIconOutline from "@mui/icons-material/PaymentOutlined";
-import PeopleIcon from "@mui/icons-material/People";
-import PeopleIconOutline from "@mui/icons-material/PeopleOutlined";
 import ProfileIcon from "@mui/icons-material/Person";
-import ProfileIconOutline from "@mui/icons-material/PersonOutlined";  
+import ProfileIconOutline from "@mui/icons-material/PersonOutlined";
 import WorkIcon from "@mui/icons-material/Work";
 import WorkIconOutline from "@mui/icons-material/WorkOutlined";
+import GroupsIcon from "@mui/icons-material/Groups";
+import GroupsIconOutline from "@mui/icons-material/GroupsOutlined";
+import AccountTreeIcon from "@mui/icons-material/AccountTree";
+import AccountTreeIconOutline from "@mui/icons-material/AccountTreeOutlined";
+import FactoryIcon from "@mui/icons-material/Factory";
+import FactoryIconOutline from "@mui/icons-material/FactoryOutlined";
+import BusinessIcon from "@mui/icons-material/Business";
+import BusinessIconOutline from "@mui/icons-material/BusinessOutlined";
+import PaidIcon from "@mui/icons-material/Paid";
+import PaidIconOutline from "@mui/icons-material/PaidOutlined";
 import {
   List,
   ListItem,
@@ -69,14 +77,14 @@ const DrawerList: FC<DrawerListProps> = ({ open }) => {
       return [
         { icon: <DashboardIcon />, outlined: <DashboardIconOutline />, label: "Dashboard", link: r.DASHBOARD },
         { icon: <ProfileIcon />, outlined: <ProfileIconOutline />, label: "Profile", link: r.PROFILE },
-        { icon: <PeopleIcon />, outlined: <PeopleIconOutline />, label: "Consultants", link: r.CONSULTANTS },
-        { icon: <PeopleIcon />, outlined: <PeopleIconOutline />, label: "Modules", link: r.MODULES },
-        { icon: <PeopleIcon />, outlined: <PeopleIconOutline />, label: "Industries", link: r.INDUSTRIES },
-        { icon: <PeopleIcon />, outlined: <PeopleIconOutline />, label: "Clients", link: r.CLIENT },
+        { icon: <GroupsIcon />, outlined: <GroupsIconOutline />, label: "Consultants", link: r.CONSULTANTS },
+        { icon: <AccountTreeIcon />, outlined: <AccountTreeIconOutline />, label: "Modules", link: r.MODULES },
+        { icon: <FactoryIcon />, outlined: <FactoryIconOutline />, label: "Industries", link: r.INDUSTRIES },
+        { icon: <BusinessIcon />, outlined: <BusinessIconOutline />, label: "Clients", link: r.CLIENT },
         { icon: <WorkIcon />, outlined: <WorkIconOutline />, label: "Projects", link: r.PROJECTS },
         { icon: <EventNoteIcon />, outlined: <EventNoteIconOutline />, label: "Meetings", link: r.INTERVIEWS },
         { icon: <PaymentIcon />, outlined: <PaymentIconOutline />, label: "Payments", link: r.PAYMENTS },
-        { icon: <PaymentIcon />, outlined: <PaymentIconOutline />, label: "Consultant Payments", link: r.CONSULTANT_PAYMENTS },
+        { icon: <PaidIcon />, outlined: <PaidIconOutline />, label: "Consultant Payments", link: r.CONSULTANT_PAYMENTS },
         { icon: <NotificationsIcon />, outlined: <NotificationsIconOutline />, label: "Notifications", link: r.NOTIFICATIONS },
       ];
     }
@@ -87,7 +95,6 @@ const DrawerList: FC<DrawerListProps> = ({ open }) => {
       return [
         { icon: <DashboardIcon />, outlined: <DashboardIconOutline />, label: "Dashboard", link: r.DASHBOARD },
         { icon: <ProfileIcon />, outlined: <ProfileIconOutline />, label: "Profile", link: r.PROFILE },
-        { icon: <PeopleIcon />, outlined: <PeopleIconOutline />, label: "Consultant", link: r.CONSULTANT },
         { icon: <WorkIcon />, outlined: <WorkIconOutline />, label: "Projects", link: r.PROJECTS },
         { icon: <EventNoteIcon />, outlined: <EventNoteIconOutline />, label: "Meetings", link: r.INTERVIEWS },
         { icon: <DescriptionIcon />, outlined: <DescriptionIconOutline />, label: "Documents", link: r.DOCUMENTS },

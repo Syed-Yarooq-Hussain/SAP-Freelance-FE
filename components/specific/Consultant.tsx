@@ -29,6 +29,7 @@ interface ConsultantProps<T extends GridValidRowModel = GridValidRowModel> {
   showTabs?: boolean;
   activeTab?: ConsultantTabKey;
   onTabChange?: (tab: ConsultantTabKey) => void;
+  autoRowHeight?: boolean;
 }
 
 export default function Consultant<
@@ -43,6 +44,7 @@ export default function Consultant<
   showTabs = false,
   onTabChange,
   activeTab,
+  autoRowHeight = false,
 }: ConsultantProps<T>) {
   const norm = (v: unknown) => String(v ?? "").toLowerCase();
   const [filterOpen, setFilterOpen] = useState(false);
@@ -180,6 +182,7 @@ export default function Consultant<
           pageSize={10}
           showAvatar
           avatarField="avatar"
+          autoRowHeight={autoRowHeight}
         />
       </Box>
 

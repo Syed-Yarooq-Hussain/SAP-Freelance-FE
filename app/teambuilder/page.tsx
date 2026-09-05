@@ -2,21 +2,34 @@
 
 import AppNavbar from "@/components/AppNavbar";
 import StepProgress from "@/components/StepProgress";
-import TeamConfirmation from "@/components/specific/teambuilder/TeamConfirmation";
 import TeamCreation from "@/components/specific/teambuilder/TeamCreation";
-import TeamPayments from "@/components/specific/teambuilder/TeamPayments";
-import TeamProjects from "@/components/specific/teambuilder/TeamProjects";
 import { teamBuilderSteps } from "@/data/teamBuilder";
+import { useToast } from "@/providers/ToastProvider";
 import { TeamBuilderRow } from "@/types/teamBuilder";
 import { useProjectProgress } from "@/utils/useProjectProgress";
 import { Box } from "@mui/material";
 import { useRouter, useSearchParams } from "next/navigation";
+import dynamic from "next/dynamic";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+
+const TeamConfirmation = dynamic(
+  () => import("@/components/specific/teambuilder/TeamConfirmation"),
+  { ssr: false }
+);
+const TeamProjects = dynamic(
+  () => import("@/components/specific/teambuilder/TeamProjects"),
+  { ssr: false }
+);
+const TeamPayments = dynamic(
+  () => import("@/components/specific/teambuilder/TeamPayments"),
+  { ssr: false }
+);
 
 function TeamBuilderContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { updateProjectStep } = useProjectProgress();
+  const { toast } = useToast();
   const stepParam = searchParams.get("step");
   const projectParam = searchParams.get("projectId");
   const [activeStep, setActiveStep] = useState(
@@ -86,6 +99,20 @@ function TeamBuilderContent() {
     setActiveStep(3);
   };
 
+  const canAccessStep = (step: number) => {
+    if (step === 1) return true;
+    return Boolean(projectId);
+  };
+
+  const goToStep = (step: number) => {
+    if (step === activeStep) return;
+    if (!projectId && step > 1) {
+      toast("Create the project first to open this step.", "info");
+      return;
+    }
+    setActiveStep(step);
+  };
+
   const current = useMemo(() => {
     switch (activeStep) {
       case 1:
@@ -144,9 +171,34 @@ function TeamBuilderContent() {
   }, [activeStep, projectId, teamCreationRows, teamCreationSelectedIds]);
 
   return (
-    <Box sx={{ mt: 10, px: 4 }}>
-      <StepProgress steps={teamBuilderSteps} activeStep={activeStep} />
-      {current}
+    <Box
+      sx={{
+        minHeight: "100vh",
+        bgcolor: "#F4F5F8",
+        pt: { xs: 10, md: 11 },
+        px: { xs: 1.5, sm: 2.5, md: 4 },
+        pb: 5,
+      }}
+    >
+      <Box sx={{ width: "100%", maxWidth: 1600, mx: "auto" }}>
+        <Box sx={{ mb: 2.5 }}>
+          <StepProgress
+            steps={teamBuilderSteps}
+            activeStep={activeStep}
+            onStepClick={goToStep}
+            isStepAccessible={canAccessStep}
+          />
+        </Box>
+        <Box
+          sx={{
+            "& > div": {
+              borderRadius: { xs: "16px", md: "20px" },
+            },
+          }}
+        >
+          {current}
+        </Box>
+      </Box>
     </Box>
   );
 }
@@ -155,7 +207,13 @@ export default function TeamBuilderPage() {
   return (
     <>
       <AppNavbar showSidebar={false} />
-      <Suspense fallback={<Box sx={{ mt: 10, px: 4 }}>Loading...</Box>}>
+      <Suspense
+        fallback={
+          <Box sx={{ minHeight: "100vh", bgcolor: "#F4F5F8", pt: 12, px: 3, color: "#64748B" }}>
+            Loading team builder...
+          </Box>
+        }
+      >
         <TeamBuilderContent />
       </Suspense>
     </>

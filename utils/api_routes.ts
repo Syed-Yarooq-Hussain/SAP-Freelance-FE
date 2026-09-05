@@ -54,6 +54,9 @@ export const API_ROUTES = {
   ADMIN_CONSULTANT_SUMMARY: "/admin/dashboard/consultants-summary",
   UPDATE_ADMIN_CONSULTANT_STATUS: "/admin/consultants",
   ADMIN_CLIENTS: "/admin/clients/all",
+  CREATE_ADMIN_CLIENT: "/admin/clients",
+  UPDATE_ADMIN_CLIENT_PROFIT_MARGIN: (clientId: string | number) =>
+    `/admin/clients/${clientId}/profit-margin`,
   UPDATE_ADMIN_CLIENT_STATUS: "/admin/clients",
   PDF_READER: "/common/pdf-reader",
   COMMON_UPLOAD: "/common/upload",

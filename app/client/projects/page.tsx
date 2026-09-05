@@ -23,11 +23,11 @@ export default function ClientProjectPage() {
             duration: item.projectDetails?.duration
               ? `${item.projectDetails.duration} months`
               : "N/A",
-            spend: "N/A",
+            spend: `$${Number(item.cost ?? item.projectDetails?.cost ?? 0).toLocaleString()}`,
             startdate: item.projectDetails?.start_date
               ? item.projectDetails.start_date.split("T")[0]
               : "N/A",
-            estimated: "N/A",
+            estimated: `$${Number(item.paid_amount ?? item.projectDetails?.paid_amount ?? 0).toLocaleString()}`,
             status: item.status,
           })) ?? [];
 

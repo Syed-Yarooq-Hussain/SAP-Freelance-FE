@@ -1,7 +1,10 @@
 "use client";
 
 import { useClientConsultants } from "@/actions/consultants/useClientConsultants";
-import { useAddConsultants } from "@/actions/projects/useAddConsultants";
+import {
+  useAddConsultants,
+  useRemoveConsultant,
+} from "@/actions/projects/useAddConsultants";
 import { useCreateProject } from "@/actions/projects/useCreateProject";
 import { useGetProjectConsultants } from "@/actions/projects/useGetProjectConsultants";
 import AppButton from "@/components/Button";
@@ -14,17 +17,26 @@ import { CONSULTANT_STATUS } from "@/constants/status";
 import { teamBuilderColumns, teamBuilderStats } from "@/data/teamBuilder";
 import { useToast } from "@/providers/ToastProvider";
 import type {
+  ApiPagination,
+} from "@/types/api";
+import type {
   ClientConsultantDTO,
   TeamBuilderRow,
   TeamCreationProps,
   Weekday,
 } from "@/types/teamBuilder";
+import {
+  appendUniqueRows,
+  extractConsultantListAndPagination,
+} from "@/utils/consultantPagination";
 import colors from "@/utils/styles/colors";
 import {
   calculateTeamStats,
 } from "@/utils/teamBuilderCalculations";
 import { useAnimatedCounter } from "@/utils/useAnimatedCounter";
 import { useProjectProgress } from "@/utils/useProjectProgress";
+import { buildConsultantQuery } from "@/utils/consultantQuery";
+import { formatHourlyRate } from "@/utils/rates";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import Groups2Icon from "@mui/icons-material/Groups2";
 import {
@@ -37,7 +49,7 @@ import {
   Snackbar,
   Typography,
 } from "@mui/material";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 export default function TeamCreation({
   onNext,
@@ -46,8 +58,11 @@ export default function TeamCreation({
   setRows,
   selectedIds,
   setSelectedIds,
+  clientId,
 }: TeamCreationProps) {
   const [filterOpen, setFilterOpen] = useState(false);
+  const [activeFilters, setActiveFilters] = useState<Record<string, unknown>>({});
+  const [paginationMeta, setPaginationMeta] = useState<ApiPagination | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [profileConsultant, setProfileConsultant] = useState<TeamBuilderRow | null>(
@@ -61,6 +76,7 @@ export default function TeamCreation({
   const { mutate: createProject, isPending: isCreating } = useCreateProject();
   const { toast } = useToast();
   const addConsultants = useAddConsultants();
+  const removeConsultant = useRemoveConsultant();
   const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
   const stats = calculateTeamStats(rows, selectedIds);
   const isProjectAlreadyCreated = Boolean(projectId);
@@ -72,6 +88,7 @@ export default function TeamCreation({
   const [addedIds, setAddedIds] = useState<number[]>([]);
   const getProjectConsultants = useGetProjectConsultants();
   const [hydrationReady, setHydrationReady] = useState(false);
+  const initialLoadRef = useRef(false);
   const { persistRequestedHours } = useProjectProgress();
   const [shortlistedMap, setShortlistedMap] = useState<Record<string, number>>(
     {}
@@ -106,7 +123,7 @@ export default function TeamCreation({
     index: number
   ): TeamBuilderRow => ({
     id: item.id,
-    name: item.name,
+    name: item.name ?? item.username ?? item.user?.username,
     country: item.country,
     projectName:
       item.project_name && item.project_name !== "N/A"
@@ -116,8 +133,12 @@ export default function TeamCreation({
     othersmodules: item.modules?.others || "N/A",
     experience: item.experience ? `${item.experience} Years` : "N/A",
     experienceYears: item.experience ?? null,
-    rate: item.rate ? `$${item.rate}/hour` : "N/A",
+    rate: item.rate !== undefined ? `${formatHourlyRate(item.rate, item.currency)}/hour` : "N/A",
     rateValue: item.rate ?? 0,
+    baseRate: item.base_rate ?? null,
+    profitMarginPercentage: item.profit_margin_percentage ?? null,
+    currency: item.currency ?? "USD",
+    showAdminPricing: false,
     avail: item.weekly_available_hours ?? 0,
     request: shortlistedMap[String(item.id)] ?? 0,
     error: "",
@@ -126,17 +147,24 @@ export default function TeamCreation({
     badges: item.badges ?? [],
   });
 
-  useEffect(() => {
-    if (!hydrationReady) return;
-    if (rows.length > 0) return;
-
-    loadConsultants(undefined, {
+  const fetchConsultants = useCallback((
+    filters: Record<string, unknown> = {},
+    page = 1
+  ) => {
+    loadConsultants(buildConsultantQuery({ ...filters, page, limit: 20 }, clientId), {
       onSuccess: (res) => {
-        const mapped: TeamBuilderRow[] =
-          res.data?.map((item: ClientConsultantDTO, index: number) =>
-            mapConsultantRow(item, index)
-          ) ?? [];
-        setRows(mapped);
+        const { list, pagination } = extractConsultantListAndPagination(
+          res.data,
+          res.pagination
+        );
+        const mapped = list.map((item, index) =>
+          mapConsultantRow(item, (page - 1) * 20 + index)
+        );
+        setRows((current) =>
+          page === 1 ? mapped : appendUniqueRows(current, mapped)
+        );
+        setPaginationMeta(pagination);
+        setFilterOpen(false);
       },
       onError: (error) => {
         const msg =
@@ -144,14 +172,21 @@ export default function TeamCreation({
         toast(msg, "error");
       },
     });
-  }, [
-    hydrationReady,
-    rows.length,
-    shortlistedMap,
-    loadConsultants,
-    toast,
-    setRows,
-  ]);
+  }, [clientId, loadConsultants, setRows, shortlistedMap, toast]);
+
+  useEffect(() => {
+    if (!hydrationReady || initialLoadRef.current) return;
+    initialLoadRef.current = true;
+    fetchConsultants({}, 1);
+  }, [fetchConsultants, hydrationReady]);
+
+  const loadMore = useCallback(() => {
+    if (isPending || !paginationMeta?.has_next_page) return;
+    fetchConsultants(
+      activeFilters,
+      paginationMeta.next_page ?? paginationMeta.current_page + 1
+    );
+  }, [activeFilters, fetchConsultants, isPending, paginationMeta]);
 
   useEffect(() => {
     if (!projectId) {
@@ -165,8 +200,6 @@ export default function TeamCreation({
       const map = JSON.parse(stored);
       setShortlistedMap(map);
       setSelectedIds(Object.keys(map));
-      setHydrationReady(true);
-      return;
     }
 
     getProjectConsultants.mutate(
@@ -182,16 +215,19 @@ export default function TeamCreation({
             map[String(c.consultant_id)] = c.requested_hours ?? 0;
           });
 
-          setShortlistedMap(map);
-          setSelectedIds(Object.keys(map));
+          const serverIds = Object.keys(map);
+          setAddedIds(serverIds.map(Number));
+          setShortlistedMap((current) => ({ ...current, ...map }));
+          if (!stored) setSelectedIds(serverIds);
           setHydrationReady(true);
         },
+        onError: () => setHydrationReady(true),
       }
     );
   }, [projectId]);
 
   const handleAddToShortlist = () => {
-    createProject(undefined, {
+    createProject(clientId ? { client_id: clientId } : undefined, {
       onSuccess: (res) => {
         const projectId = res.data?.id;
         const projectName = res.data?.name;
@@ -219,13 +255,19 @@ export default function TeamCreation({
         window.dispatchEvent(new Event("tb_projects_updated"));
         toast("Project created!", "success");
 
-        const payload = selectedIds.map((id) => {
+        const payload = selectedIds.flatMap((id) => {
           const row = rows.find((c) => c.id.toString() === id);
-          return {
+          if (!row || row.request <= 0 || row.request > row.avail) return [];
+          return [{
             consultant_id: Number(id),
-            requested_hours: Number(row?.request ?? 0),
-          };
+            requested_hours: Number(row.request),
+          }];
         });
+
+        if (payload.length === 0) {
+          onNext?.(projectId);
+          return;
+        }
 
         addConsultants.mutate(
           { projectId, body: payload },
@@ -247,51 +289,42 @@ export default function TeamCreation({
   const buildConsultantPayload = () =>
     selectedIds
       .filter((id) => !addedIds.includes(Number(id)))
-      .map((id) => {
+      .flatMap((id) => {
         const row = rows.find((c) => String(c.id) === String(id));
-        return {
+        if (!row || row.request <= 0 || row.request > row.avail) return [];
+        return [{
           consultant_id: Number(id),
-          requested_hours: Number(row?.request ?? 0),
-        };
+          requested_hours: Number(row.request),
+        }];
       });
 
-  const handleProceedNext = () => {
+  const handleProceedNext = async () => {
     if (!projectId) return;
 
     persistRequestedHours(projectId, rows, selectedIds);
 
     const payload = buildConsultantPayload();
 
-    if (payload.length === 0) {
-      onNext?.(projectId);
-      return;
-    }
-
-    addConsultants.mutate(
-      { projectId, body: payload },
-      {
-        onSuccess: () => {
-          setAddedIds((prev) => [
-            ...prev,
-            ...payload.map((p) => p.consultant_id),
-          ]);
-
-          toast("Shortlist updated successfully!", "success");
-          onNext?.(projectId);
-        },
-        onError: (err: Error) => {
-          toast(err.message, "error");
-        },
-      }
+    const removedIds = addedIds.filter(
+      (id) => !selectedIds.includes(String(id))
     );
-  };
 
-  const isAddDisabled =
-    rows.length === 0 ||
-    selectedIds.some((id) => {
-      const row = rows.find((r) => String(r.id) === String(id));
-      return !row || row.request <= 0 || row.request > row.avail;
-    });
+    try {
+      await Promise.all(
+        removedIds.map((consultantId) =>
+          removeConsultant.mutateAsync({ projectId, consultantId })
+        )
+      );
+      if (payload.length) {
+        await addConsultants.mutateAsync({ projectId, body: payload });
+      }
+      setAddedIds(selectedIds.map(Number));
+      toast("Shortlist updated successfully!", "success");
+      onNext?.(projectId);
+    } catch (error) {
+      toast(error instanceof Error ? error.message : "Failed to update shortlist", "error");
+    }
+  };
 
   const handleRequestChange = (
     id: string | number,
@@ -311,22 +344,10 @@ export default function TeamCreation({
     );
   };
 
-  const handleFilter = (filters:any) => {
-    loadConsultants(filters, {
-      onSuccess: (res) => {
-        const mapped: TeamBuilderRow[] =
-          res.data?.map((item: ClientConsultantDTO, index: number) =>
-            mapConsultantRow(item, index)
-          ) ?? [];
-        setRows(mapped);
-        setFilterOpen(false);
-      },
-      onError: (error) => {
-        const msg =
-          error instanceof Error ? error.message : "Failed to load consultants";
-        toast(msg, "error");
-      },
-    });
+  const handleFilter = (filters: Record<string, unknown>) => {
+    setActiveFilters(filters);
+    setPaginationMeta(null);
+    fetchConsultants(filters, 1);
   };
 
   const handleViewProfile = (row: TeamBuilderRow) => {
@@ -419,7 +440,7 @@ export default function TeamCreation({
         />
 
         <Box mt={3} sx={{ boxShadow: 2, bgcolor: colors.LIGHT_YELLOW, py:2, borderRadius: 2 }}>
-          {isPending ? (
+          {isPending && rows.length === 0 ? (
             <Box
               sx={{
                 display: "flex",
@@ -434,6 +455,10 @@ export default function TeamCreation({
             <DataTable
               variant="consultant"
               title="Consultant Selection"
+              hidePagination
+              scrollHeight={560}
+              onScrollEnd={loadMore}
+              loadingMore={isPending && rows.length > 0}
               titleIcon={
                 <Box
                   sx={{
@@ -458,7 +483,6 @@ export default function TeamCreation({
                 handleViewProfile
               )}
               rows={filteredRows}
-              pageSize={10}
               enableSelection
               selectedIds={selectedIds}
               onSelectionChange={(ids) => setSelectedIds(ids)}
@@ -542,7 +566,7 @@ export default function TeamCreation({
                   colorKey="BLUE"
                   width={180}
                   onClick={handleAddToShortlist}
-                  disabled={isCreating || isAddDisabled}
+                  disabled={isCreating || addConsultants.isPending}
                 />
               ) : (
                 <AppButton
@@ -550,7 +574,7 @@ export default function TeamCreation({
                   colorKey="BLUE"
                   width={180}
                   onClick={handleProceedNext}
-                  disabled={isAddDisabled}
+                  disabled={addConsultants.isPending || removeConsultant.isPending}
                 />
               )}
             </Box>

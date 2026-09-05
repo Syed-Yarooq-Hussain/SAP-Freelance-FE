@@ -91,6 +91,8 @@ export interface IClientProjectDTO {
   };
 
   members: number;
+  cost?: number;
+  paid_amount?: number;
 }
 
 export interface ClientProjectRow {

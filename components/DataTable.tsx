@@ -61,6 +61,11 @@ export type DataTableProps<T extends GridValidRowModel> = {
   searchPlaceholder?: string;
   searchValue?: string;
   onSearchChange?: (value: string) => void;
+  scrollHeight?: number | string;
+  onScrollEnd?: () => void;
+  scrollEndThreshold?: number;
+  loadingMore?: boolean;
+  autoRowHeight?: boolean;
 };
 
 const checkboxSx = {
@@ -269,11 +274,35 @@ export default function DataTable<T extends GridValidRowModel>({
   searchValue = "",
   onSearchChange,
   noResultText = "No data available",
+  scrollHeight,
+  onScrollEnd,
+  scrollEndThreshold = 120,
+  loadingMore = false,
+  autoRowHeight = false,
 }: DataTableProps<T>) {
   const isConsultantVariant = variant === "consultant";
   const [selectedRows, setSelectedRows] = React.useState<Set<string>>(
     new Set()
   );
+  const gridContainerRef = React.useRef<HTMLDivElement | null>(null);
+
+  React.useEffect(() => {
+    if (!onScrollEnd || !scrollHeight) return;
+
+    const scroller = gridContainerRef.current?.querySelector(
+      ".MuiDataGrid-virtualScroller"
+    );
+    if (!(scroller instanceof HTMLElement)) return;
+
+    const handleScroll = () => {
+      const remaining =
+        scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight;
+      if (remaining <= scrollEndThreshold) onScrollEnd();
+    };
+
+    scroller.addEventListener("scroll", handleScroll, { passive: true });
+    return () => scroller.removeEventListener("scroll", handleScroll);
+  }, [onScrollEnd, rows.length, scrollEndThreshold, scrollHeight]);
 
   React.useEffect(() => {
     const next = new Set(selectedIds.map(String));
@@ -427,6 +456,7 @@ export default function DataTable<T extends GridValidRowModel>({
           hideFooterPagination={hidePagination}
           hideFooterSelectedRowCount={hidePagination}
           disableRowSelectionOnClick
+          getRowHeight={autoRowHeight ? () => "auto" : undefined}
           checkboxSelection={false}
           onRowClick={(params, event) => {
             if (onRowClick) onRowClick(params, event);
@@ -601,8 +631,10 @@ export default function DataTable<T extends GridValidRowModel>({
       </Stack>
 
       <Box
+        ref={gridContainerRef}
         sx={{
           width: "100%",
+          ...(scrollHeight ? { height: scrollHeight } : {}),
           ...(isConsultantVariant
             ? {
                 overflow: "hidden",
@@ -620,6 +652,14 @@ export default function DataTable<T extends GridValidRowModel>({
       >
         {tableContent}
       </Box>
+
+      {loadingMore ? (
+        <Box sx={{ display: "flex", justifyContent: "center", py: 1.5 }}>
+          <Typography variant="caption" sx={{ color: "#64748B" }}>
+            Loading more consultants...
+          </Typography>
+        </Box>
+      ) : null}
 
       {/* {enableSelection && selectedRows.size > 0 && (
         <Box

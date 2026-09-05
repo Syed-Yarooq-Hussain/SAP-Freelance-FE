@@ -9,8 +9,6 @@ import EventsCalendar from './EventsCalendar'
 import AvailabilityCalendar from './AvailabilityCalendar'
 import { useConsultantMe } from '@/actions/consultants/useConsultantProfile'
 import { useSaveConsultantSchedule } from '@/actions/consultants/useSaveConsultantSchedule'
-import { PageOnboardingTour } from '@/components/onboarding/PageOnboardingTour'
-import { calendarTourSteps } from '@/components/onboarding/tour-steps'
 import { useOnboarding } from '@/providers/OnboardingProvider'
 import { DAY_MAP, WEEKLY_ROWS_INIT } from '@/constants/calendar'
 import { useToast } from '@/providers/ToastProvider'
@@ -61,9 +59,8 @@ const Index = () => {
     return formatDisplayDate(date)
   }, [])
 
-  const { data: meData, isLoading: isMeLoading } = useConsultantMe()
-  const { currentStep, status, fetchError } = useOnboarding()
-  const [targetsReady, setTargetsReady] = useState(false)
+  const { data: meData } = useConsultantMe()
+  const { currentStep, status, completeOnboarding } = useOnboarding()
   const { mutateAsync: saveSchedule, isPending } = useSaveConsultantSchedule()
   const weeklyFromMe: WeeklySchedule[] =
     (meData?.data?.working_schedule?.weekly as WeeklySchedule[]) ?? []
@@ -201,24 +198,11 @@ const Index = () => {
     (r) => r.enabled && r.startTime && r.endTime && r.startTime >= r.endTime,
   )
 
-  const shouldRunTour = useMemo(() => {
-    if (fetchError || status === 'completed') return false
-    return currentStep === 'calendar'
-  }, [currentStep, fetchError, status])
-
   useEffect(() => {
-    if (!shouldRunTour || showCustomAvailability) {
-      setTargetsReady(false)
-      return
+    if (status === 'in_progress' && currentStep === 'calendar') {
+      void completeOnboarding()
     }
-
-    if (isMeLoading || !meData) {
-      setTargetsReady(false)
-      return
-    }
-
-    setTargetsReady(true)
-  }, [shouldRunTour, isMeLoading, meData, showCustomAvailability])
+  }, [completeOnboarding, currentStep, status])
 
   return (
     <Sidebar>
@@ -418,13 +402,6 @@ const Index = () => {
             ) : null}
           </div>
         </>
-      )}
-      {!fetchError && (
-        <PageOnboardingTour
-          pageStep="calendar"
-          steps={calendarTourSteps}
-          run={shouldRunTour && targetsReady}
-        />
       )}
     </Sidebar>
   )

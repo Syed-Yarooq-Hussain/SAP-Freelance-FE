@@ -9,6 +9,8 @@ export interface IUpdateConsultantStatusPayload {
   project_id: number | string;
   status: string;
   role: string;
+  decided_rate?: number;
+  requested_hours?: number;
 }
 
 export async function updateConsultantStatusService(

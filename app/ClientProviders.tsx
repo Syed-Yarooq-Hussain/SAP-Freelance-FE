@@ -9,8 +9,6 @@ import GlobalLoader from "@/components/GlobalLoader";
 import QueryProvider from "@/providers/QueryProvider";
 import ToastProvider from "@/providers/ToastProvider";
 import getTheme from "@/theme";
-import { LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { Providers } from "@/lib/store/provider";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistor } from "@/lib/store/store";
@@ -34,7 +32,6 @@ export default function ClientProviders({
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <QueryProvider>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
             <SessionProvider refetchInterval={0} refetchWhenOffline={false}>
               <OnboardingProvider>
                   <Container
@@ -60,7 +57,6 @@ export default function ClientProviders({
                   </Container>
               </OnboardingProvider>
             </SessionProvider>
-          </LocalizationProvider>
           </QueryProvider>
         </ThemeProvider>
       {/* </AppRouterCacheProvider> */}

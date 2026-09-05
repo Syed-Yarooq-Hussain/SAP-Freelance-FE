@@ -71,8 +71,8 @@ const ClientProfile = ({ mode, onRequestEdit, onRequestView }: Props) => {
 
   if (mode === "view") {
     return (
-      <Box p={2} boxShadow={2} bgcolor="background.paper">
-        <Grid container columns={12} spacing={8} alignItems="center">
+      <Box sx={{ p: { xs: 2.5, md: 4 }, border: "1px solid #E2E8F0", borderRadius: 4, boxShadow: "0 8px 30px rgba(15,23,42,.06)", bgcolor: "background.paper" }}>
+        <Grid container columns={12} spacing={{ xs: 4, md: 8 }} alignItems="center">
           <Grid
             size={{ xs: 12, md: 6 }}
             sx={{ display: "flex", alignItems: "center" }}
@@ -83,7 +83,7 @@ const ClientProfile = ({ mode, onRequestEdit, onRequestView }: Props) => {
                 imageUrl={profile.image}
                 size={140}
                 sx={{
-                  border: "2px solid #000",
+                  border: "4px solid #EAF5FA",
                   bgcolor: "rgba(25,118,210,0.12)",
                   color: colors.BLUE,
                   fontWeight: 700,
@@ -92,34 +92,37 @@ const ClientProfile = ({ mode, onRequestEdit, onRequestView }: Props) => {
             </Box>
 
             <Box>
-              <Typography variant="h5">
+              <Typography variant="h5" sx={{ color: "#0F172A" }}>
                 <strong>{profile.name}</strong>
+              </Typography>
+              <Typography sx={{ mt: 0.5, color: "#64748B", fontSize: 14 }}>
+                Client profile
               </Typography>
             </Box>
           </Grid>
 
           <Grid size={{ xs: 12, md: 6 }}>
-            <Grid container spacing={2}>
+            <Grid container spacing={1.5}>
               <Grid size={{ xs: 6 }}>
-                <Typography variant="body2">
+                <Typography variant="body2" sx={{ p: 1.5, borderRadius: 2.5, bgcolor: "#F8FAFC" }}>
                   City: <strong>{profile.city || "—"}</strong>
                 </Typography>
               </Grid>
 
               <Grid size={{ xs: 6 }}>
-                <Typography variant="body2">
+                <Typography variant="body2" sx={{ p: 1.5, borderRadius: 2.5, bgcolor: "#F8FAFC" }}>
                   Country: <strong>{profile.country || "—"}</strong>
                 </Typography>
               </Grid>
 
               <Grid size={{ xs: 6 }}>
-                <Typography variant="body2">
+                <Typography variant="body2" sx={{ p: 1.5, borderRadius: 2.5, bgcolor: "#F8FAFC" }}>
                   Phone: <strong>{profile.phone || "—"}</strong>
                 </Typography>
               </Grid>
 
               <Grid size={{ xs: 6 }}>
-                <Typography variant="body2">
+                <Typography variant="body2" sx={{ p: 1.5, borderRadius: 2.5, bgcolor: "#F8FAFC" }}>
                   Email: <strong>{profile.email}</strong>
                 </Typography>
               </Grid>
@@ -141,7 +144,7 @@ const ClientProfile = ({ mode, onRequestEdit, onRequestView }: Props) => {
   }
 
   return (
-    <Box p={2} boxShadow={2} bgcolor="background.paper">
+    <Box sx={{ p: { xs: 2.5, md: 4 }, border: "1px solid #E2E8F0", borderRadius: 4, boxShadow: "0 8px 30px rgba(15,23,42,.06)", bgcolor: "background.paper" }}>
       <Typography variant="h6" sx={{ mb: 3, fontWeight: 700 }}>
         Edit Profile
       </Typography>
@@ -153,7 +156,7 @@ const ClientProfile = ({ mode, onRequestEdit, onRequestView }: Props) => {
             imageUrl={formData.image}
             size={140}
             sx={{
-              border: "2px solid #000",
+              border: "4px solid #EAF5FA",
               bgcolor: "rgba(25,118,210,0.12)",
               color: colors.BLUE,
               fontWeight: 700,

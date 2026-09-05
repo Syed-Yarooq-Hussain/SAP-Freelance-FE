@@ -5,6 +5,10 @@ export interface ShortlistedRow {
   othersmodules: string;
   experience: string;
   hourlyRate: string;
+  baseRate?: number | null;
+  profitMarginPercentage?: number | null;
+  currency?: string;
+  showAdminPricing?: boolean;
   status: string;
   interview: STATUS | string;
   interviewDateTime?: string | null;
@@ -18,9 +22,15 @@ export interface CandidateRow {
   othersmodules: string;
   experience: string;
   hourlyRate: string;
+  baseRate?: number | null;
+  profitMarginPercentage?: number | null;
+  currency?: string;
+  showAdminPricing?: boolean;
   signed: string;
   role?: string;
   status?: string;
+  requested_hours?: number;
+  decided_rate?: number;
   working_schedule?: {
     weekdays: {
       day: string;
@@ -34,6 +44,7 @@ export interface CandidateRow {
 export type TeamCreationProps = {
   onNext?: (projectId: string) => void;
   projectId?: string | null;
+  clientId?: string | number;
   rows: TeamBuilderRow[];
   setRows: React.Dispatch<React.SetStateAction<TeamBuilderRow[]>>;
   selectedIds: string[];
@@ -58,6 +69,10 @@ export interface TeamBuilderRow {
   working_schedule?: any;
   badges?: string[];
   rateValue?: number;
+  baseRate?: number | null;
+  profitMarginPercentage?: number | null;
+  currency?: string;
+  showAdminPricing?: boolean;
   experienceYears?: number | null;
   rawProfile?: Record<string, any>;
 }
@@ -136,7 +151,11 @@ export type TasksByMilestone = Record<number, TaskRow[]>;
 export type TeamProjectsProps = {
   onBack?: () => void;
   onNext?: (projectId: string) => void;
+  onMilestoneRequirementChange?: (isReady: boolean) => void;
   projectId?: string | null;
+  clientId?: string | number;
+  clientName?: string;
+  showTasks?: boolean;
 };
 
 export interface TeamProjectFormData {
@@ -201,10 +220,17 @@ export interface IProjectConsultant {
   name: string;
   experience: number;
   rate: number;
+  base_rate?: number;
+  profit_margin_percentage?: number;
+  currency?: string;
   modules: {
     core: string;
     others: string;
   };
+  email?: string;
+  phone?: string;
+  core_module_ids?: number[];
+  other_module_ids?: number[];
   working_schedule?: {
     weekdays: {
       day: string;
@@ -254,6 +280,8 @@ export interface IUpdateConsultantStatusPayload {
   project_id: number | string;
   status: string;
   role: string;
+  decided_rate?: number;
+  requested_hours?: number;
   booking_schedule?: {
     weekdays: {
       day: string;
@@ -270,6 +298,7 @@ type TeamConfirmationProps = {
   onNext?: (projectId: string) => void;
   projectId?: string | null;
   onDiscard: () => void;
+  showAdminPricing?: boolean;
 };
 
 type Weekday = NonNullable<
@@ -282,9 +311,15 @@ export type ClientConsultantDTO = {
   username?: string;
   email?: string;
   phone?: string;
+  requested_hours?: number;
+  core_module_ids?: number[];
+  other_module_ids?: number[];
   country?: string;
   experience?: number;
   rate?: number;
+  base_rate?: number;
+  profit_margin_percentage?: number;
+  currency?: string;
   weekly_available_hours?: number;
   badges?: string[];
   project_name?: string;

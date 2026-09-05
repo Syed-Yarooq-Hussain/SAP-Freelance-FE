@@ -5,10 +5,21 @@ import type { ApiResponse } from "@/types/api";
 import { APP_ROUTES } from "@/utils/app_routes";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
 import { signOut } from "next-auth/react";
+import { getCachedSession } from "@/services/sessionCache";
 
 const baseURL = process.env.NEXT_PUBLIC_API_URL!;
 const instance = axios.create({ baseURL });
 let isSigningOut = false;
+
+instance.interceptors.request.use(async (config) => {
+  const hasAuthorization = Boolean(config.headers?.Authorization);
+  if (!hasAuthorization) {
+    const session = await getCachedSession();
+    const token = session?.accessToken;
+    if (token) config.headers.set("Authorization", `Bearer ${token}`);
+  }
+  return config;
+});
 
 type ApiErrorResponse = {
   message?: string;

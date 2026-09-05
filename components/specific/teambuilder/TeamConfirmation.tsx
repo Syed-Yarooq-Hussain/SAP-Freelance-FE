@@ -24,6 +24,7 @@ import type {
 import dayjs from "@/utils/dayjs";
 import { normalizeStatus } from "@/utils/normalizeStatus";
 import { normalizeWorkingSchedule } from "@/utils/normalizeWorkingSchedule";
+import { formatHourlyRate } from "@/utils/rates";
 import { useProjectProgress } from "@/utils/useProjectProgress";
 import { Box, MenuItem, TextField, Typography } from "@mui/material";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -32,6 +33,7 @@ export default function TeamConfirmation({
   onNext,
   projectId,
   onDiscard,
+  showAdminPricing = false,
 }: TeamConfirmationProps) {
   type InterviewMode = "request" | "reschedule";
   const [shortlisted, setShortlisted] = useState<ShortlistedRow[]>([]);
@@ -44,8 +46,7 @@ export default function TeamConfirmation({
   const [interviewMode, setInterviewMode] = useState<InterviewMode>("request");
   const meetingInvite = useMeetingInvite();
   const updateConsultantStatus = useUpdateConsultantStatus();
-  const { markStepCompleted, isStepCompleted } = useProjectProgress();
-  const [step2Completed, setStep2Completed] = useState(false);
+  const { markStepCompleted } = useProjectProgress();
   const [selectedConsultantId, setSelectedConsultantId] = useState<
     string | number | null
   >(null);
@@ -71,6 +72,14 @@ export default function TeamConfirmation({
   const [consultantScheduleMap, setConsultantScheduleMap] = useState<
     Record<string | number, IProjectConsultant["working_schedule"]>
   >({});
+
+  const getRateFields = (item: IProjectConsultant) => ({
+    hourlyRate: `${formatHourlyRate(item.rate, item.currency)}/hour`,
+    baseRate: item.base_rate ?? null,
+    profitMarginPercentage: item.profit_margin_percentage ?? null,
+    currency: item.currency ?? "USD",
+    showAdminPricing,
+  });
 
   const shortlistedColumns = useMemo(
     () =>
@@ -113,6 +122,32 @@ export default function TeamConfirmation({
     () =>
       getCandidateColumns(
         (row: CandidateRow) => {
+          if (row.status === CONSULTANT_STATUS.OFFERED) {
+            const decidedRate = Number(row.decided_rate);
+            const requestedHours = Number(row.requested_hours);
+            if (!decidedRate || !requestedHours) {
+              toast("Rate and requested hours are required before hiring", "error");
+              return;
+            }
+            updateConsultantStatus.mutate(
+              {
+                consultant_id: row.id,
+                project_id: String(projectId),
+                status: CONSULTANT_STATUS.HIRED,
+                role: row.role || "consultant",
+                decided_rate: decidedRate,
+                requested_hours: requestedHours,
+              },
+              {
+                onSuccess: () => {
+                  toast("Consultant hired successfully", "success");
+                  getCandidatesList();
+                },
+                onError: (error) => toast(error.message, "error"),
+              }
+            );
+            return;
+          }
           setSelectedRow(row);
           setAssignRoleOpen(true);
         },
@@ -125,27 +160,19 @@ export default function TeamConfirmation({
   );
 
   const hasHired = useMemo(() => {
-    return candidates.some((c) => c.status === CONSULTANT_STATUS.OFFERED);
+    return candidates.some((c) => c.status === CONSULTANT_STATUS.HIRED);
   }, [candidates]);
 
   const hiredCount = useMemo(() => {
-    return candidates.filter((c) => c.status === CONSULTANT_STATUS.OFFERED)
+    return candidates.filter((c) => c.status === CONSULTANT_STATUS.HIRED)
       .length;
   }, [candidates]);
 
   useEffect(() => {
-    if (!projectId) return;
-    setStep2Completed(isStepCompleted(projectId, 2));
-  }, [projectId]);
-
-  useEffect(() => {
     if (projectId && hasHired) {
       markStepCompleted(projectId, 2);
-      setStep2Completed(true);
     }
   }, [hasHired, projectId]);
-
-  const canProceed = hasHired || step2Completed;
 
   const refreshEverything = () => {
     if (!projectId) return;
@@ -194,7 +221,7 @@ export default function TeamConfirmation({
       const core = item.modules?.core || "N/A";
       const others = item.modules?.others || "N/A";
       const experience = `${item.experience} Years`;
-      const hourlyRate = `$${item.rate}/hour`;
+      const pricing = getRateFields(item);
 
       if (
         item.status === CONSULTANT_STATUS.SHORTLISTED ||
@@ -206,7 +233,7 @@ export default function TeamConfirmation({
           coremodules: core,
           othersmodules: others,
           experience,
-          hourlyRate,
+          ...pricing,
           status: normalizeStatus(item.status),
           interview: item.booking_schedule
             ? normalizeStatus(item.booking_schedule.status)
@@ -231,9 +258,12 @@ export default function TeamConfirmation({
           coremodules: core || "N/A",
           othersmodules: others || "N/A",
           experience,
-          hourlyRate,
+          ...pricing,
           signed: item.is_doc_signed ? "Yes" : "No",
           role: item.role ?? undefined,
+          status: item.status,
+          requested_hours: item.requested_hours,
+          decided_rate: item.decided_rate,
         });
       }
     });
@@ -293,10 +323,12 @@ export default function TeamConfirmation({
       coremodules: item.modules?.core ?? "N/A",
       othersmodules: item.modules?.others ?? "N/A",
       experience: `${item.experience} Years`,
-      hourlyRate: `$${item.rate}/hour`,
+      ...getRateFields(item),
       signed: item.is_doc_signed ? "Yes" : "No",
       role: item.role ?? undefined,
       status: item.status,
+      requested_hours: item.requested_hours,
+      decided_rate: item.decided_rate,
       working_schedule: item.working_schedule,
     }));
   };
@@ -309,7 +341,7 @@ export default function TeamConfirmation({
       const core = item.modules?.core || "N/A";
       const others = item.modules?.others || "N/A";
       const experience = `${item.experience} Years`;
-      const hourlyRate = `$${item.rate}/hour`;
+      const pricing = getRateFields(item);
 
       if (
         item.status === CONSULTANT_STATUS.SHORTLISTED ||
@@ -321,7 +353,7 @@ export default function TeamConfirmation({
           coremodules: core,
           othersmodules: others,
           experience,
-          hourlyRate,
+          ...pricing,
           status: normalizeStatus(item.status),
           interview: item.booking_schedule
             ? normalizeStatus(item.booking_schedule.status)
@@ -341,9 +373,12 @@ export default function TeamConfirmation({
           coremodules: core || "N/A",
           othersmodules: others || "N/A",
           experience,
-          hourlyRate,
+          ...pricing,
           signed: item.is_doc_signed ? "Yes" : "No",
           role: item.role ?? undefined,
+          status: item.status,
+          requested_hours: item.requested_hours,
+          decided_rate: item.decided_rate,
         });
       }
     });
@@ -518,7 +553,6 @@ export default function TeamConfirmation({
             label="Proceed to next step"
             colorKey="BLUE"
             width={180}
-            disabled={!canProceed}
             onClick={() => onNext?.(projectId!)}
           />
         </Box>
@@ -532,7 +566,7 @@ export default function TeamConfirmation({
         onUpdated={() => {
           refreshAllData();
         }}
-        onAssign={(role) => {
+        onAssign={(role, _contracts, decidedRate, requestedHours) => {
           if (!selectedRow) return;
 
           updateConsultantStatus.mutate(
@@ -541,6 +575,8 @@ export default function TeamConfirmation({
               project_id: String(projectId),
               status: CONSULTANT_STATUS.OFFERED,
               role: role,
+              decided_rate: decidedRate,
+              requested_hours: requestedHours,
               booking_schedule: selectedRow.working_schedule
                 ? {
                     weekdays: selectedRow.working_schedule.weekdays.map(

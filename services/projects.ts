@@ -7,13 +7,20 @@ import { API_ROUTES } from "@/utils/api_routes";
 import { request } from "@/utils/request";
 import { getCachedSession } from "@/services/sessionCache";
 
-export async function createProjectService(): Promise<ApiResponse<IProject>> {
+export type CreateProjectPayload = {
+  client_id?: string | number;
+};
+
+export async function createProjectService(
+  body?: CreateProjectPayload
+): Promise<ApiResponse<IProject>> {
   const session = await getCachedSession();
   const token = session?.accessToken;
 
-  const response = await request<undefined, IProject>({
+  const response = await request<CreateProjectPayload | undefined, IProject>({
     url: API_ROUTES.PROJECT_CREATE,
     method: "POST",
+    data: body,
     headers: token
       ? {
           Authorization: `Bearer ${token}`,

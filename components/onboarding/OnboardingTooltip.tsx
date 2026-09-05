@@ -5,6 +5,7 @@ import { Check, CheckCircle2, Sparkles, Star } from "lucide-react";
 import type { TooltipRenderProps } from "react-joyride";
 
 import { OnboardingTourProgress } from "./OnboardingTourProgress";
+import { resolveTourTargetElement } from "./onboarding-tour-utils";
 
 const CONFETTI_DOTS = [
   { top: "12%", left: "10%", delay: "0ms", color: "#4A7AB5" },
@@ -146,6 +147,10 @@ export function OnboardingTooltip({
   }
 
   if (variant === "nav-link") {
+    const handleOpenTarget = () => {
+      resolveTourTargetElement(step.target)?.click();
+    };
+
     return (
       <div
         {...tooltipProps}
@@ -165,9 +170,13 @@ export function OnboardingTooltip({
 
         <div className="mt-3.5 flex items-center justify-between gap-3">
           <OnboardingTourProgress current={index} total={progressTotal} />
-          <span className="font-manrope text-[11px] font-medium text-slate-400">
-            Click highlighted item
-          </span>
+          <button
+            type="button"
+            onClick={handleOpenTarget}
+            className="shrink-0 rounded-md bg-[#4A7AB5] px-4 py-2 font-manrope text-xs font-semibold text-white transition-colors hover:bg-[#3d6799]"
+          >
+            {primaryLabel}
+          </button>
         </div>
       </div>
     );

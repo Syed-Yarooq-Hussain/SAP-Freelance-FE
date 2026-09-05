@@ -40,13 +40,11 @@ export default function AdminConsultantProfilePage() {
     };
     void load();
     return () => { active = false; };
-    // Profile is intentionally loaded once for the route id.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   return (
     <Sidebar>
-      <div className="min-h-screen rounded-xl bg-background-main p-4 md:p-6">
+      <div className="min-h-[calc(100vh-110px)] rounded-2xl bg-[#F4F5F8]">
         <button type="button" onClick={() => router.back()} className="mb-5 inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">
           <ArrowLeft className="h-4 w-4" /> Back to Consultants
         </button>

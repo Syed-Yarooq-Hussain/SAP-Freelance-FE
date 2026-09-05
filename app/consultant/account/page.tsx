@@ -1,15 +1,8 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import type { AccountFormData } from "@/lib/schemas/account";
 import Sidebar from "@/components/Sidebar";
-import { PageOnboardingTour } from "@/components/onboarding/PageOnboardingTour";
-import {
-  waitForTourTarget,
-  shouldRunOnboardingPageTour,
-  getOnboardingStepPatchForPage,
-} from "@/components/onboarding/onboarding-tour-utils";
-import { accountTourSteps } from "@/components/onboarding/tour-steps";
 import { useOnboarding } from "@/providers/OnboardingProvider";
 import { updateConsultantProfile } from "@/services/consultants";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
@@ -21,71 +14,21 @@ import { useDeleteConsultantProfile } from "@/actions/consultants/useDeleteConsu
 import { useLogout } from "@/actions/auth/logout";
 import { TrashIcon } from "lucide-react";
 import { ConfirmDeleteModal } from "@/components/common/ConfirmDeleteModal";
-import { usePathname } from "next/navigation";
 
 export default function AccountPage() {
   const dispatch = useAppDispatch();
-  const pathname = usePathname();
   const user = useAppSelector((state) => state?.user?.user);
-  const { currentStep, status, fetchError, advanceStep } = useOnboarding();
+  const { currentStep, status, completeOnboarding } = useOnboarding();
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [targetsReady, setTargetsReady] = useState(false);
-  const [accountTourDismissed, setAccountTourDismissed] = useState(false);
   const deleteProfile = useDeleteConsultantProfile();
   const { mutate: logout } = useLogout();
 
-  const shouldRunTour = useMemo(
-    () =>
-      shouldRunOnboardingPageTour({
-        pageStep: "my_profile",
-        pathname,
-        status,
-        currentStep,
-        fetchError,
-        dismissed: accountTourDismissed,
-      }),
-    [
-      accountTourDismissed,
-      currentStep,
-      fetchError,
-      pathname,
-      status,
-    ],
-  );
-
   useEffect(() => {
-    const patchStep = getOnboardingStepPatchForPage("my_profile", currentStep);
-    if (status !== "in_progress" || !patchStep) {
-      return;
+    if (status === "in_progress" && currentStep === "my_profile") {
+      void completeOnboarding();
     }
-
-    void advanceStep(patchStep);
-  }, [advanceStep, currentStep, status]);
-
-  useEffect(() => {
-    if (!shouldRunTour) {
-      setTargetsReady(false);
-      return;
-    }
-
-    if (document.querySelector('[data-tour="account-settings"]')) {
-      setTargetsReady(true);
-      return;
-    }
-
-    let cancelled = false;
-
-    void waitForTourTarget('[data-tour="account-settings"]').then((found) => {
-      if (!cancelled) {
-        setTargetsReady(found);
-      }
-    });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [shouldRunTour]);
+  }, [completeOnboarding, currentStep, status]);
 
   const handleSave = async (data: AccountFormData, apiPayload?: any) => {
     setIsLoading(true);
@@ -167,15 +110,6 @@ export default function AccountPage() {
           }}
         />
       </main>
-
-      {!fetchError && (
-        <PageOnboardingTour
-          pageStep="my_profile"
-          steps={accountTourSteps}
-          run={shouldRunTour && targetsReady}
-          onStepAfter={() => setAccountTourDismissed(true)}
-        />
-      )}
     </Sidebar>
   );
 }

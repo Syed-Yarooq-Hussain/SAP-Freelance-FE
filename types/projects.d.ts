@@ -76,6 +76,8 @@ export interface IProjectDetailsResponse {
 
 export interface IAdminProject {
   id: string;
+  client_id?: string | number;
+  step?: number;
   name: string;
   status: string;
   client_name: string;
@@ -85,6 +87,20 @@ export interface IAdminProject {
     core: string;
     others: string;
   };
+}
+
+export interface AdminProjectTableRow {
+  id: string;
+  projectId: string;
+  clientId?: string | number;
+  projectStep?: number;
+  name: string;
+  client_name: string;
+  coremodules: string;
+  othersmodules: string;
+  duration: string;
+  start_date: string;
+  status: string;
 }
 
 export interface IConsultantProjectStatItem {

@@ -1,8 +1,10 @@
 "use client";
 
 import {
+  getStepForRoute,
   getNextOnboardingPageRoute,
   getPatchStepsForPageRoute,
+  NEXT_STEP,
 } from "@/constants/onboarding";
 import { useOnboarding } from "@/providers/OnboardingProvider";
 import type { OnboardingStatus } from "@/types/onboarding";
@@ -11,8 +13,13 @@ import { useCallback } from "react";
 
 export function useOnboardingNavClick() {
   const router = useRouter();
-  const { status, currentStep, advanceStep, prepareOnboardingNavigation } =
-    useOnboarding();
+  const {
+    status,
+    currentStep,
+    advanceStep,
+    completeOnboarding,
+    prepareOnboardingNavigation,
+  } = useOnboarding();
 
   return useCallback(
     async (
@@ -48,10 +55,16 @@ export function useOnboardingNavClick() {
         await advanceStep(patchStep);
       }
 
+      const targetStep = getStepForRoute(link);
+      if (targetStep && NEXT_STEP[targetStep] === "completed") {
+        await completeOnboarding();
+      }
+
       router.push(link);
     },
     [
       advanceStep,
+      completeOnboarding,
       currentStep,
       prepareOnboardingNavigation,
       router,

@@ -18,6 +18,7 @@ import { useAppDispatch, useAppSelector } from "@/lib/store/hook";
 import { useLogout } from "@/actions/auth/logout";
 import { ConfirmDeleteModal } from "@/components/common/ConfirmDeleteModal";
 import { logoutUser } from "@/lib/store/features/user/userSlice";
+import { usePathname } from "next/navigation";
 
 type ISidebarProps = {
   children: React.ReactNode;
@@ -81,6 +82,9 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 
 
 const Sidebar: FC<ISidebarProps> = ({ children }) => {
+  const pathname = usePathname();
+  const usePortalCanvas =
+    pathname.startsWith("/client") || pathname.startsWith("/admin");
   const { mutate: logout } = useLogout();
   const dispatch = useAppDispatch()
   const handleLogout = () => {
@@ -335,11 +339,68 @@ const Sidebar: FC<ISidebarProps> = ({ children }) => {
           component="main"
           sx={{
             flexGrow: 1,
-            px: 0,
-            py: 2,
+            px: usePortalCanvas ? { xs: 1.5, sm: 2, lg: 3 } : 0,
+            py: usePortalCanvas ? { xs: 1.5, md: 2.5 } : 2,
             mt: { xs: 0, md: `${appBarHeight}px` },
             minHeight: "100vh",
             pb: { xs: "70px", md: "0px" },
+            bgcolor: usePortalCanvas ? "#F4F5F8" : "transparent",
+            ...(usePortalCanvas && {
+              "& .MuiPaper-root:not(.MuiDrawer-paper)": {
+                borderRadius: "16px",
+                border: "1px solid #E2E8F0",
+                boxShadow: "0 4px 18px rgba(15, 23, 42, 0.05)",
+                backgroundImage: "none",
+              },
+              "& .MuiDataGrid-root": {
+                overflow: "hidden",
+                border: "1px solid #E8E4DE",
+                borderRadius: "14px",
+                bgcolor: "#FFFFFF",
+              },
+              "& .MuiDataGrid-columnHeaders, & .MuiDataGrid-columnHeader": {
+                bgcolor: "#F0EDE8",
+              },
+              "& .MuiDataGrid-columnHeaderTitle": {
+                color: "#64748B",
+                fontSize: "0.72rem",
+                fontWeight: 700,
+                letterSpacing: "0.035em",
+                textTransform: "uppercase",
+              },
+              "& .MuiDataGrid-columnSeparator": { display: "none" },
+              "& .MuiDataGrid-cell": {
+                borderColor: "#E8E4DE",
+                py: 1.25,
+              },
+              "& .MuiDataGrid-row:hover": { bgcolor: "#F8FAFC" },
+              "& .MuiOutlinedInput-root": {
+                borderRadius: "10px",
+                bgcolor: "#FFFFFF",
+                transition: "box-shadow .2s ease, border-color .2s ease",
+                "&.Mui-focused": {
+                  boxShadow: "0 0 0 3px rgba(0, 92, 138, 0.10)",
+                },
+              },
+              "& .MuiButton-root": {
+                borderRadius: "10px",
+                boxShadow: "none",
+                textTransform: "none",
+                fontWeight: 650,
+              },
+              "& .MuiTabs-root": {
+                minHeight: 42,
+                borderBottom: "1px solid #E2E8F0",
+              },
+              "& .MuiTab-root": {
+                minHeight: 42,
+                textTransform: "none",
+                fontWeight: 650,
+              },
+              "& .MuiChip-root": { borderRadius: "8px", fontWeight: 600 },
+              "& table": { borderCollapse: "separate", borderSpacing: 0 },
+              "& input, & select, & textarea": { fontFamily: "inherit" },
+            }),
           }}
         >
           {children}

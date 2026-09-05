@@ -1,6 +1,7 @@
 "use client";
 
 import type { TeamBuilderRow } from "@/types/teamBuilder";
+import { formatHourlyRate } from "@/utils/rates";
 import {
   Briefcase,
   Calendar,
@@ -167,8 +168,22 @@ export default function ConsultantProfileModal({
             <StatCard
               icon={<DollarSign className="h-4 w-4" />}
               label="Hourly Rate"
-              value={`$${consultant.rateValue ?? 0} / hr`}
+              value={`${formatHourlyRate(consultant.rateValue, consultant.currency)} / hr`}
             />
+            {consultant.showAdminPricing ? (
+              <>
+                <StatCard
+                  icon={<DollarSign className="h-4 w-4" />}
+                  label="Base Rate"
+                  value={`${formatHourlyRate(consultant.baseRate, consultant.currency)} / hr`}
+                />
+                <StatCard
+                  icon={<DollarSign className="h-4 w-4" />}
+                  label="Profit Margin"
+                  value={`${consultant.profitMarginPercentage ?? 0}%`}
+                />
+              </>
+            ) : null}
             <StatCard
               icon={<MapPin className="h-4 w-4" />}
               label="Location"

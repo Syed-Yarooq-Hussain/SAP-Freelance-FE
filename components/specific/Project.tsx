@@ -15,20 +15,31 @@ interface ProjectProps<T extends GridValidRowModel = GridValidRowModel> {
   stats?: StatCardProps[];
   columns: GridColDef<T>[];
   rows: T[];
+  routeBaseOverride?: string;
+  onProjectClick?: (row: T) => void;
 }
 
 export default function Project<
   T extends GridValidRowModel = GridValidRowModel
->({ title, stats, columns, rows }: ProjectProps<T>) {
+>({
+  title,
+  stats,
+  columns,
+  rows,
+  routeBaseOverride,
+  onProjectClick,
+}: ProjectProps<T>) {
   const router = useRouter();
   const { data: session } = useSession();
   const role = session?.user?.role;
 
-  let routeBase = "";
-  if (role === Roles.CLIENT) routeBase = APP_ROUTES.CLIENT.PROJECTS;
-  else if (role === Roles.CONSULTANT)
-    routeBase = APP_ROUTES.CONSULTANT.PROJECTS;
-  else if (role === Roles.ADMIN) routeBase = APP_ROUTES.ADMIN.PROJECTS;
+  let routeBase = routeBaseOverride ?? "";
+  if (!routeBase) {
+    if (role === Roles.CLIENT) routeBase = APP_ROUTES.CLIENT.PROJECTS;
+    else if (role === Roles.CONSULTANT)
+      routeBase = APP_ROUTES.CONSULTANT.PROJECTS;
+    else if (role === Roles.ADMIN) routeBase = APP_ROUTES.ADMIN.PROJECTS;
+  }
 
   return (
     <Box>
@@ -51,9 +62,12 @@ export default function Project<
           columns={columns}
           rows={rows}
           pageSize={10}
-          rowClickable={role !== Roles.ADMIN}
+          rowClickable={Boolean(onProjectClick || routeBase)}
           onRowClick={(params) => {
-            if (role === Roles.ADMIN) return;
+            if (onProjectClick) {
+              onProjectClick(params.row);
+              return;
+            }
             if (!routeBase) return;
 
             const row = params.row as any;

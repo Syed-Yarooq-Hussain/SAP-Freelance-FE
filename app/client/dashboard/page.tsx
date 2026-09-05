@@ -5,10 +5,10 @@ import { useClientPayments } from "@/actions/payments/useClientPayments";
 import { useClientProjects } from "@/actions/projects/useClientProjects";
 import EngagementCalendarCard from "@/components/EngagementCalendarCard";
 import Sidebar from "@/components/Sidebar";
-import Dashboard from "@/components/specific/Dashboard";
+import ClientDashboardView from "@/components/client-dashboard-new";
+import { useAppSelector } from "@/lib/store/hook";
 import {
   clientAnnouncements,
-  clientStats,
   getClientSidebar,
   OngoingProject,
 } from "@/data/clientDashboard";
@@ -38,6 +38,7 @@ export default function ClientDashboardPage() {
   const { mutate: loadPayments } = useClientPayments();
   const { data: statsResponse, isLoading: statsLoading } = useClientStats();
   const dashboardStats = statsResponse?.data?.dashboard;
+  const currentUser = useAppSelector((state: any) => state?.user?.user);
 
   const animatedStats = [
     useAnimatedCounter(dashboardStats?.number_of_project ?? 0),
@@ -45,15 +46,6 @@ export default function ClientDashboardPage() {
     useAnimatedCounter(dashboardStats?.total_spend_on_project ?? 0),
     useAnimatedCounter(dashboardStats?.pending_invoices ?? 0),
   ];
-
-  const stats = clientStats.map((config, index) => ({
-    ...config,
-    subtitle:
-      index === 2 || index === 3
-        ? `$${animatedStats[index].toLocaleString()}`
-        : animatedStats[index],
-    loading: statsLoading,
-  }));
 
   const fetchProjects = useCallback(() => {
     loadProjects(undefined, {
@@ -66,11 +58,11 @@ export default function ClientDashboardPage() {
           duration: item.projectDetails?.duration
             ? `${item.projectDetails.duration} months`
             : "N/A",
-          spend: "N/A",
+          spend: `$${Number(item.cost ?? item.projectDetails?.cost ?? 0).toLocaleString()}`,
           startdate: item.projectDetails?.start_date
             ? item.projectDetails.start_date.split("T")[0]
             : "N/A",
-          estimated: "N/A",
+          estimated: `$${Number(item.paid_amount ?? item.projectDetails?.paid_amount ?? 0).toLocaleString()}`,
           status: item.status,
         }));
 
@@ -133,9 +125,16 @@ export default function ClientDashboardPage() {
 
   return (
     <Sidebar>
-      <Dashboard
+      <ClientDashboardView
+        name={currentUser?.user?.username ?? currentUser?.username}
         announcements={clientAnnouncements}
-        stats={stats}
+        stats={{
+          projects: animatedStats[0],
+          interviews: animatedStats[1],
+          spend: animatedStats[2],
+          invoices: animatedStats[3],
+          loading: statsLoading,
+        }}
         chart={
           <EngagementCalendarCard
             events={[]}
@@ -143,23 +142,13 @@ export default function ClientDashboardPage() {
             month={currentMonth}
           />
         }
-        projectTable={{
-          title: "Project Highlights",
-          columns: clientProjectColumns,
-          rows: projectRows.slice(0, 3),
-          showViewMore: true,
-          hidePagination: true,
-          onViewMoreClick: () => router.push(APP_ROUTES.CLIENT.PROJECTS),
-        }}
-        financeTable={{
-          title: "Payments Pending",
-          columns: clientPaymentColumns,
-          rows: paymentRows.slice(0, 3),
-          showViewMore: true,
-          hidePagination: true,
-          onViewMoreClick: () => router.push(APP_ROUTES.CLIENT.PAYMENTS),
-        }}
+        projectColumns={clientProjectColumns}
+        projects={projectRows.slice(0, 3)}
+        paymentColumns={clientPaymentColumns}
+        payments={paymentRows.slice(0, 3)}
         sidebarSections={getClientSidebar(router, initiatedProjects)}
+        onViewProjects={() => router.push(APP_ROUTES.CLIENT.PROJECTS)}
+        onViewPayments={() => router.push(APP_ROUTES.CLIENT.PAYMENTS)}
       />
     </Sidebar>
   );

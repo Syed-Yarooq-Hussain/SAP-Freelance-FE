@@ -35,6 +35,7 @@ interface Props {
   onEditMilestone: (milestone: MilestoneRow) => void;
   onDeleteMilestone?: (milestone: MilestoneRow) => void;
   taskForm: React.ReactNode;
+  showTasks?: boolean;
 }
 
 export default function MilestoneExpandableTable({
@@ -46,6 +47,7 @@ export default function MilestoneExpandableTable({
   onEditMilestone,
   onDeleteMilestone,
   taskForm,
+  showTasks = true,
 }: Props) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage] = React.useState(10);
@@ -64,7 +66,9 @@ export default function MilestoneExpandableTable({
             <TableCell sx={{ fontWeight: 600 }}>Start Date</TableCell>
             <TableCell sx={{ fontWeight: 600 }}>End Date</TableCell>
             <TableCell sx={{ fontWeight: 600 }}>Description</TableCell>
-            <TableCell sx={{ fontWeight: 600 }}>Tasks</TableCell>
+            {showTasks ? (
+              <TableCell sx={{ fontWeight: 600 }}>Tasks</TableCell>
+            ) : null}
             <TableCell sx={{ fontWeight: 600 }}>Actions</TableCell>
           </TableRow>
         </TableHead>
@@ -81,7 +85,7 @@ export default function MilestoneExpandableTable({
                   <TableCell>{m.due_date}</TableCell>
                   <TableCell>{m.description}</TableCell>
 
-                  <TableCell>
+                  {showTasks ? <TableCell>
                     <Box
                       onClick={() => onExpand(isOpen ? null : m.id)}
                       sx={{
@@ -101,7 +105,7 @@ export default function MilestoneExpandableTable({
                       )}
                       {m.tasks}
                     </Box>
-                  </TableCell>
+                  </TableCell> : null}
 
                   <TableCell>
                     <Stack direction="row" spacing={1}>
@@ -134,7 +138,7 @@ export default function MilestoneExpandableTable({
                   </TableCell>
                 </TableRow>
 
-                <TableRow>
+                {showTasks ? <TableRow>
                   <TableCell colSpan={6} sx={{ p: 0 }}>
                     <Collapse in={isOpen} timeout="auto" unmountOnExit>
                       <Box sx={{ p: 2, bgcolor: "#FFFAF3" }}>
@@ -155,7 +159,7 @@ export default function MilestoneExpandableTable({
                       </Box>
                     </Collapse>
                   </TableCell>
-                </TableRow>
+                </TableRow> : null}
               </React.Fragment>
             );
           })}

@@ -79,7 +79,6 @@ const BottomNav: FC = () => {
       return [
         { icon: <LayoutDashboard size={14} />, label: 'Dashboard', link: r.DASHBOARD },
         { icon: <User size={14} />, label: 'Profile', link: r.PROFILE },
-        { icon: <Users size={14} />, label: 'Consultant', link: r.CONSULTANT },
         { icon: <Briefcase size={14} />, label: 'Projects', link: r.PROJECTS },
         { icon: <CreditCard size={14} />, label: 'Payments', link: r.PAYMENTS },
       ];

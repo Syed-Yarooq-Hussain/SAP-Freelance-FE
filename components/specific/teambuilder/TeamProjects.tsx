@@ -48,7 +48,11 @@ const STATIC_TASK_DATE = "2025-10-16";
 export default function TeamProjects({
   onBack,
   onNext,
+  onMilestoneRequirementChange,
   projectId,
+  clientId,
+  clientName,
+  showTasks = true,
 }: TeamProjectsProps) {
   const { data: session } = useSession();
   const { toast } = useToast();
@@ -257,15 +261,13 @@ export default function TeamProjects({
 
       const body = {
         name: data.projectName,
-        client_id: session?.user?.id,
-        company_name: data.client,
+        client_id: clientId ?? session?.user?.id,
+        company_name: clientName ?? data.client,
         status: "active",
         start_date: data.startDate,
         end_date: data.endDate,
         industry: data.industry,
         duration: Number(data.duration || 0),
-        cost: 25000,
-        paid_amount: 125000,
       };
 
       updateProject.mutate(
@@ -288,7 +290,7 @@ export default function TeamProjects({
         }
       );
     },
-    [updateProject, toast, session, getProject, projectId]
+    [updateProject, toast, session, getProject, projectId, clientId, clientName]
   );
 
   useEffect(() => {
@@ -562,7 +564,7 @@ export default function TeamProjects({
         case "client":
           return {
             ...f,
-            defaultValue: client.username ?? "",
+            defaultValue: clientName ?? client.username ?? "",
             disabled: true,
           };
 
@@ -588,7 +590,7 @@ export default function TeamProjects({
           return f;
       }
     });
-  }, [projectData]);
+  }, [projectData, clientName]);
 
   const hasAtLeastOneCompleteMilestone = useMemo(() => {
     return rows.some((m) => {
@@ -625,6 +627,10 @@ export default function TeamProjects({
 
   const canProceed = hasCompleteMilestone || step3Completed;
 
+  useEffect(() => {
+    onMilestoneRequirementChange?.(canProceed);
+  }, [canProceed, onMilestoneRequirementChange]);
+
   const scopeCards = [
     {
       kind: "functional" as const,
@@ -659,27 +665,28 @@ export default function TeamProjects({
         const mapped = milestones.map(mapMilestoneToRow);
         setRows(mapped);
 
-        // load tasks separately (DO NOT touch rows again)
-        milestones.forEach((m) => {
-          getMilestoneTasks.mutate(Number(m.id), {
-            onSuccess: (res) => {
-              const tasks = res.data?.tasks ?? [];
-              setDynamicTasks((prev) => ({
-                ...prev,
-                [Number(m.id)]: tasks.map((t) => ({
-                  id: String(t.id),
-                  name: t.name,
-                  description: t.description,
-                  assignees: String(t.assignee_id ?? ""),
-                  date: STATIC_TASK_DATE,
-                })),
-              }));
-            },
+        if (showTasks) {
+          milestones.forEach((m) => {
+            getMilestoneTasks.mutate(Number(m.id), {
+              onSuccess: (res) => {
+                const tasks = res.data?.tasks ?? [];
+                setDynamicTasks((prev) => ({
+                  ...prev,
+                  [Number(m.id)]: tasks.map((t) => ({
+                    id: String(t.id),
+                    name: t.name,
+                    description: t.description,
+                    assignees: String(t.assignee_id ?? ""),
+                    date: STATIC_TASK_DATE,
+                  })),
+                }));
+              },
+            });
           });
-        });
+        }
       },
     });
-  }, [projectId, getProjectMilestones, getMilestoneTasks]);
+  }, [projectId, getProjectMilestones, getMilestoneTasks, showTasks]);
 
   useEffect(() => {
     if (!projectId) return;
@@ -859,10 +866,12 @@ export default function TeamProjects({
         >
           <Box>
             <Typography variant="h6" sx={{ fontWeight: 700 }}>
-              Milestones & Tasks
+              {showTasks ? "Milestones & Tasks" : "Project Milestones"}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Create at least one complete milestone, then expand it to add tasks.
+              {showTasks
+                ? "Create at least one complete milestone, then expand it to add tasks."
+                : "Create at least one delivery milestone. Tasks are intentionally skipped in the admin flow."}
             </Typography>
           </Box>
 
@@ -876,7 +885,7 @@ export default function TeamProjects({
             <Chip
               size="small"
               icon={canProceed ? <CheckCircleIcon /> : undefined}
-              label={canProceed ? "Ready to continue" : "One milestone required"}
+              label={canProceed ? "Milestone added" : "Milestones are optional"}
               color={canProceed ? "success" : "default"}
               variant={canProceed ? "filled" : "outlined"}
             />
@@ -891,6 +900,7 @@ export default function TeamProjects({
           onEditTask={handleEditTaskClick}
           onEditMilestone={handleEditMilestoneClick}
           onDeleteMilestone={(m) => console.log("Delete milestone", m.id)}
+          showTasks={showTasks}
           taskForm={
             <CreateForm
               key={`${taskFormKey}-${expandedMilestoneId}`}
@@ -951,8 +961,8 @@ export default function TeamProjects({
           }}
         >
           {canProceed
-            ? "Milestone requirement completed"
-            : "Complete at least one milestone to continue"}
+            ? "Milestone saved"
+            : "You can continue now and add milestones later"}
         </Typography>
 
         <Box sx={{ display: "flex", gap: 1.5 }}>
@@ -961,7 +971,6 @@ export default function TeamProjects({
             label="Proceed to next step"
             colorKey="BLUE"
             width={180}
-            disabled={!canProceed}
             onClick={() => onNext?.(projectId!)}
           />
         </Box>

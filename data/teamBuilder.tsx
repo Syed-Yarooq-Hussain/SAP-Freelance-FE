@@ -1,9 +1,11 @@
 import { StatCardProps } from "@/components/StatCard";
 import StatusChip from "@/components/StatusChip";
 import AppButton from "@/components/Button";
+import ConsultantRateDisplay from "@/components/specific/teambuilder/ConsultantRateDisplay";
 import type { CandidateRow, TaskRow, PaymentTableRow, TeamBuilderRow } from "@/types/teamBuilder";
 import { formatDateTimeAmPm } from "@/utils/dateTime";
 import { formatCurrencyValue } from "@/utils/payments";
+import { formatHourlyRate } from "@/utils/rates";
 import { colors, statusColors } from "@/utils/styles/colors";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
@@ -251,22 +253,22 @@ export const teamBuilderColumns = (
   },
   {
     field: "rate",
-    headerName: "Rate",
-    flex: 0.7,
-    minWidth: 80,
+    headerName: "Client Rate",
+    flex: 1,
+    minWidth: 145,
     renderCell: (params) => {
       const rateValue =
         params.row.rateValue ??
         Number(String(params.value).replace(/[^0-9.]/g, "")) ??
         0;
-
       return (
-        <Box>
-          <Typography sx={{ fontWeight: 700, fontSize: "14px", color: "#1E293B" }}>
-            ${rateValue}
-          </Typography>
-          <Typography sx={{ fontSize: "12px", color: "#94A3B8" }}>/hr</Typography>
-        </Box>
+        <ConsultantRateDisplay
+          rateValue={rateValue}
+          baseRate={params.row.baseRate}
+          profitMarginPercentage={params.row.profitMarginPercentage}
+          currency={params.row.currency}
+          showAdminPricing={params.row.showAdminPricing}
+        />
       );
     },
   },
@@ -478,7 +480,22 @@ export const getShortlistedColumns = (
   { field: "coremodules", headerName: "Modules (Core)", flex: 1.5 },
   { field: "othersmodules", headerName: "Modules (Others)", flex: 1.5 },
   { field: "experience", headerName: "Experience", flex: 1 },
-  { field: "hourlyRate", headerName: "Hourly Rate", flex: 1 },
+  {
+    field: "hourlyRate",
+    headerName: "Client Rate",
+    flex: 1.4,
+    minWidth: 165,
+    renderCell: (params) => (
+      <Box>
+        <Typography sx={{ fontWeight: 700, fontSize: 13 }}>{params.value}</Typography>
+        {params.row.showAdminPricing ? (
+          <Typography sx={{ fontSize: 10, color: "#64748B", whiteSpace: "nowrap" }}>
+            Base {formatHourlyRate(params.row.baseRate, params.row.currency)} · Margin {params.row.profitMarginPercentage ?? 0}%
+          </Typography>
+        ) : null}
+      </Box>
+    ),
+  },
   {
     field: "status",
     headerName: "Status",
@@ -568,8 +585,34 @@ export const getCandidateColumns = (
   { field: "coremodules", headerName: "Modules (Core)", flex: 2 },
   { field: "othersmodules", headerName: "Modules (Others)", flex: 2 },
   { field: "experience", headerName: "Experience", flex: 1 },
-  { field: "hourlyRate", headerName: "Hourly Rate", flex: 1 },
+  {
+    field: "hourlyRate",
+    headerName: "Client Rate",
+    flex: 1.4,
+    minWidth: 165,
+    renderCell: (params) => (
+      <Box>
+        <Typography sx={{ fontWeight: 700, fontSize: 13 }}>{params.value}</Typography>
+        {params.row.showAdminPricing ? (
+          <Typography sx={{ fontSize: 10, color: "#64748B", whiteSpace: "nowrap" }}>
+            Base {formatHourlyRate(params.row.baseRate, params.row.currency)} · Margin {params.row.profitMarginPercentage ?? 0}%
+          </Typography>
+        ) : null}
+      </Box>
+    ),
+  },
   { field: "signed", headerName: "Signed Contact", flex: 1 },
+  {
+    field: "status",
+    headerName: "Status",
+    flex: 1,
+    renderCell: (params) => (
+      <StatusChip
+        label={String(params.value || "interviewed")}
+        color={statusColors[params.value as keyof typeof statusColors] || "GREY"}
+      />
+    ),
+  },
   {
     field: "action",
     headerName: "Action",
@@ -594,7 +637,7 @@ export const getCandidateColumns = (
         );
       }
 
-      if (row.role) {
+      if (row.status === "hired") {
         return (
           <Typography
             sx={{
@@ -603,7 +646,7 @@ export const getCandidateColumns = (
               textTransform: "capitalize",
             }}
           >
-            {row.role}
+            Hired
           </Typography>
         );
       }
@@ -628,7 +671,7 @@ export const getCandidateColumns = (
             }}
             onClick={() => addToShortlist(row)}
           >
-            Hired
+            {row.status === "offered" ? "Hire" : "Make offer"}
           </Typography>
 
           <Typography

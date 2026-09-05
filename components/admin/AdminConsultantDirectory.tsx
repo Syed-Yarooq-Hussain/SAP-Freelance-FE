@@ -11,10 +11,15 @@ import type {
   TeamBuilderRow,
   Weekday,
 } from "@/types/teamBuilder";
+import {
+  appendUniqueRows,
+  extractConsultantListAndPagination,
+} from "@/utils/consultantPagination";
 import colors from "@/utils/styles/colors";
+import { formatHourlyRate } from "@/utils/rates";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import Groups2Icon from "@mui/icons-material/Groups2";
-import { Box, Button, CircularProgress, Pagination, Stack, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Typography } from "@mui/material";
 import type { GridColDef } from "@mui/x-data-grid";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
@@ -24,50 +29,6 @@ const TeamBuilderFilters = dynamic(
   () => import("@/components/specific/teambuilder/TeamBuilderFilters"),
   { ssr: false }
 );
-
-const extractConsultantListAndPagination = (
-  payload: unknown,
-  fallbackPagination?: ApiPagination | null
-) => {
-  if (Array.isArray(payload)) {
-    return { list: payload as ClientConsultantDTO[], pagination: fallbackPagination ?? null };
-  }
-
-  if (payload && typeof payload === "object") {
-    const record = payload as Record<string, unknown>;
-    const listCandidates = [record.data, record.results, record.items, record.consultants];
-
-    for (const candidate of listCandidates) {
-      if (Array.isArray(candidate)) {
-        return {
-          list: candidate as ClientConsultantDTO[],
-          pagination: (record.pagination as ApiPagination | undefined) ?? fallbackPagination ?? null,
-        };
-      }
-    }
-
-    const nestedRecord = record.data;
-    if (nestedRecord && typeof nestedRecord === "object") {
-      const nested = nestedRecord as Record<string, unknown>;
-      const nestedCandidates = [nested.data, nested.results, nested.items, nested.consultants];
-
-      for (const candidate of nestedCandidates) {
-        if (Array.isArray(candidate)) {
-          return {
-            list: candidate as ClientConsultantDTO[],
-            pagination:
-              (record.pagination as ApiPagination | undefined) ??
-              (nested.pagination as ApiPagination | undefined) ??
-              fallbackPagination ??
-              null,
-          };
-        }
-      }
-    }
-  }
-
-  return { list: [] as ClientConsultantDTO[], pagination: fallbackPagination ?? null };
-};
 
 const mapConsultantRow = (
   item: ClientConsultantDTO,
@@ -86,8 +47,14 @@ const mapConsultantRow = (
   othersmodules: item.modules?.others || "N/A",
   experience: item.experience ? `${item.experience} Years` : "N/A",
   experienceYears: item.experience ?? null,
-  rate: item.rate ? `$${item.rate}/hour` : "N/A",
+  rate: item.rate !== undefined ? `${formatHourlyRate(item.rate, item.currency)}/hour` : "N/A",
   rateValue: item.rate ?? 0,
+  baseRate: item.base_rate ?? null,
+  profitMarginPercentage: item.profit_margin_percentage ?? null,
+  currency: item.currency ?? "USD",
+  showAdminPricing:
+    item.base_rate !== undefined ||
+    item.profit_margin_percentage !== undefined,
   avail: item.weekly_available_hours ?? 0,
   request: 0,
   error: "",
@@ -139,7 +106,6 @@ export default function AdminConsultantDirectory() {
   const [searchQuery, setSearchQuery] = useState("");
   const [rows, setRows] = useState<TeamBuilderRow[]>([]);
   const [activeFilters, setActiveFilters] = useState<Record<string, unknown>>({});
-  const [currentPage, setCurrentPage] = useState(1);
   const [paginationMeta, setPaginationMeta] = useState<ApiPagination | null>(null);
   const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
   const [scheduleData, setScheduleData] = useState<
@@ -198,11 +164,10 @@ export default function AdminConsultantDirectory() {
 
   const fetchConsultants = useCallback(
     (filters?: Record<string, unknown>, page = 1) => {
-      setCurrentPage(page);
       const payload = {
         ...(filters ?? {}),
         page,
-        limit: 10,
+        limit: 20,
       } as Record<string, unknown>;
 
       loadConsultants(payload as any, {
@@ -212,9 +177,11 @@ export default function AdminConsultantDirectory() {
             res.pagination
           );
           const mapped = list.map((item: ClientConsultantDTO, index: number) =>
-            mapConsultantRow(item, index)
+            mapConsultantRow(item, (page - 1) * 20 + index)
           );
-          setRows(mapped);
+          setRows((current) =>
+            page === 1 ? mapped : appendUniqueRows(current, mapped)
+          );
           setPaginationMeta(pagination);
           setFilterOpen(false);
         },
@@ -233,6 +200,11 @@ export default function AdminConsultantDirectory() {
   useEffect(() => {
     fetchConsultants();
   }, [fetchConsultants]);
+
+  const loadMore = useCallback(() => {
+    if (isPending || !paginationMeta?.has_next_page) return;
+    fetchConsultants(activeFilters, paginationMeta.next_page ?? paginationMeta.current_page + 1);
+  }, [activeFilters, fetchConsultants, isPending, paginationMeta]);
 
   const columns = useMemo(
     () => {
@@ -287,7 +259,7 @@ export default function AdminConsultantDirectory() {
       )}
 
       <Box sx={{ bgcolor: colors.LIGHT_YELLOW, borderRadius: 2, py: 2 }}>
-        {isPending ? (
+        {isPending && rows.length === 0 ? (
           <Box
             sx={{
               display: "flex",
@@ -303,6 +275,9 @@ export default function AdminConsultantDirectory() {
             variant="consultant"
             title="Consultant Selection"
             hidePagination
+            scrollHeight={560}
+            onScrollEnd={loadMore}
+            loadingMore={isPending && rows.length > 0}
             titleIcon={
               <Box
                 sx={{
@@ -324,35 +299,17 @@ export default function AdminConsultantDirectory() {
             onSearchChange={setSearchQuery}
             columns={columns}
             rows={filteredRows}
-            pageSize={10}
             rowClickable
             onRowClick={(params) => openProfile(params.row as TeamBuilderRow)}
           />
         )}
 
         {paginationMeta && (
-          <Stack
-            direction={{ xs: "column", sm: "row" }}
-            alignItems="center"
-            justifyContent="space-between"
-            spacing={1.5}
-            mt={2}
-            px={2}
-          >
+          <Box sx={{ mt: 1.5, px: 2, textAlign: "center" }}>
             <Typography sx={{ fontSize: "0.875rem", color: "#475569" }}>
               Showing {rows.length} of {paginationMeta.total} consultants
             </Typography>
-            <Pagination
-              count={Math.max(1, paginationMeta.total_pages ?? 1)}
-              page={Math.max(0, currentPage)}
-              onChange={(_, page) => fetchConsultants(activeFilters, page)}
-              siblingCount={1}
-              boundaryCount={1}
-              color="primary"
-              shape="rounded"
-              size="small"
-            />
-          </Stack>
+          </Box>
         )}
       </Box>
 

@@ -37,7 +37,7 @@ type AssignedRolePopupProps = {
   row: CandidateRow | null;
   projectId: string | number;
   onUpdated: () => void;
-  onAssign: (role: string, contracts: string[]) => void;
+  onAssign: (role: string, contracts: string[], decidedRate: number, requestedHours: number) => void;
 };
 
 export function AssignedRolePopup({
@@ -52,6 +52,8 @@ export function AssignedRolePopup({
   >([]);
   const [selectedDocumentType, setSelectedDocumentType] = useState("");
   const [selectedRole, setRole] = useState("");
+  const [decidedRate, setDecidedRate] = useState("");
+  const [requestedHours, setRequestedHours] = useState("");
   const uploadInputRef = useRef<HTMLInputElement | null>(null);
   const consultantLevels = useConsultantLevels();
   const uploadProjectDocument = useUploadProjectDocument();
@@ -64,6 +66,8 @@ export function AssignedRolePopup({
       setRole("");
       setSelectedDocuments([]);
       setSelectedDocumentType("");
+      setDecidedRate(row?.decided_rate ? String(row.decided_rate) : String(Number(row?.hourlyRate?.replace(/[^0-9.]/g, "")) || ""));
+      setRequestedHours(row?.requested_hours ? String(row.requested_hours) : "");
     }
   }, [open]);
 
@@ -119,9 +123,11 @@ export function AssignedRolePopup({
         <>
           <AppButton
             label="Assign"
-            onClick={() => onAssign(selectedRole, assignedContractTypes)}
+            onClick={() => onAssign(selectedRole, assignedContractTypes, Number(decidedRate), Number(requestedHours))}
             disabled={
               !selectedRole ||
+              Number(decidedRate) <= 0 ||
+              Number(requestedHours) <= 0 ||
               selectedDocuments.length === 0 ||
               uploadProjectDocument.isPending
             }
@@ -325,6 +331,10 @@ export function AssignedRolePopup({
           </MenuItem>
         ))}
       </TextField>
+      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" }, gap: 2, mt: 2 }}>
+        <TextField label="Agreed hourly rate" type="number" required fullWidth size="small" value={decidedRate} onChange={(event) => setDecidedRate(event.target.value)} slotProps={{ htmlInput: { min: 1 } }} />
+        <TextField label="Requested hours / week" type="number" required fullWidth size="small" value={requestedHours} onChange={(event) => setRequestedHours(event.target.value)} slotProps={{ htmlInput: { min: 1, max: 168 } }} />
+      </Box>
     </DynamicModal>
   );
 }

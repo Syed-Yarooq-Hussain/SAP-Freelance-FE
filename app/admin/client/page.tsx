@@ -3,11 +3,14 @@
 import { useAdminClients } from "@/actions/admin/useAdminClients";
 import { useUpdateClientStatus } from "@/actions/admin/useUpdateClientStatus";
 import AdminPageShell from "@/components/admin/AdminPageShell";
+import CreateClientDialog from "@/components/admin/CreateClientDialog";
 import Sidebar from "@/components/Sidebar";
 import Consultant from "@/components/specific/Consultant";
 import { getAdminClientColumns } from "@/data/adminClient";
 import { AdminClientRow } from "@/types/admin";
 import { useMemo, useState } from "react";
+import PersonAddAltRoundedIcon from "@mui/icons-material/PersonAddAltRounded";
+import { Button } from "@mui/material";
 
 type TabKey = "active" | "pending" | "locked";
 
@@ -19,6 +22,7 @@ const CLIENT_STATUS_MAP: Record<TabKey, "active" | "rejected" | "locked"> = {
 
 export default function AdminClientPage() {
   const [activeTab, setActiveTab] = useState<TabKey>("active");
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
 
   const apiStatus = CLIENT_STATUS_MAP[activeTab];
   const { data } = useAdminClients(apiStatus);
@@ -29,12 +33,13 @@ export default function AdminClientPage() {
     return data.data.map((item) => ({
       id: item.id,
       avatar: "",
-      name: item.username,
+      name: item.username ?? item.email?.split("@")[0] ?? "Unnamed client",
       email: item.email ?? item.user?.email ?? "N/A",
       phone: item.phone ?? item.user?.phone ?? "N/A",
       activeprojects: item.active_count ?? 0,
       completedprojects: item.completed_count ?? 0,
       draftprojects: item.draft_count ?? 0,
+      profitMarginPercentage: Number(item.profit_margin_percentage ?? 0),
       locked: item.status === "locked",
     }));
   }, [data]);
@@ -56,6 +61,15 @@ export default function AdminClientPage() {
       <AdminPageShell
         title="Clients"
         description="Review client accounts, project activity, and account status."
+        actions={
+          <Button
+            variant="contained"
+            startIcon={<PersonAddAltRoundedIcon />}
+            onClick={() => setCreateDialogOpen(true)}
+          >
+            Create Client
+          </Button>
+        }
       >
         <Consultant
           key={activeTab}
@@ -65,6 +79,11 @@ export default function AdminClientPage() {
           showTabs
           activeTab={activeTab}
           onTabChange={setActiveTab}
+          autoRowHeight
+        />
+        <CreateClientDialog
+          open={createDialogOpen}
+          onClose={() => setCreateDialogOpen(false)}
         />
       </AdminPageShell>
     </Sidebar>

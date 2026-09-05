@@ -32,6 +32,7 @@ export const APP_ROUTES = {
   ADMIN: {
     DASHBOARD: "/admin/dashboard",
     PROJECTS: "/admin/projects",
+    CREATE_PROJECT: "/admin/projects/create",
     INTERVIEWS: "/admin/interviews",
     PAYMENTS: "/admin/payments",
     CONSULTANT_PAYMENTS: "/admin/consultant-payments",

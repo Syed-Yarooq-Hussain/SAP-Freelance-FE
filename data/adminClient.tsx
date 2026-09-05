@@ -1,6 +1,7 @@
 "use client";
 
 import { AdminClientRow } from "@/types/admin";
+import ProfitMarginCell from "@/components/admin/ProfitMarginCell";
 import { colors } from "@/utils/styles/colors";
 import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
@@ -16,6 +17,19 @@ export const getAdminClientColumns = (
   { field: "activeprojects", headerName: "Active Projects", flex: 1 },
   { field: "completedprojects", headerName: "Completed Projects", flex: 1 },
   { field: "draftprojects", headerName: "Draft Projects", flex: 1 },
+  {
+    field: "profitMarginPercentage",
+    headerName: "Profit Margin",
+    minWidth: 250,
+    flex: 1.4,
+    sortable: false,
+    renderCell: (params: GridRenderCellParams<AdminClientRow>) => (
+      <ProfitMarginCell
+        clientId={params.row.id}
+        value={params.row.profitMarginPercentage}
+      />
+    ),
+  },
   {
     field: "action",
     headerName: "Action",

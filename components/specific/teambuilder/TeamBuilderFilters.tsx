@@ -1,6 +1,9 @@
 "use client";
 
-import { useSapOtherModules } from "@/actions/common/useSapModules";
+import {
+  useSapModules,
+  useSapOtherModules,
+} from "@/actions/common/useSapModules";
 import SapModulesDropdown from "@/components/profile/profile-edit/SapModulesDropdown";
 import { countries } from "@/utils/common";
 import {
@@ -12,6 +15,7 @@ import {
 } from "@mui/material";
 import { Check, ChevronDown, Filter, RotateCcw } from "lucide-react";
 import { useMemo, useState } from "react";
+import type { SapModuleGroup } from "@/types/modules";
 
 interface TeamBuilderFiltersProps {
   open: boolean;
@@ -36,24 +40,34 @@ export default function TeamBuilderFilters({
   onApply,
 }: TeamBuilderFiltersProps) {
   const [filters, setFilters] = useState(initialFilters);
-  const [selectedModules, setSelectedModules] = useState<string[]>([]);
-  const [modulesModalOpen, setModulesModalOpen] = useState(false);
+  const [selectedCoreModules, setSelectedCoreModules] = useState<string[]>([]);
+  const [selectedOtherModules, setSelectedOtherModules] = useState<string[]>([]);
+  const [moduleDialog, setModuleDialog] = useState<"core" | "other" | null>(null);
+  const { data: sapModulesData } = useSapModules();
   const { data: sapOtherModulesData } = useSapOtherModules();
-  const moduleDropdownData = sapOtherModulesData?.data || [];
+  const coreModuleDropdownData = useMemo<SapModuleGroup[]>(() => {
+    const coreModules = sapModulesData?.data?.core ?? [];
+    return coreModules.length
+      ? [{ id: "core", name: "Core Modules", modules: coreModules }]
+      : [];
+  }, [sapModulesData]);
+  const otherModuleDropdownData = sapOtherModulesData?.data || [];
 
   const activeFilterCount = useMemo(() => {
     let count = 0;
-    if (selectedModules.length > 0) count += 1;
+    if (selectedCoreModules.length > 0) count += 1;
+    if (selectedOtherModules.length > 0) count += 1;
     if (filters.experienceMin || filters.experienceMax) count += 1;
     if (filters.availabilityMin || filters.availabilityMax) count += 1;
     if (filters.budgetMin || filters.budgetMax) count += 1;
     if (filters.country) count += 1;
     return count;
-  }, [filters, selectedModules]);
+  }, [filters, selectedCoreModules, selectedOtherModules]);
 
   const handleReset = () => {
     setFilters(initialFilters);
-    setSelectedModules([]);
+    setSelectedCoreModules([]);
+    setSelectedOtherModules([]);
   };
 
   const handleApply = () => {
@@ -65,7 +79,8 @@ export default function TeamBuilderFilters({
       budgetMin: filters.budgetMin,
       budgetMax: filters.budgetMax,
       country: filters.country,
-      modules: selectedModules,
+      modules: selectedCoreModules,
+      other_modules: selectedOtherModules,
     });
   };
 
@@ -110,20 +125,41 @@ export default function TeamBuilderFilters({
         </div>
       </div>
 
-      <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
+      <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-6">
         <div className="md:col-span-2 xl:col-span-1">
           <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-slate-800">
             Core Modules
           </label>
           <button
             type="button"
-            onClick={() => setModulesModalOpen(true)}
+            onClick={() => setModuleDialog("core")}
             className="flex w-full items-center justify-between rounded-input border border-slate-200 bg-white px-3 py-2.5 text-left text-sm transition-colors hover:border-brand-blue hover:bg-slate-50"
           >
             <span className="truncate text-slate-500">
-              {selectedModules.length > 0
-                ? `${selectedModules.length} selected`
+              {selectedCoreModules.length > 0
+                ? `${selectedCoreModules.length} selected`
                 : "Select SAP modules..."}
+            </span>
+            <span className="ml-2 flex shrink-0 items-center gap-1 text-sm font-semibold text-brand-blue">
+              Open
+              <ChevronDown className="h-4 w-4" />
+            </span>
+          </button>
+        </div>
+
+        <div className="md:col-span-2 xl:col-span-1">
+          <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-slate-800">
+            Other Modules
+          </label>
+          <button
+            type="button"
+            onClick={() => setModuleDialog("other")}
+            className="flex w-full items-center justify-between rounded-input border border-slate-200 bg-white px-3 py-2.5 text-left text-sm transition-colors hover:border-brand-blue hover:bg-slate-50"
+          >
+            <span className="truncate text-slate-500">
+              {selectedOtherModules.length > 0
+                ? `${selectedOtherModules.length} selected`
+                : "Select other modules..."}
             </span>
             <span className="ml-2 flex shrink-0 items-center gap-1 text-sm font-semibold text-brand-blue">
               Open
@@ -256,8 +292,8 @@ export default function TeamBuilderFilters({
       </div>
 
       <Dialog
-        open={modulesModalOpen}
-        onClose={() => setModulesModalOpen(false)}
+        open={moduleDialog !== null}
+        onClose={() => setModuleDialog(null)}
         fullWidth
         maxWidth="md"
         sx={{
@@ -274,19 +310,31 @@ export default function TeamBuilderFilters({
             pb: 1,
           }}
         >
-          Select Core Modules
+          Select {moduleDialog === "other" ? "Other" : "Core"} Modules
         </DialogTitle>
         <DialogContent sx={{ pt: 1.5 }}>
           <SapModulesDropdown
-            data={moduleDropdownData}
-            values={selectedModules}
-            onChange={setSelectedModules}
+            data={
+              moduleDialog === "other"
+                ? otherModuleDropdownData
+                : coreModuleDropdownData
+            }
+            values={
+              moduleDialog === "other"
+                ? selectedOtherModules
+                : selectedCoreModules
+            }
+            onChange={
+              moduleDialog === "other"
+                ? setSelectedOtherModules
+                : setSelectedCoreModules
+            }
             panelZIndex={1600}
           />
           <Box display="flex" justifyContent="flex-end" mt={2}>
             <Button
               variant="contained"
-              onClick={() => setModulesModalOpen(false)}
+              onClick={() => setModuleDialog(null)}
               sx={{
                 textTransform: "none",
                 borderRadius: "10px",

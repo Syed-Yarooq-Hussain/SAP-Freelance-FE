@@ -31,5 +31,32 @@ export type AdminClientRow = {
   activeprojects: number;
   completedprojects: number;
   draftprojects: number;
+  profitMarginPercentage: number;
   locked?: boolean;
 };
+
+export interface AdminClientDTO {
+  id: number;
+  username?: string;
+  email: string;
+  phone?: string;
+  status: "active" | "rejected" | "locked";
+  profit_margin_percentage?: number;
+  active_count?: number;
+  completed_count?: number;
+  draft_count?: number;
+  user?: {
+    email?: string;
+    phone?: string;
+  };
+}
+
+export interface CreateAdminClientPayload {
+  email: string;
+  password: string;
+}
+
+export interface UpdateClientProfitMarginPayload {
+  clientId: number;
+  profitMarginPercentage: number;
+}

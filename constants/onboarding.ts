@@ -8,7 +8,7 @@ export const NEXT_STEP: Record<OnboardingStep, OnboardingNextStep> = {
   welcome: "dashboard",
   dashboard: "profile",
   profile: "calendar",
-  calendar: "my_profile",
+  calendar: "completed",
   my_profile: "completed",
 };
 
