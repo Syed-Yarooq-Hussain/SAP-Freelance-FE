@@ -448,10 +448,15 @@ export default function DataTable<T extends GridValidRowModel>({
           showCellVerticalBorder={!isTransparent && !isConsultantVariant}
           showColumnVerticalBorder={!isTransparent && !isConsultantVariant}
           initialState={{
-            pagination: { paginationModel: { pageSize } },
+            pagination: {
+              paginationModel: {
+                page: 0,
+                pageSize: hidePagination ? 100 : pageSize,
+              },
+            },
           }}
-          pageSizeOptions={hidePagination ? [] : [pageSize]}
-          {...(hidePagination ? {} : { pagination: true })}
+          pageSizeOptions={hidePagination ? [100] : [pageSize]}
+          {...(!hidePagination ? { pagination: true as const } : {})}
           hideFooter={hidePagination}
           hideFooterPagination={hidePagination}
           hideFooterSelectedRowCount={hidePagination}
