@@ -13,7 +13,9 @@ import type {
 } from "@/types/teamBuilder";
 import {
   appendUniqueRows,
+  CONSULTANT_PAGE_SIZE,
   extractConsultantListAndPagination,
+  hasMoreConsultants,
 } from "@/utils/consultantPagination";
 import colors from "@/utils/styles/colors";
 import { formatHourlyRate } from "@/utils/rates";
@@ -107,6 +109,8 @@ export default function AdminConsultantDirectory() {
   const [rows, setRows] = useState<TeamBuilderRow[]>([]);
   const [activeFilters, setActiveFilters] = useState<Record<string, unknown>>({});
   const [paginationMeta, setPaginationMeta] = useState<ApiPagination | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
   const [scheduleData, setScheduleData] = useState<
     TeamBuilderRow["working_schedule"] | null
@@ -167,7 +171,7 @@ export default function AdminConsultantDirectory() {
       const payload = {
         ...(filters ?? {}),
         page,
-        limit: 20,
+        limit: CONSULTANT_PAGE_SIZE,
       } as Record<string, unknown>;
 
       loadConsultants(payload as any, {
@@ -177,12 +181,14 @@ export default function AdminConsultantDirectory() {
             res.pagination
           );
           const mapped = list.map((item: ClientConsultantDTO, index: number) =>
-            mapConsultantRow(item, (page - 1) * 20 + index)
+            mapConsultantRow(item, (page - 1) * CONSULTANT_PAGE_SIZE + index)
           );
           setRows((current) =>
             page === 1 ? mapped : appendUniqueRows(current, mapped)
           );
           setPaginationMeta(pagination);
+          setCurrentPage(page);
+          setHasMore(hasMoreConsultants(pagination, list.length, page));
           setFilterOpen(false);
         },
         onError: (error) => {
@@ -202,9 +208,10 @@ export default function AdminConsultantDirectory() {
   }, [fetchConsultants]);
 
   const loadMore = useCallback(() => {
-    if (isPending || !paginationMeta?.has_next_page) return;
-    fetchConsultants(activeFilters, paginationMeta.next_page ?? paginationMeta.current_page + 1);
-  }, [activeFilters, fetchConsultants, isPending, paginationMeta]);
+    if (isPending || !hasMore) return;
+    const nextPage = paginationMeta?.next_page ?? currentPage + 1;
+    fetchConsultants(activeFilters, nextPage);
+  }, [activeFilters, currentPage, fetchConsultants, hasMore, isPending, paginationMeta]);
 
   const columns = useMemo(
     () => {

@@ -71,3 +71,27 @@ export const appendUniqueRows = <T extends { id: string | number }>(
   incoming.forEach((row) => byId.set(String(row.id), row));
   return Array.from(byId.values());
 };
+
+export const CONSULTANT_PAGE_SIZE = 20;
+
+export const hasMoreConsultants = (
+  pagination: ApiPagination | null,
+  receivedCount: number,
+  page: number,
+) => {
+  if (pagination) {
+    if (typeof pagination.has_next_page === "boolean") {
+      return pagination.has_next_page;
+    }
+
+    if (Number.isFinite(pagination.total_pages)) {
+      return page < pagination.total_pages;
+    }
+
+    if (Number.isFinite(pagination.total)) {
+      return page * CONSULTANT_PAGE_SIZE < pagination.total;
+    }
+  }
+
+  return receivedCount === CONSULTANT_PAGE_SIZE;
+};

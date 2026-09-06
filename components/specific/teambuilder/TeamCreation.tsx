@@ -27,7 +27,9 @@ import type {
 } from "@/types/teamBuilder";
 import {
   appendUniqueRows,
+  CONSULTANT_PAGE_SIZE,
   extractConsultantListAndPagination,
+  hasMoreConsultants,
 } from "@/utils/consultantPagination";
 import colors from "@/utils/styles/colors";
 import {
@@ -63,6 +65,8 @@ export default function TeamCreation({
   const [filterOpen, setFilterOpen] = useState(false);
   const [activeFilters, setActiveFilters] = useState<Record<string, unknown>>({});
   const [paginationMeta, setPaginationMeta] = useState<ApiPagination | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [profileConsultant, setProfileConsultant] = useState<TeamBuilderRow | null>(
@@ -151,19 +155,25 @@ export default function TeamCreation({
     filters: Record<string, unknown> = {},
     page = 1
   ) => {
-    loadConsultants(buildConsultantQuery({ ...filters, page, limit: 20 }, clientId), {
+    loadConsultants(buildConsultantQuery({
+      ...filters,
+      page,
+      limit: CONSULTANT_PAGE_SIZE,
+    }, clientId), {
       onSuccess: (res) => {
         const { list, pagination } = extractConsultantListAndPagination(
           res.data,
           res.pagination
         );
         const mapped = list.map((item, index) =>
-          mapConsultantRow(item, (page - 1) * 20 + index)
+          mapConsultantRow(item, (page - 1) * CONSULTANT_PAGE_SIZE + index)
         );
         setRows((current) =>
           page === 1 ? mapped : appendUniqueRows(current, mapped)
         );
         setPaginationMeta(pagination);
+        setCurrentPage(page);
+        setHasMore(hasMoreConsultants(pagination, list.length, page));
         setFilterOpen(false);
       },
       onError: (error) => {
@@ -181,12 +191,9 @@ export default function TeamCreation({
   }, [fetchConsultants, hydrationReady]);
 
   const loadMore = useCallback(() => {
-    if (isPending || !paginationMeta?.has_next_page) return;
-    fetchConsultants(
-      activeFilters,
-      paginationMeta.next_page ?? paginationMeta.current_page + 1
-    );
-  }, [activeFilters, fetchConsultants, isPending, paginationMeta]);
+    if (isPending || !hasMore) return;
+    fetchConsultants(activeFilters, paginationMeta?.next_page ?? currentPage + 1);
+  }, [activeFilters, currentPage, fetchConsultants, hasMore, isPending, paginationMeta]);
 
   useEffect(() => {
     if (!projectId) {
@@ -347,6 +354,8 @@ export default function TeamCreation({
   const handleFilter = (filters: Record<string, unknown>) => {
     setActiveFilters(filters);
     setPaginationMeta(null);
+    setCurrentPage(1);
+    setHasMore(true);
     fetchConsultants(filters, 1);
   };
 
