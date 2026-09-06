@@ -8,7 +8,6 @@ import { patchFeatureTourService } from "@/services/onboarding";
 import { CVUploadModal } from "@/components/profile/cv-upload-modal";
 import ProfileEditPage from "@/components/profile/profile-edit";
 import { ProfileLayout } from "@/components/profile-new/profile-layout";
-import Sidebar from "@/components/Sidebar";
 import { useOnboarding } from "@/providers/OnboardingProvider";
 import { updateConsultantProfile } from "@/services/consultants";
 import { getConsultantMeService } from "@/services/getConsultantProfile";

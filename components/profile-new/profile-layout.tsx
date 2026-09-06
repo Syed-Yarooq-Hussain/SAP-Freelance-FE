@@ -146,8 +146,8 @@ export function ProfileLayout({
               </button>
             </div>
           </div>
-          <div className="flex md:flex-row flex-col">
-            <div className="flex flex-col bg-background-main md:bg-transparent rounded-xl md:p-4 p-0 md:flex-row gap-8">
+          <div className="flex w-full min-w-0 md:flex-row flex-col">
+            <div className="flex w-full min-w-0 flex-col bg-background-main md:bg-transparent rounded-xl md:p-4 p-0 md:flex-row gap-8">
               <div className="flex-shrink-0 ">
                 <div className="md:block hidden">
                   <ProfileImage
@@ -239,6 +239,7 @@ export function ProfileLayout({
               </div>
             </div>
             <div
+              className="w-full min-w-0 flex-1"
               data-tour={
                 tourVariant === "my_profile" ? "my-profile-header" : undefined
               }
@@ -251,7 +252,7 @@ export function ProfileLayout({
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 rounded-2xl">
           {/* Left Sidebar */}
-          <div className="lg:col-span-1">
+          <div className="w-full min-w-0 lg:col-span-1">
             {otherModules.length > 0 && <OtherModulesSection />}
             <div
               data-tour={
@@ -278,7 +279,7 @@ export function ProfileLayout({
 
           {/* Main Content */}
           <div
-            className="lg:col-span-2 md:bg-transparent bg-background-main"
+            className="w-full min-w-0 lg:col-span-2 md:bg-transparent bg-background-main"
             data-tour="profile-professional-info"
           >
             <ProfessionalInfo />

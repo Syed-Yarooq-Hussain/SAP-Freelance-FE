@@ -105,7 +105,7 @@ export function ProfileHeader({
       ?.map((module: any) => module?.module?.name) || [];
 
   return (
-    <div className="flex-1 flex flex-col gap-3 md:mt-0 mt-4">
+    <div className="flex w-full min-w-0 flex-1 flex-col gap-3 md:mt-0 mt-4">
       <div className="md:block hidden">
         <UserInfo
           user={user?.user}
@@ -143,7 +143,7 @@ export function ProfileHeader({
           </div>
         </div>
       ) : (
-        <div className="bg-inactive border border-dashed mb-4 border-slate-200 rounded-xl px-4 py-3 flex items-center gap-2">
+        <div className="flex w-full min-w-0 items-center gap-2 rounded-xl border border-dashed border-slate-200 bg-inactive px-4 py-3 mb-4">
           <div className="flex items-center gap-2 bg-disabled rounded-xl p-2">
             <Laptop className="w-6 h-6" />
           </div>
@@ -203,7 +203,7 @@ export function ProfileHeader({
             )}
           </div>
         ) : (
-          <div className="bg-inactive border border-dashed mb-4 border-slate-200 rounded-xl px-4 py-3 flex flex-col text-center justify-center items-center gap-2">
+          <div className="flex w-full min-w-0 flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-slate-200 bg-inactive px-4 py-3 text-center mb-4">
             <div className="flex items-center gap-2 bg-disabled rounded-xl p-2">
               <FileText className="w-6 h-6" />
             </div>

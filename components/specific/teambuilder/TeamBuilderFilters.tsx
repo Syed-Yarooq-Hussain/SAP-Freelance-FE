@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  useSapModules,
-  useSapOtherModules,
-} from "@/actions/common/useSapModules";
+import { useSapOtherModules } from "@/actions/common/useSapModules";
 import SapModulesDropdown from "@/components/profile/profile-edit/SapModulesDropdown";
 import { countries } from "@/utils/common";
 import {
@@ -15,7 +12,6 @@ import {
 } from "@mui/material";
 import { Check, ChevronDown, Filter, RotateCcw } from "lucide-react";
 import { useMemo, useState } from "react";
-import type { SapModuleGroup } from "@/types/modules";
 
 interface TeamBuilderFiltersProps {
   open: boolean;
@@ -43,15 +39,8 @@ export default function TeamBuilderFilters({
   const [selectedCoreModules, setSelectedCoreModules] = useState<string[]>([]);
   const [selectedOtherModules, setSelectedOtherModules] = useState<string[]>([]);
   const [moduleDialog, setModuleDialog] = useState<"core" | "other" | null>(null);
-  const { data: sapModulesData } = useSapModules();
   const { data: sapOtherModulesData } = useSapOtherModules();
-  const coreModuleDropdownData = useMemo<SapModuleGroup[]>(() => {
-    const coreModules = sapModulesData?.data?.core ?? [];
-    return coreModules.length
-      ? [{ id: "core", name: "Core Modules", modules: coreModules }]
-      : [];
-  }, [sapModulesData]);
-  const otherModuleDropdownData = sapOtherModulesData?.data || [];
+  const moduleDropdownData = sapOtherModulesData?.data || [];
 
   const activeFilterCount = useMemo(() => {
     let count = 0;
@@ -314,11 +303,7 @@ export default function TeamBuilderFilters({
         </DialogTitle>
         <DialogContent sx={{ pt: 1.5 }}>
           <SapModulesDropdown
-            data={
-              moduleDialog === "other"
-                ? otherModuleDropdownData
-                : coreModuleDropdownData
-            }
+            data={moduleDropdownData}
             values={
               moduleDialog === "other"
                 ? selectedOtherModules

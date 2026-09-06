@@ -162,7 +162,7 @@ export function ProfessionalInfo() {
     await updateProfile({ projects: updated })
   }
   return (
-    <div className="border border-slate-200 rounded-xl p-6 mb-6">
+    <div className="w-full min-w-0 border border-slate-200 rounded-xl p-6 mb-6">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2 font-syne">
           <span className="bg-[#EAF1FB] p-2 rounded-xl flex items-center justify-center text-sm">
