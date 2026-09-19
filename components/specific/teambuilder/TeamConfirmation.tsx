@@ -516,7 +516,7 @@ export default function TeamConfirmation({
         />
       </Box>
 
-      <RoleHierarchy />
+      <RoleHierarchy projectId={projectId} />
 
       <Box
         sx={{

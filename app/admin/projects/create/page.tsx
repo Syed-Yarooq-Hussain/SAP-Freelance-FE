@@ -16,11 +16,11 @@ import BusinessRoundedIcon from "@mui/icons-material/BusinessRounded";
 import CreditCardRoundedIcon from "@mui/icons-material/CreditCardRounded";
 import Groups2RoundedIcon from "@mui/icons-material/Groups2Rounded";
 import HowToRegRoundedIcon from "@mui/icons-material/HowToRegRounded";
-import LockRoundedIcon from "@mui/icons-material/LockRounded";
+import { updateProjectService } from "@/services/addProjectDetails";
+import { getProjectService } from "@/services/getProject";
 import {
   Box,
   Button,
-  Chip,
   CircularProgress,
   Paper,
   Stack,
@@ -125,6 +125,8 @@ function AdminProjectBuilderContent() {
   const [selectedConsultantIds, setSelectedConsultantIds] = useState<string[]>(
     []
   );
+  const [isChangingClient, setIsChangingClient] = useState(false);
+  const changingClientRef = useRef(false);
   const lastSavedStepRef = useRef<number | null>(null);
   const { data, isLoading, error } = useAdminClients("active");
 
@@ -168,20 +170,39 @@ function AdminProjectBuilderContent() {
     }
   }, [activeStep, projectId, router, searchParams, selectedClientId]);
 
-  const selectClient = (client: AdminProjectClient) => {
-    if (projectId || client.id === selectedClientId) return;
-    setSelectedClientId(client.id);
-    setTeamRows([]);
-    setSelectedConsultantIds([]);
+  const selectClient = async (client: AdminProjectClient) => {
+    if (changingClientRef.current || client.id === selectedClientId) return;
+    changingClientRef.current = true;
+    setIsChangingClient(true);
+    try {
+      if (projectId) {
+        await updateProjectService(projectId, { client_id: client.id });
+        const saved = await getProjectService(projectId);
+        if (String(saved.data?.client_id) !== client.id) {
+          throw new Error("Client change was not saved by the backend. Please update the project API.");
+        }
+      }
+      setSelectedClientId(client.id);
+      if (!projectId) {
+        setTeamRows([]);
+        setSelectedConsultantIds([]);
+      }
+      if (projectId) toast("Project client updated.", "success");
+    } catch (error) {
+      toast(error instanceof Error ? error.message : "Could not update client.", "error");
+    } finally {
+      changingClientRef.current = false;
+      setIsChangingClient(false);
+    }
   };
 
   const returnToClientSelection = () => {
-    if (projectId) return;
     setActiveStep(1);
   };
 
   const canAccessStep = (step: number) => {
-    if (step === 1) return !projectId;
+    if (isChangingClient) return false;
+    if (step === 1) return true;
     if (!selectedClientId) return false;
     if (step === 2) return true;
     if (!projectId) return false;
@@ -189,11 +210,7 @@ function AdminProjectBuilderContent() {
   };
 
   const goToStep = (step: number) => {
-    if (step === activeStep) return;
-    if (step === 1 && projectId) {
-      toast("Client is locked after the project is created.", "info");
-      return;
-    }
+    if (changingClientRef.current || step === activeStep) return;
     if (!selectedClientId && step > 1) {
       toast("Select a client first.", "info");
       return;
@@ -212,9 +229,10 @@ function AdminProjectBuilderContent() {
           clients={clients}
           selectedClientId={selectedClientId}
           isLoading={isLoading}
+          isSaving={isChangingClient}
           error={error?.message ?? null}
           onSelect={selectClient}
-          onContinue={() => selectedClientId && setActiveStep(2)}
+          onContinue={() => !changingClientRef.current && selectedClientId && setActiveStep(2)}
         />
       );
     }
@@ -278,6 +296,7 @@ function AdminProjectBuilderContent() {
     clients,
     error,
     isLoading,
+    isChangingClient,
     projectId,
     selectedClient,
     selectedClientId,
@@ -354,18 +373,7 @@ function AdminProjectBuilderContent() {
               </Box>
             </Stack>
 
-            {projectId ? (
-              <Chip
-                size="small"
-                icon={<LockRoundedIcon />}
-                label={`Client locked · Project ${projectId}`}
-                sx={{ bgcolor: "#DBEAFE", color: "#1E40AF" }}
-              />
-            ) : (
-              <Button size="small" onClick={returnToClientSelection}>
-                Change client
-              </Button>
-            )}
+            <Button size="small" onClick={returnToClientSelection}>Change client</Button>
           </Paper>
         ) : null}
 

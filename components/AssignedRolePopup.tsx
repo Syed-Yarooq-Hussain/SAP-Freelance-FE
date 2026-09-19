@@ -19,9 +19,20 @@ import {
   Typography,
 } from "@mui/material";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { useSession } from "next-auth/react";
+import { crewDraftKey, readCrewDraft } from "@/utils/crewBuilder";
+import {
+  getProjectTeamBuilder,
+  isTeamBuilderApiEnabled,
+} from "@/services/projectTeamBuilder";
 import AppButton from "./Button";
 
-const DOCUMENT_TYPES = ["NDA", "Service", "Property ownership", "Project contract"];
+const DOCUMENT_TYPES = [
+  "NDA",
+  "Service",
+  "Property ownership",
+  "Project contract",
+];
 
 type ContractDocument = {
   id: string;
@@ -37,7 +48,12 @@ type AssignedRolePopupProps = {
   row: CandidateRow | null;
   projectId: string | number;
   onUpdated: () => void;
-  onAssign: (role: string, contracts: string[], decidedRate: number, requestedHours: number) => void;
+  onAssign: (
+    role: string,
+    contracts: string[],
+    decidedRate: number,
+    requestedHours: number,
+  ) => void;
 };
 
 export function AssignedRolePopup({
@@ -47,11 +63,13 @@ export function AssignedRolePopup({
   projectId,
   onAssign,
 }: AssignedRolePopupProps) {
+  const { data: session } = useSession();
   const [selectedDocuments, setSelectedDocuments] = useState<
     ContractDocument[]
   >([]);
   const [selectedDocumentType, setSelectedDocumentType] = useState("");
   const [selectedRole, setRole] = useState("");
+  const roleEdited = useRef(false);
   const [decidedRate, setDecidedRate] = useState("");
   const [requestedHours, setRequestedHours] = useState("");
   const uploadInputRef = useRef<HTMLInputElement | null>(null);
@@ -61,15 +79,52 @@ export function AssignedRolePopup({
   const assignedContractTypes = selectedDocuments.map((doc) => doc.type);
 
   useEffect(() => {
+    let cancelled = false;
     if (open) {
+      roleEdited.current = false;
       consultantLevels.mutate();
-      setRole("");
+      const serverEnabled = isTeamBuilderApiEnabled();
+      const draft =
+        !serverEnabled && session?.user?.id
+          ? readCrewDraft(crewDraftKey(String(session.user.id), projectId))
+          : null;
+      const proposedRole = draft?.roles.find((role) =>
+        role.personIds.includes(String(row?.id)),
+      )?.title;
+      setRole(row?.role || proposedRole || "");
+      if (serverEnabled && !row?.role) {
+        getProjectTeamBuilder(projectId)
+          .then((state) => {
+            if (!cancelled && !roleEdited.current)
+              setRole(
+                state.roles.find((role) =>
+                  role.personIds.includes(String(row?.id)),
+                )?.title ?? "",
+              );
+          })
+          .catch(() => {
+            if (!cancelled)
+              toast(
+                "Could not load the proposed role. Please select a role below.",
+                "error",
+              );
+          });
+      }
       setSelectedDocuments([]);
       setSelectedDocumentType("");
-      setDecidedRate(row?.decided_rate ? String(row.decided_rate) : String(Number(row?.hourlyRate?.replace(/[^0-9.]/g, "")) || ""));
-      setRequestedHours(row?.requested_hours ? String(row.requested_hours) : "");
+      setDecidedRate(
+        row?.decided_rate
+          ? String(row.decided_rate)
+          : String(Number(row?.hourlyRate?.replace(/[^0-9.]/g, "")) || ""),
+      );
+      setRequestedHours(
+        row?.requested_hours ? String(row.requested_hours) : "",
+      );
     }
-  }, [open]);
+    return () => {
+      cancelled = true;
+    };
+  }, [open, row?.id, projectId, session?.user?.id]);
 
   const resetDocumentPicker = () => {
     setSelectedDocumentType("");
@@ -90,27 +145,30 @@ export function AssignedRolePopup({
 
     const documentType = selectedDocumentType;
 
-    uploadProjectDocument.mutate({
-      file,
-      projectId,
-      userId: row.id,
-      type: documentType,
-    }, {
-      onSuccess: (res) => {
-        addDocument({
-          id: `${documentType}-${file.name}-${Date.now()}`,
-          type: documentType,
-          name: file.name,
-          documentId: res.data?.id ?? res.data?.doc_id,
-          url: res.data?.url,
-        });
-        toast("Document uploaded successfully", "success");
+    uploadProjectDocument.mutate(
+      {
+        file,
+        projectId,
+        userId: row.id,
+        type: documentType,
       },
-      onError: (error) => {
-        if (uploadInputRef.current) uploadInputRef.current.value = "";
-        toast(error.message || "Failed to upload document", "error");
+      {
+        onSuccess: (res) => {
+          addDocument({
+            id: `${documentType}-${file.name}-${Date.now()}`,
+            type: documentType,
+            name: file.name,
+            documentId: res.data?.id ?? res.data?.doc_id,
+            url: res.data?.url,
+          });
+          toast("Document uploaded successfully", "success");
+        },
+        onError: (error) => {
+          if (uploadInputRef.current) uploadInputRef.current.value = "";
+          toast(error.message || "Failed to upload document", "error");
+        },
       },
-    });
+    );
   };
 
   return (
@@ -123,7 +181,14 @@ export function AssignedRolePopup({
         <>
           <AppButton
             label="Assign"
-            onClick={() => onAssign(selectedRole, assignedContractTypes, Number(decidedRate), Number(requestedHours))}
+            onClick={() =>
+              onAssign(
+                selectedRole,
+                assignedContractTypes,
+                Number(decidedRate),
+                Number(requestedHours),
+              )
+            }
             disabled={
               !selectedRole ||
               Number(decidedRate) <= 0 ||
@@ -280,7 +345,7 @@ export function AssignedRolePopup({
                     size="small"
                     onClick={() =>
                       setSelectedDocuments((prev) =>
-                        prev.filter((item) => item.id !== document.id)
+                        prev.filter((item) => item.id !== document.id),
                       )
                     }
                   >
@@ -293,14 +358,17 @@ export function AssignedRolePopup({
         )}
       </Box>
       <Typography sx={{ fontWeight: 700, fontSize: "1rem", mb: 1 }}>
-        Role 
+        Role
       </Typography>
       <TextField
         select
         fullWidth
         size="small"
         value={selectedRole}
-        onChange={(e) => setRole(e.target.value)}
+        onChange={(e) => {
+          roleEdited.current = true;
+          setRole(e.target.value);
+        }}
         slotProps={{
           select: {
             displayEmpty: true,
@@ -331,9 +399,34 @@ export function AssignedRolePopup({
           </MenuItem>
         ))}
       </TextField>
-      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" }, gap: 2, mt: 2 }}>
-        <TextField label="Agreed hourly rate" type="number" required fullWidth size="small" value={decidedRate} onChange={(event) => setDecidedRate(event.target.value)} slotProps={{ htmlInput: { min: 1 } }} />
-        <TextField label="Requested hours / week" type="number" required fullWidth size="small" value={requestedHours} onChange={(event) => setRequestedHours(event.target.value)} slotProps={{ htmlInput: { min: 1, max: 168 } }} />
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
+          gap: 2,
+          mt: 2,
+        }}
+      >
+        <TextField
+          label="Agreed hourly rate"
+          type="number"
+          required
+          fullWidth
+          size="small"
+          value={decidedRate}
+          onChange={(event) => setDecidedRate(event.target.value)}
+          slotProps={{ htmlInput: { min: 1 } }}
+        />
+        <TextField
+          label="Requested hours / week"
+          type="number"
+          required
+          fullWidth
+          size="small"
+          value={requestedHours}
+          onChange={(event) => setRequestedHours(event.target.value)}
+          slotProps={{ htmlInput: { min: 1, max: 168 } }}
+        />
       </Box>
     </DynamicModal>
   );

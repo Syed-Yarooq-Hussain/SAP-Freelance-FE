@@ -33,6 +33,7 @@ type AdminClientSelectionProps = {
   clients: AdminProjectClient[];
   selectedClientId: string | null;
   isLoading?: boolean;
+  isSaving?: boolean;
   error?: string | null;
   onSelect: (client: AdminProjectClient) => void;
   onContinue: () => void;
@@ -50,6 +51,7 @@ export default function AdminClientSelection({
   clients,
   selectedClientId,
   isLoading = false,
+  isSaving = false,
   error,
   onSelect,
   onContinue,
@@ -187,6 +189,7 @@ export default function AdminClientSelection({
                   type="button"
                   key={client.id}
                   aria-pressed={selected}
+                  disabled={isSaving}
                   onClick={() => onSelect(client)}
                   sx={{
                     appearance: "none",
@@ -341,11 +344,11 @@ export default function AdminClientSelection({
         <Button
           variant="contained"
           endIcon={<ArrowForwardRoundedIcon />}
-          disabled={!selectedClientId}
+          disabled={!selectedClientId || isSaving}
           onClick={onContinue}
           sx={{ minWidth: 190, bgcolor: "#005C8A" }}
         >
-          Continue to shortlist
+          {isSaving ? "Saving client..." : "Continue to shortlist"}
         </Button>
       </Box>
     </Paper>

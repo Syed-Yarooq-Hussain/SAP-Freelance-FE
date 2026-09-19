@@ -12,11 +12,11 @@ import { useUpdateTask } from "@/actions/projects/useUpdateTask";
 import AppButton from "@/components/Button";
 import { CreateForm } from "@/components/CreateForm";
 import MilestoneExpandableTable from "@/components/MilestoneExpandableTable";
-import DynamicPopup from "@/components/Popup";
+import MilestoneTeamPlanner from "./MilestoneTeamPlanner";
+import dynamic from "next/dynamic";
 import { CONSULTANT_STATUS } from "@/constants/status";
 import { getMilestoneFormFields } from "@/forms/milestoneForm";
 import { getProjectFormFields } from "@/forms/projectForm";
-import { getScopeFormFields } from "@/forms/scopeForm";
 import { getTaskFormFields } from "@/forms/taskForm";
 import { useToast } from "@/providers/ToastProvider";
 import { IFieldConfig } from "@/types/create-form";
@@ -32,18 +32,15 @@ import {
   TasksByMilestone,
   TeamProjectsProps,
 } from "@/types/teamBuilder";
-import { mapInterviewFieldsToPopup } from "@/utils/mapFormToPopup";
 import { useProjectProgress } from "@/utils/useProjectProgress";
-import BlockIcon from "@mui/icons-material/Block";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import CodeIcon from "@mui/icons-material/Code";
-import DescriptionIcon from "@mui/icons-material/Description";
 import FlagIcon from "@mui/icons-material/Flag";
 import { Box, Chip, Paper, Stack, Typography } from "@mui/material";
 import { useSession } from "next-auth/react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 const STATIC_TASK_DATE = "2025-10-16";
+const ScopeStudio = dynamic(() => import("./ScopeStudio"), { ssr: false });
 
 export default function TeamProjects({
   onBack,
@@ -74,21 +71,16 @@ export default function TeamProjects({
   const { markStepCompleted, isStepCompleted } = useProjectProgress();
   const [step3Completed, setStep3Completed] = useState(false);
   const [expandedMilestoneId, setExpandedMilestoneId] = useState<number | null>(
-    null
+    null,
   );
 
   const updateMilestone = useUpdateMilestone();
 
   const [editingMilestone, setEditingMilestone] = useState<MilestoneRow | null>(
-    null
+    null,
   );
-  const [popupKind, setPopupKind] = useState<
-    "functional" | "technical" | "out" | null
-  >(null);
-  const [scopeData, setScopeData] = useState<Record<string, string>>({
-    scopeText: "",
-  });
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [scopePending, setScopePending] = useState(false);
+  const [milestoneTeamPending, setMilestoneTeamPending] = useState(false);
 
   const loadAssignees = useCallback(() => {
     if (!projectId) return;
@@ -111,7 +103,7 @@ export default function TeamProjects({
           const assignees = list.filter(
             (item) =>
               item.status === CONSULTANT_STATUS.OFFERED ||
-              item.status === CONSULTANT_STATUS.HIRED
+              item.status === CONSULTANT_STATUS.HIRED,
           );
 
           const options: IOption[] = assignees.map((item) => ({
@@ -121,7 +113,7 @@ export default function TeamProjects({
 
           setAssigneeOptions(options);
         },
-      }
+      },
     );
   }, [projectId, getProjectConsultants]);
 
@@ -162,7 +154,7 @@ export default function TeamProjects({
           setMilestoneFormKey((k) => k + 1);
         },
         onError: (err) => toast(err.message, "error"),
-      }
+      },
     );
   };
 
@@ -204,7 +196,7 @@ export default function TeamProjects({
                     assignees: String(updated.assignee_id ?? ""),
                     date: STATIC_TASK_DATE,
                   }
-                : t
+                : t,
             ),
           }));
 
@@ -214,7 +206,7 @@ export default function TeamProjects({
           setTaskFormKey((k) => k + 1);
         },
         onError: (err) => toast(err.message, "error"),
-      }
+      },
     );
   };
 
@@ -238,18 +230,6 @@ export default function TeamProjects({
     description: m.description ?? "",
     tasks: m.tasks?.length ?? 0,
   });
-
-  const handleScopeFieldChange = (field: string, value: string) => {
-    setScopeData((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const scopePopupFields = useMemo(() => {
-    return mapInterviewFieldsToPopup(
-      getScopeFormFields(),
-      scopeData,
-      handleScopeFieldChange
-    );
-  }, [scopeData]);
 
   const handleSubmit = useCallback(
     (data: TeamProjectFormData) => {
@@ -287,10 +267,18 @@ export default function TeamProjects({
             });
           },
           onError: (err) => toast(err.message, "error"),
-        }
+        },
       );
     },
-    [updateProject, toast, session, getProject, projectId, clientId, clientName]
+    [
+      updateProject,
+      toast,
+      session,
+      getProject,
+      projectId,
+      clientId,
+      clientName,
+    ],
   );
 
   useEffect(() => {
@@ -328,7 +316,7 @@ export default function TeamProjects({
         },
       });
     },
-    [getMilestoneTasks, toast, setDynamicTasks]
+    [getMilestoneTasks, toast, setDynamicTasks],
   );
 
   const handleExpandMilestone = (id: number | null) => {
@@ -384,7 +372,7 @@ export default function TeamProjects({
         onError: (err: Error) => {
           toast(err.message, "error");
         },
-      }
+      },
     );
   };
 
@@ -446,8 +434,8 @@ export default function TeamProjects({
 
               setRows((prev) =>
                 prev.map((m) =>
-                  m.id === milestoneId ? { ...m, tasks: mapped.length } : m
-                )
+                  m.id === milestoneId ? { ...m, tasks: mapped.length } : m,
+                ),
               );
 
               setTaskFormKey((k) => k + 1);
@@ -455,47 +443,9 @@ export default function TeamProjects({
           });
         },
         onError: (err) => toast(err.message, "error"),
-      }
+      },
     );
   };
-
-  const openPopup = (kind: "functional" | "technical" | "out") => {
-    setPopupKind(kind);
-    setScopeData({ scopeText: "" });
-    setUploadedFile(null);
-  };
-
-  const closePopup = () => {
-    setPopupKind(null);
-    setScopeData({ scopeText: "" });
-    setUploadedFile(null);
-  };
-
-  const saveScope = () => {
-    console.log(`Saved ${popupKind} scope:`, {
-      description: scopeData.scopeText.trim(),
-      file: uploadedFile,
-    });
-    closePopup();
-  };
-
-  const popupTitle =
-    popupKind === "functional"
-      ? ""
-      : popupKind === "technical"
-      ? ""
-      : popupKind === "out"
-      ? ""
-      : "";
-
-  const popupDescription =
-    popupKind === "functional"
-      ? "Upload Functional Scope Documents OR write by yourself."
-      : popupKind === "technical"
-      ? "Upload Technical Scope Documents OR write by yourself."
-      : popupKind === "out"
-      ? "Upload Out-of-Scope Documents OR write by yourself."
-      : undefined;
 
   const milestoneFormElements = useMemo(
     () =>
@@ -517,7 +467,7 @@ export default function TeamProjects({
         }
         return f;
       }),
-    [editingMilestone]
+    [editingMilestone],
   );
 
   const taskFormElements = useMemo(() => {
@@ -546,7 +496,7 @@ export default function TeamProjects({
         }
 
         return [el];
-      }
+      },
     );
   }, [expandedMilestoneId, rows, assigneeOptions]);
 
@@ -609,7 +559,7 @@ export default function TeamProjects({
         Boolean(m.name?.trim()) &&
         Boolean(m.start_date) &&
         Boolean(m.due_date) &&
-        Boolean(m.description?.trim())
+        Boolean(m.description?.trim()),
     );
   }, [rows]);
 
@@ -630,30 +580,6 @@ export default function TeamProjects({
   useEffect(() => {
     onMilestoneRequirementChange?.(canProceed);
   }, [canProceed, onMilestoneRequirementChange]);
-
-  const scopeCards = [
-    {
-      kind: "functional" as const,
-      title: "Functional Scope",
-      description: "Capture business requirements, process flows, and expected outcomes.",
-      icon: <DescriptionIcon fontSize="small" />,
-      buttonLabel: "Add Functional Scope",
-    },
-    {
-      kind: "technical" as const,
-      title: "Technical Scope",
-      description: "Add systems, integrations, data needs, and technical constraints.",
-      icon: <CodeIcon fontSize="small" />,
-      buttonLabel: "Add Technical Scope",
-    },
-    {
-      kind: "out" as const,
-      title: "Out of Scope",
-      description: "Define exclusions early so delivery expectations stay clear.",
-      icon: <BlockIcon fontSize="small" />,
-      buttonLabel: "Add Out of Scope",
-    },
-  ];
 
   const loadAllMilestones = useCallback(() => {
     if (!projectId) return;
@@ -753,99 +679,7 @@ export default function TeamProjects({
         )}
       </Paper>
 
-      <Paper
-        elevation={0}
-        sx={{
-          p: { xs: 2, md: 2.5 },
-          border: "1px solid",
-          borderColor: "divider",
-          borderRadius: 1,
-          bgcolor: "background.paper",
-        }}
-      >
-        <Stack
-          direction={{ xs: "column", md: "row" }}
-          justifyContent="space-between"
-          alignItems={{ xs: "flex-start", md: "center" }}
-          spacing={1}
-          sx={{ mb: 2 }}
-        >
-          <Box>
-            <Typography variant="h6" sx={{ fontWeight: 700 }}>
-              Project Scope
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Add scope notes or upload documents for each area.
-            </Typography>
-          </Box>
-
-          <Chip size="small" label="Optional but recommended" variant="outlined" />
-        </Stack>
-
-        <Box
-          sx={{
-            display: "grid",
-            gap: 2,
-            gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" },
-          }}
-        >
-          {scopeCards.map((scope) => (
-            <Paper
-              key={scope.kind}
-              elevation={0}
-              sx={{
-                p: 2,
-                minHeight: 180,
-                border: "1px solid",
-                borderColor: "divider",
-                borderRadius: 1,
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-                gap: 2,
-                transition: "border-color 0.2s, box-shadow 0.2s",
-                "&:hover": {
-                  borderColor: "primary.main",
-                  boxShadow: "0 8px 24px rgba(70, 128, 255, 0.12)",
-                },
-              }}
-            >
-              <Box>
-                <Stack direction="row" spacing={1.25} alignItems="center" mb={1}>
-                  <Box
-                    sx={{
-                      width: 34,
-                      height: 34,
-                      borderRadius: 1,
-                      display: "grid",
-                      placeItems: "center",
-                      color: "primary.main",
-                      bgcolor: "primary.main",
-                      backgroundColor: "rgba(70, 128, 255, 0.1)",
-                    }}
-                  >
-                    {scope.icon}
-                  </Box>
-                  <Typography variant="subtitle1" fontWeight={700}>
-                    {scope.title}
-                  </Typography>
-                </Stack>
-
-                <Typography variant="body2" color="text.secondary">
-                  {scope.description}
-                </Typography>
-              </Box>
-
-              <AppButton
-                label={scope.buttonLabel}
-                colorKey="BLUE"
-                onClick={() => openPopup(scope.kind)}
-                sx={{ width: "100%" }}
-              />
-            </Paper>
-          ))}
-        </Box>
-      </Paper>
+      <ScopeStudio projectId={projectId} onPendingChange={setScopePending} />
 
       <Paper
         elevation={0}
@@ -909,12 +743,21 @@ export default function TeamProjects({
               actionsContainerProps={{
                 sx: { mt: 2, justifyContent: "flex-start" },
               }}
-              submitButton={{ children: editingTask ? "Update Task" : "Add Task" }}
+              submitButton={{
+                children: editingTask ? "Update Task" : "Add Task",
+              }}
             />
           }
         />
 
-        <Box sx={{ mt: 2.5, pt: 2.5, borderTop: "1px solid", borderColor: "divider" }}>
+        <Box
+          sx={{
+            mt: 2.5,
+            pt: 2.5,
+            borderTop: "1px solid",
+            borderColor: "divider",
+          }}
+        >
           <Typography variant="subtitle1" fontWeight={700}>
             {editingMilestone ? "Edit Milestone" : "Add Milestone"}
           </Typography>
@@ -922,20 +765,28 @@ export default function TeamProjects({
             Add delivery checkpoints with dates and a clear description.
           </Typography>
 
-        <CreateForm
-          key={milestoneFormKey}
-          elements={milestoneFormElements}
-          onSuccess={
-            editingMilestone ? handleUpdateMilestone : handleAddMilestone
-          }
-          actionsContainerProps={{
-            sx: { mt: 2, justifyContent: "flex-start" },
-          }}
-          submitButton={{
-            children: editingMilestone ? "Update Milestone" : "Add Milestone",
-          }}
-        />
+          <CreateForm
+            key={milestoneFormKey}
+            elements={milestoneFormElements}
+            onSuccess={
+              editingMilestone ? handleUpdateMilestone : handleAddMilestone
+            }
+            actionsContainerProps={{
+              sx: { mt: 2, justifyContent: "flex-start" },
+            }}
+            submitButton={{
+              children: editingMilestone ? "Update Milestone" : "Add Milestone",
+            }}
+          />
         </Box>
+        {projectId ? (
+          <MilestoneTeamPlanner
+            key={projectId}
+            projectId={projectId}
+            milestones={rows}
+            onPendingChange={setMilestoneTeamPending}
+          />
+        ) : null}
       </Paper>
 
       <Paper
@@ -960,36 +811,24 @@ export default function TeamProjects({
             fontWeight: 600,
           }}
         >
-          {canProceed
-            ? "Milestone saved"
-            : "You can continue now and add milestones later"}
+          {milestoneTeamPending
+            ? "Save or discard milestone team drafts before continuing"
+            : canProceed
+              ? "Milestone saved"
+              : "You can continue now and add milestones later"}
         </Typography>
 
         <Box sx={{ display: "flex", gap: 1.5 }}>
           <AppButton label="Back" colorKey="RED" onClick={onBack} width={180} />
           <AppButton
             label="Proceed to next step"
+            disabled={scopePending || milestoneTeamPending}
             colorKey="BLUE"
             width={180}
             onClick={() => onNext?.(projectId!)}
           />
         </Box>
       </Paper>
-
-      <DynamicPopup
-        open={popupKind !== null}
-        onClose={closePopup}
-        title={popupTitle}
-        description={popupDescription}
-        fields={scopePopupFields}
-        fileUpload
-        fileValue={uploadedFile}
-        onFileChange={(f) => setUploadedFile(f)}
-        buttonText="Save"
-        buttonColor="BLUE"
-        onSubmit={saveScope}
-        disableSubmit={!scopeData.scopeText?.trim()}
-      />
     </Box>
   );
 }

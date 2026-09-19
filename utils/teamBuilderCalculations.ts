@@ -14,13 +14,17 @@ function parseHourlyRate(rate: string | number | undefined): number {
   return isNaN(parsed) ? 0 : parsed;
 }
 
-
 export function calculateTeamStats(
   rows: TeamBuilderRow[],
-  selectedIds: string[]
+  selectedIds: string[],
 ): TeamStats {
   if (!rows.length || !selectedIds.length) {
-    return { hoursPerWeek: 0, avgRatePerHour: 0, hoursPerMonth: 0, perMonthCost: 0 };
+    return {
+      hoursPerWeek: 0,
+      avgRatePerHour: 0,
+      hoursPerMonth: 0,
+      perMonthCost: 0,
+    };
   }
 
   const selectedSet = new Set(selectedIds.map(Number));
@@ -28,19 +32,26 @@ export function calculateTeamStats(
   let totalHoursPerWeek = 0;
   let totalRate = 0;
   let count = 0;
+  let weeklyCost = 0;
 
   for (const row of rows) {
     if (selectedSet.has(Number(row.id))) {
       const hours = Number(row.request || 0);
       totalHoursPerWeek += hours;
       totalRate += parseHourlyRate(row.rate);
+      weeklyCost += hours * parseHourlyRate(row.rate);
       count++;
     }
   }
 
-  const avgRatePerHour = totalHoursPerWeek * 4; // existing business logic
-  const hoursPerMonth = count > 0 ? Math.round(totalRate / count) : 0;
-  const perMonthCost = hoursPerMonth * avgRatePerHour;
+  const avgRatePerHour = count > 0 ? Math.round(totalRate / count) : 0;
+  const hoursPerMonth = totalHoursPerWeek * 4;
+  const perMonthCost = weeklyCost * 4;
 
-  return { hoursPerWeek: totalHoursPerWeek, avgRatePerHour, hoursPerMonth, perMonthCost };
+  return {
+    hoursPerWeek: totalHoursPerWeek,
+    avgRatePerHour,
+    hoursPerMonth,
+    perMonthCost,
+  };
 }

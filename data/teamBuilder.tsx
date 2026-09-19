@@ -800,7 +800,7 @@ export const createTeamBuilderPaymentMilestoneColumns = (
     flex: 2,
     renderCell: (params: GridRenderCellParams<PaymentTableRow>) => (
       <strong style={{ textDecoration: "underline" }}>
-        {params.row.milestone?.name || params.row.project_milestone_id}
+        {params.row.milestone?.name || (params.row.project_milestone_id ? `Milestone #${params.row.project_milestone_id}` : `Custom payment #${params.row.id}`)}
       </strong>
     ),
   },
@@ -936,7 +936,7 @@ export const createTeamBuilderPaymentCustomRangeColumns = (
     flex: 2,
     renderCell: (params: GridRenderCellParams<PaymentTableRow>) => (
       <strong style={{ textDecoration: "underline" }}>
-        {params.row.milestone?.name || params.row.project_milestone_id}
+        {params.row.milestone?.name || (params.row.project_milestone_id ? `Milestone #${params.row.project_milestone_id}` : `Custom payment #${params.row.id}`)}
       </strong>
     ),
   },

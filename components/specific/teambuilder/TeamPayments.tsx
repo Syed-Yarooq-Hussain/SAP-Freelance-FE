@@ -5,6 +5,7 @@ import { useProjectPayments } from "@/actions/payments/useProjectPayments";
 import { useUploadDocument } from "@/actions/documents/useUploadDocument";
 import { useUpdatePaymentStatus } from "@/actions/payments/useUpdatePaymentStatus";
 import AppButton from "@/components/Button";
+import MilestoneBillingOverview from "./MilestoneBillingOverview";
 import DataTable from "@/components/DataTable";
 import InvoiceDetails from "@/components/InvoiceDetails";
 import DynamicPopup from "@/components/Popup";
@@ -279,7 +280,7 @@ export default function TeamPayments({
 
   const invoiceDetailsData = selectedPayment
     ? {
-        invoiceName: selectedPayment.milestone?.name || "N/A",
+        invoiceName: selectedPayment.milestone?.name || `Custom payment #${selectedPayment.id}`,
         accountTitle: "John Doe",
         accountNumber: "1234563322566311556311556315",
         iban: "BAC1235US5600033225566315",
@@ -331,6 +332,7 @@ export default function TeamPayments({
         mt: 3,
       }}
     >
+      <MilestoneBillingOverview projectId={projectId} />
       <Grid container spacing={2}>
         {paymentStats.map((s, index) => (
           <Grid key={index} size={{ xs: 12, sm: 6, md: 3 }}>
@@ -351,7 +353,7 @@ export default function TeamPayments({
               variant="h6"
               sx={{ fontWeight: 600, textTransform: "capitalize" }}
             >
-              Payment ({isCustomRange ? "Custom Range" : "By Milestone"})
+              Issued payments ({isCustomRange ? "Custom Range" : "Milestone / Custom"})
             </Typography>
 
             <AppButton

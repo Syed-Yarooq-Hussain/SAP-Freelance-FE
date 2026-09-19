@@ -6,16 +6,18 @@
  * @returns Object containing breakdown and total
  */
 export const calculatePaymentWithCharges = (
-  baseAmount: number,
+  baseAmount: number | string,
   vatPercent: number = 10,
   serviceChargePercent: number = 10
 ) => {
-  const vat = (baseAmount * vatPercent) / 100;
-  const serviceCharge = (baseAmount * serviceChargePercent) / 100;
-  const total = baseAmount + vat + serviceCharge;
+  const amount = Number(baseAmount);
+  if (!Number.isFinite(amount)) throw new Error("Invalid payment amount");
+  const vat = (amount * vatPercent) / 100;
+  const serviceCharge = (amount * serviceChargePercent) / 100;
+  const total = amount + vat + serviceCharge;
 
   return {
-    baseAmount: Math.round(baseAmount * 100) / 100,
+    baseAmount: Math.round(amount * 100) / 100,
     vat: Math.round(vat * 100) / 100,
     serviceCharge: Math.round(serviceCharge * 100) / 100,
     total: Math.round(total * 100) / 100,
