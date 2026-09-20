@@ -8,7 +8,7 @@ import {
 import { useCreateProject } from "@/actions/projects/useCreateProject";
 import { useGetProjectConsultants } from "@/actions/projects/useGetProjectConsultants";
 import AppButton from "@/components/Button";
-import CrewWorkspace from "./CrewWorkspace";
+import DataTable from "@/components/DataTable";
 import {
   crewDraftKey,
   readCrewDraft,
@@ -27,7 +27,7 @@ import TeamBuilderFilters from "@/components/specific/teambuilder/TeamBuilderFil
 import DynamicPopup from "@/components/Popup";
 import StatCard from "@/components/StatCard";
 import { CONSULTANT_STATUS } from "@/constants/status";
-import { teamBuilderStats } from "@/data/teamBuilder";
+import { teamBuilderColumns, teamBuilderStats } from "@/data/teamBuilder";
 import { useToast } from "@/providers/ToastProvider";
 import type { ApiPagination } from "@/types/api";
 import type {
@@ -545,9 +545,7 @@ export default function TeamCreation({
         }
       }
       toast(
-        serverEnabled
-          ? "Team, roles and hierarchy saved!"
-          : "Team shortlist saved!",
+        serverEnabled ? "Team shortlist saved!" : "Team shortlist saved!",
         "success",
       );
       onNext?.(targetId);
@@ -630,8 +628,7 @@ export default function TeamCreation({
               Build Your Team
             </Typography>
             <Typography variant="body2" sx={{ fontWeight: 400 }}>
-              Select your consultants, build your roles, and shape your project
-              team.
+              Set weekly hours, and review your projected engagement cost.
             </Typography>
           </Box>
           <Button
@@ -704,16 +701,24 @@ export default function TeamCreation({
         )}
         {serverEnabled && !hydrationReady && !serverError && (
           <Alert severity="info" sx={{ mb: 2 }}>
-            Loading saved team structure…
+            Loading saved shortlist…
           </Alert>
         )}
         {draftError && (
           <Alert severity="warning" sx={{ mb: 2 }}>
-            The hierarchy draft could not be saved in this browser. Export your
-            team structure to keep a copy.
+            Your selection could not be saved in this browser. Save your
+            shortlist before leaving this page.
           </Alert>
         )}
-        <Box mt={3}>
+        <Box
+          mt={3}
+          sx={{
+            boxShadow: 2,
+            bgcolor: colors.LIGHT_YELLOW,
+            py: 2,
+            borderRadius: 2,
+          }}
+        >
           <fieldset
             disabled={saving || !hydrationReady}
             aria-busy={saving || !hydrationReady}
@@ -725,25 +730,26 @@ export default function TeamCreation({
               pointerEvents: saving || !hydrationReady ? "none" : undefined,
             }}
           >
-            <CrewWorkspace
-              persistenceLabel={
-                serverEnabled ? "Changes saved with Save & Continue" : undefined
-              }
-              key={draftKey}
-              rows={rows}
-              visibleRows={filteredRows}
+            <DataTable<TeamBuilderRow>
+              variant="consultant"
+              title="Consultant Selection"
+              hidePagination
+              scrollHeight={560}
+              onScrollEnd={loadMore}
+              loadingMore={isPending}
+              showSearch
+              searchPlaceholder="Search by name, ID or module..."
+              searchValue={searchQuery}
+              onSearchChange={setSearchQuery}
+              columns={teamBuilderColumns(
+                handleRequestChange,
+                handleViewProfile,
+              )}
+              rows={filteredRows}
+              enableSelection
               selectedIds={selectedIds}
-              onSelect={setSelectedIds}
-              roles={roles}
-              onRolesChange={setRoles}
-              onHoursChange={handleRequestChange}
-              search={searchQuery}
-              onSearch={setSearchQuery}
-              onProfile={handleViewProfile}
-              onSchedule={openSchedule}
-              loading={isPending}
-              hasMore={hasMore}
-              onLoadMore={loadMore}
+              onSelectionChange={setSelectedIds}
+              rowClickable={false}
             />
           </fieldset>
 

@@ -38,6 +38,7 @@ export default function TeamConfirmation({
   type InterviewMode = "request" | "reschedule";
   const [shortlisted, setShortlisted] = useState<ShortlistedRow[]>([]);
   const [candidates, setCandidates] = useState<CandidateRow[]>([]);
+  const [structurePending, setStructurePending] = useState(false);
   const getProjectConsultants = useGetProjectConsultants();
   const [interviewOpen, setInterviewOpen] = useState(false);
   const [assignRoleOpen, setAssignRoleOpen] = useState(false);
@@ -516,7 +517,11 @@ export default function TeamConfirmation({
         />
       </Box>
 
-      <RoleHierarchy projectId={projectId} />
+      <RoleHierarchy
+        projectId={projectId}
+        onPendingChange={setStructurePending}
+        refreshKey={JSON.stringify([shortlisted.map(row => row.id), candidates.map(row => [row.id, row.status, row.role])])}
+      />
 
       <Box
         sx={{
@@ -551,6 +556,7 @@ export default function TeamConfirmation({
           />
           <AppButton
             label="Proceed to next step"
+            disabled={structurePending}
             colorKey="BLUE"
             width={180}
             onClick={() => onNext?.(projectId!)}

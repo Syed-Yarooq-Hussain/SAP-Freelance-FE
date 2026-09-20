@@ -13,6 +13,7 @@ export default function CrewHierarchy({
   onSelect,
   onDropRole,
   onDropPerson,
+  candidateMode = false,
 }: {
   roles: CrewRole[];
   people: TeamBuilderRow[];
@@ -20,6 +21,7 @@ export default function CrewHierarchy({
   onSelect?: (id: string) => void;
   onDropRole?: (id: string, parentId: string | null) => void;
   onDropPerson?: (personId: string, roleId: string) => void;
+  candidateMode?: boolean;
 }) {
   const [zoom, setZoom] = useState(1);
   const viewport = useRef<HTMLDivElement>(null);
@@ -103,9 +105,13 @@ export default function CrewHierarchy({
             <GitBranch size={34} strokeWidth={1.4} />
             <h3>Give your team a structure</h3>
             <p>
-              Add a role, then place it here.
+              {candidateMode
+                ? "Choose a role for a selected candidate to add them here."
+                : "Add a role, then place it here."}
               <br />
-              Drop roles onto each other to connect them.
+              {candidateMode
+                ? "Drag candidates onto their lead to connect them."
+                : "Drop roles onto each other to connect them."}
             </p>
           </div>
         ) : (
@@ -171,7 +177,7 @@ export default function CrewHierarchy({
                       : "Open position"}
                   </span>
                   <span className={styles.nodeCount}>
-                    {role.personIds.length
+                    {candidateMode ? "Click to edit role & reporting line" : role.personIds.length
                       ? `${role.personIds.length} assigned`
                       : "Awaiting consultant"}
                   </span>

@@ -335,13 +335,12 @@ export default function DataTable<T extends GridValidRowModel>({
 
   const handleSelectAll = React.useCallback(() => {
     setSelectedRows((prev) => {
-      let updated: Set<string>;
-
-      if (prev.size === rows.length) {
-        updated = new Set();
-      } else {
-        updated = new Set(rows.map((r) => r.id.toString()));
-      }
+      const updated = new Set(prev);
+      const allVisibleSelected = rows.every(row => prev.has(String(row.id)));
+      rows.forEach(row => {
+        if (allVisibleSelected) updated.delete(String(row.id));
+        else updated.add(String(row.id));
+      });
 
       queueMicrotask(() => {
         onSelectionChange?.(Array.from(updated));
@@ -361,9 +360,9 @@ export default function DataTable<T extends GridValidRowModel>({
       renderHeader: () => (
         <Checkbox
           indeterminate={
-            selectedRows.size > 0 && selectedRows.size < rows.length
+            rows.some(row => selectedRows.has(String(row.id))) && !rows.every(row => selectedRows.has(String(row.id)))
           }
-          checked={selectedRows.size === rows.length && rows.length > 0}
+          checked={rows.length > 0 && rows.every(row => selectedRows.has(String(row.id)))}
           onChange={handleSelectAll}
           sx={checkboxSx}
         />
@@ -389,9 +388,9 @@ export default function DataTable<T extends GridValidRowModel>({
           ? () => (
               <Checkbox
                 indeterminate={
-                  selectedRows.size > 0 && selectedRows.size < rows.length
+                  rows.some(row => selectedRows.has(String(row.id))) && !rows.every(row => selectedRows.has(String(row.id)))
                 }
-                checked={selectedRows.size === rows.length && rows.length > 0}
+                checked={rows.length > 0 && rows.every(row => selectedRows.has(String(row.id)))}
                 onChange={handleSelectAll}
                 sx={checkboxSx}
               />
