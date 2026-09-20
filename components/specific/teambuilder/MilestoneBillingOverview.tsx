@@ -6,6 +6,7 @@ import { Fragment } from "react";
 import {
   Alert,
   Box,
+  Chip,
   Table,
   TableBody,
   TableCell,
@@ -30,25 +31,26 @@ export default function MilestoneBillingOverview({
   payments: IProjectPaymentDTO[];
 }) {
   return (
-    <Box sx={{ mb: 3 }}>
-      <Typography variant="h6">All milestones</Typography>
+    <Box sx={{ mb: 3, border: "1px solid #E2E8F0", borderRadius: 3, overflow: "hidden", bgcolor: "#fff" }}>
+      <Box sx={{ px: 2.5, pt: 2.5 }}><Typography sx={{ fontSize: 15, fontWeight: 700, color: "#0F172A" }}>Milestone overview <Box component="span" sx={{ ml: 1, fontSize: 12, color: "#64748B", fontWeight: 500 }}>{milestones.length} milestones</Box></Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        Estimates include selected candidates. Payable amounts come from saved
-        hired allocations. Payment status comes from issued payment records.
+        Review costs and expand a milestone for its breakdown.
       </Typography>
+      </Box>
       {!milestones.length ? (
         <Alert severity="info">No milestones found for this project.</Alert>
       ) : (
         <Box sx={{ overflowX: "auto" }}>
           <Table
             size="small"
+            sx={{ minWidth: 650, "& th": { bgcolor: "#F8FAFC", color: "#64748B", fontSize: 11, fontWeight: 600, py: 1.5 }, "& td": { borderColor: "#F1F5F9", fontSize: 13, py: 1.75 }, "& th:first-of-type, & td:first-of-type": { pl: 2.5 } }}
             aria-label="Milestone estimates and payable amounts"
           >
             <TableHead>
               <TableRow>
                 <TableCell>Milestone</TableCell>
-                <TableCell>Estimated amount</TableCell>
-                <TableCell>Payable amount</TableCell>
+                <TableCell align="right">Estimated</TableCell>
+                <TableCell align="right">Payable</TableCell>
                 <TableCell>Currency</TableCell>
                 <TableCell>Payment status</TableCell>
               </TableRow>
@@ -79,7 +81,7 @@ export default function MilestoneBillingOverview({
                   <Fragment key={milestone.id}>
                     <TableRow>
                       <TableCell>
-                        <Typography fontWeight={600}>
+                        <Typography sx={{ fontSize: 13, fontWeight: 600, color: "#334155" }}>
                           {milestone.name}
                         </Typography>
                         {milestone.teamError ? (
@@ -88,7 +90,7 @@ export default function MilestoneBillingOverview({
                           </Typography>
                         ) : null}
                       </TableCell>
-                      <TableCell>
+                      <TableCell align="right" sx={{ fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" }}>
                         {team
                           ? formatCurrency(
                               Number(team.estimated_amount),
@@ -96,7 +98,7 @@ export default function MilestoneBillingOverview({
                             )
                           : "Unavailable"}
                       </TableCell>
-                      <TableCell>
+                      <TableCell align="right" sx={{ fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" }}>
                         {team
                           ? formatCurrency(
                               Number(team.payable_amount),
@@ -108,25 +110,24 @@ export default function MilestoneBillingOverview({
                         {team?.currency || records[0]?.currency || "—"}
                       </TableCell>
                       <TableCell>
-                        {!team && !positive.length
-                          ? "Payment status unavailable"
-                          : status}
+                        <Chip size="small" label={!team && !positive.length ? "Unavailable" : status}
+                          sx={{ height: 24, fontSize: 11, fontWeight: 600, bgcolor: status === "Paid" ? "#ECFDF5" : status === "No payment due" ? "#F1F5F9" : "#FFFBEB", color: status === "Paid" ? "#047857" : status === "No payment due" ? "#64748B" : "#92400E" }} />
                       </TableCell>
                     </TableRow>
                     {team?.breakdown?.length || records.length ? (
                       <TableRow>
-                        <TableCell colSpan={5}>
+                        <TableCell colSpan={5} sx={{ pt: "0 !important", pb: "10px !important" }}>
                           <details>
                             <summary
-                              style={{ cursor: "pointer", padding: "8px 0" }}
+                              style={{ cursor: "pointer", padding: "2px 0", fontSize: 11, fontWeight: 600, color: "#64748B" }}
                             >
-                              View calculation and payment records
+                              Cost & payment breakdown
                             </summary>
                             {team?.breakdown?.map((line) => (
                               <Typography
                                 variant="body2"
                                 key={line.consultant_id}
-                                sx={{ my: 1 }}
+                                sx={{ my: 1, px: 1.5, py: 1, bgcolor: "#F8FAFC", borderRadius: 1.5, fontSize: 12, lineHeight: 1.8 }}
                               >
                                 {consultantLabel(line.consultant_id)}
                                 : {line.hours} h ×{" "}

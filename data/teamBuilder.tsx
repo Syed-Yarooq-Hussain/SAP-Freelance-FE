@@ -18,7 +18,7 @@ import Groups2Icon from "@mui/icons-material/Groups2";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
-import { Avatar, Box, Button, Checkbox, IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import { Avatar, Box, Button, Checkbox, Chip, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import {
   GridColDef,
   GridRenderCellParams,
@@ -108,21 +108,33 @@ const ConsultantModules = ({ value, tone, search = "", selected = [] }: {
   }
 
   return (
-    <Stack spacing={0.75} sx={{ width: "100%", minWidth: 0, py: 0.5 }}>
-      {modules.map(({ name, matched }, index) => (
-        <Box key={`${name}-${index}`} title={matched ? `${name} — matches your search or filter` : name}
+    <Stack direction="row" spacing={0.5} sx={{ width: "100%", minWidth: 0, alignItems: "center" }}>
+      {modules.slice(0, 1).map(({ name, matched }, index) => (
+        <Tooltip key={`${name}-${index}`} title={name} arrow>
+        <Box
           sx={{
-            px: 1.25, py: 0.5, borderRadius: 2,
-            bgcolor: matched ? "#FEF3C7" : tone === "core" ? "#E8F5E9" : "#E3F2FD",
-            color: matched ? "#92400E" : tone === "core" ? "#2E7D32" : colors.BLUE,
-            border: "1px solid", borderColor: matched ? "#D97706" : "transparent",
-            fontSize: "12px", fontWeight: matched ? 700 : 600,
-            lineHeight: 1.5, whiteSpace: "normal", overflowWrap: "anywhere",
+            px: 1, py: 0.25, borderRadius: 5, minWidth: 0,
+            bgcolor: tone === "core" ? "#E8F5E9" : "#E3F2FD",
+            color: tone === "core" ? "#2E7D32" : colors.BLUE,
+            border: "1px solid", borderColor: matched ? "currentColor" : "transparent",
+            fontSize: "11px", fontWeight: matched ? 700 : 500,
+            lineHeight: 1.5, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
           }}
         >
           {matched ? <Box component="mark" sx={{ bgcolor: "transparent", color: "inherit" }}>{name}</Box> : name}
         </Box>
+        </Tooltip>
       ))}
+      {modules.length > 1 && (
+        <Tooltip arrow title={<Box>{modules.slice(1).map(({ name, matched }, index) => (
+          <Box key={`${name}-${index}`} sx={{ fontWeight: matched ? 700 : 400, py: 0.25 }}>{name}{matched ? " (matched)" : ""}</Box>
+        ))}</Box>}>
+          <Box component="button" type="button" aria-label={`Show ${modules.length - 1} more modules`}
+            sx={{ border: 0, bgcolor: "#F1F5F9", color: "#64748B", borderRadius: 5, px: 0.75, py: 0.25, fontSize: 10, cursor: "help", flexShrink: 0 }}>
+            +{modules.length - 1}
+          </Box>
+        </Tooltip>
+      )}
     </Stack>
   );
 };
@@ -186,7 +198,7 @@ export const teamBuilderColumns = (
     valueFormatter: (value) => moduleSearch.publicIdentity ? consultantLabel(value) : value,
     renderCell: (params) => (
       <Box>
-        <Typography sx={{ fontWeight: 700, fontSize: "1rem", color: "#1E293B" }}>
+        <Typography sx={{ fontWeight: 600, fontSize: "0.75rem", color: "#1E293B" }}>
           {moduleSearch.publicIdentity ? consultantLabel(params.row.id) : `#${params.value}`}
         </Typography>
         <ConsultantBadges badges={params.row.badges} />
@@ -789,9 +801,10 @@ export const createTeamBuilderPaymentMilestoneColumns = (
   {
     field: "milestone",
     headerName: "Milestone",
+    minWidth: 180,
     flex: 2,
     renderCell: (params: GridRenderCellParams<PaymentTableRow>) => (
-      <strong style={{ textDecoration: "underline" }}>
+      <strong style={{ fontWeight: 600, fontSize: 12 }}>
         {params.row.milestone?.name || (params.row.project_milestone_id ? `Milestone #${params.row.project_milestone_id}` : `Custom payment #${params.row.id}`)}
       </strong>
     ),
@@ -799,6 +812,7 @@ export const createTeamBuilderPaymentMilestoneColumns = (
   {
     field: "payment_module",
     headerName: "Type",
+    minWidth: 100,
     flex: 1.5,
     renderCell: (params: GridRenderCellParams<PaymentTableRow>) => (
       <span style={{ textTransform: "capitalize" }}>
@@ -809,6 +823,7 @@ export const createTeamBuilderPaymentMilestoneColumns = (
   {
     field: "amount",
     headerName: "Payment amount",
+    minWidth: 140,
     flex: 1.4,
     renderCell: (params: GridRenderCellParams<PaymentTableRow>) =>
       formatCurrency(Number(params.row.amount), params.row.currency || "USD"),
@@ -817,30 +832,29 @@ export const createTeamBuilderPaymentMilestoneColumns = (
   {
     field: "is_paid",
     headerName: "Status",
+    minWidth: 90,
     flex: 1,
     renderCell: (params: GridRenderCellParams<PaymentTableRow>) => (
-      <StatusChip
-        label={params.row.is_paid ? "Paid" : "Unpaid"}
-        color="BLUE"
-        status={params.row.is_paid ? "success" : "warning"}
+      <Chip size="small" label={params.row.is_paid ? "Paid" : "Unpaid"}
+        sx={{ height: 24, fontSize: 11, fontWeight: 600, bgcolor: params.row.is_paid ? "#ECFDF5" : "#FFFBEB", color: params.row.is_paid ? "#047857" : "#92400E" }}
       />
     ),
   },
   {
     field: "actions",
     headerName: "Actions",
-    width: 220,
+    width: 140,
     sortable: false,
     filterable: false,
     renderCell: (params: GridRenderCellParams<PaymentTableRow>) => (
       <Stack direction="row" spacing={1}>
-        <AppButton
-          label="Mark Paid"
-          colorKey="BLUE"
-          width={100}
+        <Button
+          size="small"
+          variant="outlined"
+          sx={{ textTransform: "none", fontSize: 11, borderRadius: 1.5, whiteSpace: "nowrap" }}
           disabled={params.row.is_paid || Number(params.row.amount) <= 0}
           onClick={() => onPaidClick(String(params.row.id))}
-        />
+        >{params.row.is_paid ? "Paid" : "Record payment"}</Button>
       </Stack>
     ),
   },
@@ -851,7 +865,7 @@ export const teamBuilderPaymentMilestoneColumns = [
     field: "milestone",
     headerName: "Milestone",
     renderCell: (params: GridRenderCellParams) => (
-      <strong style={{ textDecoration: "underline" }}>{params.value}</strong>
+      <strong style={{ fontWeight: 600, fontSize: 12 }}>{params.value}</strong>
     ),
     flex: 3,
   },
@@ -904,9 +918,10 @@ export const createTeamBuilderPaymentCustomRangeColumns = (
   {
     field: "milestone",
     headerName: "Milestone",
+    minWidth: 180,
     flex: 2,
     renderCell: (params: GridRenderCellParams<PaymentTableRow>) => (
-      <strong style={{ textDecoration: "underline" }}>
+      <strong style={{ fontWeight: 600, fontSize: 12 }}>
         {params.row.milestone?.name || (params.row.project_milestone_id ? `Milestone #${params.row.project_milestone_id}` : `Custom payment #${params.row.id}`)}
       </strong>
     ),
@@ -914,6 +929,7 @@ export const createTeamBuilderPaymentCustomRangeColumns = (
   {
     field: "payment_module",
     headerName: "Type",
+    minWidth: 100,
     flex: 1.5,
     renderCell: (params: GridRenderCellParams<PaymentTableRow>) => (
       <span style={{ textTransform: "capitalize" }}>
@@ -924,6 +940,7 @@ export const createTeamBuilderPaymentCustomRangeColumns = (
   {
     field: "amount",
     headerName: "Payment amount",
+    minWidth: 140,
     flex: 1.4,
     renderCell: (params: GridRenderCellParams<PaymentTableRow>) =>
       formatCurrency(Number(params.row.amount), params.row.currency || "USD"),
@@ -932,30 +949,29 @@ export const createTeamBuilderPaymentCustomRangeColumns = (
   {
     field: "is_paid",
     headerName: "Status",
+    minWidth: 90,
     flex: 1,
     renderCell: (params: GridRenderCellParams<PaymentTableRow>) => (
-      <StatusChip
-        label={params.row.is_paid ? "Paid" : "Unpaid"}
-        color="BLUE"
-        status={params.row.is_paid ? "success" : "warning"}
+      <Chip size="small" label={params.row.is_paid ? "Paid" : "Unpaid"}
+        sx={{ height: 24, fontSize: 11, fontWeight: 600, bgcolor: params.row.is_paid ? "#ECFDF5" : "#FFFBEB", color: params.row.is_paid ? "#047857" : "#92400E" }}
       />
     ),
   },
   {
     field: "actions",
     headerName: "Actions",
-    width: 220,
+    width: 140,
     sortable: false,
     filterable: false,
     renderCell: (params: GridRenderCellParams<PaymentTableRow>) => (
       <Stack direction="row" spacing={1}>
-        <AppButton
-          label="Mark Paid"
-          colorKey="BLUE"
-          width={100}
+        <Button
+          size="small"
+          variant="outlined"
+          sx={{ textTransform: "none", fontSize: 11, borderRadius: 1.5, whiteSpace: "nowrap" }}
           disabled={params.row.is_paid || Number(params.row.amount) <= 0}
           onClick={() => onPaidClick(String(params.row.id))}
-        />
+        >{params.row.is_paid ? "Paid" : "Record payment"}</Button>
       </Stack>
     ),
   },
@@ -966,7 +982,7 @@ export const teamBuilderPaymentCustomRangeColumns = [
     field: "milestone",
     headerName: "Milestone",
     renderCell: (params: GridRenderCellParams) => (
-      <strong style={{ textDecoration: "underline" }}>{params.value}</strong>
+      <strong style={{ fontWeight: 600, fontSize: 12 }}>{params.value}</strong>
     ),
     flex: 3,
   },

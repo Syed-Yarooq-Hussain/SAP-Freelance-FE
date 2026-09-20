@@ -749,7 +749,6 @@ export default function TeamCreation({
             <DataTable<TeamBuilderRow>
               variant="consultant"
               title="Consultant Selection"
-              autoRowHeight
               hidePagination
               scrollHeight={560}
               onScrollEnd={loadMore}

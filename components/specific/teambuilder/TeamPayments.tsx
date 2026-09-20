@@ -31,6 +31,8 @@ import {
   Button,
   CircularProgress,
   Paper,
+  Tab,
+  Tabs,
   Typography,
 } from "@mui/material";
 import { useRouter } from "next/navigation";
@@ -61,6 +63,7 @@ export default function TeamPayments({
   const [paymentId, setPaymentId] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [paymentTab, setPaymentTab] = useState<"milestone" | "custom">("milestone");
   const busy = useRef(false);
   const requestId = useRef(0);
   const updateProject = useUpdateProject();
@@ -274,7 +277,7 @@ export default function TeamPayments({
   };
 
   return (
-    <Paper variant="outlined" sx={{ p: { xs: 2, md: 3 }, mt: 3 }}>
+    <Paper elevation={0} sx={{ p: { xs: 2, md: 3 }, mt: 3, bgcolor: "#F8FAFC", borderRadius: 3, border: "1px solid #E2E8F0" }}>
       <Box
         sx={{
           display: "flex",
@@ -283,9 +286,12 @@ export default function TeamPayments({
           mb: 2,
         }}
       >
-        <Typography variant="h6">Project payments</Typography>
-        <Button disabled={loading || submitting} onClick={() => void refresh()}>
-          Refresh billing
+        <Box>
+          <Typography sx={{ fontSize: 20, fontWeight: 700, color: "#0F172A" }}>Payments & launch</Typography>
+          <Typography sx={{ mt: 0.5, fontSize: 13, color: "#64748B" }}>Review your milestones and record a payment to get started.</Typography>
+        </Box>
+        <Button size="small" sx={{ textTransform: "none", color: "#64748B", flexShrink: 0 }} disabled={loading || submitting} onClick={() => void refresh()}>
+          Refresh
         </Button>
       </Box>
       {loading ? (
@@ -337,12 +343,12 @@ export default function TeamPayments({
                   <Paper
                     key={label}
                     variant="outlined"
-                    sx={{ p: 2, bgcolor: "#F7FAFC" }}
+                    sx={{ p: 2.5, borderRadius: 2.5, borderColor: label === "Remaining payable" ? "#C8DCEB" : "#E2E8F0", bgcolor: label === "Remaining payable" ? "#EDF5FA" : "#fff" }}
                   >
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography sx={{ fontSize: 12, color: "#64748B", mb: 1 }}>
                       {label}
                     </Typography>
-                    <Typography variant="h6">
+                    <Typography sx={{ fontSize: { xs: 22, md: 26 }, fontWeight: 700, letterSpacing: "-0.03em", fontVariantNumeric: "tabular-nums", color: label === "Already paid" ? "#047857" : "#0F172A" }}>
                       {formatCurrency(Number(amount), total.currency)}
                     </Typography>
                   </Paper>
@@ -350,20 +356,13 @@ export default function TeamPayments({
               </Box>
             </Box>
           ))}
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            Total payable includes milestone snapshots and custom payments once.
-            Paid and remaining balances use actual issued payment records.
-            Amounts are shown as supplied by the backend, without added taxes,
-            charges or conversion.
-          </Typography>
           {totals.some(
             (total) =>
               Math.abs(total.payable - total.paid - total.remaining) > 0.01,
           ) ? (
             <Alert severity="info" sx={{ mb: 2 }}>
-              Milestone payable amounts and issued payment records differ.
-              Remaining payable shows only issued unpaid records; unissued
-              milestone amounts are shown in the overview.
+              Milestone totals and issued payments currently differ.
+              The remaining balance includes issued unpaid payments only.
             </Alert>
           ) : null}
           <MilestoneBillingOverview
@@ -378,44 +377,50 @@ export default function TeamPayments({
               Boolean(loadError) ||
               updateProject.isPending
             }
-            sx={{ border: 0, m: 0, p: 0, minWidth: 0 }}
+            sx={{ border: "1px solid #E2E8F0", borderRadius: 3, bgcolor: "#fff", m: 0, p: 0, minWidth: 0, overflow: "hidden" }}
           >
-            <DataTable
-              title="Milestone payment records"
-              columns={milestoneColumns}
-              rows={milestonePayments}
-              pageSize={10}
-            />
-            <Box sx={{ mt: 3 }}>
+            <Box sx={{ px: 2.5, pt: 2.5 }}>
+              <Typography sx={{ fontSize: 15, fontWeight: 700, color: "#0F172A" }}>Payment records</Typography>
+              <Typography sx={{ fontSize: 12, color: "#64748B", mt: 0.5 }}>Record payments and attach receipts here.</Typography>
+              <Tabs value={paymentTab} onChange={(_, value) => setPaymentTab(value)} aria-label="Payment type" sx={{ mt: 1, "& .MuiTab-root": { textTransform: "none", fontSize: 12, minHeight: 44 } }}>
+                <Tab value="milestone" label={`Milestones (${milestonePayments.length})`} />
+                <Tab value="custom" label={`Custom payments (${customPayments.length})`} />
+              </Tabs>
+            </Box>
+            <Box sx={{ p: { xs: 1, sm: 2 }, borderTop: "1px solid #E2E8F0" }}>
               <DataTable
-                title="Custom payment records"
-                columns={customColumns}
-                rows={customPayments}
+                key={paymentTab}
+                title=""
+                isTransparent
+                rowClickable={false}
+                noResultText={paymentTab === "milestone" ? "No milestone payments issued yet." : "No custom payments yet."}
+                columns={paymentTab === "milestone" ? milestoneColumns : customColumns}
+                rows={paymentTab === "milestone" ? milestonePayments : customPayments}
+                scrollHeight={Math.min(10, Math.max(1, paymentTab === "milestone" ? milestonePayments.length : customPayments.length)) * 52 + 116}
                 pageSize={10}
               />
             </Box>
           </Box>
         </>
       ) : null}
-      <Typography variant="body2" color="text.secondary" sx={{ mt: 3 }}>
+      <Box sx={{ mt: 3, pt: 2.5, borderTop: "1px solid #E2E8F0", display: "flex", alignItems: { xs: "stretch", sm: "center" }, justifyContent: "space-between", flexDirection: { xs: "column", sm: "row" }, gap: 2 }}>
+      <Typography sx={{ fontSize: 12, color: hasPaidPayment ? "#047857" : "#64748B", maxWidth: 360 }}>
         {hasPaidPayment
-          ? "A positive payment has been paid. You can start the project."
-          : "Pay at least one positive-amount payment to start the project. Selecting an unpaid record is not sufficient."}
+          ? "Payment received. Your project is ready to start."
+          : "Complete at least one payment to start your project."}
       </Typography>
       <Box
         display="flex"
         justifyContent="flex-end"
         flexWrap="wrap"
         gap={2}
-        mt={2}
       >
-        <AppButton
-          label="Back"
-          colorKey="RED"
-          width={180}
+        <Button
+          variant="outlined"
+          sx={{ textTransform: "none", borderColor: "#CBD5E1", color: "#475569", px: 3, borderRadius: 2 }}
           onClick={onDiscard}
           disabled={submitting || updateProject.isPending}
-        />
+        >Back</Button>
         <AppButton
           label="Start the Project"
           colorKey="BLUE"
@@ -423,6 +428,7 @@ export default function TeamPayments({
           onClick={startProject}
           disabled={!canStart}
         />
+      </Box>
       </Box>
       <DynamicPopup
         open={Boolean(paymentId)}
