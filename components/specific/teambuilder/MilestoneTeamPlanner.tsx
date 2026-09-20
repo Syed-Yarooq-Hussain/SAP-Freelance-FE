@@ -1,5 +1,7 @@
 "use client";
 
+import { consultantLabel } from "@/utils/consultantIdentity";
+
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
 import {
@@ -332,7 +334,7 @@ function MilestoneTeamCard({
       !selectedIds.has(String(candidate.consultant_id))
     )
       return false;
-    return `${candidate.name} ${candidate.role || ""}`
+    return `${consultantLabel(candidate.consultant_id)} ${candidate.role || ""}`
       .toLowerCase()
       .includes(search.toLowerCase());
   });
@@ -547,7 +549,7 @@ function MilestoneTeamCard({
                       checked={Boolean(allocation)}
                       disabled={disabled}
                       inputProps={{
-                        "aria-label": `Assign ${candidate.name} to ${milestone.name}`,
+                        "aria-label": `Assign ${consultantLabel(candidate.consultant_id)} to ${milestone.name}`,
                       }}
                       onChange={(_, checked) =>
                         change(
@@ -566,12 +568,10 @@ function MilestoneTeamCard({
                         width: 36,
                         height: 36,
                       }}
-                    >
-                      {candidate.name?.slice(0, 1)}
-                    </Avatar>
+                    />
                     <Box sx={{ flex: 1, minWidth: 130 }}>
                       <Typography variant="body2" fontWeight={650}>
-                        {candidate.name}
+                        {consultantLabel(candidate.consultant_id)}
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
                         {candidate.role || "Role not assigned"} ·{" "}
@@ -616,7 +616,7 @@ function MilestoneTeamCard({
                             min: 0.25,
                             max: 100000,
                             step: 0.25,
-                            "aria-label": `Hours for ${candidate.name}`,
+                            "aria-label": `Hours for ${consultantLabel(candidate.consultant_id)}`,
                           },
                         }}
                         sx={{ width: 145 }}
@@ -652,7 +652,7 @@ function MilestoneTeamCard({
                     </Button>
                   }
                 >
-                  Consultant #{item.consultant_id} is no longer available on
+                  {consultantLabel(item.consultant_id)} is no longer available on
                   this project.
                 </Alert>
               ))}

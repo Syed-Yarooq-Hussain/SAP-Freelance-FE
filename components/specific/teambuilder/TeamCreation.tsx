@@ -1,6 +1,9 @@
 "use client";
 
+import { consultantLabel } from "@/utils/consultantIdentity";
+
 import { useClientConsultants } from "@/actions/consultants/useClientConsultants";
+import { useSapOtherModules } from "@/actions/common/useSapModules";
 import {
   useAddConsultants,
   useRemoveConsultant,
@@ -90,6 +93,20 @@ export default function TeamCreation({
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const { data: moduleCatalog } = useSapOtherModules();
+  const moduleSearch = useMemo(() => {
+    const modules = moduleCatalog?.data?.flatMap((group) => group.modules) ?? [];
+    const namesFor = (value: unknown) => {
+      const ids = new Set(Array.isArray(value) ? value.map(String) : []);
+      return modules.filter((module) => ids.has(String(module.id))).map((module) => module.name);
+    };
+    return {
+      searchQuery,
+      publicIdentity: true,
+      coreModules: namesFor(activeFilters.modules),
+      otherModules: namesFor(activeFilters.other_modules),
+    };
+  }, [moduleCatalog, activeFilters, searchQuery]);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [profileConsultant, setProfileConsultant] =
     useState<TeamBuilderRow | null>(null);
@@ -187,14 +204,13 @@ export default function TeamCreation({
     if (!query) return visible;
 
     return visible.filter((row) => {
-      const idMatch = String(row.id).toLowerCase().includes(query);
+      const idMatch = consultantLabel(row.id).toLowerCase().includes(query);
       const coreMatch = row.coremodules?.toLowerCase().includes(query);
       const othersMatch = row.othersmodules?.toLowerCase().includes(query);
       return (
         idMatch ||
         coreMatch ||
-        othersMatch ||
-        row.name?.toLowerCase().includes(query)
+        othersMatch
       );
     });
   }, [rowsWithSchedule, searchQuery, visibleIds]);
@@ -733,17 +749,19 @@ export default function TeamCreation({
             <DataTable<TeamBuilderRow>
               variant="consultant"
               title="Consultant Selection"
+              autoRowHeight
               hidePagination
               scrollHeight={560}
               onScrollEnd={loadMore}
               loadingMore={isPending}
               showSearch
-              searchPlaceholder="Search by name, ID or module..."
+              searchPlaceholder="Search by consultant ID or module..."
               searchValue={searchQuery}
               onSearchChange={setSearchQuery}
               columns={teamBuilderColumns(
                 handleRequestChange,
                 handleViewProfile,
+                moduleSearch,
               )}
               rows={filteredRows}
               enableSelection

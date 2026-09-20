@@ -1,4 +1,5 @@
 export interface ShortlistedRow {
+  /** Consultant user ID, not the project membership ID. */
   id: string | number;
   meetingId?: number | null;
   coremodules: string;
@@ -15,6 +16,7 @@ export interface ShortlistedRow {
 }
 
 export interface CandidateRow {
+  /** Consultant user ID, not the project membership ID. */
   id: number;
   avatar: string;
   name: string;
@@ -52,6 +54,7 @@ export type TeamCreationProps = {
 };
 
 export interface TeamBuilderRow {
+  /** Consultant user ID, not the project membership ID. */
   id: string | number;
   name?: string;
   email?: string;
@@ -281,6 +284,7 @@ export interface IUpdateConsultantStatusPayload {
   status: string;
   role: string;
   decided_rate?: number;
+  rate_basis?: "base" | "client";
   requested_hours?: number;
   booking_schedule?: {
     weekdays: {
@@ -363,6 +367,7 @@ export interface IProjectPaymentDTO {
   project_milestone_id: string;
   doc_id: string | null;
   amount: number;
+  currency?: string;
   payment_module: string;
   is_paid: boolean;
   deleted_at: string | null;

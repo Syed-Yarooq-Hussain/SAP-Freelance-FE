@@ -1,5 +1,7 @@
 "use client";
 
+import { consultantLabel } from "@/utils/consultantIdentity";
+
 import { useUpdateProject } from "@/actions/projects/useaddProjectDetails";
 import { useCreateMilestone } from "@/actions/projects/useCreateMilestone";
 import { useCreateTask } from "@/actions/projects/useCreateTask";
@@ -107,7 +109,7 @@ export default function TeamProjects({
           );
 
           const options: IOption[] = assignees.map((item) => ({
-            label: item.name,
+            label: consultantLabel(item.consultant_id),
             value: String(item.consultant_id),
           }));
 

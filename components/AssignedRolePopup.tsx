@@ -1,5 +1,7 @@
 "use client";
 
+import { consultantLabel } from "@/utils/consultantIdentity";
+
 import { useConsultantLevels } from "@/actions/common/useConsultantLevels";
 import { useUploadProjectDocument } from "@/actions/documents/useUploadProjectDocument";
 import DynamicModal from "@/components/DynamicModal";
@@ -48,6 +50,7 @@ type AssignedRolePopupProps = {
   row: CandidateRow | null;
   projectId: string | number;
   onUpdated: () => void;
+  submitting?: boolean;
   onAssign: (
     role: string,
     contracts: string[],
@@ -62,6 +65,7 @@ export function AssignedRolePopup({
   row,
   projectId,
   onAssign,
+  submitting = false,
 }: AssignedRolePopupProps) {
   const { data: session } = useSession();
   const [selectedDocuments, setSelectedDocuments] = useState<
@@ -174,13 +178,13 @@ export function AssignedRolePopup({
   return (
     <DynamicModal
       open={open}
-      onClose={onClose}
+      onClose={() => { if (!submitting) onClose(); }}
       title="Assigned Role"
       width={480}
       actions={
         <>
           <AppButton
-            label="Assign"
+            label={submitting ? "Saving offer…" : "Save offer"}
             onClick={() =>
               onAssign(
                 selectedRole,
@@ -193,7 +197,12 @@ export function AssignedRolePopup({
               !selectedRole ||
               Number(decidedRate) <= 0 ||
               Number(requestedHours) <= 0 ||
-              selectedDocuments.length === 0 ||
+              !Number.isFinite(Number(decidedRate)) ||
+              Number(decidedRate) > 1000000000 ||
+              Math.abs(Number(decidedRate) * 100 - Math.round(Number(decidedRate) * 100)) > 0.000001 ||
+              !Number.isInteger(Number(requestedHours)) ||
+              Number(requestedHours) > 168 ||
+              submitting ||
               uploadProjectDocument.isPending
             }
             colorKey="BLUE"
@@ -210,13 +219,12 @@ export function AssignedRolePopup({
       {row && (
         <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 3 }}>
           <Avatar
-            src={row.avatar}
             sx={{ width: 48, height: 48, bgcolor: "#e5e7eb" }}
           />
 
           <Box>
             <Typography fontWeight={700} sx={{ fontSize: "1rem" }}>
-              {row.name || "N/A"}
+              {consultantLabel(row.id)}
             </Typography>
             <Typography variant="body2" color="text.secondary">
               {row.coremodules || row.othersmodules
@@ -228,7 +236,7 @@ export function AssignedRolePopup({
       )}
 
       <Typography sx={{ fontWeight: 700, fontSize: "1rem", mb: 1 }}>
-        Contract Document
+        Contract Document (optional)
       </Typography>
 
       <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5, mb: 3 }}>
@@ -408,14 +416,14 @@ export function AssignedRolePopup({
         }}
       >
         <TextField
-          label="Agreed hourly rate"
+          label="Client hourly rate (including margin)"
           type="number"
           required
           fullWidth
           size="small"
           value={decidedRate}
           onChange={(event) => setDecidedRate(event.target.value)}
-          slotProps={{ htmlInput: { min: 1 } }}
+          slotProps={{ htmlInput: { min: 0.01, step: 0.01 } }}
         />
         <TextField
           label="Requested hours / week"

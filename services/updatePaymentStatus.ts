@@ -6,7 +6,7 @@ import { getCachedSession } from "@/services/sessionCache";
 
 export interface UpdatePaymentPayload {
   is_paid: boolean;
-  doc_id?: string | null;
+  doc_id?: string | number | null;
   payment_module: string;
 }
 

@@ -1,5 +1,7 @@
 "use client";
 
+import { consultantLabel } from "@/utils/consultantIdentity";
+
 import { useUpdateMeetingStatus } from "@/actions/common/useClientMeetings";
 import { useMeetingInvite } from "@/actions/common/useMeetingInvite";
 import { useGetProjectConsultants } from "@/actions/projects/useGetProjectConsultants";
@@ -119,10 +121,9 @@ export default function TeamConfirmation({
     []
   );
 
-  const candidateColumns = useMemo(
-    () =>
-      getCandidateColumns(
+  const candidateColumns = getCandidateColumns(
         (row: CandidateRow) => {
+          if (!projectId || updateConsultantStatus.isPending) return;
           if (row.status === CONSULTANT_STATUS.OFFERED) {
             const decidedRate = Number(row.decided_rate);
             const requestedHours = Number(row.requested_hours);
@@ -136,7 +137,6 @@ export default function TeamConfirmation({
                 project_id: String(projectId),
                 status: CONSULTANT_STATUS.HIRED,
                 role: row.role || "consultant",
-                decided_rate: decidedRate,
                 requested_hours: requestedHours,
               },
               {
@@ -156,9 +156,7 @@ export default function TeamConfirmation({
           setSelectedRow(row);
           setRejectConfirmOpen(true);
         }
-      ),
-    []
-  );
+      );
 
   const hasHired = useMemo(() => {
     return candidates.some((c) => c.status === CONSULTANT_STATUS.HIRED);
@@ -254,8 +252,8 @@ export default function TeamConfirmation({
       if (candidateStatuses.includes(item.status)) {
         candidates.push({
           id: Number(item.consultant_id),
-          avatar: "/public/vercel.svg",
-          name: item.name,
+          avatar: "",
+          name: consultantLabel(item.consultant_id),
           coremodules: core || "N/A",
           othersmodules: others || "N/A",
           experience,
@@ -319,8 +317,8 @@ export default function TeamConfirmation({
   const mapCandidateOnly = (list: IProjectConsultant[]): CandidateRow[] => {
     return list.map((item) => ({
       id: Number(item.consultant_id),
-      avatar: "/public/vercel.svg",
-      name: item.name,
+      avatar: "",
+      name: consultantLabel(item.consultant_id),
       coremodules: item.modules?.core ?? "N/A",
       othersmodules: item.modules?.others ?? "N/A",
       experience: `${item.experience} Years`,
@@ -369,8 +367,8 @@ export default function TeamConfirmation({
       ) {
         candidates.push({
           id: Number(item.consultant_id),
-          avatar: "/public/vercel.svg",
-          name: item.name,
+          avatar: "",
+          name: consultantLabel(item.consultant_id),
           coremodules: core || "N/A",
           othersmodules: others || "N/A",
           experience,
@@ -512,8 +510,6 @@ export default function TeamConfirmation({
           columns={candidateColumns}
           rows={candidates}
           pageSize={6}
-          showAvatar
-          avatarField="avatar"
         />
       </Box>
 
@@ -565,6 +561,7 @@ export default function TeamConfirmation({
       </Box>
 
       <AssignedRolePopup
+        submitting={updateConsultantStatus.isPending}
         open={assignRoleOpen}
         onClose={() => setAssignRoleOpen(false)}
         row={selectedRow}
@@ -573,7 +570,7 @@ export default function TeamConfirmation({
           refreshAllData();
         }}
         onAssign={(role, _contracts, decidedRate, requestedHours) => {
-          if (!selectedRow) return;
+          if (!selectedRow || updateConsultantStatus.isPending || !projectId) return;
 
           updateConsultantStatus.mutate(
             {
@@ -582,6 +579,7 @@ export default function TeamConfirmation({
               status: CONSULTANT_STATUS.OFFERED,
               role: role,
               decided_rate: decidedRate,
+              rate_basis: "client",
               requested_hours: requestedHours,
               booking_schedule: selectedRow.working_schedule
                 ? {
@@ -599,8 +597,10 @@ export default function TeamConfirmation({
             {
               onSuccess: () => {
                 setAssignRoleOpen(false);
+                toast("Offer saved successfully", "success");
                 getCandidatesList();
               },
+              onError: (error) => toast(error.message || "Could not save the offer", "error"),
             }
           );
         }}

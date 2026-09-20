@@ -1,5 +1,7 @@
 "use client";
 
+import { consultantLabel } from "@/utils/consultantIdentity";
+
 import type { TeamBuilderRow } from "@/types/teamBuilder";
 import { formatHourlyRate } from "@/utils/rates";
 import {
@@ -11,6 +13,7 @@ import {
   MapPin,
   Star,
   X,
+  UserRound,
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { useEffect } from "react";
@@ -42,7 +45,7 @@ const getModuleTags = (consultant: TeamBuilderRow): string[] => {
 };
 
 const buildSummary = (consultant: TeamBuilderRow): string => {
-  const name = consultant.name?.trim() || `Consultant #${consultant.id}`;
+  const name = consultantLabel(consultant.id);
   const years = consultant.experienceYears;
   const modules = getModuleTags(consultant);
   const moduleText =
@@ -88,7 +91,7 @@ export default function ConsultantProfileModal({
 
   if (!open || !consultant) return null;
 
-  const displayName = consultant.name?.trim() || `Consultant #${consultant.id}`;
+  const displayName = consultantLabel(consultant.id);
   const moduleTags = getModuleTags(consultant);
   const badges = consultant.badges ?? [];
   const hasVerified = badges.some((b) => b.toUpperCase() === "VERIFIED");
@@ -126,7 +129,7 @@ export default function ConsultantProfileModal({
 
           <div className="flex items-start gap-4">
             <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl border border-white/30 bg-white/10 text-xl font-bold">
-              {String(consultant.id).slice(-2)}
+              <UserRound aria-hidden="true" className="h-8 w-8" />
             </div>
             <div className="min-w-0 flex-1">
               <h2 className="truncate text-2xl font-bold">{displayName}</h2>

@@ -1,5 +1,7 @@
 "use client";
 
+import { consultantLabel } from "@/utils/consultantIdentity";
+
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import {
@@ -359,14 +361,14 @@ export default function RoleHierarchy({
                     >
                       <GripVertical size={16} />
                       <Typography variant="body2" fontWeight={600}>
-                        {person.name || `Consultant #${id}`}
+                        {consultantLabel(person.id)}
                       </Typography>
                     </Stack>
                     <TextField
                       select
                       fullWidth
                       size="small"
-                      label={`Role for ${person.name || id}`}
+                      label={`Role for ${consultantLabel(person.id)}`}
                       value={role?.title ?? ""}
                       onChange={(event) => setRole(id, event.target.value)}
                     >
@@ -415,7 +417,7 @@ export default function RoleHierarchy({
               {active ? (
                 <Paper variant="outlined" sx={{ mt: 2, p: 2 }}>
                   <Typography fontWeight={600} sx={{ mb: 2 }}>
-                    Edit {people.find(person => String(person.id) === active.personIds[0])?.name || "candidate"}
+                    Edit {consultantLabel(active.personIds[0])}
                   </Typography>
                   <TextField
                     select
@@ -432,7 +434,7 @@ export default function RoleHierarchy({
                   fullWidth
                   size="small"
                   sx={{ mt: 2 }}
-                  label={`Reports to · ${people.find((person) => String(person.id) === active.personIds[0])?.name || active.title}`}
+                  label={`Reports to · ${consultantLabel(active.personIds[0])}`}
                   value={active.parentId ?? ""}
                   onChange={(event) =>
                     move(active.id, event.target.value || null)
@@ -448,9 +450,7 @@ export default function RoleHierarchy({
                     .map((role) => (
                       <MenuItem key={role.id} value={role.id}>
                         {
-                          people.find(
-                            (person) => String(person.id) === role.personIds[0],
-                          )?.name
+                          consultantLabel(role.personIds[0])
                         }{" "}
                         · {role.title}
                       </MenuItem>

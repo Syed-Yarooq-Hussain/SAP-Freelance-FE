@@ -1,5 +1,7 @@
 "use client";
 
+import { consultantLabel } from "@/utils/consultantIdentity";
+
 import { useEffect, useState } from "react";
 import { useConsultantLevels } from "@/actions/common/useConsultantLevels";
 import type { TeamBuilderRow } from "@/types/teamBuilder";
@@ -85,7 +87,7 @@ export default function CrewWorkspace(props: Props) {
     );
     setActiveRole(roleId);
     setMessage(
-      `${person.name || `Consultant #${personId}`} assigned. Set their requested hours in the talent pool.`,
+      `${consultantLabel(personId)} assigned. Set their requested hours in the talent pool.`,
     );
   };
   const place = (id: string, parentId: string | null) => {
@@ -122,12 +124,15 @@ export default function CrewWorkspace(props: Props) {
       [
         JSON.stringify(
           {
-            roles,
+            roles: roles.map((role) => ({
+              ...role,
+              personIds: role.personIds.map(consultantLabel),
+            })),
             consultants: rows
               .filter((r) => selectedIds.includes(String(r.id)))
               .map((r) => ({
-                id: r.id,
-                name: r.name,
+                id: consultantLabel(r.id),
+                name: consultantLabel(r.id),
                 requestedHours: r.request,
                 modules: [r.coremodules, r.othersmodules],
               })),
@@ -233,7 +238,7 @@ export default function CrewWorkspace(props: Props) {
             <Search size={15} />
             <input
               aria-label="Search consultants"
-              placeholder="Search name, ID or module"
+              placeholder="Search consultant ID or module"
               value={props.search}
               onChange={(e) => {
                 props.onSearch(e.target.value);
@@ -295,30 +300,26 @@ export default function CrewWorkspace(props: Props) {
                     <button
                       type="button"
                       className={styles.avatar}
-                      aria-label={`Select ${person.name || `consultant ${id}`} for assignment`}
+                      aria-label={`Select ${consultantLabel(person.id)} for assignment`}
                       onClick={() => setActivePerson(id)}
                     >
-                      {(person.name || `C ${id}`)
-                        .split(" ")
-                        .map((s) => s[0])
-                        .slice(0, 2)
-                        .join("")}
+                      <Users size={18} aria-hidden="true" />
                     </button>
                     <button
                       type="button"
                       className={styles.personName}
                       onClick={() => setActivePerson(id)}
                     >
-                      <strong>{person.name || `Consultant #${id}`}</strong>
+                      <strong>{consultantLabel(person.id)}</strong>
                       <small>
-                        #{id} · {person.experience}
+                        {person.experience}
                         {person.country ? ` · ${person.country}` : ""}
                       </small>
                     </button>
                     <button
                       type="button"
                       className={`${styles.selectButton} ${selected ? styles.checked : ""}`}
-                      aria-label={`${selected ? "Remove" : "Shortlist"} ${person.name || id}`}
+                      aria-label={`${selected ? "Remove" : "Shortlist"} ${consultantLabel(person.id)}`}
                       aria-pressed={selected}
                       disabled={!selected && person.avail <= 0}
                       onClick={() => togglePerson(id)}
@@ -357,7 +358,7 @@ export default function CrewWorkspace(props: Props) {
                     <label className={styles.hours}>
                       Requested hours / week
                       <input
-                        aria-label={`Requested hours for ${person.name || id}`}
+                        aria-label={`Requested hours for ${consultantLabel(person.id)}`}
                         type="number"
                         min="1"
                         max={person.avail}
@@ -529,11 +530,10 @@ export default function CrewWorkspace(props: Props) {
                 <div className={styles.assignments}>
                   {role.personIds.map((id) => (
                     <span key={id}>
-                      {rows.find((r) => String(r.id) === id)?.name ||
-                        `Consultant #${id}`}
+                      {consultantLabel(id)}
                       <button
                         type="button"
-                        aria-label={`Unassign consultant ${id} from ${role.title}`}
+                        aria-label={`Unassign ${consultantLabel(id)} from ${role.title}`}
                         onClick={() =>
                           commit(
                             roles.map((r) =>
@@ -562,7 +562,7 @@ export default function CrewWorkspace(props: Props) {
                 >
                   <Plus size={13} />
                   {activePerson
-                    ? `Assign ${rows.find((r) => String(r.id) === activePerson)?.name || `#${activePerson}`}`
+                    ? `Assign ${consultantLabel(activePerson)}`
                     : "Select or drop a consultant"}
                 </button>
                 <button

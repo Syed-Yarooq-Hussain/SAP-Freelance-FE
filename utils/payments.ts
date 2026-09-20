@@ -1,14 +1,14 @@
 /**
  * Calculate payment with VAT and service charges
  * @param baseAmount - The original payment amount
- * @param vatPercent - VAT percentage (default: 10)
- * @param serviceChargePercent - Service charge percentage (default: 10)
+ * @param vatPercent - Explicit authoritative VAT percentage (default: no added VAT)
+ * @param serviceChargePercent - Explicit authoritative service charge (default: none)
  * @returns Object containing breakdown and total
  */
 export const calculatePaymentWithCharges = (
   baseAmount: number | string,
-  vatPercent: number = 10,
-  serviceChargePercent: number = 10
+  vatPercent: number = 0,
+  serviceChargePercent: number = 0
 ) => {
   const amount = Number(baseAmount);
   if (!Number.isFinite(amount)) throw new Error("Invalid payment amount");

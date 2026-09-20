@@ -1,10 +1,11 @@
+import { consultantLabel } from "@/utils/consultantIdentity";
 import { StatCardProps } from "@/components/StatCard";
 import StatusChip from "@/components/StatusChip";
 import AppButton from "@/components/Button";
 import ConsultantRateDisplay from "@/components/specific/teambuilder/ConsultantRateDisplay";
 import type { CandidateRow, TaskRow, PaymentTableRow, TeamBuilderRow } from "@/types/teamBuilder";
 import { formatDateTimeAmPm } from "@/utils/dateTime";
-import { formatCurrencyValue } from "@/utils/payments";
+import { formatCurrency } from "@/utils/payments";
 import { formatHourlyRate } from "@/utils/rates";
 import { colors, statusColors } from "@/utils/styles/colors";
 import AssignmentIcon from "@mui/icons-material/Assignment";
@@ -17,7 +18,7 @@ import Groups2Icon from "@mui/icons-material/Groups2";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
-import { Box, Button, Checkbox, IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import { Avatar, Box, Button, Checkbox, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import {
   GridColDef,
   GridRenderCellParams,
@@ -88,6 +89,44 @@ const parseModuleList = (value?: string): string[] => {
     .filter(Boolean);
 };
 
+const ConsultantModules = ({ value, tone, search = "", selected = [] }: {
+  value?: string;
+  tone: "core" | "other";
+  search?: string;
+  selected?: string[];
+}) => {
+  const query = search.trim().toLowerCase();
+  const selectedNames = new Set(selected.map((name) => name.trim().toLowerCase()));
+  const modules = parseModuleList(value).map((name) => ({
+    name,
+    matched: Boolean(query && name.toLowerCase().includes(query)) ||
+      selectedNames.has(name.toLowerCase()),
+  })).sort((a, b) => Number(b.matched) - Number(a.matched));
+
+  if (!modules.length) {
+    return <Typography sx={{ color: "#94A3B8", fontSize: "12px" }}>N/A</Typography>;
+  }
+
+  return (
+    <Stack spacing={0.75} sx={{ width: "100%", minWidth: 0, py: 0.5 }}>
+      {modules.map(({ name, matched }, index) => (
+        <Box key={`${name}-${index}`} title={matched ? `${name} — matches your search or filter` : name}
+          sx={{
+            px: 1.25, py: 0.5, borderRadius: 2,
+            bgcolor: matched ? "#FEF3C7" : tone === "core" ? "#E8F5E9" : "#E3F2FD",
+            color: matched ? "#92400E" : tone === "core" ? "#2E7D32" : colors.BLUE,
+            border: "1px solid", borderColor: matched ? "#D97706" : "transparent",
+            fontSize: "12px", fontWeight: matched ? 700 : 600,
+            lineHeight: 1.5, whiteSpace: "normal", overflowWrap: "anywhere",
+          }}
+        >
+          {matched ? <Box component="mark" sx={{ bgcolor: "transparent", color: "inherit" }}>{name}</Box> : name}
+        </Box>
+      ))}
+    </Stack>
+  );
+};
+
 const ConsultantStatusBadge = ({
   label,
   tone,
@@ -136,17 +175,19 @@ const ConsultantBadges = ({ badges = [] }: { badges?: string[] }) => {
 
 export const teamBuilderColumns = (
   onRequestChange: (id: string | number, value: number, avail: number) => void,
-  onViewProfile?: (row: TeamBuilderRow) => void
+  onViewProfile?: (row: TeamBuilderRow) => void,
+  moduleSearch: { searchQuery?: string; coreModules?: string[]; otherModules?: string[]; publicIdentity?: boolean } = {},
 ): GridColDef[] => [
   {
     field: "id",
     headerName: "Consultant ID",
     flex: 0.9,
-    minWidth: 120,
+    minWidth: moduleSearch.publicIdentity ? 180 : 120,
+    valueFormatter: (value) => moduleSearch.publicIdentity ? consultantLabel(value) : value,
     renderCell: (params) => (
       <Box>
         <Typography sx={{ fontWeight: 700, fontSize: "1rem", color: "#1E293B" }}>
-          #{params.value}
+          {moduleSearch.publicIdentity ? consultantLabel(params.row.id) : `#${params.value}`}
         </Typography>
         <ConsultantBadges badges={params.row.badges} />
       </Box>
@@ -157,78 +198,20 @@ export const teamBuilderColumns = (
     headerName: "Modules (Core)",
     flex: 1.4,
     minWidth: 160,
-    renderCell: (params) => {
-      const label = params.value as string;
-      if (!label || label === "N/A") {
-        return (
-          <Typography sx={{ color: "#94A3B8", fontSize: "12px" }}>N/A</Typography>
-        );
-      }
-
-      return (
-        <Box
-          sx={{
-            px: 1.25,
-            py: 0.5,
-            borderRadius: 5,
-            bgcolor: "#E8F5E9",
-            color: "#2E7D32",
-            fontSize: "12px",
-            fontWeight: 600,
-            maxWidth: "100%",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-            display: "block",
-          }}
-          title={label}
-        >
-          {label}
-        </Box>
-      );
-    },
+    renderCell: (params) => (
+      <ConsultantModules value={params.value} tone="core" search={moduleSearch.searchQuery}
+        selected={moduleSearch.coreModules} />
+    ),
   },
   {
     field: "othersmodules",
     headerName: "Modules (Other)",
     flex: 1.5,
     minWidth: 180,
-    renderCell: (params) => {
-      const modules = parseModuleList(params.value as string);
-
-      if (!modules.length) {
-        return (
-          <Typography sx={{ color: "#94A3B8", fontSize: "12px" }}>N/A</Typography>
-        );
-      }
-
-      return (
-        <Stack spacing={0.75} sx={{ width: "100%", minWidth: 0 }}>
-          {modules.map((module) => (
-            <Box
-              key={module}
-              sx={{
-                px: 1.25,
-                py: 0.5,
-                borderRadius: 5,
-                bgcolor: "#E3F2FD",
-                color: colors.BLUE,
-                fontSize: "12px",
-                fontWeight: 600,
-                maxWidth: "100%",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-                display: "block",
-              }}
-              title={module}
-            >
-              {module}
-            </Box>
-          ))}
-        </Stack>
-      );
-    },
+    renderCell: (params) => (
+      <ConsultantModules value={params.value} tone="other" search={moduleSearch.searchQuery}
+        selected={moduleSearch.otherModules} />
+    ),
   },
   {
     field: "experience",
@@ -476,7 +459,7 @@ export const getShortlistedColumns = (
   ) => void,
   onCancel: (meetingId: number) => void
 ): GridColDef[] => [
-  { field: "id", headerName: "ID" },
+  { field: "id", headerName: "Consultant", minWidth: 180, valueFormatter: (value) => consultantLabel(value) },
   { field: "coremodules", headerName: "Modules (Core)", flex: 1.5 },
   { field: "othersmodules", headerName: "Modules (Others)", flex: 1.5 },
   { field: "experience", headerName: "Experience", flex: 1 },
@@ -581,7 +564,16 @@ export const getCandidateColumns = (
   addToShortlist: (row: CandidateRow) => void,
   rejectCandidate: (row: CandidateRow) => void
 ): GridColDef[] => [
-  { field: "name", headerName: "Name", flex: 1 },
+  {
+    field: "name", headerName: "Consultant", flex: 1, minWidth: 210,
+    valueGetter: (_value, row) => consultantLabel(row.id),
+    renderCell: (params) => (
+      <Stack direction="row" spacing={1} alignItems="center">
+        <Avatar sx={{ width: 32, height: 32 }} />
+        <span>{consultantLabel(params.row.id)}</span>
+      </Stack>
+    ),
+  },
   { field: "coremodules", headerName: "Modules (Core)", flex: 2 },
   { field: "othersmodules", headerName: "Modules (Others)", flex: 2 },
   { field: "experience", headerName: "Experience", flex: 1 },
@@ -709,7 +701,7 @@ export const taskColumns = (
     },
   },
   { field: "description", headerName: "Description", flex: 1.6 },
-  { field: "assignees", headerName: "Assignees", flex: 1 },
+  { field: "assignees", headerName: "Assignees", flex: 1, valueFormatter: (value) => consultantLabel(value) },
   {
     field: "actions",
     headerName: "Actions",
@@ -815,34 +807,13 @@ export const createTeamBuilderPaymentMilestoneColumns = (
     ),
   },
   {
-    field: "baseAmount",
-    headerName: "Base Amount",
-    flex: 1.2,
+    field: "amount",
+    headerName: "Payment amount",
+    flex: 1.4,
     renderCell: (params: GridRenderCellParams<PaymentTableRow>) =>
-      formatCurrencyValue(params.row.baseAmount),
+      formatCurrency(Number(params.row.amount), params.row.currency || "USD"),
   },
-  {
-    field: "vat",
-    headerName: "VAT (10%)",
-    flex: 1,
-    renderCell: (params: GridRenderCellParams<PaymentTableRow>) =>
-      formatCurrencyValue(params.row.vat),
-  },
-  {
-    field: "serviceCharge",
-    headerName: "Service Charge (10%)",
-    flex: 1.5,
-    renderCell: (params: GridRenderCellParams<PaymentTableRow>) =>
-      formatCurrencyValue(params.row.serviceCharge),
-  },
-  {
-    field: "totalAmount",
-    headerName: "Total",
-    flex: 1,
-    renderCell: (params: GridRenderCellParams<PaymentTableRow>) => (
-      <strong>{formatCurrencyValue(params.row.totalAmount)}</strong>
-    ),
-  },
+  { field: "currency", headerName: "Currency", width: 100 },
   {
     field: "is_paid",
     headerName: "Status",
@@ -867,7 +838,7 @@ export const createTeamBuilderPaymentMilestoneColumns = (
           label="Mark Paid"
           colorKey="BLUE"
           width={100}
-          disabled={params.row.is_paid}
+          disabled={params.row.is_paid || Number(params.row.amount) <= 0}
           onClick={() => onPaidClick(String(params.row.id))}
         />
       </Stack>
@@ -951,34 +922,13 @@ export const createTeamBuilderPaymentCustomRangeColumns = (
     ),
   },
   {
-    field: "baseAmount",
-    headerName: "Base Amount",
-    flex: 1.2,
+    field: "amount",
+    headerName: "Payment amount",
+    flex: 1.4,
     renderCell: (params: GridRenderCellParams<PaymentTableRow>) =>
-      formatCurrencyValue(params.row.baseAmount),
+      formatCurrency(Number(params.row.amount), params.row.currency || "USD"),
   },
-  {
-    field: "vat",
-    headerName: "VAT (10%)",
-    flex: 1,
-    renderCell: (params: GridRenderCellParams<PaymentTableRow>) =>
-      formatCurrencyValue(params.row.vat),
-  },
-  {
-    field: "serviceCharge",
-    headerName: "Service Charge (10%)",
-    flex: 1.5,
-    renderCell: (params: GridRenderCellParams<PaymentTableRow>) =>
-      formatCurrencyValue(params.row.serviceCharge),
-  },
-  {
-    field: "totalAmount",
-    headerName: "Total",
-    flex: 1,
-    renderCell: (params: GridRenderCellParams<PaymentTableRow>) => (
-      <strong>{formatCurrencyValue(params.row.totalAmount)}</strong>
-    ),
-  },
+  { field: "currency", headerName: "Currency", width: 100 },
   {
     field: "is_paid",
     headerName: "Status",
@@ -1003,7 +953,7 @@ export const createTeamBuilderPaymentCustomRangeColumns = (
           label="Mark Paid"
           colorKey="BLUE"
           width={100}
-          disabled={params.row.is_paid}
+          disabled={params.row.is_paid || Number(params.row.amount) <= 0}
           onClick={() => onPaidClick(String(params.row.id))}
         />
       </Stack>
@@ -1048,16 +998,3 @@ export const teamBuilderPaymentCustomRangeRows = [
     amount: "$3,500",
   },
 ];
-
-export const invoiceData = {
-  invoiceName: "Milestone 1",
-  accountTitle: "John Doe",
-  accountNumber: "1234563322566311556315",
-  iban: "BAC1235US5600033225566315",
-  invoiceNumber: "3,500",
-  amount: "3,500",
-  serviceCharges: "35",
-  vat: "10%",
-  vatAmount: "$35",
-  totalAmount: "3,570",
-};

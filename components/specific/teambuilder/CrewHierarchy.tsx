@@ -1,5 +1,7 @@
 "use client";
 
+import { consultantLabel } from "@/utils/consultantIdentity";
+
 import { useEffect, useRef, useState } from "react";
 import { Maximize2, Minus, Plus, GitBranch } from "lucide-react";
 import { layoutCrew, type CrewRole } from "@/utils/crewBuilder";
@@ -8,7 +10,6 @@ import styles from "./CrewWorkspace.module.css";
 
 export default function CrewHierarchy({
   roles,
-  people,
   activeRole,
   onSelect,
   onDropRole,
@@ -170,8 +171,7 @@ export default function CrewHierarchy({
                       ? role.personIds
                           .map(
                             (id) =>
-                              people.find((p) => String(p.id) === id)?.name ||
-                              `Consultant #${id}`,
+                              consultantLabel(id),
                           )
                           .join(", ")
                       : "Open position"}

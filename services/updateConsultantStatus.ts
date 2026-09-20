@@ -10,6 +10,7 @@ export interface IUpdateConsultantStatusPayload {
   status: string;
   role: string;
   decided_rate?: number;
+  rate_basis?: "base" | "client";
   requested_hours?: number;
 }
 
