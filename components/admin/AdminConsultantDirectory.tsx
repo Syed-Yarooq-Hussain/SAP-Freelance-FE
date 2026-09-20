@@ -2,14 +2,13 @@
 
 import { useClientConsultants } from "@/actions/consultants/useClientConsultants";
 import DataTable from "@/components/DataTable";
-import DynamicPopup from "@/components/Popup";
+import ConsultantAvailabilityDialog from "@/components/specific/teambuilder/ConsultantAvailabilityDialog";
 import { teamBuilderColumns } from "@/data/teamBuilder";
 import { useToast } from "@/providers/ToastProvider";
 import type { ApiPagination } from "@/types/api";
 import type {
   ClientConsultantDTO,
   TeamBuilderRow,
-  Weekday,
 } from "@/types/teamBuilder";
 import {
   appendUniqueRows,
@@ -111,10 +110,7 @@ export default function AdminConsultantDirectory() {
   const [paginationMeta, setPaginationMeta] = useState<ApiPagination | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
-  const [scheduleData, setScheduleData] = useState<
-    TeamBuilderRow["working_schedule"] | null
-  >(null);
+  const [scheduleConsultant, setScheduleConsultant] = useState<TeamBuilderRow | null>(null);
   const { mutate: loadConsultants, isPending } = useClientConsultants();
   const { toast } = useToast();
 
@@ -131,8 +127,7 @@ export default function AdminConsultantDirectory() {
   }, [router]);
 
   const openSchedule = (row: TeamBuilderRow) => {
-    setScheduleData(row.working_schedule);
-    setScheduleModalOpen(true);
+    setScheduleConsultant(row);
   };
 
   const rowsWithSchedule = useMemo(
@@ -320,43 +315,13 @@ export default function AdminConsultantDirectory() {
         )}
       </Box>
 
-      {scheduleModalOpen && (
-        <DynamicPopup
-          open={scheduleModalOpen}
-          onClose={() => setScheduleModalOpen(false)}
-          title="Working Schedule"
-          description=""
-        >
-          <Box sx={{ mt: 2 }}>
-            {scheduleData?.weekly?.length ? (
-              scheduleData.weekly.map((day: Weekday, index: number) => (
-                <Box
-                  key={`${day.day}-${index}`}
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    p: 1,
-                    borderBottom: "1px solid #eee",
-                  }}
-                >
-                  <Typography>{day.day}</Typography>
-                  {day.active ? (
-                    <Typography>
-                      {day.slot?.[0]?.start || "-"} -{" "}
-                      {day.slot?.[0]?.end || "-"}
-                    </Typography>
-                  ) : (
-                    <Typography color="red">Not Active</Typography>
-                  )}
-                </Box>
-              ))
-            ) : (
-              <Typography color="text.secondary">
-                No working schedule available
-              </Typography>
-            )}
-          </Box>
-        </DynamicPopup>
+      {scheduleConsultant && (
+        <ConsultantAvailabilityDialog
+          open
+          onClose={() => setScheduleConsultant(null)}
+          consultantId={scheduleConsultant.id}
+          schedule={scheduleConsultant.working_schedule}
+        />
       )}
     </div>
   );

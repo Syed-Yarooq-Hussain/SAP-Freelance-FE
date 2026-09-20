@@ -24,10 +24,9 @@ import {
   saveProjectTeamBuilder,
 } from "@/services/projectTeamBuilder";
 import { CustomError } from "@/exceptions/custom-exception";
-import { normalizeWorkingSchedule } from "@/utils/normalizeWorkingSchedule";
+import ConsultantAvailabilityDialog from "./ConsultantAvailabilityDialog";
 import ConsultantProfileModal from "@/components/specific/teambuilder/ConsultantProfileModal";
 import TeamBuilderFilters from "@/components/specific/teambuilder/TeamBuilderFilters";
-import DynamicPopup from "@/components/Popup";
 import StatCard from "@/components/StatCard";
 import { CONSULTANT_STATUS } from "@/constants/status";
 import { teamBuilderColumns, teamBuilderStats } from "@/data/teamBuilder";
@@ -142,7 +141,10 @@ export default function TeamCreation({
     TeamBuilderRow["working_schedule"] | null
   >(null);
 
+  const [scheduleConsultantId, setScheduleConsultantId] = useState<string | number>("");
+
   const openSchedule = (row: TeamBuilderRow) => {
+    setScheduleConsultantId(row.id);
     setScheduleData(row.working_schedule);
     setScheduleModalOpen(true);
   };
@@ -785,36 +787,12 @@ export default function TeamCreation({
             onAddToSelection={handleAddConsultantToSelection}
           />
 
-          <DynamicPopup
+          {scheduleModalOpen && <ConsultantAvailabilityDialog
             open={scheduleModalOpen}
             onClose={() => setScheduleModalOpen(false)}
-            title="Working Schedule"
-            description=""
-          >
-            <Box sx={{ mt: 2 }}>
-              {normalizeWorkingSchedule(scheduleData).map((day, i: number) => (
-                <Box
-                  key={i}
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    p: 1,
-                    borderBottom: "1px solid #eee",
-                  }}
-                >
-                  <Typography>{day.day}</Typography>
-
-                  {day.active ? (
-                    <Typography>
-                      {day.start || "?"} - {day.end || "?"}
-                    </Typography>
-                  ) : (
-                    <Typography color="red">Not Active</Typography>
-                  )}
-                </Box>
-              ))}
-            </Box>
-          </DynamicPopup>
+            consultantId={scheduleConsultantId}
+            schedule={scheduleData}
+          />}
 
           <Box
             display="flex"
