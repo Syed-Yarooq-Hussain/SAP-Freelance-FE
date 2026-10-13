@@ -444,6 +444,10 @@ export default function DataTable<T extends GridValidRowModel>({
       <DataGrid
           rows={rows}
           columns={updatedColumns}
+          // Infinite lists already fetch pages externally. Client pagination
+          // would silently hide every supplied row after the first 100.
+          paginationMode={hidePagination ? "server" : "client"}
+          rowCount={hidePagination ? rows.length : undefined}
           showCellVerticalBorder={!isTransparent && !isConsultantVariant}
           showColumnVerticalBorder={!isTransparent && !isConsultantVariant}
           initialState={{

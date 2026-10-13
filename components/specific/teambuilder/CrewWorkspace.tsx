@@ -5,7 +5,7 @@ import { consultantLabel } from "@/utils/consultantIdentity";
 import { useEffect, useState } from "react";
 import { useConsultantLevels } from "@/actions/common/useConsultantLevels";
 import type { TeamBuilderRow } from "@/types/teamBuilder";
-import { canParent, removeRole, type CrewRole } from "@/utils/crewBuilder";
+import { addDesignRoles, DESIGN_ROLE_TITLES, canParent, removeRole, type CrewRole } from "@/utils/crewBuilder";
 import {
   ArrowRight,
   Check,
@@ -23,6 +23,7 @@ import CrewHierarchy from "./CrewHierarchy";
 import styles from "./CrewWorkspace.module.css";
 
 interface Props {
+  selectionLocked?: boolean;
   persistenceLabel?: string;
   rows: TeamBuilderRow[];
   visibleRows: TeamBuilderRow[];
@@ -50,7 +51,6 @@ export default function CrewWorkspace(props: Props) {
   const {
     mutate: fetchLevels,
     data: levels,
-    isPending: loadingLevels,
     isError: levelsError,
   } = useConsultantLevels();
   const [newRole, setNewRole] = useState("");
@@ -73,7 +73,7 @@ export default function CrewWorkspace(props: Props) {
   };
   const assign = (personId: string, roleId: string) => {
     const person = rows.find((row) => String(row.id) === personId);
-    if (!person || person.avail <= 0) {
+    if (!person || (!props.selectionLocked && person.avail <= 0)) {
       setMessage("This consultant has no available hours.");
       return;
     }
@@ -87,7 +87,7 @@ export default function CrewWorkspace(props: Props) {
     );
     setActiveRole(roleId);
     setMessage(
-      `${consultantLabel(personId)} assigned. Set their requested hours in the talent pool.`,
+      props.selectionLocked ? `${consultantLabel(personId)} assigned.` : `${consultantLabel(personId)} assigned. Set their requested hours in the talent pool.`,
     );
   };
   const place = (id: string, parentId: string | null) => {
@@ -230,7 +230,7 @@ export default function CrewWorkspace(props: Props) {
         >
           <div className={styles.columnHeading}>
             <span>
-              <b>01</b> TALENT POOL
+              <b>01</b> {props.selectionLocked ? "SELECTED CONSULTANTS" : "TALENT POOL"}
             </span>
             <small>{pool.length} shown</small>
           </div>
@@ -238,7 +238,7 @@ export default function CrewWorkspace(props: Props) {
             <Search size={15} />
             <input
               aria-label="Search consultants"
-              placeholder="Search consultant ID or module"
+              placeholder={props.selectionLocked ? "Search name, ID or module" : "Search consultant ID or module"}
               value={props.search}
               onChange={(e) => {
                 props.onSearch(e.target.value);
@@ -246,7 +246,7 @@ export default function CrewWorkspace(props: Props) {
               }}
             />
           </div>
-          <div className={styles.tabs}>
+          {!props.selectionLocked && <div className={styles.tabs}>
             <button
               type="button"
               aria-pressed={!showSelected}
@@ -261,7 +261,7 @@ export default function CrewWorkspace(props: Props) {
             >
               Selected <b>{selectedIds.length}</b>
             </button>
-          </div>
+          </div>}
           <div className={styles.scroll}>
             {props.loading && !pool.length ? (
               <p className={styles.empty}>Loading consultants…</p>
@@ -277,6 +277,22 @@ export default function CrewWorkspace(props: Props) {
             {pool.map((person) => {
               const id = String(person.id),
                 selected = selectedIds.includes(id);
+              if (props.selectionLocked) return (
+                <article key={id} className={`${styles.person} ${activePerson === id ? styles.active : ""}`}>
+                  <button type="button" className={styles.personName} draggable
+                    aria-label={`Select ${consultantLabel(id)} for a role`}
+                    onClick={() => setActivePerson(id)}
+                    onDragStart={(event) => { event.dataTransfer.setData("application/crew-person", id); event.dataTransfer.effectAllowed = "move"; setActivePerson(id); }}>
+                    <GripVertical size={15} /><strong>{person.name?.trim() || consultantLabel(id)}</strong>
+                  </button>
+                  <small>ID {consultantLabel(id)}</small>
+                  {person.coremodules && <p><b>Core:</b> {person.coremodules}</p>}
+                  {person.othersmodules && <p><b>Other:</b> {person.othersmodules}</p>}
+                  {!person.coremodules && !person.othersmodules && <p>Modules not specified</p>}
+                  {person.experience && person.experience !== "undefined" && person.experience !== "null" && <p><b>Experience:</b> {person.experience}</p>}
+                  <small>{roles.filter(role => role.personIds.includes(id)).length} assigned roles</small>
+                </article>
+              );
               const modules = [
                 ...new Set(
                   `${person.coremodules},${person.othersmodules}`
@@ -428,32 +444,23 @@ export default function CrewWorkspace(props: Props) {
             <small>{roles.length} positions</small>
           </div>
           <div className={styles.addRole}>
-            <select
-              aria-label="Role to add"
-              value={newRole}
-              onChange={(e) => setNewRole(e.target.value)}
-              disabled={loadingLevels}
-            >
-              <option value="">
-                {loadingLevels ? "Loading roles…" : "Choose a role…"}
-              </option>
-              {(levels?.data ?? []).map((level) => (
-                <option key={level} value={level}>
-                  {level}
-                </option>
-              ))}
-            </select>
+            <input list="crew-role-options" aria-label="Role to add" value={newRole}
+              onChange={(event) => setNewRole(event.target.value)} maxLength={120}
+              placeholder="Choose or enter a custom role" />
+            <datalist id="crew-role-options">
+              {[...new Set([...DESIGN_ROLE_TITLES, ...(levels?.data ?? [])])].map((level) => <option key={level} value={level} />)}
+            </datalist>
             <button
               type="button"
               aria-label="Add role"
-              disabled={!newRole}
+              disabled={!newRole.trim()}
               onClick={() => {
                 const id = crypto.randomUUID();
                 commit([
                   ...roles,
                   {
                     id,
-                    title: newRole,
+                    title: newRole.trim(),
                     personIds: [],
                     parentId: null,
                     placed: false,
@@ -466,6 +473,11 @@ export default function CrewWorkspace(props: Props) {
               <Plus size={17} />
             </button>
           </div>
+          {DESIGN_ROLE_TITLES.some(title => !roles.some(role => role.title.trim().toLowerCase() === title.toLowerCase())) && (
+            <button type="button" className={styles.loadMore} onClick={() => commit(addDesignRoles(roles))}>
+              <Plus size={14} /> Add design roles
+            </button>
+          )}
           {levelsError && (
             <p className={styles.error}>
               Roles could not load.{" "}
@@ -530,7 +542,10 @@ export default function CrewWorkspace(props: Props) {
                 <div className={styles.assignments}>
                   {role.personIds.map((id) => (
                     <span key={id}>
-                      {consultantLabel(id)}
+                      {props.selectionLocked ? (() => {
+                        const person = rows.find(row => String(row.id) === id);
+                        return <span><strong>{person?.name?.trim() || consultantLabel(id)}</strong><small> · {consultantLabel(id)}{person?.coremodules ? ` · ${person.coremodules}` : ""}</small></span>;
+                      })() : consultantLabel(id)}
                       <button
                         type="button"
                         aria-label={`Unassign ${consultantLabel(id)} from ${role.title}`}
@@ -600,7 +615,8 @@ export default function CrewWorkspace(props: Props) {
           />
           {selectedRole && (
             <div className={styles.inspector}>
-              <strong>{selectedRole.title}</strong>
+              <label>Role title<input aria-label="Edit role title" key={selectedRole.id + selectedRole.title} defaultValue={selectedRole.title} maxLength={120}
+                onBlur={(event) => { const title = event.target.value.trim(); if (title && title !== selectedRole.title) commit(roles.map(role => role.id === selectedRole.id ? { ...role, title } : role)); else event.target.value = selectedRole.title; }} /></label>
               <label>
                 Reports to
                 <select

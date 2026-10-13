@@ -770,6 +770,17 @@ export default function TeamCreation({
               onSelectionChange={setSelectedIds}
               rowClickable={false}
             />
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 2, px: 2, py: 1.5 }}>
+              <Typography variant="caption" color="text.secondary">
+                {filteredRows.length} consultants shown
+                {paginationMeta?.total != null ? ` · ${paginationMeta.total} total` : ""}
+              </Typography>
+              {hasMore && (
+                <Button size="small" onClick={loadMore} disabled={isPending} sx={{ textTransform: "none" }}>
+                  {isPending ? "Loading…" : "Load more consultants"}
+                </Button>
+              )}
+            </Box>
           </fieldset>
 
           <ConsultantProfileModal

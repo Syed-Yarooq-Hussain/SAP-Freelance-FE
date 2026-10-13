@@ -4,6 +4,14 @@ import type { MilestoneTeam } from "@/types/milestoneTeam";
 export type BillingMilestone = IMilestone & {
   team?: MilestoneTeam;
   teamError?: string;
+  billing?: {
+    basis: "hired_team_weeks";
+    weeks: number;
+    estimated_amount: number;
+    payable_amount: number;
+    currency: string;
+    breakdown?: { consultant_id: string | number; weekly_hours: number; total_hours: number; client_hourly_rate: number; amount: number; currency: string }[];
+  };
 };
 
 export function paymentAmount(payment: IProjectPaymentDTO): number {
@@ -24,7 +32,7 @@ export function paymentCurrency(
   return (
     payment.currency ||
     milestones.find((m) => String(m.id) === milestoneIdForPayment(payment))
-      ?.team?.currency ||
+      ?.billing?.currency ||
     "USD"
   );
 }
@@ -42,21 +50,11 @@ export function summarizeBilling(
       groups.set(currency, { currency, payable: 0, paid: 0, remaining: 0 });
     return groups.get(currency)!;
   };
-  const snapshotIds = new Set<string>();
-  for (const milestone of milestones) {
-    if (!milestone.team || milestone.team.configured === false) continue;
-    snapshotIds.add(String(milestone.id));
-    group(milestone.team.currency).payable += Number(
-      milestone.team.payable_amount,
-    );
-  }
-  // Payments back their milestone snapshot, rather than being added a second time.
-  // Custom payments and records whose snapshot is unavailable count once here.
+  // Issued payments are the sole balance source; never add allocation snapshots.
   for (const payment of payments) {
     const amount = paymentAmount(payment);
     const total = group(paymentCurrency(payment, milestones));
-    if (!snapshotIds.has(milestoneIdForPayment(payment)))
-      total.payable += amount;
+    total.payable += amount;
     if (payment.is_paid === true) total.paid += amount;
     else total.remaining += amount;
   }

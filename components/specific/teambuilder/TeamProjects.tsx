@@ -14,7 +14,6 @@ import { useUpdateTask } from "@/actions/projects/useUpdateTask";
 import AppButton from "@/components/Button";
 import { CreateForm } from "@/components/CreateForm";
 import MilestoneExpandableTable from "@/components/MilestoneExpandableTable";
-import MilestoneTeamPlanner from "./MilestoneTeamPlanner";
 import dynamic from "next/dynamic";
 import { CONSULTANT_STATUS } from "@/constants/status";
 import { getMilestoneFormFields } from "@/forms/milestoneForm";
@@ -82,7 +81,6 @@ export default function TeamProjects({
     null,
   );
   const [scopePending, setScopePending] = useState(false);
-  const [milestoneTeamPending, setMilestoneTeamPending] = useState(false);
 
   const loadAssignees = useCallback(() => {
     if (!projectId) return;
@@ -764,7 +762,7 @@ export default function TeamProjects({
             {editingMilestone ? "Edit Milestone" : "Add Milestone"}
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
-            Add delivery checkpoints with dates and a clear description.
+            Set milestone dates and a description. Billing uses the full hired team and the milestone duration.
           </Typography>
 
           <CreateForm
@@ -781,14 +779,7 @@ export default function TeamProjects({
             }}
           />
         </Box>
-        {projectId ? (
-          <MilestoneTeamPlanner
-            key={projectId}
-            projectId={projectId}
-            milestones={rows}
-            onPendingChange={setMilestoneTeamPending}
-          />
-        ) : null}
+
       </Paper>
 
       <Paper
@@ -813,9 +804,7 @@ export default function TeamProjects({
             fontWeight: 600,
           }}
         >
-          {milestoneTeamPending
-            ? "Save or discard milestone team drafts before continuing"
-            : canProceed
+          {canProceed
               ? "Milestone saved"
               : "You can continue now and add milestones later"}
         </Typography>
@@ -824,7 +813,7 @@ export default function TeamProjects({
           <AppButton label="Back" colorKey="RED" onClick={onBack} width={180} />
           <AppButton
             label="Proceed to next step"
-            disabled={scopePending || milestoneTeamPending}
+            disabled={scopePending}
             colorKey="BLUE"
             width={180}
             onClick={() => onNext?.(projectId!)}

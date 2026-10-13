@@ -24,7 +24,6 @@ import {
 } from "@/utils/teamBuilderBilling";
 import { getProjectPaymentService } from "@/services/getProjectPayment";
 import { getProjectMilestonesService } from "@/services/getProjectMilestones";
-import { getMilestoneTeam } from "@/services/milestoneTeam";
 import {
   Alert,
   Box,
@@ -81,47 +80,7 @@ export default function TeamPayments({
         getProjectPaymentService(projectId),
         getProjectMilestonesService(projectId),
       ]);
-      const allMilestones = await Promise.all(
-        (milestoneResponse.data ?? []).map(
-          async (milestone): Promise<BillingMilestone> => {
-            const item = milestone as BillingMilestone;
-            try {
-              const team =
-                item.team ??
-                (await getMilestoneTeam(projectId, Number(item.id)));
-              const estimated = Number(team.estimated_amount),
-                payable = Number(team.payable_amount);
-              if (
-                team.estimated_amount == null ||
-                team.payable_amount == null ||
-                !Number.isFinite(estimated) ||
-                !Number.isFinite(payable) ||
-                estimated < 0 ||
-                payable < 0 ||
-                !/^[A-Z]{3}$/.test(team.currency)
-              )
-                throw new Error("Invalid milestone billing snapshot");
-              return {
-                ...item,
-                team: {
-                  ...team,
-                  estimated_amount: estimated,
-                  payable_amount: payable,
-                },
-              };
-            } catch (error) {
-              return {
-                ...item,
-                team: undefined,
-                teamError:
-                  error instanceof Error
-                    ? error.message
-                    : "Snapshot unavailable",
-              };
-            }
-          },
-        ),
-      );
+      const allMilestones = (milestoneResponse.data ?? []) as BillingMilestone[];
       const records = [
         ...new Map(
           (paymentResponse.data ?? [])
@@ -316,13 +275,6 @@ export default function TeamPayments({
       ) : null}
       {data?.projectId === projectId ? (
         <>
-          {milestones.some((m) => !m.team) ? (
-            <Alert severity="warning" sx={{ mb: 2 }}>
-              Some milestone snapshots are unavailable. Their payment records
-              remain visible; their estimates cannot be shown. Refresh billing
-              to retry.
-            </Alert>
-          ) : null}
           {totals.map((total) => (
             <Box key={total.currency} sx={{ mb: 3 }}>
               <Typography variant="subtitle2" sx={{ mb: 1 }}>
@@ -356,15 +308,6 @@ export default function TeamPayments({
               </Box>
             </Box>
           ))}
-          {totals.some(
-            (total) =>
-              Math.abs(total.payable - total.paid - total.remaining) > 0.01,
-          ) ? (
-            <Alert severity="info" sx={{ mb: 2 }}>
-              Milestone totals and issued payments currently differ.
-              The remaining balance includes issued unpaid payments only.
-            </Alert>
-          ) : null}
           <MilestoneBillingOverview
             milestones={milestones}
             payments={payments}

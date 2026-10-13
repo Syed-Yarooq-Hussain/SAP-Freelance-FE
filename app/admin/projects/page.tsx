@@ -95,7 +95,7 @@ export default function AdminProjectPage() {
             onClick={() => router.push(APP_ROUTES.ADMIN.CREATE_PROJECT)}
             sx={{ bgcolor: "#005C8A" }}
           >
-            Create for client
+            Create project
           </Button>
         }
       >

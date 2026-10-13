@@ -1,5 +1,18 @@
 import type { TeamBuilderRow } from "@/types/teamBuilder";
 
+export const DESIGN_ROLE_TITLES = [
+  "Project Manager", "Solution Architect", "Senior Functional Lead",
+  "SD Lead", "FI Lead", "MM Lead", "CO Lead", "LE Lead",
+  "Technical Lead", "ABAP Developer", "Basis Consultant",
+] as const;
+
+export function addDesignRoles(roles: CrewRole[]): CrewRole[] {
+  const titles = new Set(roles.map(role => role.title.trim().toLowerCase()));
+  return [...roles, ...DESIGN_ROLE_TITLES.filter(title => !titles.has(title.toLowerCase())).map(title => ({
+    id: crypto.randomUUID(), title, personIds: [], parentId: null, placed: false,
+  }))];
+}
+
 export interface CrewRole {
   id: string;
   title: string;

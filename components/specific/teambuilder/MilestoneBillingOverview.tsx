@@ -1,174 +1,45 @@
-"use client";
-
-import { consultantLabel } from "@/utils/consultantIdentity";
+﻿"use client";
 
 import { Fragment } from "react";
-import {
-  Alert,
-  Box,
-  Chip,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Typography,
-} from "@mui/material";
+import { Alert, Box, Chip, Table, TableBody, TableCell, TableHead, TableRow, Typography } from "@mui/material";
+import { consultantLabel } from "@/utils/consultantIdentity";
 import type { IProjectPaymentDTO } from "@/types/teamBuilder";
 import { formatCurrency } from "@/utils/payments";
-import {
-  milestoneIdForPayment,
-  paymentAmount,
-  paymentCurrency,
-  type BillingMilestone,
-} from "@/utils/teamBuilderBilling";
+import { milestoneIdForPayment, paymentAmount, paymentCurrency, type BillingMilestone } from "@/utils/teamBuilderBilling";
 
-export default function MilestoneBillingOverview({
-  milestones,
-  payments,
-}: {
-  milestones: BillingMilestone[];
-  payments: IProjectPaymentDTO[];
-}) {
-  return (
-    <Box sx={{ mb: 3, border: "1px solid #E2E8F0", borderRadius: 3, overflow: "hidden", bgcolor: "#fff" }}>
-      <Box sx={{ px: 2.5, pt: 2.5 }}><Typography sx={{ fontSize: 15, fontWeight: 700, color: "#0F172A" }}>Milestone overview <Box component="span" sx={{ ml: 1, fontSize: 12, color: "#64748B", fontWeight: 500 }}>{milestones.length} milestones</Box></Typography>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        Review costs and expand a milestone for its breakdown.
-      </Typography>
-      </Box>
-      {!milestones.length ? (
-        <Alert severity="info">No milestones found for this project.</Alert>
-      ) : (
-        <Box sx={{ overflowX: "auto" }}>
-          <Table
-            size="small"
-            sx={{ minWidth: 650, "& th": { bgcolor: "#F8FAFC", color: "#64748B", fontSize: 11, fontWeight: 600, py: 1.5 }, "& td": { borderColor: "#F1F5F9", fontSize: 13, py: 1.75 }, "& th:first-of-type, & td:first-of-type": { pl: 2.5 } }}
-            aria-label="Milestone estimates and payable amounts"
-          >
-            <TableHead>
-              <TableRow>
-                <TableCell>Milestone</TableCell>
-                <TableCell align="right">Estimated</TableCell>
-                <TableCell align="right">Payable</TableCell>
-                <TableCell>Currency</TableCell>
-                <TableCell>Payment status</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {milestones.map((milestone) => {
-                const team = milestone.team;
-                const records = payments.filter(
-                  (payment) =>
-                    milestoneIdForPayment(payment) === String(milestone.id),
-                );
-                const positive = records.filter(
-                  (payment) => paymentAmount(payment) > 0,
-                );
-                const paid = positive.filter(
-                  (payment) => payment.is_paid === true,
-                );
-                const status = positive.length
-                  ? paid.length === positive.length
-                    ? "Paid"
-                    : paid.length
-                      ? "Partially paid"
-                      : "Unpaid"
-                  : team?.payable_amount === 0
-                    ? "No payment due"
-                    : "Unpaid · no payment issued";
-                return (
-                  <Fragment key={milestone.id}>
-                    <TableRow>
-                      <TableCell>
-                        <Typography sx={{ fontSize: 13, fontWeight: 600, color: "#334155" }}>
-                          {milestone.name}
-                        </Typography>
-                        {milestone.teamError ? (
-                          <Typography variant="caption" color="error">
-                            {milestone.teamError}
-                          </Typography>
-                        ) : null}
-                      </TableCell>
-                      <TableCell align="right" sx={{ fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" }}>
-                        {team
-                          ? formatCurrency(
-                              Number(team.estimated_amount),
-                              team.currency,
-                            )
-                          : "Unavailable"}
-                      </TableCell>
-                      <TableCell align="right" sx={{ fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" }}>
-                        {team
-                          ? formatCurrency(
-                              Number(team.payable_amount),
-                              team.currency,
-                            )
-                          : "Unavailable"}
-                      </TableCell>
-                      <TableCell>
-                        {team?.currency || records[0]?.currency || "—"}
-                      </TableCell>
-                      <TableCell>
-                        <Chip size="small" label={!team && !positive.length ? "Unavailable" : status}
-                          sx={{ height: 24, fontSize: 11, fontWeight: 600, bgcolor: status === "Paid" ? "#ECFDF5" : status === "No payment due" ? "#F1F5F9" : "#FFFBEB", color: status === "Paid" ? "#047857" : status === "No payment due" ? "#64748B" : "#92400E" }} />
-                      </TableCell>
-                    </TableRow>
-                    {team?.breakdown?.length || records.length ? (
-                      <TableRow>
-                        <TableCell colSpan={5} sx={{ pt: "0 !important", pb: "10px !important" }}>
-                          <details>
-                            <summary
-                              style={{ cursor: "pointer", padding: "2px 0", fontSize: 11, fontWeight: 600, color: "#64748B" }}
-                            >
-                              Cost & payment breakdown
-                            </summary>
-                            {team?.breakdown?.map((line) => (
-                              <Typography
-                                variant="body2"
-                                key={line.consultant_id}
-                                sx={{ my: 1, px: 1.5, py: 1, bgcolor: "#F8FAFC", borderRadius: 1.5, fontSize: 12, lineHeight: 1.8 }}
-                              >
-                                {consultantLabel(line.consultant_id)}
-                                : {line.hours} h ×{" "}
-                                {formatCurrency(
-                                  Number(line.hourly_rate),
-                                  line.currency || team.currency,
-                                )}{" "}
-                                ={" "}
-                                {formatCurrency(
-                                  Number(line.estimated_amount),
-                                  line.currency || team.currency,
-                                )}{" "}
-                                estimated;{" "}
-                                {formatCurrency(
-                                  Number(line.payable_amount),
-                                  line.currency || team.currency,
-                                )}{" "}
-                                payable ({line.status}).
-                              </Typography>
-                            ))}
-                            {records.map((payment) => (
-                              <Typography variant="body2" key={payment.id}>
-                                Payment #{payment.id}:{" "}
-                                {formatCurrency(
-                                  paymentAmount(payment),
-                                  paymentCurrency(payment, milestones),
-                                )}{" "}
-                                · {payment.is_paid === true ? "Paid" : "Unpaid"}
-                              </Typography>
-                            ))}
-                          </details>
-                        </TableCell>
-                      </TableRow>
-                    ) : null}
-                  </Fragment>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </Box>
-      )}
+export default function MilestoneBillingOverview({ milestones, payments }: { milestones: BillingMilestone[]; payments: IProjectPaymentDTO[] }) {
+  return <Box sx={{ mb: 3, border: "1px solid #E2E8F0", borderRadius: 3, overflow: "hidden", bgcolor: "#fff" }}>
+    <Box sx={{ px: 2.5, pt: 2.5 }}>
+      <Typography sx={{ fontSize: 15, fontWeight: 700 }}>Milestone overview</Typography>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>Full hired team, billed for the milestone duration. Balances reflect issued payments.</Typography>
     </Box>
-  );
+    {!milestones.length ? <Alert severity="info">No milestones found for this project.</Alert> : <Box sx={{ overflowX: "auto" }}>
+      <Table size="small" aria-label="Milestone billing" sx={{ minWidth: 700, "& th": { bgcolor: "#F8FAFC", color: "#64748B", fontSize: 11, fontWeight: 600 }, "& td": { borderColor: "#F1F5F9", fontSize: 13, py: 1.75 } }}>
+        <TableHead><TableRow><TableCell>Milestone</TableCell><TableCell>Weeks</TableCell><TableCell align="right">Estimated</TableCell><TableCell align="right">Issued payable</TableCell><TableCell>Status</TableCell></TableRow></TableHead>
+        <TableBody>{milestones.map(milestone => {
+          const records = payments.filter(payment => milestoneIdForPayment(payment) === String(milestone.id));
+          const billing = milestone.billing?.basis === "hired_team_weeks" ? milestone.billing : undefined;
+          const amounts = new Map<string, number>();
+          records.forEach(payment => { const currency = paymentCurrency(payment, milestones); amounts.set(currency, (amounts.get(currency) ?? 0) + paymentAmount(payment)); });
+          const positive = records.filter(payment => paymentAmount(payment) > 0);
+          const paid = positive.filter(payment => payment.is_paid === true);
+          const status = positive.length ? paid.length === positive.length ? "Paid" : paid.length ? "Partially paid" : "Unpaid" : records.length || billing?.payable_amount === 0 ? "No payment due" : "Not issued";
+          const weeks = billing?.weeks ?? (milestone.required_hours != null ? Number(milestone.required_hours) / 40 : null);
+          return <Fragment key={milestone.id}>
+            <TableRow>
+              <TableCell><Typography sx={{ fontSize: 13, fontWeight: 600 }}>{milestone.name}</Typography><Typography variant="caption" color="text.secondary">{milestone.start_date?.split("T")[0]} – {milestone.due_date?.split("T")[0]}</Typography></TableCell>
+              <TableCell>{weeks != null && Number.isFinite(weeks) ? Number(weeks.toFixed(2)) : "—"}</TableCell>
+              <TableCell align="right">{billing ? `${formatCurrency(billing.estimated_amount, billing.currency)} ${billing.currency}` : "Not available yet"}</TableCell>
+              <TableCell align="right">{amounts.size ? [...amounts].map(([currency, amount]) => <Box key={currency}>{formatCurrency(amount, currency)} {currency}</Box>) : billing?.payable_amount === 0 ? `${formatCurrency(0, billing.currency)} ${billing.currency}` : "Not issued"}</TableCell>
+              <TableCell><Chip size="small" label={status} sx={{ fontSize: 11, bgcolor: status === "Paid" ? "#ECFDF5" : status === "Unpaid" ? "#FFFBEB" : "#F1F5F9", color: status === "Paid" ? "#047857" : "#64748B" }} /></TableCell>
+            </TableRow>
+            {(billing?.breakdown?.length || records.length) ? <TableRow><TableCell colSpan={5} sx={{ pt: "0 !important" }}><details><summary style={{ cursor: "pointer", fontSize: 11, color: "#64748B" }}>Cost & payment breakdown</summary>
+              {billing?.breakdown?.map(line => <Typography variant="body2" key={line.consultant_id} sx={{ mt: 1 }}>{consultantLabel(line.consultant_id)}: {line.weekly_hours} hours/week × {billing.weeks} weeks = {line.total_hours} hours × {formatCurrency(line.client_hourly_rate, line.currency)} = {formatCurrency(line.amount, line.currency)} {line.currency}</Typography>)}
+              {records.map(payment => <Typography variant="body2" key={payment.id}>Payment #{payment.id}: {formatCurrency(paymentAmount(payment), paymentCurrency(payment, milestones))} · {payment.is_paid === true ? "Paid" : "Unpaid"}</Typography>)}
+            </details></TableCell></TableRow> : null}
+          </Fragment>;
+        })}</TableBody>
+      </Table>
+    </Box>}
+  </Box>;
 }

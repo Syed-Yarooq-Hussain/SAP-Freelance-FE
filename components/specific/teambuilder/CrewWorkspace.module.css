@@ -313,7 +313,8 @@
   gap: 6px;
   border-bottom: 1px solid var(--line);
 }
-.addRole select {
+.addRole select,
+.addRole input {
   min-width: 0;
   width: 100%;
   padding: 7px;

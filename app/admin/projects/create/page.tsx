@@ -22,9 +22,7 @@ import {
   Box,
   Button,
   CircularProgress,
-  Paper,
   Stack,
-  Typography,
 } from "@mui/material";
 import { useRouter, useSearchParams } from "next/navigation";
 import dynamic from "next/dynamic";
@@ -310,15 +308,18 @@ function AdminProjectBuilderContent() {
   return (
     <Sidebar>
       <AdminPageShell
-        title="Create project for a client"
-        description="Create and manage the engagement on behalf of an existing client account."
+        title="Create project"
+        description="Build your team, define milestones and launch your project."
         actions={
+          <Stack direction="row" spacing={1}>
+          {activeStep > 1 && <Button onClick={returnToClientSelection} sx={{ textTransform: "none" }}>Change client</Button>}
           <Button
             variant="outlined"
             onClick={() => router.push(APP_ROUTES.ADMIN.PROJECTS)}
           >
             Exit to projects
           </Button>
+          </Stack>
         }
       >
         <StepProgress
@@ -327,55 +328,6 @@ function AdminProjectBuilderContent() {
           onStepClick={goToStep}
           isStepAccessible={canAccessStep}
         />
-
-        {activeStep > 1 ? (
-          <Paper
-            elevation={0}
-            sx={{
-              mt: 2,
-              px: { xs: 2, md: 2.5 },
-              py: 1.75,
-              border: "1px solid #BFDBFE",
-              bgcolor: "#EFF8FF",
-              display: "flex",
-              flexDirection: { xs: "column", sm: "row" },
-              alignItems: { xs: "flex-start", sm: "center" },
-              justifyContent: "space-between",
-              gap: 1.5,
-            }}
-          >
-            <Stack direction="row" spacing={1.5} alignItems="center">
-              <Box
-                sx={{
-                  width: 38,
-                  height: 38,
-                  borderRadius: "10px",
-                  display: "grid",
-                  placeItems: "center",
-                  bgcolor: "#005C8A",
-                  color: "#FFFFFF",
-                }}
-              >
-                <BusinessRoundedIcon fontSize="small" />
-              </Box>
-              <Box>
-                <Typography variant="caption" sx={{ color: "#64748B" }}>
-                  Creating on behalf of
-                </Typography>
-                <Typography sx={{ fontWeight: 750, color: "#0F172A" }}>
-                  {selectedClient?.name ?? `Client #${selectedClientId}`}
-                </Typography>
-                {selectedClient?.email ? (
-                  <Typography variant="caption" sx={{ color: "#64748B" }}>
-                    {selectedClient.email}
-                  </Typography>
-                ) : null}
-              </Box>
-            </Stack>
-
-            <Button size="small" onClick={returnToClientSelection}>Change client</Button>
-          </Paper>
-        ) : null}
 
         {needsClientResolution ? (
           <Box sx={{ minHeight: 280, display: "grid", placeItems: "center" }}>

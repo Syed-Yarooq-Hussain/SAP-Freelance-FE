@@ -9,14 +9,10 @@ import {
   Box,
   Button,
   CircularProgress,
-  MenuItem,
   Paper,
   Stack,
-  TextField,
   Typography,
 } from "@mui/material";
-import { GripVertical } from "lucide-react";
-import { useConsultantLevels } from "@/actions/common/useConsultantLevels";
 import { getProjectConsultantsService } from "@/services/getProjectConsultants";
 import {
   getProjectTeamBuilder,
@@ -25,14 +21,14 @@ import {
 } from "@/services/projectTeamBuilder";
 import {
   canParent,
+  addDesignRoles,
   crewDraftKey,
   readCrewDraft,
-  removeRole,
   type CrewRole,
 } from "@/utils/crewBuilder";
 import type { ProjectTeamBuilderState } from "@/types/projectTeamBuilder";
 import type { IProjectConsultant, TeamBuilderRow } from "@/types/teamBuilder";
-import CrewHierarchy from "@/components/specific/teambuilder/CrewHierarchy";
+import CrewWorkspace from "@/components/specific/teambuilder/CrewWorkspace";
 
 export default function RoleHierarchy({
   projectId,
@@ -52,21 +48,13 @@ export default function RoleHierarchy({
     null,
   );
   const [savedRoles, setSavedRoles] = useState<CrewRole[]>([]);
-  const [activeId, setActiveId] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [retry, setRetry] = useState(0);
-  const {
-    mutate: loadLevels,
-    data: levels,
-    isError: levelsError,
-  } = useConsultantLevels();
-  useEffect(() => {
-    loadLevels();
-  }, [loadLevels]);
   useEffect(() => {
     onPendingChange?.(dirty || saving);
     return () => onPendingChange?.(false);
@@ -113,45 +101,23 @@ export default function RoleHierarchy({
         avail: member.requested_hours,
         request: member.requested_hours,
       }));
-      const saved =
-        state?.roles ??
-        readCrewDraft(crewDraftKey(owner, projectId))?.roles ??
-        [];
-      // One node per selected candidate; retain their previous reporting relationship.
-      const next: CrewRole[] = unique.flatMap((member) => {
+      const draft = readCrewDraft(crewDraftKey(owner, projectId));
+      const saved = state?.roles ?? draft?.roles ?? [];
+      const eligible = new Set(rows.map(person => String(person.id)));
+      const next: CrewRole[] = saved.map(role => ({ ...role, personIds: role.personIds.filter(id => eligible.has(id)) }));
+      for (const member of unique) {
         const id = String(member.consultant_id);
-        const existing = saved.find((role) => role.personIds.includes(id));
-        const title = existing?.title || member.role;
-        if (!title) return [];
-        const parentPerson = saved
-          .find((role) => role.id === existing?.parentId)
-          ?.personIds.find(
-            (personId) =>
-              personId !== id &&
-              rows.some((row) => String(row.id) === personId),
-          );
-        return [
-          {
-            id: `person-${id}`,
-            title,
-            personIds: [id],
-            placed: true,
-            parentId: parentPerson ? `person-${parentPerson}` : null,
-          },
-        ];
-      });
-      const normalized = next.map((role) => ({
-        ...role,
-        parentId: canParent(next, role.id, role.parentId)
-          ? role.parentId
-          : null,
-      }));
+        if (!state && !draft && member.role && !next.some(role => role.personIds.includes(id))) {
+          next.push({ id: crypto.randomUUID(), title: member.role, personIds: [id], placed: true, parentId: null });
+        }
+      }
+      const initialRoles = !draft && !saved.length ? addDesignRoles(next) : next;
+      const normalized = initialRoles.map(role => ({ ...role, parentId: canParent(initialRoles, role.id, role.parentId) ? role.parentId : null }));
       setPeople(rows);
       setRoles(normalized);
       setSavedRoles(normalized);
       setSnapshot(state);
-      setDirty(false);
-      setActiveId(current => normalized.some(role => role.id === current) ? current : null);
+      setDirty(initialRoles.length !== next.length);
     };
     load()
       .catch((reason) => {
@@ -170,42 +136,6 @@ export default function RoleHierarchy({
     setRoles(next);
     setDirty(true);
     setMessage("");
-  };
-  const move = (id: string, parentId: string | null) => {
-    if (!roles.some((role) => role.id === id)) {
-      setMessage(
-        "Choose this candidate’s role first, then drag them into the hierarchy.",
-      );
-      return;
-    }
-    if (!canParent(roles, id, parentId)) {
-      setMessage(
-        "A candidate cannot report to themselves or someone reporting to them.",
-      );
-      return;
-    }
-    change(
-      roles.map((role) =>
-        role.id === id ? { ...role, parentId, placed: true } : role,
-      ),
-    );
-    setActiveId(id);
-  };
-  const setRole = (personId: string, title: string) => {
-    const id = `person-${personId}`;
-    if (!title) {
-      change(removeRole(roles, id));
-      return;
-    }
-    change(
-      roles.some((role) => role.id === id)
-        ? roles.map((role) => (role.id === id ? { ...role, title } : role))
-        : [
-            ...roles,
-            { id, title, personIds: [personId], parentId: null, placed: true },
-          ],
-    );
-    setActiveId(id);
   };
   const save = async () => {
     if (!projectId || saving || (server && !snapshot)) return;
@@ -252,10 +182,6 @@ export default function RoleHierarchy({
       setSaving(false);
     }
   };
-  const active = roles.find((role) => role.id === activeId);
-  const titleOptions = [
-    ...new Set([...(levels?.data ?? []), ...roles.map((role) => role.title)]),
-  ];
   if (!projectId) return null;
   return (
     <Paper
@@ -266,8 +192,7 @@ export default function RoleHierarchy({
         Team structure
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        Choose a role for each selected candidate. Drag a candidate onto their
-        lead to set who they report to, or use the reporting dropdown.
+        Assign selected consultants to roles, then arrange the project hierarchy. Choose a standard role or add your own.
       </Typography>
       {error ? (
         <Alert
@@ -300,14 +225,6 @@ export default function RoleHierarchy({
           {message}
         </Alert>
       ) : null}
-      {levelsError ? (
-        <Alert
-          severity="warning"
-          action={<Button onClick={() => loadLevels()}>Retry</Button>}
-        >
-          Role options could not be loaded.
-        </Alert>
-      ) : null}
       {loading ? (
         <CircularProgress size={24} />
       ) : !people.length ? (
@@ -316,152 +233,14 @@ export default function RoleHierarchy({
         </Alert>
       ) : (
         <>
-          <Box
-            component="fieldset"
-            disabled={saving}
-            sx={{
-              border: 0,
-              p: 0,
-              m: 0,
-              minWidth: 0,
-              pointerEvents: saving ? "none" : "auto",
-              display: "grid",
-              gridTemplateColumns: { xs: "1fr", md: "300px minmax(0, 1fr)" },
-              gap: 2,
-            }}
-          >
-            <Box sx={{ maxHeight: 490, overflowY: "auto", pr: 0.5 }}>
-              <Typography variant="subtitle2" sx={{ mb: 1 }}>
-                Selected candidates ({people.length})
-              </Typography>
-              {people.map((person) => {
-                const id = String(person.id);
-                const role = roles.find((item) => item.personIds.includes(id));
-                return (
-                  <Paper
-                    key={id}
-                    variant="outlined"
-                    sx={{
-                      p: 1.5,
-                      mb: 1,
-                      borderColor:
-                        activeId === role?.id ? "#005C8A" : "divider",
-                    }}
-                  >
-                    <Stack
-                      draggable={Boolean(role)}
-                      onDragStart={(event) => {
-                        event.dataTransfer.setData("application/crew-person", id);
-                        event.dataTransfer.effectAllowed = "move";
-                      }}
-                      direction="row"
-                      spacing={1}
-                      alignItems="center"
-                      sx={{ mb: 1, cursor: role ? "grab" : "default" }}
-                    >
-                      <GripVertical size={16} />
-                      <Typography variant="body2" fontWeight={600}>
-                        {consultantLabel(person.id)}
-                      </Typography>
-                    </Stack>
-                    <TextField
-                      select
-                      fullWidth
-                      size="small"
-                      label={`Role for ${consultantLabel(person.id)}`}
-                      value={role?.title ?? ""}
-                      onChange={(event) => setRole(id, event.target.value)}
-                    >
-                      <MenuItem value="">Choose role</MenuItem>
-                      {titleOptions.map((title) => (
-                        <MenuItem key={title} value={title}>
-                          {title}
-                        </MenuItem>
-                      ))}
-                    </TextField>
-                    {role ? (
-                      <Button
-                        size="small"
-                        onClick={() => setActiveId(role.id)}
-                        sx={{ mt: 0.5 }}
-                      >
-                        Edit role & reporting line
-                      </Button>
-                    ) : null}
-                  </Paper>
-                );
-              })}
-            </Box>
-            <Box sx={{ minWidth: 0 }}>
-              <Box
-                sx={{
-                  height: 410,
-                  display: "flex",
-                  border: "1px solid #E2E8F0",
-                  borderRadius: 2,
-                  overflow: "hidden",
-                }}
-              >
-                <CrewHierarchy
-                  candidateMode
-                  roles={roles}
-                  people={people}
-                  activeRole={activeId}
-                  onSelect={setActiveId}
-                  onDropRole={move}
-                  onDropPerson={(personId, parentId) =>
-                    move(`person-${personId}`, parentId)
-                  }
-                />
-              </Box>
-              {active ? (
-                <Paper variant="outlined" sx={{ mt: 2, p: 2 }}>
-                  <Typography fontWeight={600} sx={{ mb: 2 }}>
-                    Edit {consultantLabel(active.personIds[0])}
-                  </Typography>
-                  <TextField
-                    select
-                    fullWidth
-                    size="small"
-                    label="Candidate role"
-                    value={active.title}
-                    onChange={event => setRole(active.personIds[0], event.target.value)}
-                  >
-                    {titleOptions.map(title => <MenuItem key={title} value={title}>{title}</MenuItem>)}
-                  </TextField>
-                <TextField
-                  select
-                  fullWidth
-                  size="small"
-                  sx={{ mt: 2 }}
-                  label={`Reports to · ${consultantLabel(active.personIds[0])}`}
-                  value={active.parentId ?? ""}
-                  onChange={(event) =>
-                    move(active.id, event.target.value || null)
-                  }
-                >
-                  <MenuItem value="">No lead / top level</MenuItem>
-                  {roles
-                    .filter(
-                      (role) =>
-                        role.id !== active.id &&
-                        canParent(roles, active.id, role.id),
-                    )
-                    .map((role) => (
-                      <MenuItem key={role.id} value={role.id}>
-                        {
-                          consultantLabel(role.personIds[0])
-                        }{" "}
-                        · {role.title}
-                      </MenuItem>
-                    ))}
-                </TextField>
-                  <Button sx={{ mt: 1 }} disabled={!active.parentId} onClick={() => move(active.id, null)}>
-                    Remove reporting link
-                  </Button>
-                </Paper>
-              ) : null}
-            </Box>
+          <Box component="fieldset" disabled={saving} sx={{ border: 0, p: 0, m: 0, minWidth: 0, pointerEvents: saving ? "none" : "auto" }}>
+            <CrewWorkspace selectionLocked rows={people}
+              visibleRows={people.filter(person => [person.name, consultantLabel(person.id), person.coremodules, person.othersmodules].join(" ").toLowerCase().includes(search.trim().toLowerCase()))}
+              selectedIds={people.map(person => String(person.id))} onSelect={() => {}}
+              roles={roles} onRolesChange={change} onHoursChange={() => {}}
+              search={search} onSearch={setSearch} onProfile={() => {}} onSchedule={() => {}}
+              loading={false} hasMore={false} onLoadMore={() => {}}
+              persistenceLabel={server ? "Project team structure" : "Browser draft"} />
           </Box>
           <Stack
             direction="row"
