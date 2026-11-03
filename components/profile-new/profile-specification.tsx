@@ -6,7 +6,7 @@ const ProfileSpecification = ({ user }: { user: any }) => {
   const loginWithLinkedin = user?.user?.linkedin_url;
   return (
     <div
-        className={`grid grid-cols-2  gap-4 mb-4 ${user?.user?.linkedin_url ? "md:grid-cols-5" : "md:grid-cols-4"}`}
+        className="mb-4 grid grid-cols-[repeat(auto-fit,minmax(min(100%,140px),1fr))] gap-3 [&>div]:min-w-0 [&>div]:break-words [&_svg]:shrink-0"
       >
         <div className="shadow-custom min-h-16 border flex flex-col justify-evenly border-slate-200 rounded-lg px-4 py-2">
           <div className="text-[10px] text-light-grey font-semibold font-manrope">

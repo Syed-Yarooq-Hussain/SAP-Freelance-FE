@@ -146,9 +146,9 @@ export function ProfileLayout({
               </button>
             </div>
           </div>
-          <div className="flex w-full min-w-0 md:flex-row flex-col">
-            <div className="flex w-full min-w-0 flex-col bg-background-main md:bg-transparent rounded-xl md:p-4 p-0 md:flex-row gap-8">
-              <div className="flex-shrink-0 ">
+          <div className="flex w-full min-w-0 flex-col gap-6 md:flex-row lg:gap-8">
+            <div className="w-full min-w-0 rounded-xl bg-background-main md:w-56 md:shrink-0 md:bg-transparent">
+              <div className="min-w-0">
                 <div className="md:block hidden">
                   <ProfileImage
                     imageUrl={user?.avatar}

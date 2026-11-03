@@ -117,9 +117,9 @@ export function ProfileHeader({
 
     <div className="md:order-2 order-3">
       {coreModules.length > 0 ? (
-        <div className="bg-gradient-success md:h-14 h-auto border mb-4 border-slate-200 rounded-xl px-4 py-3">
+        <div className="bg-gradient-success min-h-14 border mb-4 border-slate-200 rounded-xl px-4 py-3">
           <div className="flex items-center gap-2">
-            <div className="flex md:flex-row flex-col md:items-center items-start gap-2 font-manrope">
+            <div className="flex min-w-0 flex-wrap md:flex-row flex-col md:items-center items-start gap-2 font-manrope">
               <div className="flex items-center mr-1">
                 <Dot className="w-8 h-8 text-success" />
                 <p className="text-sm text-success font-medium">
@@ -127,7 +127,7 @@ export function ProfileHeader({
                 </p>
               </div>
               <div className="h-5 w-[1px] bg-slate-200 md:block hidden"></div>
-              <div className="flex items-center gap-2">
+              <div className="flex min-w-0 flex-wrap items-center gap-2">
                 {coreModules.map((module, index) => (
                   <div
                     key={module}

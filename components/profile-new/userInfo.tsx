@@ -47,8 +47,8 @@ const UserInfo = ({ user, badges }: { user: any, badges: string[] }) => {
   };
   return (
     <div className="flex items-start justify-between mb-2">
-        <div className="flex items-center gap-3">
-          <h1 className="text-xl md:text-3xl text-slate-900 mb-2 font-neue">
+        <div className="flex min-w-0 flex-wrap items-center gap-3">
+          <h1 className="min-w-0 break-words text-xl md:text-3xl text-slate-900 mb-2 font-neue">
             {user?.username}
           </h1>
           <div className="flex items-center flex-wrap gap-2">
